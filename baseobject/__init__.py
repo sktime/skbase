@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 # copyright: sktime developers, BSD-3-Clause License (see LICENSE file)
 
-"""Base classes for defining estimators and other objects in sktime."""
+"""BaseObject."""
+
+__version__ = "0.1.0"
 
 __author__ = ["mloning", "RNKuhns", "fkiraly"]
 __all__ = [
@@ -11,5 +13,5 @@ __all__ = [
     "_HeterogenousMetaEstimator",
 ]
 
-from sktime.base._base import BaseObject, BaseEstimator
-from sktime.base._meta import _HeterogenousMetaEstimator
+from baseobject._base import BaseObject, BaseEstimator
+from baseobject._meta import _HeterogenousMetaEstimator
