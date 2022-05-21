@@ -1,0 +1,56 @@
+[project]
+name = "baseobject"
+version = "0.11.0"
+description = "Base classes for sklearn-like parametric objects"
+authors = [
+    {name = "Franz Király", email = "f.kiraly@ucl.ac.uk"},
+    {name = "Ryan Kuhns"},
+]
+maintainers = [
+    {name = "Ryan Kuhns"},
+    {name = "Franz Király", email = "f.kiraly@ucl.ac.uk"},
+]
+readme = "README.md"
+keywords = [
+    "data-science",
+    "machine-learning",
+    "scikit-learn",
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Topic :: Software Development",
+    "Topic :: Scientific/Engineering",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+requires-python = ">=3.7,<3.10"
+dependencies = [
+    "scikit-learn>=0.24.0,<1.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "wheel",
+]
+
+[project.urls]
+homepage = "https://github.com/fkiraly/baseobject"
+repository = "https://github.com/fkiraly/baseobject"
+documentation = "https://github.com/fkiraly/baseobject"
+download = "https://pypi.org/project/baseobject/#files"
+
+[project.license]
+file = "LICENSE"
+
+[build-system]
+requires = ["setuptools", "wheel", "toml", "build"]
+build-backend = "setuptools.build_meta"
