@@ -1,9 +1,10 @@
 [project]
 name = "baseobject"
-version = "0.11.0"
+version = "0.0.1"
 description = "Base classes for sklearn-like parametric objects"
 authors = [
     {name = "Franz Király", email = "f.kiraly@ucl.ac.uk"},
+    {name = "Markus Löning"},
     {name = "Ryan Kuhns"},
 ]
 maintainers = [
