@@ -1,0 +1,64 @@
+{
+  "files": [
+    "CONTRIBUTORS.md"
+  ],
+  "imageSize": 100,
+  "contributorsPerLine": 9,
+  "contributorsSortAlphabetically": true,
+  "badgeTemplate": "[![All Contributors](https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg)](#contributors)",
+  "skipCi": true,
+  "contributors": [
+    {
+      "login": "fkiraly",
+      "name": "Franz Kiraly",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/7985502?v=4",
+      "profile": "https://github.com/fkiraly",
+      "contributions": [
+        "bug",
+        "business",
+        "code",
+        "doc",
+        "design",
+        "eventOrganizing",
+        "example",
+        "financial",
+        "fundingFinding",
+        "ideas",
+        "maintenance",
+        "mentoring",
+        "projectManagement",
+        "question",
+        "review",
+        "talk",
+        "test",
+        "tutorial",
+        "video"
+      ]
+    },
+    {
+        "login": "RNKuhns",
+        "name": "Ryan Kuhns",
+        "avatar_url": "https://avatars0.githubusercontent.com/u/26907244?v=4",
+        "profile": "https://github.com/rnkuhns",
+        "contributions": [
+          "code",
+          "bug",
+          "doc",
+          "design",
+          "tutorial",
+          "example",
+          "ideas",
+          "maintenance",
+          "projectManagement",
+          "question",
+          "review",
+          "test"
+        ]
+      }
+  ],
+  "projectName": "sktime",
+  "projectOwner": "alan-turing-institute",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "commitConvention": "none"
+}
