@@ -36,6 +36,34 @@
       ]
     },
     {
+      "login": "mloning",
+      "name": "Markus Löning",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/21020482?v=4",
+      "profile": "https://github.com/mloning",
+      "contributions": [
+        "code",
+        "test",
+        "maintenance",
+        "platform",
+        "review",
+        "infra",
+        "example",
+        "bug",
+        "tutorial",
+        "business",
+        "doc",
+        "design",
+        "eventOrganizing",
+        "fundingFinding",
+        "ideas",
+        "projectManagement",
+        "question",
+        "talk",
+        "mentoring",
+        "video"
+      ]
+    },
+    {
         "login": "RNKuhns",
         "name": "Ryan Kuhns",
         "avatar_url": "https://avatars0.githubusercontent.com/u/26907244?v=4",
