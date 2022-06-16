@@ -78,7 +78,7 @@ convention = "numpy"
 show_missing = true
 
 [tool.coverage.run]
-source = ["base_object"]
+source = ["baseobject"]
 omit = ["*/setup.py", "tests/*"]
 
 [tool.doc8]
