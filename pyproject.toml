@@ -1,15 +1,15 @@
 [project]
 name = "baseobject"
-version = "0.0.1"
+version = "0.1.0"
 description = "Base classes for sklearn-like parametric objects"
 authors = [
     {name = "Franz Kiraly", email = "f.kiraly@ucl.ac.uk"},
     {name = "Markus Löning"},
-    {name = "Ryan Kuhns"},
+    {name = "Ryan Kuhns", email = "rk.baseobject@gmail.com"},
 ]
 maintainers = [
     {name = "Franz Kiraly", email = "f.kiraly@ucl.ac.uk"},
-    {name = "Ryan Kuhns"},
+    {name = "Ryan Kuhns", email = "rk.baseobject@gmail.com"},
 ]
 readme = "README.md"
 keywords = [
@@ -41,6 +41,24 @@ dependencies = [
 dev = [
     "pytest",
     "wheel",
+]
+
+docs = [
+    "jupyter",
+    "nbsphinx>=0.8.6",
+    "numpydoc",
+    "pydata-sphinx-theme",
+    "sphinx_issues",
+    "sphinx-gallery",
+    "sphinx-panels",
+    "sphinx",
+]
+
+tests = [
+    "pytest",
+    "coverage",
+    "pytest-cov",
+    "safety",
 ]
 
 [project.urls]
