@@ -39,8 +39,44 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "pre-commit",
+    "mypy",
     "pytest",
-    "wheel",
+    "pytest-cov",
+    "coverage",
+    "isort",
+    "flake8",
+    "black",
+    "pydocstyle",
+    "nbqa",
+    "flake8-bugbear",
+    "flake8-builtins",
+    "flake8-quotes",
+    "flake8-comprehensions",
+    "pandas-vet",
+    "flake8-print",
+    "pep8-naming",
+    "doc8",
+]
+
+binder = ["jupyter"]
+
+docs = [
+    "jupyter",
+    "nbsphinx>=0.8.6",
+    "numpydoc",
+    "pydata-sphinx-theme",
+    "sphinx_issues",
+    "sphinx-gallery",
+    "sphinx-panels",
+    "sphinx",
+]
+
+tests = [
+    "pytest",
+    "coverage",
+    "pytest-cov",
+    "safety",
 ]
 
 [project.urls]
