@@ -55,3 +55,34 @@ file = "LICENSE"
 [build-system]
 requires = ["setuptools", "wheel", "toml", "build"]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+# ignore certain folders
+addopts = [
+    "--doctest-modules"
+]
+
+[tool.isort]
+profile = "black"
+src_paths = ["isort", "test"]
+multi_line_output = 3
+
+[tool.black]
+line-length = 88
+extend-exclude = ["^/setup.py", "docs/conf.py"]
+
+[tool.pydocstyle]
+convention = "numpy"
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.coverage.run]
+source = ["base_object"]
+omit = ["*/setup.py", "tests/*"]
+
+[tool.doc8]
+max-line-length=88
+
+[tool.bandit]
+exclude_dirs = ["*/tests/*"]
