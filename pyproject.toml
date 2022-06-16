@@ -62,9 +62,9 @@ tests = [
 ]
 
 [project.urls]
-homepage = "https://github.com/fkiraly/baseobject"
-repository = "https://github.com/fkiraly/baseobject"
-documentation = "https://github.com/fkiraly/baseobject"
+homepage = "https://github.com/sktime/baseobject"
+repository = "https://github.com/sktime/baseobject"
+documentation = "https://github.com/sktime/baseobject"
 download = "https://pypi.org/project/baseobject/#files"
 
 [project.license]
