@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-# copyright: sktime developers, BSD-3-Clause License (see LICENSE file)
-"""
-Tests for BaseObject universal base class.
+# copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
+"""Tests for BaseObject universal base class.
 
 tests in this module:
 
@@ -79,14 +78,14 @@ def test_get_class_tag():
     AssertError if inheritance logic in get_tag is incorrect
     AssertError if default override logic in get_tag is incorrect
     """
-    child_tags = dict()
+    child_tags = {}
     child_tags_keys = FIXTURE_CLASSCHILD_TAGS.keys()
 
     for key in child_tags_keys:
         child_tags[key] = FIXTURE_CLASSCHILD.get_class_tag(key)
 
     child_tag_default = FIXTURE_CLASSCHILD.get_class_tag("foo", "bar")
-    child_tag_defaultNone = FIXTURE_CLASSCHILD.get_class_tag("bar")
+    child_tag_default_none = FIXTURE_CLASSCHILD.get_class_tag("bar")
 
     msg = "Inheritance logic in BaseObject.get_class_tag is incorrect"
 
@@ -96,7 +95,7 @@ def test_get_class_tag():
     msg = "Default override logic in BaseObject.get_class_tag is incorrect"
 
     assert child_tag_default == "bar", msg
-    assert child_tag_defaultNone is None, msg
+    assert child_tag_default_none is None, msg
 
 
 def test_get_tags():
@@ -121,14 +120,14 @@ def test_get_tag():
     AssertError if inheritance logic in get_tag is incorrect
     AssertError if default override logic in get_tag is incorrect
     """
-    object_tags = dict()
+    object_tags = {}
     object_tags_keys = FIXTURE_OBJECT_TAGS.keys()
 
     for key in object_tags_keys:
         object_tags[key] = FIXTURE_OBJECT.get_tag(key, raise_error=False)
 
     object_tag_default = FIXTURE_OBJECT.get_tag("foo", "bar", raise_error=False)
-    object_tag_defaultNone = FIXTURE_OBJECT.get_tag("bar", raise_error=False)
+    object_tag_default_none = FIXTURE_OBJECT.get_tag("bar", raise_error=False)
 
     msg = "Inheritance logic in BaseObject.get_tag is incorrect"
 
@@ -138,7 +137,7 @@ def test_get_tag():
     msg = "Default override logic in BaseObject.get_tag is incorrect"
 
     assert object_tag_default == "bar", msg
-    assert object_tag_defaultNone is None, msg
+    assert object_tag_default_none is None, msg
 
 
 def test_get_tag_raises():
@@ -272,6 +271,6 @@ def test_components():
     assert set(non_comp_comps.keys()) == set()
 
     assert isinstance(comp_comps, dict)
-    assert set(comp_comps.keys()) == set(["foo_"])
+    assert set(comp_comps.keys()) == {"foo_"}
     assert comp_comps["foo_"] == composite.foo_
     assert comp_comps["foo_"] != composite.foo
