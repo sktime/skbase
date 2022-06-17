@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-# copyright: sktime developers, BSD-3-Clause License (see LICENSE file)
-"""
-Base class template for objects and fittable objects.
+# copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
+"""Base class template for objects and fittable objects.
 
 templates in this module:
 
@@ -59,7 +58,7 @@ from copy import deepcopy
 from sklearn import clone
 from sklearn.base import BaseEstimator as _BaseEstimator
 
-from sktime.exceptions import NotFittedError
+from baseobject._exceptions import NotFittedError
 
 
 class BaseObject(_BaseEstimator):
@@ -285,11 +284,7 @@ class BaseObject(_BaseEstimator):
             `MyClass(**params)` or `MyClass(**params[i])` creates a valid test instance.
             `create_test_instance` uses the first (or only) dictionary in `params`
         """
-        # imported inside the function to avoid circular imports
-        from sktime.tests._config import ESTIMATOR_TEST_PARAMS
-
-        # if non-default parameters are required, but none have been found,
-        # raise error
+        # if non-default parameters are required, but none have been found, raise error
         if hasattr(cls, "_required_parameters"):
             required_parameters = getattr(cls, "required_parameters", [])
             if len(required_parameters) > 0:
@@ -302,7 +297,7 @@ class BaseObject(_BaseEstimator):
 
         # construct with parameter configuration for testing, otherwise construct with
         # default parameters (empty dict)
-        params = ESTIMATOR_TEST_PARAMS.get(cls, {})
+        params = {}
         return params
 
     @classmethod
