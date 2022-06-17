@@ -31,7 +31,7 @@ from copy import deepcopy
 
 import pytest
 
-from sktime.base import BaseObject
+from baseobject import BaseObject
 
 
 # Fixture class for testing tag system
