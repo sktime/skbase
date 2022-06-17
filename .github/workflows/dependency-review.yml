@@ -19,7 +19,7 @@ jobs:
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v1
         with:
-          # Possible values: "critical", "high", "moderate", "low" 
+          # Possible values: "critical", "high", "moderate", "low"
           # Will fail if a PR introduces a security vulnerability
           # that is the specified level or higher
           fail-on-severity: high
