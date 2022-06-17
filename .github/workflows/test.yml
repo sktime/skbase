@@ -91,13 +91,13 @@ jobs:
       - name: Install dependencies
         run: python -m pip install .[test]
 
-      # Remove for now
-      - name: Run Safety security check
-        shell: bash -l {0}
+      # Remove for now. Turn on once dependencies are shrunk.
+      # - name: Run Safety security check
+      #   shell: bash -l {0}
         # This will scan the installed python environment for all installed dependencies
         # including transitive dependencies
         # Ignoring CVEs disputed by NumPy devs with IDs 44715, 44716, 44717
-        run: safety check --full-report -i 44715 -i 44716 -i 44717
+        # run: safety check --full-report -i 44715 -i 44716 -i 44717
         # Do not continue on error. Fail the action if safety returns a
         # non-zero exit code indicating a vulnerability has been found
         continue-on-error: false
