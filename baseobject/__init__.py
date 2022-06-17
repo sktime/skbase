@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -u
 # -*- coding: utf-8 -*-
-# copyright: sktime developers, BSD-3-Clause License (see LICENSE file)
+# copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
 
 """BaseObject."""
 
@@ -13,5 +13,5 @@ __all__ = [
     "_HeterogenousMetaEstimator",
 ]
 
-from baseobject._base import BaseObject, BaseEstimator
+from baseobject._base import BaseEstimator, BaseObject
 from baseobject._meta import _HeterogenousMetaEstimator
