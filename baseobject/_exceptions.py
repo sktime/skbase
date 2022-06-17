@@ -1,6 +1,6 @@
-"""Custom exceptions used in ``baseobject``."""
 # -*- coding: utf-8 -*-
 # copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
+"""Custom exceptions used in ``baseobject``."""
 from typing import List
 
 __author__: List[str] = ["mloning", "rnkuhns"]
