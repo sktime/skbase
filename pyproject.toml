@@ -72,7 +72,7 @@ docs = [
     "sphinx",
 ]
 
-tests = [
+test = [
     "pytest",
     "coverage",
     "pytest-cov",

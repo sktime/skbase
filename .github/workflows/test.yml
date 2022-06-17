@@ -89,7 +89,7 @@ jobs:
       # in BaseObject this likelihood is not high, but creating this functionality
       # will be a nice value add (and has uses outside of .github actions)
       - name: Install dependencies
-        run: python -m pip install .[dev, tests]
+        run: python -m pip install .[dev,test]
 
       - name: Run Safety security check
         shell: bash -l {0}
