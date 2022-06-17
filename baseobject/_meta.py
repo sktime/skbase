@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -u
 # -*- coding: utf-8 -*-
-# copyright: sktime developers, BSD-3-Clause License (see LICENSE file)
+# copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
 """Implements meta estimator for estimators composed of other estimators."""
 
 __author__ = ["mloning", "fkiraly"]
@@ -96,7 +96,7 @@ class _HeterogenousMetaEstimator(BaseEstimator, metaclass=ABCMeta):
     def _subset_dict_keys(self, dict_to_subset, keys):
         """Subset dictionary d to keys in keys."""
         keys_in_both = set(keys).intersection(dict_to_subset.keys())
-        subsetted_dict = dict((k, dict_to_subset[k]) for k in keys_in_both)
+        subsetted_dict = {(k, dict_to_subset[k]) for k in keys_in_both}
         return subsetted_dict
 
     @staticmethod
