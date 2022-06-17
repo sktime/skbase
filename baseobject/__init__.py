@@ -13,5 +13,5 @@ __all__ = [
     "_HeterogenousMetaEstimator",
 ]
 
-from baseobject._base import BaseObject, BaseEstimator
+from baseobject._base import BaseEstimator, BaseObject
 from baseobject._meta import _HeterogenousMetaEstimator
