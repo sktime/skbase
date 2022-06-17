@@ -15,6 +15,13 @@ on:
       - 'docs/**'
     types: [opened, synchronize]
 
+  workflow_dispatch:
+    
+permissions:
+  contents: read
+  # Needed for the 'trilom/file-changes-action' action
+  pull-requests: read
+  
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
