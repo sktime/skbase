@@ -68,7 +68,7 @@ class BaseObject(_BaseEstimator):
     """
 
     def __init__(self):
-        self._tags_dynamic = dict()
+        self._tags_dynamic = {}
         super(BaseObject, self).__init__()
 
     def reset(self):
@@ -93,7 +93,7 @@ class BaseObject(_BaseEstimator):
 
         # delete all object attributes in self
         attrs = [attr for attr in dir(self) if "__" not in attr]
-        cls_attrs = [attr for attr in dir(type(self))]
+        cls_attrs = list(dir(type(self)))
         self_attrs = set(attrs).difference(cls_attrs)
         for attr in self_attrs:
             delattr(self, attr)
@@ -123,7 +123,7 @@ class BaseObject(_BaseEstimator):
             class attribute via nested inheritance. NOT overridden by dynamic
             tags set by set_tags or mirror_tags.
         """
-        collected_tags = dict()
+        collected_tags = {}
 
         # We exclude the last two parent classes: sklearn.base.BaseEstimator and
         # the basic Python object.
@@ -475,7 +475,7 @@ class BaseObject(_BaseEstimator):
 
         # retrieve all attributes that are BaseObject descendants
         attrs = [attr for attr in dir(self) if "__" not in attr]
-        cls_attrs = [attr for attr in dir(type(self))]
+        cls_attrs = list(dir(type(self)))
         self_attrs = set(attrs).difference(cls_attrs).difference(param_names)
 
         comp_dict = {x: getattr(self, x) for x in self_attrs}
