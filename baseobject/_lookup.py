@@ -9,19 +9,14 @@ all_estimators(estimator_types, filter_tags)
     lookup and filtering of objects (BaseObject descendants)
 """
 
-import inspect
 import pkgutil
 from copy import deepcopy
 from importlib import import_module
-from inspect import isclass
+from inspect import getmembers, isclass
 from operator import itemgetter
 from pathlib import Path
 
 from baseobject import BaseObject
-
-from sktime.registry._base_classes import (
-    BASE_CLASS_LOOKUP,
-)
 
 
 def all_estimators(
@@ -32,21 +27,26 @@ def all_estimators(
     as_dataframe=False,
     return_tags=None,
     suppress_import_stdout=True,
-    ignore_modules=None,
     package_name="baseobject",
+    ignore_modules=None,
+    class_lookup=None,
 ):
     """Get a list of all estimators in the package with name package_name.
 
-    This function crawls the module and gets all classes that are BaseObject-s.
+    This function crawls the package/module and gets all classes that are objects.
+    Objects means: BaseObject descendants.
+    Objects retrieved can be sub-set by inheritance, tags, and exclusion conditions.
 
     Not included are: the base classes themselves, classes defined in test modules.
 
     Parameters
     ----------
     estimator_types: class, list of class, optional (default=None)
+        if class_lookup is provided, can also be str or list of str
         Which kind of objects should be returned.
         if None, no filter is applied and all estimators are returned.
         if class or list of class, estimators are filtered to inherit from one of these
+        if str or list of str, classes ca be aliased by strings, via class_lookup
     return_names: bool, optional (default=True)
         if True, estimator class name is included in the all_estimators()
             return in the order: name, estimator class, optional tags, either as
@@ -76,10 +76,14 @@ def all_estimators(
             estimator and will be appended as either columns or tuple entries.
     suppress_import_stdout : bool, optional. Default=True
         whether to suppress stdout printout upon import.
+    package_name : str, optional. Default="baseobject".
+        should be set to default to package or module name if used for search.
+        objects will be searched inside the package/module called package_name,
+        this can include sub-module dots, e.g., "package.module1.module2"
     ignore_modules : str or lits of str, optional. Default=empty list
         list of module names to ignore in search
-    package_name : str, optional. Default="baseobject".
-        should be set to default to package name if used for search
+    class_lookup : dict string -> class, optional, default=None
+        dict of aliases for classes used in estimator_types
 
     Returns
     -------
@@ -169,7 +173,7 @@ def all_estimators(
                     sys.stdout = sys.__stdout__
                 else:
                     module = import_module(module_name)
-                classes = inspect.getmembers(module, inspect.isclass)
+                classes = getmembers(module, isclass)
 
                 # Filter classes
                 estimators = [
@@ -192,9 +196,7 @@ def all_estimators(
         return any(isclass(x) and isinstance(estimator, x) for x in estimator_types)
 
     if estimator_types:
-        estimator_types = _check_list_of_class_or_error(
-            estimator_types, "estimator_types"
-        )
+        estimator_types = _check_estimator_types(estimator_types, class_lookup)
         all_estimators = [
             (name, estimator)
             for name, estimator in all_estimators
@@ -371,30 +373,51 @@ def _check_tag_cond(estimator, filter_tags=None, as_dataframe=True):
     return cond_sat
 
 
-def _check_estimator_types(estimator_types):
-    """Return list of classes corresponding to type strings."""
+def _check_estimator_types(estimator_types, class_lookup=None):
+    """Return list of classes corresponding to type strings.
+
+    Parameters
+    ----------
+    estimator_types : str, class or list of [string or class]
+    class_lookup : dict string -> class, optional, default=None
+
+    Returns
+    -------
+    list of class, i-th element is:
+        class_lookup[estimator_types[i]] if estimator_types[i] was a string
+        estimator_types[i] otherwise
+    if class_lookup is none, only checks whether estimator_types is class or list of
+
+    Raises
+    ------
+    ValueError if estimator_types is not of the expected type
+    """
     estimator_types = deepcopy(estimator_types)
 
     if not isinstance(estimator_types, list):
         estimator_types = [estimator_types]  # make iterable
 
     def _get_err_msg(estimator_type):
-        return (
-            f"Parameter `estimator_type` must be None, a string, or a list of "
-            f"strings. Valid string values are: "
-            f"{tuple(BASE_CLASS_LOOKUP.keys())}, but found: "
-            f"{repr(estimator_type)}"
-        )
+        if class_lookup is None:
+            return (
+                f"Parameter `estimator_type` must be None, a sclass, or a list of "
+                f"class, but found: {repr(estimator_type)}"
+            )
+        else:
+            return (
+                f"Parameter `estimator_type` must be None, a string, a class, or a list"
+                f" of [string or class]. Valid string values are: "
+                f"{tuple(class_lookup.keys())}, but found: "
+                f"{repr(estimator_type)}"
+            )
 
     for i, estimator_type in enumerate(estimator_types):
         if not isinstance(estimator_type, (type, str)):
-            raise ValueError(
-                "Please specify `estimator_types` as a list of str or classes."
-            )
+            raise ValueError(_get_err_msg(estimator_type))
         if isinstance(estimator_type, str):
-            if estimator_type not in BASE_CLASS_LOOKUP.keys():
+            if estimator_type not in class_lookup.keys():
                 raise ValueError(_get_err_msg(estimator_type))
-            estimator_type = BASE_CLASS_LOOKUP[estimator_type]
+            estimator_type = class_lookup[estimator_type]
             estimator_types[i] = estimator_type
         elif isinstance(estimator_type, type):
             pass
