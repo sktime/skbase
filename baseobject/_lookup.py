@@ -10,6 +10,8 @@ all_estimators(estimator_types, filter_tags)
 """
 
 __author__ = ["fkiraly", "mloning", "katiebuc", "rnkuhns"]
+# based on the sktime estimator retrieval utility of the same name
+# which, in turn, is based on the sklearn estimator retrieval utility of the same name
 
 
 import pkgutil
