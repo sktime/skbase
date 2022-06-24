@@ -80,6 +80,10 @@ jobs:
           conda info --envs
           which python
 
+      - name: Install test deps via conda
+        shell: bash -l {0}
+        run: conda install safety pytest-cov coverage pytest
+
       # We want to replace this with the earlier step that
       # auto generates a environment.yml (named based on pyproject.toml dep table name)
       # that is installed by conda
@@ -89,7 +93,7 @@ jobs:
       # in BaseObject this likelihood is not high, but creating this functionality
       # will be a nice value add (and has uses outside of .github actions)
       - name: Install dependencies
-        run: python -m pip install .[test]
+        run: python -m pip install .
 
       # Remove for now. Turn on once dependencies are shrunk.
       # - name: Run Safety security check
