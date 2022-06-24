@@ -20,8 +20,6 @@ from inspect import isclass
 from operator import itemgetter
 from pathlib import Path
 
-import pandas as pd
-
 from baseobject import BaseObject
 
 from sktime.base import BaseEstimator
@@ -40,6 +38,13 @@ VALID_ESTIMATOR_TYPES = (
     *VALID_ESTIMATOR_BASE_TYPES,
     *VALID_TRANSFORMER_TYPES,
 )
+
+
+def _make_dataframe(all_estimators, columns):
+    """Create pandas.DataFrame for all_estimators, fct isolates pandas soft dep."""
+    import pandas as pd
+
+    return pd.DataFrame(all_estimators, columns=columns)
 
 
 def all_estimators(
@@ -81,10 +86,11 @@ def all_estimators(
     exclude_estimators: str, list of str, optional (default=None)
         Names of estimators to exclude.
     as_dataframe: bool, optional (default=False)
-        if True, all_estimators will return a pandas.DataFrame with named
-            columns for all of the attributes being returned.
         if False, all_estimators will return a list (either a list of
             estimators or a list of tuples, see Returns)
+        if True, all_estimators will return a pandas.DataFrame with named
+            columns for all of the attributes being returned.
+            this requires soft dependency pandas to be installed.
     return_tags: str or list of str, optional (default=None)
         Names of tags to fetch and return each estimator's value of.
         For a list of valid tag strings, use the registry.all_tags utility.
@@ -265,7 +271,7 @@ def all_estimators(
 
     # convert to pandas.DataFrame if as_dataframe=True
     if as_dataframe:
-        all_estimators = pd.DataFrame(all_estimators, columns=columns)
+        all_estimators = _make_dataframe(all_estimators, columns=columns)
 
     return all_estimators
 
@@ -451,7 +457,7 @@ def all_tags(
     # convert to pd.DataFrame if as_dataframe=True
     if as_dataframe:
         columns = ["name", "scitype", "type", "description"]
-        all_tags = pd.DataFrame(all_tags, columns=columns)
+        all_tags = _make_dataframe(all_tags, columns=columns)
 
     return all_tags
 
