@@ -9,6 +9,9 @@ all_estimators(estimator_types, filter_tags)
     lookup and filtering of objects (BaseObject descendants)
 """
 
+__author__ = ["fkiraly", "mloning", "katiebuc", "rnkuhns"]
+
+
 import pkgutil
 from copy import deepcopy
 from importlib import import_module
