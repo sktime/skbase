@@ -6,10 +6,7 @@ Registry lookup methods.
 This module exports the following methods for registry lookup:
 
 all_estimators(estimator_types, filter_tags)
-    lookup and filtering of estimators
-
-all_tags(estimator_types)
-    lookup and filtering of estimator tags
+    lookup and filtering of objects (BaseObject descendants)
 """
 
 import inspect
@@ -22,29 +19,9 @@ from pathlib import Path
 
 from baseobject import BaseObject
 
-from sktime.base import BaseEstimator
 from sktime.registry._base_classes import (
-    BASE_CLASS_LIST,
     BASE_CLASS_LOOKUP,
-    TRANSFORMER_MIXIN_LIST,
 )
-from sktime.registry._tags import ESTIMATOR_TAG_REGISTER
-
-VALID_TRANSFORMER_TYPES = tuple(TRANSFORMER_MIXIN_LIST)
-VALID_ESTIMATOR_BASE_TYPES = tuple(BASE_CLASS_LIST)
-
-VALID_ESTIMATOR_TYPES = (
-    BaseEstimator,
-    *VALID_ESTIMATOR_BASE_TYPES,
-    *VALID_TRANSFORMER_TYPES,
-)
-
-
-def _make_dataframe(all_estimators, columns):
-    """Create pandas.DataFrame for all_estimators, fct isolates pandas soft dep."""
-    import pandas as pd
-
-    return pd.DataFrame(all_estimators, columns=columns)
 
 
 def all_estimators(
@@ -394,74 +371,6 @@ def _check_tag_cond(estimator, filter_tags=None, as_dataframe=True):
     return cond_sat
 
 
-def all_tags(
-    estimator_types=None,
-    as_dataframe=False,
-):
-    """Get a list of all tags from sktime.
-
-    Retrieves tags directly from `_tags`, offers filtering functionality.
-
-    Parameters
-    ----------
-    estimator_types: string, list of string, optional (default=None)
-        Which kind of estimators should be returned.
-        - If None, no filter is applied and all estimators are returned.
-        - Possible values are 'classifier', 'regressor', 'transformer' and
-        'forecaster' to get estimators only of these specific types, or a list of
-        these to get the estimators that fit at least one of the types.
-    as_dataframe: bool, optional (default=False)
-                if False, return is as described below;
-                if True, return is converted into a pandas.DataFrame for pretty
-                display
-
-    Returns
-    -------
-    tags: list of tuples (a, b, c, d),
-        in alphabetical order by a
-        a : string - name of the tag as used in the _tags dictionary
-        b : string - name of the scitype this tag applies to
-                    must be in _base_classes.BASE_CLASS_SCITYPE_LIST
-        c : string - expected type of the tag value
-            should be one of:
-                "bool" - valid values are True/False
-                "int" - valid values are all integers
-                "str" - valid values are all strings
-                ("str", list_of_string) - any string in list_of_string is valid
-                ("list", list_of_string) - any individual string and sub-list is valid
-        d : string - plain English description of the tag
-    """
-
-    def is_tag_for_type(tag, estimator_types):
-        tag_types = tag[1]
-        tag_types = _check_list_of_str_or_error(tag_types, "tag_types")
-
-        if isinstance(estimator_types, str):
-            estimator_types = [estimator_types]
-
-        tag_types = set(tag_types)
-        estimator_types = set(estimator_types)
-        is_valid_tag_for_type = len(tag_types.intersection(estimator_types)) > 0
-
-        return is_valid_tag_for_type
-
-    all_tags = ESTIMATOR_TAG_REGISTER
-
-    if estimator_types:
-        # checking, but not using the return since that is classes, not strings
-        _check_estimator_types(estimator_types)
-        all_tags = [tag for tag in all_tags if is_tag_for_type(tag, estimator_types)]
-
-    all_tags = sorted(all_tags, key=itemgetter(0))
-
-    # convert to pd.DataFrame if as_dataframe=True
-    if as_dataframe:
-        columns = ["name", "scitype", "type", "description"]
-        all_tags = _make_dataframe(all_tags, columns=columns)
-
-    return all_tags
-
-
 def _check_estimator_types(estimator_types):
     """Return list of classes corresponding to type strings."""
     estimator_types = deepcopy(estimator_types)
@@ -471,7 +380,7 @@ def _check_estimator_types(estimator_types):
 
     def _get_err_msg(estimator_type):
         return (
-            f"Parameter `estimator_type` must be None, a string or a list of "
+            f"Parameter `estimator_type` must be None, a string, or a list of "
             f"strings. Valid string values are: "
             f"{tuple(BASE_CLASS_LOOKUP.keys())}, but found: "
             f"{repr(estimator_type)}"
@@ -480,7 +389,7 @@ def _check_estimator_types(estimator_types):
     for i, estimator_type in enumerate(estimator_types):
         if not isinstance(estimator_type, (type, str)):
             raise ValueError(
-                "Please specify `estimator_types` as a list of str or " "types."
+                "Please specify `estimator_types` as a list of str or classes."
             )
         if isinstance(estimator_type, str):
             if estimator_type not in BASE_CLASS_LOOKUP.keys():
@@ -492,3 +401,10 @@ def _check_estimator_types(estimator_types):
         else:
             raise ValueError(_get_err_msg(estimator_type))
     return estimator_types
+
+
+def _make_dataframe(all_estimators, columns):
+    """Create pandas.DataFrame for all_estimators, fct isolates pandas soft dep."""
+    import pandas as pd
+
+    return pd.DataFrame(all_estimators, columns=columns)
