@@ -79,6 +79,7 @@ jobs:
           conda --version
           conda info --envs
           which python
+          which pip
 
       - name: Install test deps via conda
         shell: bash -l {0}
