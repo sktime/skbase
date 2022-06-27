@@ -70,6 +70,7 @@ jobs:
           channels: anaconda, conda-forge
           channel-priority: true
           auto-activate-base: false
+          activate-environment: test
           use-only-tar-bz2: true
 
       # Useful for troubleshooting
