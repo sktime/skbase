@@ -50,7 +50,7 @@ jobs:
     strategy:
         fail-fast: true
         matrix:
-          os: [ubuntu-latest, windows-latest, macos-latest]
+          os: [ubuntu-latest, windows-latest, macOS-10.15]
           python-version: ['3.7', '3.8', '3.9', '3.10']
     steps:
       - uses: actions/checkout@v2
@@ -93,7 +93,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -VV
-          python -m pip install .
+          python -m pip install .[test]
 
       # Remove for now. Turn on once dependencies are shrunk.
       # - name: Run Safety security check
@@ -106,19 +106,17 @@ jobs:
         # non-zero exit code indicating a vulnerability has been found
       #   continue-on-error: false
 
-      # - name: Generate Pytest coverage report
-      #   shell: bash -l {0}
-      #   run: |
-      #     conda info --envs
-      #     conda list
-      #     pytest --cov=./ --cov-report=xml
+      - name: Generate Pytest coverage report
+        shell: bash -l {0}
+        run: |
+          pytest --cov=./ --cov-report=xml
 
-      # - name: Upload coverage to Codecov
-      #   uses: codecov/codecov-action@v2
-      #   with:
-      #     # token: ${{ secrets.CODECOV_TOKEN }}
-      #     env_vars: OS,PYTHON
-      #     fail_ci_if_error: true
-      #     files: ./coverage.xml
-      #     flags: unittests
-      #     verbose: true
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          # token: ${{ secrets.CODECOV_TOKEN }}
+          env_vars: OS,PYTHON
+          fail_ci_if_error: true
+          files: ./coverage.xml
+          flags: unittests
+          verbose: true
