@@ -40,10 +40,10 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pre-commit",
+]
+
+linters = [
     "mypy",
-    "pytest",
-    "pytest-cov",
-    "coverage",
     "isort",
     "flake8",
     "black",
@@ -76,7 +76,6 @@ test = [
     "pytest",
     "coverage",
     "pytest-cov",
-    "safety",
 ]
 
 [project.urls]
