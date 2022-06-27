@@ -12,6 +12,7 @@ on:
       - 'docs/**'
     types: [opened, synchronize]
 
+  # Allows workflows to be manually triggered
   workflow_dispatch:
 
 permissions:
@@ -50,7 +51,7 @@ jobs:
     strategy:
         fail-fast: true
         matrix:
-          os: [ubuntu-latest, windows-latest, macOS-10.15]
+          os: [ubuntu-latest, windows-latest, macOS-latest]
           python-version: ['3.7', '3.8', '3.9', '3.10']
     steps:
       - uses: actions/checkout@v2
@@ -96,11 +97,11 @@ jobs:
           python -VV
           python -m pip install .[test]
 
-      # Remove for now. Turn on once dependencies are shrunk.
+      # Commented out for now. Turn on once dependencies are shrunk.
       # - name: Run Safety security check
       #   shell: bash -l {0}
         # This will scan the installed python environment for all installed dependencies
-        # including transitive dependencies
+        # including transitive dependencies. Checks for dependencies with known CVEs
         # Ignoring CVEs disputed by NumPy devs with IDs 44715, 44716, 44717
         # run: safety check --full-report -i 44715 -i 44716 -i 44717
         # Do not continue on error. Fail the action if safety returns a
