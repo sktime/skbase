@@ -61,9 +61,6 @@ class BaseFixtureGenerator:
                 should be used only for encoding general rules, not individual skips
                 individual skips should go on the EXCLUDED_TESTS list in _config
             requires _generate_estimator_class and _generate_estimator_instance as is
-        _excluded_scenario: static method (test_name: str, scenario) -> bool
-            whether scenario should be skipped in test with test_name test_name
-            requires _generate_estimator_scenario as is
 
     Fixtures parametrized
     ---------------------
@@ -650,7 +647,7 @@ class TestAllEstimators(BaseFixtureGenerator, QuickTester):
         assert not hasattr(estimator_instance, "test__attr")
 
     @pytest.mark.parametrize("a", [True, 42])
-    def test_no_between_test_case_side_effects(self, estimator_instance, scenario, a):
+    def test_no_between_test_case_side_effects(self, estimator_instance, a):
         """Test that there are no side effects across instances of the same test."""
         assert not hasattr(estimator_instance, "test__attr")
         estimator_instance.test__attr = 42
