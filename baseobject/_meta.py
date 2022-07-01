@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -u
 # -*- coding: utf-8 -*-
-# copyright: sktime developers, BSD-3-Clause License (see LICENSE file)
+# copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
 """Implements meta estimator for estimators composed of other estimators."""
 
 __author__ = ["mloning", "fkiraly"]
@@ -9,7 +9,7 @@ __all__ = ["_HeterogenousMetaEstimator"]
 from abc import ABCMeta
 from inspect import isclass
 
-from sktime.base import BaseEstimator
+from baseobject import BaseEstimator
 
 
 class _HeterogenousMetaEstimator(BaseEstimator, metaclass=ABCMeta):
@@ -96,7 +96,7 @@ class _HeterogenousMetaEstimator(BaseEstimator, metaclass=ABCMeta):
     def _subset_dict_keys(self, dict_to_subset, keys):
         """Subset dictionary d to keys in keys."""
         keys_in_both = set(keys).intersection(dict_to_subset.keys())
-        subsetted_dict = dict((k, dict_to_subset[k]) for k in keys_in_both)
+        subsetted_dict = {(k, dict_to_subset[k]) for k in keys_in_both}
         return subsetted_dict
 
     @staticmethod
@@ -353,9 +353,9 @@ class _HeterogenousMetaEstimator(BaseEstimator, metaclass=ABCMeta):
 
         Parameters
         ----------
-        self : `sktime` estimator, instance of composite_class (when this is invoked)
-        other : `sktime` estimator, should inherit from composite_class or base_class
-            otherwise, `NotImplemented` is returned
+        self : `baseobject` estimator, instance of composite_class (when invoked)
+        other : `baseobject` estimator, should inherit from composite_class \
+            or base_class otherwise, `NotImplemented` is returned
         base_class : estimator base class assumed as base class for self, other,
             and estimator components of composite_class, in case of concatenation
         composite_class : estimator class that has attr_name attribute in instances
