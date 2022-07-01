@@ -80,24 +80,6 @@ test = [
     "safety",
 ]
 
-docs = [
-    "jupyter",
-    "nbsphinx>=0.8.6",
-    "numpydoc",
-    "pydata-sphinx-theme",
-    "sphinx_issues",
-    "sphinx-gallery",
-    "sphinx-panels",
-    "sphinx",
-]
-
-tests = [
-    "pytest",
-    "coverage",
-    "pytest-cov",
-    "safety",
-]
-
 [project.urls]
 homepage = "https://github.com/sktime/baseobject"
 repository = "https://github.com/sktime/baseobject"
