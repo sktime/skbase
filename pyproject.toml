@@ -40,8 +40,44 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "pre-commit",
+]
+
+linters = [
+    "mypy",
+    "isort",
+    "flake8",
+    "black",
+    "pydocstyle",
+    "nbqa",
+    "flake8-bugbear",
+    "flake8-builtins",
+    "flake8-quotes",
+    "flake8-comprehensions",
+    "pandas-vet",
+    "flake8-print",
+    "pep8-naming",
+    "doc8",
+]
+
+binder = ["jupyter"]
+
+docs = [
+    "jupyter",
+    "nbsphinx>=0.8.6",
+    "numpydoc",
+    "pydata-sphinx-theme",
+    "sphinx_issues",
+    "sphinx-gallery",
+    "sphinx-panels",
+    "sphinx",
+]
+
+test = [
     "pytest",
-    "wheel",
+    "coverage",
+    "pytest-cov",
+    "safety",
 ]
 
 docs = [
@@ -74,3 +110,35 @@ file = "LICENSE"
 [build-system]
 requires = ["setuptools", "wheel", "toml", "build"]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+# ignore certain folders
+addopts = [
+    "--doctest-modules"
+]
+
+[tool.isort]
+profile = "black"
+src_paths = ["isort", "test"]
+multi_line_output = 3
+known_first_party = ["baseobject"]
+
+[tool.black]
+line-length = 88
+extend-exclude = ["^/setup.py", "docs/conf.py"]
+
+[tool.pydocstyle]
+convention = "numpy"
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.coverage.run]
+source = ["baseobject"]
+omit = ["*/setup.py", "tests/*"]
+
+[tool.doc8]
+max-line-length=88
+
+[tool.bandit]
+exclude_dirs = ["*/tests/*"]
