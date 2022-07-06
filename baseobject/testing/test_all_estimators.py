@@ -18,8 +18,6 @@ import pytest
 from sklearn.utils.estimator_checks import (
     check_get_params_invariance as _check_get_params_invariance,
 )
-
-from baseobject import BaseObject
 from sktime.registry import all_estimators
 from sktime.tests._config import (
     EXCLUDE_ESTIMATORS,
@@ -29,14 +27,13 @@ from sktime.tests._config import (
     VALID_ESTIMATOR_TYPES,
     VALID_TRANSFORMER_TYPES,
 )
+from sktime.utils._testing.estimator_checks import _get_args, _list_required_methods
+
+from baseobject import BaseObject
 from baseobject.testing.utils._conditional_fixtures import (
     create_conditional_fixtures_and_names,
 )
 from baseobject.testing.utils.deep_equals import deep_equals
-from sktime.utils._testing.estimator_checks import (
-    _get_args,
-    _list_required_methods,
-)
 
 
 class BaseFixtureGenerator:

@@ -13,7 +13,6 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_random_state
-
 from sktime.alignment.base import BaseAligner
 from sktime.annotation.base import BaseSeriesAnnotator
 from sktime.classification.base import BaseClassifier
