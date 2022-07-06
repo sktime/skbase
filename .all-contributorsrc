@@ -60,8 +60,8 @@
         ]
       }
   ],
-  "projectName": "sktime",
-  "projectOwner": "alan-turing-institute",
+  "projectName": "BaseObject",
+  "projectOwner": "sktime",
   "repoType": "github",
   "repoHost": "https://github.com",
   "commitConvention": "none"
