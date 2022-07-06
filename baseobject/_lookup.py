@@ -12,7 +12,6 @@ all_objects(object_types, filter_tags)
 """
 # Based on the sktime all_estimator retrieval utility, which is based on the
 # sklearn estimator retrieval utility of the same name
-
 import importlib
 import inspect
 import io
@@ -20,8 +19,6 @@ import pkgutil
 import sys
 from collections.abc import Iterable
 from copy import deepcopy
-from importlib import import_module
-from inspect import getmembers, isclass
 from operator import itemgetter
 from pathlib import Path
 from types import FunctionType, ModuleType
@@ -30,7 +27,7 @@ from typing import Any, Dict, List, Optional, Tuple, Type, Union
 from baseobject import BaseObject
 
 # Conditionally import TypedDict based on Python version
-if sys.version_info >= (3, 9):
+if sys.version_info >= (3, 8):
     from typing import TypedDict
 else:
     from typing_extensions import TypedDict
@@ -533,8 +530,6 @@ def all_objects(
     ----------
     Modified version from scikit-learn's `all_estimators()`.
     """
-    import io
-    import sys
     import warnings
 
     if ignore_modules is None:
@@ -545,12 +540,12 @@ def all_objects(
     all_estimators = []
     root = str(Path(__file__).parent.parent)  # sktime package root directory
 
-    def _is_abstract(klass):
-        if not (hasattr(klass, "__abstractmethods__")):
-            return False
-        if not len(klass.__abstractmethods__):
-            return False
-        return True
+    # def _is_abstract(klass):
+    #     if not (hasattr(klass, "__abstractmethods__")):
+    #         return False
+    #     if not len(klass.__abstractmethods__):
+    #         return False
+    #     return True
 
     def _is_private_module(module):
         return "._" in module
@@ -586,11 +581,11 @@ def all_objects(
                 if suppress_import_stdout:
                     # setup text trap, import, then restore
                     sys.stdout = io.StringIO()
-                    module = import_module(module_name)
+                    module = importlib.import_module(module_name)
                     sys.stdout = sys.__stdout__
                 else:
-                    module = import_module(module_name)
-                classes = getmembers(module, isclass)
+                    module = importlib.import_module(module_name)
+                classes = inspect.getmembers(module, inspect.isclass)
 
                 # Filter classes
                 estimators = [
@@ -610,7 +605,9 @@ def all_objects(
 
     # Filter based on given estimator types
     def _is_in_estimator_types(estimator, estimator_types):
-        return any(isclass(x) and isinstance(estimator, x) for x in estimator_types)
+        return any(
+            inspect.isclass(x) and isinstance(estimator, x) for x in estimator_types
+        )
 
     if estimator_types:
         estimator_types = _check_estimator_types(estimator_types, class_lookup)
@@ -726,10 +723,10 @@ def _check_list_of_class_or_error(arg_to_check, arg_name):
     TypeError if arg_to_check is not a class or list of class
     """
     # check that return_tags has the right type:
-    if isclass(arg_to_check, str):
+    if inspect.isclass(arg_to_check, str):
         arg_to_check = [arg_to_check]
     if not isinstance(arg_to_check, list) or not all(
-        isclass(value) for value in arg_to_check
+        inspect.isclass(value) for value in arg_to_check
     ):
         raise TypeError(
             f"Error in all_estimators!  Argument {arg_name} must be either\
