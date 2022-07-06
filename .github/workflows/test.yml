@@ -1,0 +1,117 @@
+name: Test
+
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+  pull_request:
+    branches:
+      - main
+      - 'release**'
+    paths-ignore:
+      - 'docs/**'
+    types: [opened, synchronize]
+
+  # Allows workflows to be manually triggered
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # Needed for the 'trilom/file-changes-action' action
+  pull-requests: read
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Look into replacing this with pre-commit.ci
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - id: file_changes
+        uses: trilom/file-changes-action@v1.2.4
+        with:
+          output: " "
+      - name: List changed files
+        run: echo '${{ steps.file_changes.outputs.files}}'
+      - uses: pre-commit/action@v2.0.0
+        with:
+          extra_args: --files ${{ steps.file_changes.outputs.files}}
+      - name: Check for missing init files
+        run: build_tools/fail_on_missing_init_files.sh
+        shell: bash
+
+  run-tests:
+    needs: code-quality
+    name: Test ${{ matrix.os }}-${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+        fail-fast: true
+        matrix:
+          os: [ubuntu-latest, windows-latest, macOS-latest]
+          python-version: ['3.7', '3.8', '3.9', '3.10']
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: conda-incubator/setup-miniconda@v2
+        name: Set up conda
+        with:
+          # We want to come back and add a previous step (maybe our own github action)
+          # that will generate the test_env.yml file based on pyproject.toml
+          # Doing it this way is easier and lets us easily use conda to install everything
+          # But just have packages listed in pyproject.toml
+          # activate-environment: test_env
+          # environment-file: build_tools/test_env.yml
+          auto-update-conda: true
+          miniconda-version: "latest"
+          python-version: ${{ matrix.python-version }}
+          channels: anaconda, conda-forge
+          channel-priority: true
+          auto-activate-base: false
+          activate-environment: test
+          use-only-tar-bz2: true
+
+      # Useful for troubleshooting
+      - name: Check Conda Setup
+        shell: bash -l {0}
+        run: |
+          conda --version
+          conda info --envs
+          which python
+          which pip
+
+      # We want to replace this with the earlier step that
+      # auto generates a environment.yml (named based on pyproject.toml dep table name)
+      # that is installed by conda
+      # The downside of doing it this way is that pip will be greedy
+      # It could cause some dependencies all ready installed by conda to be
+      # installed in different verisons that break the installation
+      # in BaseObject this likelihood is not high, but creating this functionality
+      # will be a nice value add (and has uses outside of .github actions)
+      - name: Install dependencies
+        shell: bash -l {0}
+        run: |
+          python -VV
+          python -m pip install .[test]
+
+      # Commented out for now. Turn on once dependencies are shrunk.
+      # - name: Run Safety security check
+      #   shell: bash -l {0}
+        # This will scan the installed python environment for all installed dependencies
+        # including transitive dependencies. Checks for dependencies with known CVEs
+        # Ignoring CVEs disputed by NumPy devs with IDs 44715, 44716, 44717
+        # run: safety check --full-report -i 44715 -i 44716 -i 44717
+        # Do not continue on error. Fail the action if safety returns a
+        # non-zero exit code indicating a vulnerability has been found
+      #   continue-on-error: false
+
+      - name: Generate Pytest coverage report
+        shell: bash -l {0}
+        run: |
+          pytest --cov=./ --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2

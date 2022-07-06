@@ -1,15 +1,15 @@
 [project]
 name = "baseobject"
-version = "0.0.1"
+version = "0.1.0"
 description = "Base classes for sklearn-like parametric objects"
 authors = [
     {name = "Franz Kiraly", email = "f.kiraly@ucl.ac.uk"},
     {name = "Markus Löning"},
-    {name = "Ryan Kuhns"},
+    {name = "Ryan Kuhns", email = "rk.baseobject@gmail.com"},
 ]
 maintainers = [
     {name = "Franz Kiraly", email = "f.kiraly@ucl.ac.uk"},
-    {name = "Ryan Kuhns"},
+    {name = "Ryan Kuhns", email = "rk.baseobject@gmail.com"},
 ]
 readme = "README.md"
 keywords = [
@@ -31,6 +31,7 @@ classifiers = [
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
 ]
 requires-python = ">=3.7,<3.11"
 dependencies = [
@@ -39,14 +40,50 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "pre-commit",
+]
+
+linters = [
+    "mypy",
+    "isort",
+    "flake8",
+    "black",
+    "pydocstyle",
+    "nbqa",
+    "flake8-bugbear",
+    "flake8-builtins",
+    "flake8-quotes",
+    "flake8-comprehensions",
+    "pandas-vet",
+    "flake8-print",
+    "pep8-naming",
+    "doc8",
+]
+
+binder = ["jupyter"]
+
+docs = [
+    "jupyter",
+    "nbsphinx>=0.8.6",
+    "numpydoc",
+    "pydata-sphinx-theme",
+    "sphinx_issues",
+    "sphinx-gallery",
+    "sphinx-panels",
+    "sphinx",
+]
+
+test = [
     "pytest",
-    "wheel",
+    "coverage",
+    "pytest-cov",
+    "safety",
 ]
 
 [project.urls]
-homepage = "https://github.com/fkiraly/baseobject"
-repository = "https://github.com/fkiraly/baseobject"
-documentation = "https://github.com/fkiraly/baseobject"
+homepage = "https://github.com/sktime/baseobject"
+repository = "https://github.com/sktime/baseobject"
+documentation = "https://github.com/sktime/baseobject"
 download = "https://pypi.org/project/baseobject/#files"
 
 [project.license]
@@ -55,3 +92,35 @@ file = "LICENSE"
 [build-system]
 requires = ["setuptools", "wheel", "toml", "build"]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+# ignore certain folders
+addopts = [
+    "--doctest-modules"
+]
+
+[tool.isort]
+profile = "black"
+src_paths = ["isort", "test"]
+multi_line_output = 3
+known_first_party = ["baseobject"]
+
+[tool.black]
+line-length = 88
+extend-exclude = ["^/setup.py", "docs/conf.py"]
+
+[tool.pydocstyle]
+convention = "numpy"
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.coverage.run]
+source = ["baseobject"]
+omit = ["*/setup.py", "tests/*"]
+
+[tool.doc8]
+max-line-length=88
+
+[tool.bandit]
+exclude_dirs = ["*/tests/*"]
