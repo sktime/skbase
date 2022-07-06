@@ -1,30 +1,442 @@
 # -*- coding: utf-8 -*-
-# copyright: sktime developers, BSD-3-Clause License (see LICENSE file)
+# copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
 """
 Registry lookup methods.
 
 This module exports the following methods for registry lookup:
 
-all_estimators(estimator_types, filter_tags)
+package_metadata()
+    Walk package and return metadata on included classes and functions by module.
+all_objects(object_types, filter_tags)
     lookup and filtering of objects (BaseObject descendants)
 """
+# Based on the sktime all_estimator retrieval utility, which is based on the
+# sklearn estimator retrieval utility of the same name
 
-__author__ = ["fkiraly", "mloning", "katiebuc", "miraep8", "xloem", "rnkuhns"]
-# based on the sktime estimator retrieval utility of the same name
-# which, in turn, is based on the sklearn estimator retrieval utility of the same name
-
-
+import importlib
+import inspect
+import io
 import pkgutil
+import sys
+from collections.abc import Iterable
 from copy import deepcopy
 from importlib import import_module
 from inspect import getmembers, isclass
 from operator import itemgetter
 from pathlib import Path
+from types import FunctionType, ModuleType
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
-from baseobject import BaseObject
+from base_object import BaseObject
+
+# Conditionally import TypedDict based on Python version
+if sys.version_info >= (3, 9):
+    from typing import TypedDict
+else:
+    from typing_extensions import TypedDict
+
+__all__: List[str] = ["all_objects", "package_metadata"]
+__author__: List[str] = [
+    "fkiraly",
+    "mloning",
+    "katiebuc",
+    "miraep8",
+    "xloem",
+    "rnkuhns",
+]
 
 
-def all_estimators(
+class ClassInfo(TypedDict):
+    """Type definitions for information on a module's classes."""
+
+    klass: Type
+    name: str
+    description: str
+    tags: Dict[str, Any]
+    is_concrete_implementation: bool
+    is_base_class: bool
+    is_base_object: bool
+    authors: Optional[Union[List[str], str]]
+    module_name: str
+
+
+class FunctionInfo(TypedDict):
+    """Type definitions for information on a module's functions."""
+
+    func: FunctionType
+    name: str
+    description: str
+    module_name: str
+
+
+class ModuleInfo(TypedDict):
+    """Module information type definitions."""
+
+    path: str
+    name: str
+    classes: Dict[str, ClassInfo]
+    functions: Dict[str, FunctionInfo]
+    __all__: List[str]
+    authors: str
+    is_package: bool
+    contains_concrete_class_implementations: bool
+    contains_base_classes: bool
+    contains_base_objects: bool
+
+
+def _is_non_public_module(module_name: str) -> bool:
+    """Determine if a module is non-public or not.
+
+    Parameters
+    ----------
+    module_name : str
+        Name of the module.
+
+    Returns
+    -------
+    is_non_public : bool
+        Whether the module is non-public or not.
+    """
+    is_non_public: bool = "._" in module_name
+    return is_non_public
+
+
+def _is_ignored_module(
+    module_name: str, modules_to_ignore: Union[List[str], Tuple[str]] = None
+) -> bool:
+    """Determine if module is one of the ignored modules.
+
+    Paramters
+    ---------
+    module_name : str
+        Name of the module.
+    modules_to_ignore : list[str] or tuple[str]
+        The modules that should be ignored when walking the package.
+
+    Returns
+    -------
+    is_ignored : bool
+        Whether the module is an ignrored module or not.
+    """
+    is_ignored: bool
+    if modules_to_ignore is not None:
+        is_ignored = any(part in modules_to_ignore for part in module_name.split("."))
+    else:
+        is_ignored = False
+    return is_ignored
+
+
+def _is_abstract(klass: type) -> bool:
+    """Determine if a class is an abstract class.
+
+    Parameters
+    ----------
+    klass : object
+        Class to check.
+
+    Returns
+    -------
+    is_abstract : bool
+        Whether the input class is an abstract class or not.
+    """
+    # Simplify check by starting as an abstract class
+    is_abstract = True
+    if not (hasattr(klass, "__abstractmethods__")):
+        is_abstract = False
+    elif not len(klass.__abstractmethods__):
+        is_abstract = False
+    return is_abstract
+
+
+def _import_module(module_name: str, suppress_import_stdout: bool = True) -> ModuleType:
+    """Import a module, while optionally suppressing import standard out.
+
+    Parameters
+    ----------
+    module_name : str
+        Name of the module to be imported.
+    suppress_import_stdout : bool, default=True
+        Whether to suppress stdout printout upon import.
+
+    Returns
+    -------
+    module : ModuleType
+        The module that was imported.
+    """
+    if suppress_import_stdout:
+        # setup text trap, import, then restore
+        sys.stdout = io.StringIO()
+        module = importlib.import_module(module_name)
+        sys.stdout = sys.__stdout__
+    else:
+        module = importlib.import_module(module_name)
+    return module
+
+
+def _filter_by_class(klass: type, class_filter: Union[type, Iterable[type]]) -> bool:
+    """Determine if a class is a subclass of the supplied classes.
+
+    Parameters
+    ----------
+    klass : object
+        Class to check.
+    class_filter : objects or iterable of objects
+        Classes that `klass` is checked against.
+
+    Returns
+    -------
+    is_subclass : bool
+        Whether the input class is a subclass of the `class_filter`.
+    """
+    if class_filter is None:
+        is_subclass = True
+    else:
+        if isinstance(class_filter, Iterable) and not isinstance(class_filter, tuple):
+            class_filter = tuple(class_filter)
+        if issubclass(klass, class_filter):
+            is_subclass = True
+        else:
+            is_subclass = False
+    return is_subclass
+
+
+def _filter_by_tags(
+    klass: type, tag_filter: Union[str, Iterable[str], Dict[str, Any]]
+) -> bool:
+    """Determine if a class has a tag or has certain values for a tag.
+
+    Parameters
+    ----------
+    klass : object
+        Class to check.
+    tag_filter : str, iterable of str or dict
+        Filter used to determine if `klass` has tag or expected tag values.
+
+    Returns
+    -------
+    has_tag : bool
+        Whether the input class has tags defined by the `tag_filter`.
+    """
+    if tag_filter is None:
+        return True
+    if hasattr(klass, "get_class_tags"):
+        klass_tags = klass.get_class_tags()
+    # If a string is supplied verify it is in the returned tag dict
+    if isinstance(tag_filter, str):
+        has_tag = tag_filter in klass_tags
+    # If a iterable of strings is provided, check that all are in the returned tag_dict
+    elif isinstance(tag_filter, Iterable) and all(
+        [isinstance(t, str) for t in tag_filter]
+    ):
+        has_tag = all([tag in klass_tags for tag in tag_filter])
+    # If a dict is suppied verify that tag and value are acceptable
+    elif isinstance(tag_filter, dict):
+        for tag, value in tag_filter.items():
+            if not isinstance(value, Iterable):
+                value = [value]
+                if tag in klass_tags:
+                    has_tag = klass_tags[tag] in set(value)
+                else:
+                    has_tag = False
+                # We can break the loop and return has_tag as False if it is ever False
+                if not has_tag:
+                    break
+    else:
+        raise ValueError(
+            "`tag_filter` should be a string tag name, iterable of string tag names, "
+            "or a dictionary mapping tag names to allowable values. "
+            f"But `tag_filter` has type {type(tag_filter)}."
+        )
+
+    return has_tag
+
+
+def _get_module_info(
+    module: ModuleType,
+    is_pkg: bool,
+    package_base_classes: Union[type, Tuple[type, ...]],
+) -> ModuleInfo:
+    # Determine path to the module
+    if hasattr(module, "__path__"):
+        path = module.__path__[0]
+    else:
+        path = module.__file__
+
+    # Make package_base_classes a tuple if it was supplied as a class
+    if isinstance(package_base_classes, Iterable):
+        package_base_classes = tuple(package_base_classes)
+    elif not isinstance(package_base_classes, tuple):
+        package_base_classes = (package_base_classes,)
+    designed_imports: List[str] = getattr(module, "__all__", [])
+    authors: Union[str, List[str]] = getattr(module, "__author__", [])
+    if isinstance(authors, (list, tuple)):
+        authors = ", ".join(authors)
+    # Compile information on classes in the module
+    module_classes: Dict[str, ClassInfo] = {}
+    for name, klass in inspect.getmembers(module, inspect.isclass):
+        klass_authors = getattr(klass, "__author__", authors)
+        if isinstance(klass_authors, (list, tuple)):
+            klass_authors = ", ".join(klass_authors)
+        if klass.__module__ == module.__name__ or name in designed_imports:
+            module_classes[name] = {
+                "klass": klass,
+                "name": klass.__name__,
+                "description": klass.__doc__.split("\n")[0],
+                "tags": (
+                    klass.get_class_tags() if hasattr(klass, "get_class_tags") else None
+                ),
+                "is_concrete_implementation": (
+                    issubclass(klass, package_base_classes)
+                    and klass not in package_base_classes
+                ),
+                "is_base_class": klass in package_base_classes,
+                "is_base_object": issubclass(klass, BaseObject),
+                "authors": klass_authors,
+                "module_name": module.__name__,
+            }
+
+    module_functions: Dict[str, FunctionInfo] = {}
+    for name, func in inspect.getmembers(module, inspect.isfunction):
+        if func.__module__ == module.__name__ or name in designed_imports:
+            module_functions[name] = {
+                "func": func,
+                "name": func.__name__,
+                "description": func.__doc__.split("\n")[0],
+                "module_name": module.__name__,
+            }
+
+    # Combine all the information on the module together
+    module_info: ModuleInfo = {
+        "path": path,
+        "name": module.__name__,
+        "classes": module_classes,
+        "functions": module_functions,
+        "__all__": designed_imports,
+        "authors": authors,
+        "is_package": is_pkg,
+        "contains_concrete_class_implementations": False,
+        "contains_base_classes": any(
+            v["is_base_class"] for v in module_classes.values()
+        ),
+        "contains_base_objects": any(
+            v["is_base_object"] for v in module_classes.values()
+        ),
+    }
+    return module_info
+
+
+def package_metadata(
+    top_level_name: str,
+    path: str,
+    recursive: bool = True,
+    exclude_nonpublic_modules: bool = True,
+    modules_to_ignore: Union[List[str], Tuple[str]] = ("tests",),
+    package_base_classes: Union[type, Tuple[type, ...]] = (BaseObject,),
+    suppress_import_stdout: bool = True,
+) -> Dict[str, ModuleInfo]:
+    """Return a dictionary mapping all package modules to their metadata.
+
+    Parameters
+    ----------
+    path : str, default=None
+        String path that should be used as root to find any modules or submodules.
+    top_level_name : str, default=None
+        The name of the top-level package/module associated with the provided `path`.
+    recursive : bool, default=True
+        Whether to recursively walk through submodules.
+
+        - If True, then submoudles of submodules and so on are found.
+        - If False, then only first-level submoundes of `package` are found.
+    exclude_non_public_modules : bool, default=True
+        Whether to exclude nonpublic modules (modules where names start with
+        a leading underscore).
+    modules_to_ignore : list[str] or tuple[str], default=()
+        The modules that should be ignored when walking the package.
+    suppress_import_stdout : bool, default=True
+        Whether to suppress stdout printout upon import.
+
+    Returns
+    -------
+    module_info: dict
+        Dictionary mapping string submodule name (key) to a dictionary of the
+        submodules metadata.
+    """
+    import warnings
+
+    # if not isinstance(path, str):
+    #     raise ValueError("Provide parameter `path` as a string .")
+
+    module_info: Dict[str, ModuleInfo] = {}
+    # First try to import the top level path
+    try:
+        module: ModuleType
+        if path.endswith(".py"):
+            loader = importlib.machinery.SourceFileLoader(top_level_name, path)
+            if suppress_import_stdout:
+                sys.stdout = io.StringIO()
+                module = loader.load_module()
+                sys.stdout = sys.__stdout__
+            else:
+                module = loader.load_module()
+        else:
+            loader = importlib.machinery.SourceFileLoader(
+                top_level_name, path + "/__init__.py"
+            )
+            if suppress_import_stdout:
+                sys.stdout = io.StringIO()
+                module = loader.load_module()
+                sys.stdout = sys.__stdout__
+            else:
+                module = loader.load_module()
+        module_info[top_level_name] = _get_module_info(
+            module, loader.is_package(top_level_name), package_base_classes
+        )
+    except ImportError:
+        pass
+
+    # Now walk through any submodules
+    prefix = f"{top_level_name}."
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=FutureWarning)
+        warnings.simplefilter("module", category=ImportWarning)
+        warnings.filterwarnings(
+            "ignore", category=UserWarning, message=".*has been moved to.*"
+        )
+        for _loader, name, is_pkg in pkgutil.walk_packages(path=[path], prefix=prefix):
+            # Used to skip-over ignored modules and non-public modules
+            if _is_ignored_module(name, modules_to_ignore=modules_to_ignore) or (
+                exclude_nonpublic_modules and _is_non_public_module(name)
+            ):
+                continue
+
+            try:
+                sub_module: ModuleType = _import_module(
+                    name, suppress_import_stdout=suppress_import_stdout
+                )
+                module_info[name] = _get_module_info(
+                    sub_module, is_pkg, package_base_classes
+                )
+            except ImportError:
+                continue
+
+            if recursive and is_pkg:
+                name_ending: str = name.split(".")[1] if "." in name else name
+                updated_path: str = "\\".join([path, name_ending])
+                module_info.update(
+                    package_metadata(
+                        top_level_name=name,
+                        path=updated_path,
+                        recursive=recursive,
+                        exclude_nonpublic_modules=exclude_nonpublic_modules,
+                        modules_to_ignore=modules_to_ignore,
+                        package_base_classes=package_base_classes,
+                    )
+                )
+
+    return module_info
+
+
+def all_objects(
     estimator_types=None,
     filter_tags=None,
     exclude_estimators=None,
@@ -126,12 +538,12 @@ def all_estimators(
     import warnings
 
     if ignore_modules is None:
-        MODULES_TO_IGNORE = []
+        modules_to_ignore = []
     else:
-        MODULES_TO_IGNORE = ignore_modules
+        modules_to_ignore = ignore_modules
 
     all_estimators = []
-    ROOT = str(Path(__file__).parent.parent)  # sktime package root directory
+    root = str(Path(__file__).parent.parent)  # sktime package root directory
 
     def _is_abstract(klass):
         if not (hasattr(klass, "__abstractmethods__")):
@@ -145,7 +557,7 @@ def all_estimators(
 
     def _is_ignored_module(module):
         module_parts = module.split(".")
-        return any(part in MODULES_TO_IGNORE for part in module_parts)
+        return any(part in modules_to_ignore for part in module_parts)
 
     def _is_base_class(name):
         return name.startswith("_") or name.startswith("Base")
@@ -164,7 +576,7 @@ def all_estimators(
             "ignore", category=UserWarning, message=".*has been moved to.*"
         )
         prefix = f"{package_name}."
-        for _, module_name, _ in pkgutil.walk_packages(path=[ROOT], prefix=prefix):
+        for _, module_name, _ in pkgutil.walk_packages(path=[root], prefix=prefix):
 
             # Filter modules
             if _is_ignored_module(module_name) or _is_private_module(module_name):
@@ -248,7 +660,7 @@ def all_estimators(
                 ]
             else:
                 all_estimators = [
-                    tuple([est]) + _get_return_tags(est, return_tags)
+                    (est,) + _get_return_tags(est, return_tags)
                     for est in all_estimators
                 ]
         columns = columns + return_tags
