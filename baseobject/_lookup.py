@@ -27,7 +27,7 @@ from pathlib import Path
 from types import FunctionType, ModuleType
 from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
-from base_object import BaseObject
+from baseobject import BaseObject
 
 # Conditionally import TypedDict based on Python version
 if sys.version_info >= (3, 9):
