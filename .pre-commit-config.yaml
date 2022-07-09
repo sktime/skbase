@@ -19,7 +19,6 @@ repos:
   - id: check-docstring-first
   - id: name-tests-test
     args: ['--django']
-  - id: no-commit-to-branch
 
 - repo: https://github.com/pycqa/isort
   rev: 5.10.1
