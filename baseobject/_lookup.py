@@ -15,14 +15,26 @@ all_objects(object_types, filter_tags)
 import importlib
 import inspect
 import io
+import os
+import pathlib
 import pkgutil
 import sys
+import warnings
 from collections.abc import Iterable
 from copy import deepcopy
 from operator import itemgetter
-from pathlib import Path
 from types import FunctionType, ModuleType
-from typing import Any, Dict, List, Optional, Tuple, Type, Union
+from typing import (
+    Any,
+    List,
+    Mapping,
+    MutableMapping,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    Union,
+)
 
 from baseobject import BaseObject
 
@@ -49,7 +61,7 @@ class ClassInfo(TypedDict):
     klass: Type
     name: str
     description: str
-    tags: Dict[str, Any]
+    tags: MutableMapping[str, Any]
     is_concrete_implementation: bool
     is_base_class: bool
     is_base_object: bool
@@ -71,8 +83,8 @@ class ModuleInfo(TypedDict):
 
     path: str
     name: str
-    classes: Dict[str, ClassInfo]
-    functions: Dict[str, FunctionInfo]
+    classes: MutableMapping[str, ClassInfo]
+    functions: MutableMapping[str, FunctionInfo]
     __all__: List[str]
     authors: str
     is_package: bool
@@ -145,32 +157,7 @@ def _is_abstract(klass: type) -> bool:
     return is_abstract
 
 
-def _import_module(module_name: str, suppress_import_stdout: bool = True) -> ModuleType:
-    """Import a module, while optionally suppressing import standard out.
-
-    Parameters
-    ----------
-    module_name : str
-        Name of the module to be imported.
-    suppress_import_stdout : bool, default=True
-        Whether to suppress stdout printout upon import.
-
-    Returns
-    -------
-    module : ModuleType
-        The module that was imported.
-    """
-    if suppress_import_stdout:
-        # setup text trap, import, then restore
-        sys.stdout = io.StringIO()
-        module = importlib.import_module(module_name)
-        sys.stdout = sys.__stdout__
-    else:
-        module = importlib.import_module(module_name)
-    return module
-
-
-def _filter_by_class(klass: type, class_filter: Union[type, Iterable[type]]) -> bool:
+def _filter_by_class(klass: type, class_filter: Union[type, Sequence[type]]) -> bool:
     """Determine if a class is a subclass of the supplied classes.
 
     Parameters
@@ -198,7 +185,7 @@ def _filter_by_class(klass: type, class_filter: Union[type, Iterable[type]]) -> 
 
 
 def _filter_by_tags(
-    klass: type, tag_filter: Union[str, Iterable[str], Dict[str, Any]]
+    klass: type, tag_filter: Union[str, Sequence[str], Mapping[str, Any]]
 ) -> bool:
     """Determine if a class has a tag or has certain values for a tag.
 
@@ -248,57 +235,194 @@ def _filter_by_tags(
     return has_tag
 
 
+def _import_module(
+    module_name: str,
+    suppress_import_stdout: bool = True,
+    loader: importlib.machinery.SourceFileLoader = None,
+) -> ModuleType:
+    """Import a module, while optionally suppressing import standard out.
+
+    Parameters
+    ----------
+    module_name : str
+        Name of the module to be imported.
+    suppress_import_stdout : bool, default=True
+        Whether to suppress stdout printout upon import.
+    loader : importlib.machinery.SourceFileLoader, default=None
+        If provided, this should be the loader to load the module.
+
+    Returns
+    -------
+    module : ModuleType
+        The module that was imported.
+    """
+    if loader is None:
+        if suppress_import_stdout:
+            # setup text trap, import, then restore
+            sys.stdout = io.StringIO()
+            module = importlib.import_module(module_name)
+            sys.stdout = sys.__stdout__
+        else:
+            module = importlib.import_module(module_name)
+    else:
+        if suppress_import_stdout:
+            sys.stdout = io.StringIO()
+            module = loader.load_module()
+            sys.stdout = sys.__stdout__
+        else:
+            module = loader.load_module()
+    return module
+
+
+def _determine_module_path(
+    package_name: str, path: Optional[Union[str, pathlib.Path]] = None
+) -> Tuple[ModuleType, str, importlib.machinery.SourceFileLoader]:
+    """Determine a package's path information.
+
+    Parameters
+    ----------
+    package_name : str, default=None
+        The name of the package/module to return metadata for.
+
+        - If `path` is not None, this should be the name of the package/module
+          associated with the path. `package_name` (with "." appended at end)
+          will be used as prefix for any submodules/packages when walking
+          the provided `path`.
+        - If `path` is None, then package_name is assumed to be an importable
+          package or module and the `path` to `package_name` will be determined
+          from its import.
+
+    path : str or absolute pathlib.Path, default=None
+        If provided, this should be the path that should be used as root
+        to find any modules or submodules.
+    """
+    if not isinstance(package_name, str):
+        raise ValueError(
+            "`package_name` must be the string name of a package or module."
+            "For example, 'some_package' or 'some_package.some_module'."
+        )
+
+    if path is None:
+        module = _import_module(package_name, suppress_import_stdout=False)
+        if hasattr(module, "__path__") and (
+            module.__path__ is not None and len(module.__path__) > 0
+        ):
+            path_ = module.__path__[0]
+        elif hasattr(module, "__file__") and module.__file__ is not None:
+            # path = Path(module.__file__).parent
+            path = module.__file__.split(".")[0]
+        else:
+            raise ValueError(
+                f"Unable to determine path for provided `package_name`: {package_name} "
+                "from the imported module. Try explicitly providing the `path`."
+            )
+        if path_.endswith(".py"):
+            loader = importlib.machinery.SourceFileLoader(package_name, path_)
+        elif os.path.exists(path_ + "/__init__.py"):
+            loader = importlib.machinery.SourceFileLoader(
+                package_name, path_ + "/__init__.py"
+            )
+        else:
+            loader = importlib.machinery.SourceFileLoader(package_name, path_)
+    else:
+        # Make sure path is str and not a pathlib.Path
+        if isinstance(path, pathlib.Path):
+            path_ = str(path.absolute())
+        # Use the provided path and package name to load the module if both available
+        if isinstance(path, str):
+            path_ = path
+            # First try to import the top level path
+            try:
+                if path_.endswith(".py"):
+                    loader = importlib.machinery.SourceFileLoader(package_name, path_)
+                elif os.path.exists(path_ + "/__init__.py"):
+                    loader = importlib.machinery.SourceFileLoader(
+                        package_name, path_ + "/__init__.py"
+                    )
+                else:
+                    loader = importlib.machinery.SourceFileLoader(package_name, path_)
+                module = _import_module(
+                    package_name, suppress_import_stdout=False, loader=loader
+                )
+            except ImportError:
+                raise ValueError(
+                    f"Unable to import a package named {package_name} based "
+                    f"on provided `path`: {path_}."
+                )
+        else:
+            raise ValueError(
+                f"`path` must be a str path or pathlib.Path, but is type {type(path)}."
+            )
+
+    return module, path_, loader
+
+
 def _get_module_info(
     module: ModuleType,
     is_pkg: bool,
+    path: str,
     package_base_classes: Union[type, Tuple[type, ...]],
+    exclude_non_public_items: bool = True,
 ) -> ModuleInfo:
-    # Determine path to the module
-    if hasattr(module, "__path__"):
-        path = module.__path__[0]
-    else:
-        path = module.__file__
-
     # Make package_base_classes a tuple if it was supplied as a class
+    base_classes_none = False
     if isinstance(package_base_classes, Iterable):
         package_base_classes = tuple(package_base_classes)
     elif not isinstance(package_base_classes, tuple):
+        if package_base_classes is None:
+            base_classes_none = True
         package_base_classes = (package_base_classes,)
     designed_imports: List[str] = getattr(module, "__all__", [])
     authors: Union[str, List[str]] = getattr(module, "__author__", [])
     if isinstance(authors, (list, tuple)):
         authors = ", ".join(authors)
     # Compile information on classes in the module
-    module_classes: Dict[str, ClassInfo] = {}
+    module_classes: MutableMapping[str, ClassInfo] = {}
     for name, klass in inspect.getmembers(module, inspect.isclass):
-        klass_authors = getattr(klass, "__author__", authors)
-        if isinstance(klass_authors, (list, tuple)):
-            klass_authors = ", ".join(klass_authors)
+        # Skip a class if non-public items should be excluded and it starts with "_"
+        if exclude_non_public_items and klass.__name__.startswith("_"):
+            continue
+        # Otherwise, store info about the class
         if klass.__module__ == module.__name__ or name in designed_imports:
+            klass_authors = getattr(klass, "__author__", authors)
+            if isinstance(klass_authors, (list, tuple)):
+                klass_authors = ", ".join(klass_authors)
+            if base_classes_none:
+                concrete_implementation = False
+            else:
+                concrete_implementation = (
+                    issubclass(klass, package_base_classes)
+                    and klass not in package_base_classes
+                )
             module_classes[name] = {
                 "klass": klass,
                 "name": klass.__name__,
-                "description": klass.__doc__.split("\n")[0],
+                "description": (
+                    "" if klass.__doc__ is None else klass.__doc__.split("\n")[0]
+                ),
                 "tags": (
                     klass.get_class_tags() if hasattr(klass, "get_class_tags") else None
                 ),
-                "is_concrete_implementation": (
-                    issubclass(klass, package_base_classes)
-                    and klass not in package_base_classes
-                ),
+                "is_concrete_implementation": concrete_implementation,
                 "is_base_class": klass in package_base_classes,
                 "is_base_object": issubclass(klass, BaseObject),
                 "authors": klass_authors,
                 "module_name": module.__name__,
             }
 
-    module_functions: Dict[str, FunctionInfo] = {}
+    module_functions: MutableMapping[str, FunctionInfo] = {}
     for name, func in inspect.getmembers(module, inspect.isfunction):
         if func.__module__ == module.__name__ or name in designed_imports:
+            # Skip a class if non-public items should be excluded and it starts with "_"
+            if exclude_non_public_items and klass.__name__.startswith("_"):
+                continue
+            # Otherwise, store info about the class
             module_functions[name] = {
                 "func": func,
                 "name": func.__name__,
-                "description": func.__doc__.split("\n")[0],
+                "description": (
+                    "" if func.__doc__ is None else func.__doc__.split("\n")[0]
+                ),
                 "module_name": module.__name__,
             }
 
@@ -323,27 +447,42 @@ def _get_module_info(
 
 
 def package_metadata(
-    top_level_name: str,
-    path: str,
+    package_name: str,
+    path: Optional[str] = None,
     recursive: bool = True,
+    exclude_non_public_items: bool = True,
     exclude_nonpublic_modules: bool = True,
     modules_to_ignore: Union[List[str], Tuple[str]] = ("tests",),
     package_base_classes: Union[type, Tuple[type, ...]] = (BaseObject,),
     suppress_import_stdout: bool = True,
-) -> Dict[str, ModuleInfo]:
+) -> Mapping[str, ModuleInfo]:
     """Return a dictionary mapping all package modules to their metadata.
 
     Parameters
     ----------
+    package_name : str, default=None
+        The name of the package/module to return metadata for.
+
+        - If `path` is not None, this should be the name of the package/module
+          associated with the path. `package_name` (with "." appended at end)
+          will be used as prefix for any submodules/packages when walking
+          the provided `path`.
+        - If `path` is None, then package_name is assumed to be an importable
+          package or module and the `path` to `package_name` will be determined
+          from its import.
+
     path : str, default=None
-        String path that should be used as root to find any modules or submodules.
-    top_level_name : str, default=None
-        The name of the top-level package/module associated with the provided `path`.
+        If provided, this should be the path that should be used as root
+        to find any modules or submodules.
     recursive : bool, default=True
         Whether to recursively walk through submodules.
 
         - If True, then submoudles of submodules and so on are found.
         - If False, then only first-level submoundes of `package` are found.
+
+    exclude_non_public_items : bool, default=True
+        Whether to exclude nonpublic functions and classes (where name starts
+        with a leading underscore).
     exclude_non_public_modules : bool, default=True
         Whether to exclude nonpublic modules (modules where names start with
         a leading underscore).
@@ -358,48 +497,28 @@ def package_metadata(
         Dictionary mapping string submodule name (key) to a dictionary of the
         submodules metadata.
     """
-    import warnings
-
-    # if not isinstance(path, str):
-    #     raise ValueError("Provide parameter `path` as a string .")
-
-    module_info: Dict[str, ModuleInfo] = {}
-    # First try to import the top level path
-    try:
-        module: ModuleType
-        if path.endswith(".py"):
-            loader = importlib.machinery.SourceFileLoader(top_level_name, path)
-            if suppress_import_stdout:
-                sys.stdout = io.StringIO()
-                module = loader.load_module()
-                sys.stdout = sys.__stdout__
-            else:
-                module = loader.load_module()
-        else:
-            loader = importlib.machinery.SourceFileLoader(
-                top_level_name, path + "/__init__.py"
-            )
-            if suppress_import_stdout:
-                sys.stdout = io.StringIO()
-                module = loader.load_module()
-                sys.stdout = sys.__stdout__
-            else:
-                module = loader.load_module()
-        module_info[top_level_name] = _get_module_info(
-            module, loader.is_package(top_level_name), package_base_classes
-        )
-    except ImportError:
-        pass
+    module, path, loader = _determine_module_path(package_name, path)
+    module_info: MutableMapping[str, ModuleInfo] = {}
+    # Get any metadata at the top-level of the provided package
+    # This is because the pkgutil.walk_packages doesn't include __init__
+    # file when walking a package
+    module_info[package_name] = _get_module_info(
+        module,
+        loader.is_package(package_name),
+        path,
+        package_base_classes,
+        exclude_non_public_items=exclude_non_public_items,
+    )
 
     # Now walk through any submodules
-    prefix = f"{top_level_name}."
+    prefix = f"{package_name}."
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=FutureWarning)
         warnings.simplefilter("module", category=ImportWarning)
         warnings.filterwarnings(
             "ignore", category=UserWarning, message=".*has been moved to.*"
         )
-        for _loader, name, is_pkg in pkgutil.walk_packages(path=[path], prefix=prefix):
+        for _, name, is_pkg in pkgutil.walk_packages(path=[path], prefix=prefix):
             # Used to skip-over ignored modules and non-public modules
             if _is_ignored_module(name, modules_to_ignore=modules_to_ignore) or (
                 exclude_nonpublic_modules and _is_non_public_module(name)
@@ -411,7 +530,11 @@ def package_metadata(
                     name, suppress_import_stdout=suppress_import_stdout
                 )
                 module_info[name] = _get_module_info(
-                    sub_module, is_pkg, package_base_classes
+                    sub_module,
+                    is_pkg,
+                    path,
+                    package_base_classes,
+                    exclude_non_public_items=exclude_non_public_items,
                 )
             except ImportError:
                 continue
@@ -421,9 +544,10 @@ def package_metadata(
                 updated_path: str = "\\".join([path, name_ending])
                 module_info.update(
                     package_metadata(
-                        top_level_name=name,
+                        package_name=name,
                         path=updated_path,
                         recursive=recursive,
+                        exclude_non_public_items=exclude_non_public_items,
                         exclude_nonpublic_modules=exclude_nonpublic_modules,
                         modules_to_ignore=modules_to_ignore,
                         package_base_classes=package_base_classes,
@@ -442,16 +566,15 @@ def all_objects(
     return_tags=None,
     suppress_import_stdout=True,
     package_name="baseobject",
+    path: Optional[str] = None,
     ignore_modules=None,
     class_lookup=None,
 ):
-    """Get a list of all estimators in the package with name package_name.
+    """Get a list of all estimators in the package with name `package_name`.
 
-    This function crawls the package/module and gets all classes that are objects.
-    Objects means: BaseObject descendants.
-    Objects retrieved can be sub-set by inheritance, tags, and exclusion conditions.
-
-    Not included are: the base classes themselves, classes defined in test modules.
+    This function crawls the package/module and gets all classes that
+    are descendents of BaseObject. These classes can be retrieved
+    based on their inherittence from intermediate classes, and their tags.
 
     Parameters
     ----------
@@ -494,6 +617,9 @@ def all_objects(
         should be set to default to package or module name if used for search.
         objects will be searched inside the package/module called package_name,
         this can include sub-module dots, e.g., "package.module1.module2"
+    path : str, default=None
+        If provided, this should be the path that should be used as root
+        to find `package_name` and start the search for any submodules/packages.
     ignore_modules : str or lits of str, optional. Default=empty list
         list of module names to ignore in search
     class_lookup : dict string -> class, optional, default=None
@@ -530,7 +656,7 @@ def all_objects(
     ----------
     Modified version from scikit-learn's `all_estimators()`.
     """
-    import warnings
+    module, root, _ = _determine_module_path(package_name, path)
 
     if ignore_modules is None:
         modules_to_ignore = []
@@ -538,7 +664,7 @@ def all_objects(
         modules_to_ignore = ignore_modules
 
     all_estimators = []
-    root = str(Path(__file__).parent.parent)  # sktime package root directory
+    # root = str(pathlib.Path(__file__).parent.parent)  # sktime package root directory
 
     # def _is_abstract(klass):
     #     if not (hasattr(klass, "__abstractmethods__")):
@@ -572,7 +698,6 @@ def all_objects(
         )
         prefix = f"{package_name}."
         for _, module_name, _ in pkgutil.walk_packages(path=[root], prefix=prefix):
-
             # Filter modules
             if _is_ignored_module(module_name) or _is_private_module(module_name):
                 continue
@@ -586,7 +711,6 @@ def all_objects(
                 else:
                     module = importlib.import_module(module_name)
                 classes = inspect.getmembers(module, inspect.isclass)
-
                 # Filter classes
                 estimators = [
                     (name, klass)
@@ -702,7 +826,7 @@ def _check_list_of_str_or_error(arg_to_check, arg_name):
     return arg_to_check
 
 
-def _check_list_of_class_or_error(arg_to_check, arg_name):
+def _check_iterable_of_class_or_error(arg_to_check, arg_name):
     """Check that certain arguments are class or list of class.
 
     Parameters
@@ -723,10 +847,11 @@ def _check_list_of_class_or_error(arg_to_check, arg_name):
     TypeError if arg_to_check is not a class or list of class
     """
     # check that return_tags has the right type:
-    if inspect.isclass(arg_to_check, str):
+    if inspect.isclass(arg_to_check):
         arg_to_check = [arg_to_check]
-    if not isinstance(arg_to_check, list) or not all(
-        inspect.isclass(value) for value in arg_to_check
+    if not (
+        isinstance(arg_to_check, list)
+        and all(inspect.isclass(value) for value in arg_to_check)
     ):
         raise TypeError(
             f"Error in all_estimators!  Argument {arg_name} must be either\
