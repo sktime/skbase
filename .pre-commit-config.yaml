@@ -1,7 +1,7 @@
 repos:
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.2.0
+  rev: v4.3.0
   hooks:
   - id: check-added-large-files
     args: ['--maxkb=1000']
@@ -27,7 +27,7 @@ repos:
       name: isort
 
 - repo: https://github.com/psf/black
-  rev: 22.3.0
+  rev: 22.6.0
   hooks:
   - id: black
     language_version: python3
