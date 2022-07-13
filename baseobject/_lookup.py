@@ -302,6 +302,17 @@ def _determine_module_path(
             "For example, 'some_package' or 'some_package.some_module'."
         )
 
+    def _instantiate_loader(package_name: str, path: str):
+        if path.endswith(".py"):
+            loader = importlib.machinery.SourceFileLoader(package_name, path)
+        elif os.path.exists(path + "/__init__.py"):
+            loader = importlib.machinery.SourceFileLoader(
+                package_name, path + "/__init__.py"
+            )
+        else:
+            loader = importlib.machinery.SourceFileLoader(package_name, path)
+        return loader
+
     if path is None:
         module = _import_module(package_name, suppress_import_stdout=False)
         if hasattr(module, "__path__") and (
@@ -310,37 +321,21 @@ def _determine_module_path(
             path_ = module.__path__[0]
         elif hasattr(module, "__file__") and module.__file__ is not None:
             # path = Path(module.__file__).parent
-            path = module.__file__.split(".")[0]
+            path_ = module.__file__.split(".")[0]
         else:
             raise ValueError(
                 f"Unable to determine path for provided `package_name`: {package_name} "
                 "from the imported module. Try explicitly providing the `path`."
             )
-        if path_.endswith(".py"):
-            loader = importlib.machinery.SourceFileLoader(package_name, path_)
-        elif os.path.exists(path_ + "/__init__.py"):
-            loader = importlib.machinery.SourceFileLoader(
-                package_name, path_ + "/__init__.py"
-            )
-        else:
-            loader = importlib.machinery.SourceFileLoader(package_name, path_)
+        loader = _instantiate_loader(package_name, path_)
     else:
         # Make sure path is str and not a pathlib.Path
-        if isinstance(path, pathlib.Path):
-            path_ = str(path.absolute())
-        # Use the provided path and package name to load the module if both available
-        if isinstance(path, str):
-            path_ = path
-            # First try to import the top level path
+        if isinstance(path, (pathlib.Path, str)):
+            path_ = str(path.absolute()) if isinstance(path, pathlib.Path) else path
+            # Use the provided path and package name to load the module
+            # if both available.
             try:
-                if path_.endswith(".py"):
-                    loader = importlib.machinery.SourceFileLoader(package_name, path_)
-                elif os.path.exists(path_ + "/__init__.py"):
-                    loader = importlib.machinery.SourceFileLoader(
-                        package_name, path_ + "/__init__.py"
-                    )
-                else:
-                    loader = importlib.machinery.SourceFileLoader(package_name, path_)
+                loader = _instantiate_loader(package_name, path_)
                 module = _import_module(
                     package_name, suppress_import_stdout=False, loader=loader
                 )
