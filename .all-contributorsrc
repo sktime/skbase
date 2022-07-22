@@ -1,0 +1,68 @@
+{
+  "files": [
+    "CONTRIBUTORS.md"
+  ],
+  "imageSize": 100,
+  "contributorsPerLine": 9,
+  "contributorsSortAlphabetically": true,
+  "badgeTemplate": "[![All Contributors](https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg)](#contributors)",
+  "skipCi": true,
+  "contributors": [
+    {
+      "login": "fkiraly",
+      "name": "Franz Kiraly",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/7985502?v=4",
+      "profile": "https://github.com/fkiraly",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "design",
+        "example",
+        "ideas",
+        "maintenance",
+        "projectManagement",
+        "review",
+        "test"
+      ]
+    },
+    {
+      "login": "mloning",
+      "name": "Markus Löning",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/21020482?v=4",
+      "profile": "https://github.com/mloning",
+      "contributions": [
+        "code",
+        "test",
+        "platform",
+        "bug",
+        "doc",
+        "design",
+        "ideas"
+      ]
+    },
+    {
+        "login": "RNKuhns",
+        "name": "Ryan Kuhns",
+        "avatar_url": "https://avatars0.githubusercontent.com/u/26907244?v=4",
+        "profile": "https://github.com/rnkuhns",
+        "contributions": [
+          "bug",
+          "code",
+          "doc",
+          "design",
+          "example",
+          "ideas",
+          "maintenance",
+          "projectManagement",
+          "review",
+          "test"
+        ]
+      }
+  ],
+  "projectName": "BaseObject",
+  "projectOwner": "sktime",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "commitConvention": "none"
+}
