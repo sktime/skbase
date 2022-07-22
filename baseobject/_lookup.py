@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 # copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
-"""
-Registry lookup methods.
+"""Tools to lookup information on code artifacts in a Python package or module.
 
 This module exports the following methods for registry lookup:
 
 package_metadata()
     Walk package and return metadata on included classes and functions by module.
 all_objects(object_types, filter_tags)
-    lookup and filtering of objects (BaseObject descendants)
+    Look (and optionally filter) BaseObject descendents in a package or module.
+
 """
-# Based on the sktime all_estimator retrieval utility, which is based on the
-# sklearn estimator retrieval utility of the same name
+# all_objects is based on the sktime all_estimator retrieval utility, which
+# is based on the sklearn estimator retrieval utility of the same name
+# See https://github.com/scikit-learn/scikit-learn/blob/main/COPYING and
+# https://github.com/alan-turing-institute/sktime/blob/main/LICENSE
 import importlib
 import inspect
 import io
@@ -157,7 +159,9 @@ def _is_abstract(klass: type) -> bool:
     return is_abstract
 
 
-def _filter_by_class(klass: type, class_filter: Union[type, Sequence[type]]) -> bool:
+def _filter_by_class(
+    klass: type, class_filter: Optional[Union[type, Sequence[type]]] = None
+) -> bool:
     """Determine if a class is a subclass of the supplied classes.
 
     Parameters
@@ -185,7 +189,8 @@ def _filter_by_class(klass: type, class_filter: Union[type, Sequence[type]]) -> 
 
 
 def _filter_by_tags(
-    klass: type, tag_filter: Union[str, Sequence[str], Mapping[str, Any]]
+    klass: type,
+    tag_filter: Optional[Union[str, Sequence[str], Mapping[str, Any]]] = None,
 ) -> bool:
     """Determine if a class has a tag or has certain values for a tag.
 
@@ -281,7 +286,7 @@ def _determine_module_path(
 
     Parameters
     ----------
-    package_name : str, default=None
+    package_name : str
         The name of the package/module to return metadata for.
 
         - If `path` is not None, this should be the name of the package/module
@@ -455,7 +460,7 @@ def package_metadata(
 
     Parameters
     ----------
-    package_name : str, default=None
+    package_name : str
         The name of the package/module to return metadata for.
 
         - If `path` is not None, this should be the name of the package/module
@@ -472,8 +477,8 @@ def package_metadata(
     recursive : bool, default=True
         Whether to recursively walk through submodules.
 
-        - If True, then submoudles of submodules and so on are found.
-        - If False, then only first-level submoundes of `package` are found.
+        - If True, then submodules of submodules and so on are found.
+        - If False, then only first-level submodules of `package` are found.
 
     exclude_non_public_items : bool, default=True
         Whether to exclude nonpublic functions and classes (where name starts
@@ -483,6 +488,12 @@ def package_metadata(
         a leading underscore).
     modules_to_ignore : list[str] or tuple[str], default=()
         The modules that should be ignored when walking the package.
+    package_base_classes: type or Sequence[type], default = (BaseObject,)
+        The base classes used to determine if any classes found in metadata descend
+        from a base class.
+
+    Other Parameters
+    ----------------
     suppress_import_stdout : bool, default=True
         Whether to suppress stdout printout upon import.
 
@@ -573,16 +584,20 @@ def all_objects(
 
     Parameters
     ----------
-    estimator_types: class, list of class, optional (default=None)
-        if class_lookup is provided, can also be str or list of str
-        Which kind of objects should be returned.
-        if None, no filter is applied and all estimators are returned.
-        if class or list of class, estimators are filtered to inherit from one of these
-        if str or list of str, classes ca be aliased by strings, via class_lookup
-    return_names: bool, optional (default=True)
-        if True, estimator class name is included in the all_estimators()
-            return in the order: name, estimator class, optional tags, either as
-            a tuple or as pandas.DataFrame columns
+    estimator_types: class or list of classes, default=None
+
+        - If class_lookup is provided, can also be str or list of str
+          which kind of objects should be returned.
+        - If None, no filter is applied and all estimators are returned.
+        - If class or list of class, estimators are filtered to inherit from
+          one of these.
+        - If str or list of str, classes ca be aliased by strings, via class_lookup.
+
+    return_names: bool, default=True
+
+        - If True, estimator class name is included in the all_estimators()
+          return in the order: name, estimator class, optional tags, either as
+          a tuple or as pandas.DataFrame columns.
         if False, estimator class name is removed from the all_estimators()
             return.
     filter_tags: dict of (str or list of str), optional (default=None)
@@ -591,34 +606,38 @@ def all_objects(
             each key/value pair is statement in "and"/conjunction
                 key is tag name to sub-set on
                 value str or list of string are tag values
-                condition is "key must be equal to value, or in set(value)"
-    exclude_estimators: str, list of str, optional (default=None)
+                condition is "key must be equal to value, or in set(value)".
+    exclude_estimators: str or list of str, odefault=None
         Names of estimators to exclude.
-    as_dataframe: bool, optional (default=False)
-        if False, all_estimators will return a list (either a list of
-            estimators or a list of tuples, see Returns)
-        if True, all_estimators will return a pandas.DataFrame with named
+    as_dataframe: bool, default=False
+
+        - If False, all_estimators will return a list (either a list of
+            estimators or a list of tuples, see Returns).
+        - If True, all_estimators will return a pandas.DataFrame with named
             columns for all of the attributes being returned.
             this requires soft dependency pandas to be installed.
-    return_tags: str or list of str, optional (default=None)
+    return_tags: str or list of str, default=None
         Names of tags to fetch and return each estimator's value of.
         For a list of valid tag strings, use the registry.all_tags utility.
-        if str or list of str,
-            the tag values named in return_tags will be fetched for each
-            estimator and will be appended as either columns or tuple entries.
-    suppress_import_stdout : bool, optional. Default=True
-        whether to suppress stdout printout upon import.
-    package_name : str, optional. Default="baseobject".
+        If str or list of str, the tag values named in return_tags will be
+        fetched for each object and will be appended as either columns or
+        tuple entries.
+    package_name : str, default="baseobject".
         should be set to default to package or module name if used for search.
         objects will be searched inside the package/module called package_name,
-        this can include sub-module dots, e.g., "package.module1.module2"
+        this can include sub-module dots, e.g., "package.module1.module2".
     path : str, default=None
         If provided, this should be the path that should be used as root
         to find `package_name` and start the search for any submodules/packages.
     ignore_modules : str or lits of str, optional. Default=empty list
-        list of module names to ignore in search
-    class_lookup : dict string -> class, optional, default=None
-        dict of aliases for classes used in estimator_types
+        list of module names to ignore in search.
+    class_lookup : dict[str, class], default=None
+        Dictionary of aliases for classes used in estimator_types.
+
+    Other Parameters
+    ----------------
+    suppress_import_stdout : bool, default=True
+        whether to suppress stdout printout upon import.
 
     Returns
     -------
@@ -627,29 +646,29 @@ def all_objects(
         2. list of tuples (optional estimator name, class, ~optional estimator
                 tags), if return_names=True or return_tags is not None.
         3. pandas.DataFrame if as_dataframe = True
-        if list of estimators:
-            entries are estimators matching the query,
-            in alphabetical order of estimator name
-        if list of tuples:
-            list of (optional estimator name, estimator, optional estimator
-            tags) matching the query, in alphabetical order of estimator name,
-            where
-            ``name`` is the estimator name as string, and is an
-                optional return
-            ``estimator`` is the actual estimator
-            ``tags`` are the estimator's values for each tag in return_tags
-                and is an optional return.
-        if dataframe:
-            all_estimators will return a pandas.DataFrame.
-            column names represent the attributes contained in each column.
-            "estimators" will be the name of the column of estimators, "names"
-            will be the name of the column of estimator class names and the string(s)
-            passed in return_tags will serve as column names for all columns of
-            tags that were optionally requested.
+
+        - If list of estimators, entries are estimators matching the query,
+          in alphabetical order of estimator name
+        - If list of tuples list of (optional estimator name, estimator,
+          optional estimator tags) matching the query,
+          in alphabetical order of estimator name, where:
+
+           - ``name`` is the estimator name as string, and is an
+             optional return
+            - ``estimator`` is the actual estimator
+            - ``tags`` are the estimator's values for each tag in return_tags
+              and is an optional return.
+
+        - If dataframe, all_estimators will return a pandas.DataFrame.
+          Column names represent the attributes contained in each column.
+          "estimators" will be the name of the column of estimators, "names"
+          will be the name of the column of estimator class names and the string(s)
+          passed in return_tags will serve as column names for all columns of
+          tags that were optionally requested.
 
     References
     ----------
-    Modified version from scikit-learn's `all_estimators()`.
+    Modified version of scikit-learn's and sktime's `all_estimators()`.
     """
     module, root, _ = _determine_module_path(package_name, path)
 
@@ -793,10 +812,11 @@ def _check_list_of_str_or_error(arg_to_check, arg_name):
 
     Parameters
     ----------
-    arg_to_check: argument we are testing the type of
+    arg_to_check: any
+        Argument we are testing the type of.
     arg_name: str,
         name of the argument we are testing, will be added to the error if
-        ``arg_to_check`` is not a str or a list of str
+        ``arg_to_check`` is not a str or a list of str.
 
     Returns
     -------
@@ -806,70 +826,78 @@ def _check_list_of_str_or_error(arg_to_check, arg_name):
 
     Raises
     ------
-    TypeError if arg_to_check is not a str or list of str
+    TypeError if arg_to_check is not a str or list of str.
     """
     # check that return_tags has the right type:
     if isinstance(arg_to_check, str):
         arg_to_check = [arg_to_check]
-    if not isinstance(arg_to_check, list) or not all(
+    elif not isinstance(arg_to_check, list) or not all(
         isinstance(value, str) for value in arg_to_check
     ):
         raise TypeError(
-            f"Error in all_estimators!  Argument {arg_name} must be either\
+            f"Input error. Argument {arg_name} must be either\
              a str or list of str"
         )
     return arg_to_check
 
 
-def _check_iterable_of_class_or_error(arg_to_check, arg_name):
+def _check_iterable_of_class_or_error(arg_to_check, arg_name, coerce_to_list=False):
     """Check that certain arguments are class or list of class.
 
     Parameters
     ----------
-    arg_to_check: argument we are testing the type of
-    arg_name: str,
+    arg_to_check: any
+        Argument we are testing the type of.
+    arg_name: str
         name of the argument we are testing, will be added to the error if
-        ``arg_to_check`` is not a str or a list of str
+        ``arg_to_check`` is not a str or a list of str.
+    coerce_to_list : bool, default=False
+        Whether `arg_to_check` should be coerced to a list prior to return.
 
     Returns
     -------
     arg_to_check: list of class,
-        if arg_to_check was originally a class it converts it into a list of class
-        so that it can be iterated over.
+        If `arg_to_check` was originally a class it converts it into a list
+        containing the class so it can be iterated over. Otherwise,
+        `arg_to_check` is returned.
 
     Raises
     ------
-    TypeError if arg_to_check is not a class or list of class
+    TypeError:
+        If `arg_to_check` is not a class or iterable of class.
     """
     # check that return_tags has the right type:
     if inspect.isclass(arg_to_check):
         arg_to_check = [arg_to_check]
-    if not (
-        isinstance(arg_to_check, list)
+    elif not (
+        isinstance(arg_to_check, Iterable)
         and all(inspect.isclass(value) for value in arg_to_check)
     ):
         raise TypeError(
-            f"Error in all_estimators!  Argument {arg_name} must be either\
-             a class or list of class"
+            f"Input error. Argument {arg_name} must be either\
+             a class or an iterable of classes"
         )
+    elif coerce_to_list:
+        arg_to_check = list(arg_to_check)
     return arg_to_check
 
 
-def _get_return_tags(estimator, return_tags):
+def _get_return_tags(obj, return_tags):
     """Fetch a list of all tags for every_entry of all_estimators.
 
     Parameters
     ----------
-    estimator:  BaseEstimator, an sktime estimator
-    return_tags: list of str,
-        names of tags to get values for the estimator
+    obj:  BaseObject
+        A BaseObject.
+    return_tags: list of str
+        Names of tags to get values for the estimator.
 
     Returns
     -------
-    tags: a tuple with all the estimators values for all tags in return tags.
-        a value is None if it is not a valid tag for the estimator provided.
+    tags: a tuple with all the object values for all tags in return tags.
+        a value is None if it is not a valid tag for the object provided.
     """
-    tags = tuple(estimator.get_class_tag(tag) for tag in return_tags)
+    tags = tuple(obj.get_class_tag(tag) for tag in return_tags)
     return tags
 
 
@@ -878,21 +906,24 @@ def _check_tag_cond(estimator, filter_tags=None, as_dataframe=True):
 
     Parameters
     ----------
-    estimator: BaseEstimator, an sktime estimator
+    estimator: BaseObject
+        Class inheritting from BaseOBject.
     filter_tags: dict of (str or list of str), default=None
         subsets the returned estimators as follows:
             each key/value pair is statement in "and"/conjunction
                 key is tag name to sub-set on
                 value str or list of string are tag values
-                condition is "key must be equal to value, or in set(value)"
+                condition is "key must be equal to value, or in set(value)".
     as_dataframe: bool, default=False
-                if False, return is as described below;
-                if True, return is converted into a pandas.DataFrame for pretty
-                display
+
+        - If False, return is as described below.
+        - If True, return is converted into a pandas.DataFrame for pretty
+          display.
 
     Returns
     -------
-    cond_sat: bool, whether estimator satisfies condition in filter_tags
+    cond_sat: bool
+        Whether estimator satisfies condition in filter_tags.
     """
     if not isinstance(filter_tags, dict):
         raise TypeError("filter_tags must be a dict")
@@ -912,19 +943,19 @@ def _check_estimator_types(estimator_types, class_lookup=None):
 
     Parameters
     ----------
-    estimator_types : str, class or list of [string or class]
-    class_lookup : dict string -> class, optional, default=None
+    estimator_types : str, class, or list of string or class
+    class_lookup : dict[string, class], default=None
 
     Returns
     -------
     list of class, i-th element is:
         class_lookup[estimator_types[i]] if estimator_types[i] was a string
         estimator_types[i] otherwise
-    if class_lookup is none, only checks whether estimator_types is class or list of
+    if class_lookup is none, only checks whether estimator_types is class or list of.
 
     Raises
     ------
-    ValueError if estimator_types is not of the expected type
+    ValueError if estimator_types is not of the expected type.
     """
     estimator_types = deepcopy(estimator_types)
 
@@ -960,8 +991,11 @@ def _check_estimator_types(estimator_types, class_lookup=None):
     return estimator_types
 
 
-def _make_dataframe(all_estimators, columns):
-    """Create pandas.DataFrame for all_estimators, fct isolates pandas soft dep."""
+def _make_dataframe(all_objects, columns):
+    """Create pandas.DataFrame from all_objects.
+
+    Kept as a separate function with import to isolate the pandas dependency.
+    """
     import pandas as pd
 
-    return pd.DataFrame(all_estimators, columns=columns)
+    return pd.DataFrame(all_objects, columns=columns)
