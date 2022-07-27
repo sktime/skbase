@@ -556,18 +556,17 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
 
     def test_required_params(self, object_class):
         """Check required parameter interface."""
-        object = object_class
         # Check common meta-object interface
-        if hasattr(object, "_required_parameters"):
-            required_params = object._required_parameters
+        if hasattr(object_class, "_required_parameters"):
+            required_params = object_class._required_parameters
 
             assert isinstance(required_params, list), (
-                f"For object: {object}, `_required_parameters` must be a "
+                f"For object: {object_class}, `_required_parameters` must be a "
                 f"tuple, but found type: {type(required_params)}"
             )
 
             assert all([isinstance(param, str) for param in required_params]), (
-                f"For object: {object}, elements of `_required_parameters` "
+                f"For object: {object_class}, elements of `_required_parameters` "
                 f"list must be strings"
             )
 
@@ -661,15 +660,16 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
 
     def test_set_params(self, object_instance):
         """Check that set_params works correctly."""
-        object = object_instance
-        params = object.get_params()
+        params = object_instance.get_params()
 
-        msg = f"set_params of {type(object).__name__} does not return self"
-        assert object.set_params(**params) is object, msg
+        msg = f"set_params of {type(object_instance).__name__} does not return self"
+        assert object_instance.set_params(**params) is object_instance, msg
 
-        is_equal, equals_msg = deep_equals(object.get_params(), params, return_msg=True)
+        is_equal, equals_msg = deep_equals(
+            object_instance.get_params(), params, return_msg=True
+        )
         msg = (
-            f"get_params result of {type(object).__name__} (x) does not match "
+            f"get_params result of {type(object_instance).__name__} (x) does not match "
             f"what was passed to set_params (y). Reason for discrepancy: {equals_msg}"
         )
         assert is_equal, msg
@@ -681,7 +681,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         we use the other test parameter settings (which are assumed valid).
         This guarantees settings which play along with the __init__ content.
         """
-        object = object_class.create_test_instance()
+        object_instance = object_class.create_test_instance()
         test_params = object_class.get_test_params()
         if not isinstance(test_params, list):
             test_params = [test_params]
@@ -694,11 +694,11 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             params_full.update(params)
 
             msg = f"set_params of {object_class.__name__} does not return self"
-            est_after_set = object.set_params(**params_full)
-            assert est_after_set is object, msg
+            est_after_set = object_instance.set_params(**params_full)
+            assert est_after_set is object_instance, msg
 
             is_equal, equals_msg = deep_equals(
-                object.get_params(deep=False), params_full, return_msg=True
+                object_instance.get_params(deep=False), params_full, return_msg=True
             )
             msg = (
                 f"get_params result of {object_class.__name__} (x) does not match "
@@ -709,13 +709,12 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
 
     def test_clone(self, object_instance):
         """Check we can call clone from scikit-learn."""
-        object = object_instance
-        object.clone()
+        object_clone = object_instance.clone()
+        assert deep_equals(object_clone.get_params(), object_instance.get_params())
 
     def test_repr(self, object_instance):
         """Check we can call repr."""
-        object = object_instance
-        repr(object)
+        repr(object_instance)
 
     def test_constructor(self, object_class):
         """Check that the constructor has correct signature and behaves correctly."""
