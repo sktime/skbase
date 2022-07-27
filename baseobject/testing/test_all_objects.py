@@ -744,7 +744,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
 
         # Filter out required parameters with no default value and parameters
         # set for running tests
-        required_params = getattr(object, "_required_parameters", tuple())
+        required_params = getattr(object, "_required_parameters", ())
 
         test_params = object_class.get_test_params()
         if isinstance(test_params, list):
