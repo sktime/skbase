@@ -76,7 +76,7 @@ def deep_equals(x, y, return_msg=False):
         if x.dtype == "object":
             index_equal = x.index.equals(y.index)
             values_equal, values_msg = deep_equals(
-                list(x.values), list(y.values), return_msg=True
+                list(x.to_array()), list(y.to_array()), return_msg=True
             )
             if not values_equal:
                 msg = ".values" + values_msg

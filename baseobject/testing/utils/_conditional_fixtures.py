@@ -174,7 +174,7 @@ def create_conditional_fixtures_and_names(
             # retrieve kwargs corresponding to old fixture values
             fixture_name = fixture_names[j]
             if i == 0:
-                kwargs = dict()
+                kwargs = {}
             else:
                 kwargs = dict(zip(old_fixture_vars, fixture))
             # retrieve conditional fixtures, conditional on fixture values in kwargs
