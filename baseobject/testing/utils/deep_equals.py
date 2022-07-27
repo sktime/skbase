@@ -13,7 +13,6 @@ __all__ = ["deep_equals"]
 
 
 import numpy as np
-import pandas as pd
 
 
 def deep_equals(x, y, return_msg=False):
@@ -69,6 +68,50 @@ def deep_equals(x, y, return_msg=False):
 
     # we now know all types are the same
     # so now we compare values
+    if _is_pandas(x):
+        res = _pandas_equals(x, y, return_msg=return_msg)
+        if res is not None:
+            return _pandas_equals(x, y, return_msg=return_msg)
+    if isinstance(x, np.ndarray):
+        if x.dtype != y.dtype:
+            return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
+        return ret(np.array_equal(x, y, equal_nan=True), ".values")
+    # recursion through lists, tuples and dicts
+    elif isinstance(x, (list, tuple)):
+        return ret(*_tuple_equals(x, y, return_msg=True))
+    elif isinstance(x, dict):
+        return ret(*_dict_equals(x, y, return_msg=True))
+    elif type(x).__name__ == "ForecastingHorizon":
+        return ret(*_fh_equals(x, y, return_msg=True))
+    elif x != y:
+        return ret(False, f" !=, {x} != {y}")
+
+    return ret(True, "")
+
+
+def _is_pandas(x):
+
+    clstr = type(x).__name__
+    if clstr in ["DataFrame", "Series"]:
+        return True
+    if clstr.endswith("Index"):
+        return True
+    else:
+        return False
+
+
+def _pandas_equals(x, y, return_msg=False):
+
+    import pandas as pd
+
+    def ret(is_equal, msg):
+        if return_msg:
+            if is_equal:
+                msg = ""
+            return is_equal, msg
+        else:
+            return is_equal
+
     if isinstance(x, pd.Series):
         if x.dtype != y.dtype:
             return ret(False, f".dtype, x.dtype= {x.dtype} != y.dtype = {y.dtype}")
@@ -103,21 +146,6 @@ def deep_equals(x, y, return_msg=False):
             return ret(x.equals(y), f".df_equals, x = {x} != y = {y}")
     elif isinstance(x, pd.Index):
         return ret(x.equals(y), f".index_equals, x = {x} != y = {y}")
-    elif isinstance(x, np.ndarray):
-        if x.dtype != y.dtype:
-            return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
-        return ret(np.array_equal(x, y, equal_nan=True), ".values")
-    # recursion through lists, tuples and dicts
-    elif isinstance(x, (list, tuple)):
-        return ret(*_tuple_equals(x, y, return_msg=True))
-    elif isinstance(x, dict):
-        return ret(*_dict_equals(x, y, return_msg=True))
-    elif type(x).__name__ == "ForecastingHorizon":
-        return ret(*_fh_equals(x, y, return_msg=True))
-    elif x != y:
-        return ret(False, f" !=, {x} != {y}")
-
-    return ret(True, "")
 
 
 def _tuple_equals(x, y, return_msg=False):
