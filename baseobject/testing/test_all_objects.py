@@ -155,7 +155,7 @@ class BaseFixtureGenerator:
         gens = [attr for attr in dir(self) if attr.startswith("_generate_")]
         fixts = [gen.replace("_generate_", "") for gen in gens]
 
-        generator_dict = dict()
+        generator_dict = {}
         for var, gen in zip(fixts, gens):
             generator_dict[var] = getattr(self, gen)
 
@@ -292,16 +292,16 @@ class QuickTester:
         ... )
         {'test_repr[NaiveForecaster-2]': 'PASSED'}
         """
-        tests_to_run = self._check_None_str_or_list_of_str(
+        tests_to_run = self._check_none_str_or_list_of_str(
             tests_to_run, var_name="tests_to_run"
         )
-        fixtures_to_run = self._check_None_str_or_list_of_str(
+        fixtures_to_run = self._check_none_str_or_list_of_str(
             fixtures_to_run, var_name="fixtures_to_run"
         )
-        tests_to_exclude = self._check_None_str_or_list_of_str(
+        tests_to_exclude = self._check_none_str_or_list_of_str(
             tests_to_exclude, var_name="tests_to_exclude"
         )
-        fixtures_to_exclude = self._check_None_str_or_list_of_str(
+        fixtures_to_exclude = self._check_none_str_or_list_of_str(
             fixtures_to_exclude, var_name="fixtures_to_exclude"
         )
 
@@ -355,7 +355,7 @@ class QuickTester:
             )
 
         # the below loops run all the tests and collect the results here:
-        results = dict()
+        results = {}
         # loop A: we loop over all the tests
         for test_name in test_names_subset:
 
@@ -428,7 +428,7 @@ class QuickTester:
         return results
 
     @staticmethod
-    def _check_None_str_or_list_of_str(obj, var_name="obj"):
+    def _check_none_str_or_list_of_str(obj, var_name="obj"):
         """Check that obj is None, str, or list of str, and coerce to list of str."""
         if obj is not None:
             msg = f"{var_name} must be None, str, or list of str"
@@ -586,14 +586,12 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
 
     def test_object_tags(self, object_class):
         """Check conventions on object tags."""
-        object = object_class
-
-        assert hasattr(object, "get_class_tags")
-        all_tags = object.get_class_tags()
+        assert hasattr(object_class, "get_class_tags")
+        all_tags = object_class.get_class_tags()
         assert isinstance(all_tags, dict)
         assert all(isinstance(key, str) for key in all_tags.keys())
-        if hasattr(object, "_tags"):
-            tags = object._tags
+        if hasattr(object_class, "_tags"):
+            tags = object_class._tags
             msg = f"_tags must be a dict, but found {type(tags)}"
             assert isinstance(tags, dict), msg
             assert len(tags) > 0, "_tags is empty"
@@ -605,7 +603,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         # Avoid ambiguous class attributes
         ambiguous_attrs = ("tags", "tags_")
         for attr in ambiguous_attrs:
-            assert not hasattr(object, attr), (
+            assert not hasattr(object_class, attr), (
                 f"Please avoid using the {attr} attribute to disambiguate it from "
                 f"object tags."
             )
@@ -720,16 +718,16 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         """Check that the constructor has correct signature and behaves correctly."""
         assert getfullargspec(object_class.__init__).varkw is None
 
-        object = object_class.create_test_instance()
-        assert isinstance(object, object_class)
+        object_instance = object_class.create_test_instance()
+        assert isinstance(object_instance, object_class)
 
         # Ensure that each parameter is set in init
-        init_params = _get_args(type(object).__init__)
-        invalid_attr = set(init_params) - set(vars(object)) - {"self"}
+        init_params = _get_args(type(object_instance).__init__)
+        invalid_attr = set(init_params) - set(vars(object_instance)) - {"self"}
         assert not invalid_attr, (
             "object %s should store all parameters"
-            " as an attribute during init. Did not find "
-            "attributes `%s`." % (object.__class__.__name__, sorted(invalid_attr))
+            " as an attribute during init. Did not find attributes"
+            " `%s`." % (object_instance.__class__.__name__, sorted(invalid_attr))
         )
 
         # Ensure that init does nothing but set parameters
