@@ -153,10 +153,10 @@ class BaseFixtureGenerator:
             value at [variable] is a reference to _generate_[variable]
         """
         gens = [attr for attr in dir(self) if attr.startswith("_generate_")]
-        vars = [gen.replace("_generate_", "") for gen in gens]
+        fixts = [gen.replace("_generate_", "") for gen in gens]
 
         generator_dict = dict()
-        for var, gen in zip(vars, gens):
+        for var, gen in zip(fixts, gens):
             generator_dict[var] = getattr(self, gen)
 
         return generator_dict
@@ -231,7 +231,7 @@ class QuickTester:
 
     def run_tests(
         self,
-        object,
+        obj,
         return_exceptions=True,
         tests_to_run=None,
         fixtures_to_run=None,
@@ -251,7 +251,7 @@ class QuickTester:
 
         Parameters
         ----------
-        object : object class or object instance
+        obj : object class or object instance
         return_exceptions : bool, optional, default=True
             whether to return exceptions/failures, or raise them
                 if True: returns exceptions in results
@@ -317,23 +317,23 @@ class QuickTester:
         #  the remaining fixtures are generated conditionally, without change
         temp_generator_dict = deepcopy(self.generator_dict())
 
-        if isclass(object):
-            object_class = object
+        if isclass(obj):
+            object_class = obj
         else:
-            object_class = type(object)
+            object_class = type(obj)
 
         def _generate_object_class(test_name, **kwargs):
             return [object_class], [object_class.__name__]
 
         def _generate_object_instance(test_name, **kwargs):
-            return [object.clone()], [object_class.__name__]
+            return [obj.clone()], [object_class.__name__]
 
         def _generate_object_instance_cls(test_name, **kwargs):
             return object_class.create_test_instances_and_names()
 
         temp_generator_dict["object_class"] = _generate_object_class
 
-        if not isclass(object):
+        if not isclass(obj):
             temp_generator_dict["object_instance"] = _generate_object_instance
         else:
             temp_generator_dict["object_instance"] = _generate_object_instance_cls
@@ -522,12 +522,12 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
 
     def test_create_test_instance(self, object_class):
         """Check first that create_test_instance logic works."""
-        object = object_class.create_test_instance()
+        object_instance = object_class.create_test_instance()
 
         # Check that init does not construct object of other class than itself
-        assert isinstance(object, object_class), (
+        assert isinstance(object_instance, object_class), (
             "object returned by create_test_instance must be an instance of the class, "
-            f"found {type(object)}"
+            f"found {type(object_instance)}"
         )
 
     def test_create_test_instances_and_names(self, object_class):
@@ -657,10 +657,11 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
 
     def test_get_params(self, object_instance):
         """Check that get_params works correctly."""
-        object = object_instance
-        params = object.get_params()
+        params = object_instance.get_params()
         assert isinstance(params, dict)
-        _check_get_params_invariance(object.__class__.__name__, object)
+        _check_get_params_invariance(
+            object_instance.__class__.__name__, object_instance
+        )
 
     def test_set_params(self, object_instance):
         """Check that set_params works correctly."""
