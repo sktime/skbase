@@ -73,8 +73,8 @@ class BaseFixtureGenerator:
     # class variables which can be overridden by descendants
     # ------------------------------------------------------
 
-    # path to search for objects
-    path = "baseobject.mock_package"
+    # package to search for objects
+    package_name = "baseobject.mock_package"
 
     # which object types are generated; None=all, or scitype string like "forecaster"
     object_type_filter = None
@@ -141,7 +141,7 @@ class BaseFixtureGenerator:
             object_types=getattr(self, "object_type_filter", None),
             return_names=False,
             exclude_estimators=self.exclude_objects,
-            path=self.path,
+            package_name=self.package_name,
         )
 
     def generator_dict(self):
