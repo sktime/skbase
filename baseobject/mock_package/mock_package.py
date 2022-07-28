@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Mock package for testing the test class."""
 
 from copy import deepcopy
