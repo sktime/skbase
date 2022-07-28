@@ -71,6 +71,10 @@ class BaseFixtureGenerator:
     """
 
     # class variables which can be overridden by descendants
+    # ------------------------------------------------------
+
+    # path to search for objects
+    path = "baseobject.mock_package"
 
     # which object types are generated; None=all, or scitype string like "forecaster"
     object_type_filter = None
@@ -137,6 +141,7 @@ class BaseFixtureGenerator:
             object_types=getattr(self, "object_type_filter", None),
             return_names=False,
             exclude_estimators=self.exclude_objects,
+            path=self.path,
         )
 
     def generator_dict(self):
@@ -282,7 +287,7 @@ class QuickTester:
         --------
         >>> from sktime.forecasting.naive import NaiveForecaster
         >>> from sktime.tests.test_all_objects import TestAllobjects
-        >>> TestAllobjects().run_tests(
+        >>> TestAllObjects().run_tests(
         ...     NaiveForecaster,
         ...     tests_to_run="test_required_params"
         ... )
