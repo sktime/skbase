@@ -6,7 +6,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from baseobject.testing.utils._dependencies import _check_soft_dependencies
 from baseobject.testing.utils.deep_equals import deep_equals
+
 
 # examples used for comparison below
 EXAMPLES = [
@@ -16,12 +18,17 @@ EXAMPLES = [
     [([([([()])])])],
     np.array([2, 3, 4]),
     np.array([2, 4, 5]),
-    pd.DataFrame({"a": [4, 2]}),
-    pd.DataFrame({"a": [4, 3]}),
-    (np.array([1, 2, 4]), [pd.DataFrame({"a": [4, 2]})]),
-    {"foo": [42], "bar": pd.Series([1, 2])},
-    {"bar": [42], "foo": pd.Series([1, 2])},
 ]
+
+
+if _check_soft_dependencies("pandas", severity="none"):
+    EXAMPLES += [
+        pd.DataFrame({"a": [4, 2]}),
+        pd.DataFrame({"a": [4, 3]}),
+        (np.array([1, 2, 4]), [pd.DataFrame({"a": [4, 2]})]),
+        {"foo": [42], "bar": pd.Series([1, 2])},
+        {"bar": [42], "foo": pd.Series([1, 2])},
+    ]
 
 
 @pytest.mark.parametrize("fixture", EXAMPLES)
