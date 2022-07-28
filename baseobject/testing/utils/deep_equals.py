@@ -14,6 +14,8 @@ __all__ = ["deep_equals"]
 
 import numpy as np
 
+from baseobject.testing.utils._dependencies import _check_soft_dependencies
+
 
 def deep_equals(x, y, return_msg=False):
     """Test two objects for equality in value.
@@ -68,10 +70,14 @@ def deep_equals(x, y, return_msg=False):
 
     # we now know all types are the same
     # so now we compare values
-    if _is_pandas(x):
+
+    # pandas is a soft dependency, so we compare pandas objects separately
+    #   and only if pandas is installed in the environment
+    if _is_pandas(x) and _check_soft_dependencies("pandas", severity="none"):
         res = _pandas_equals(x, y, return_msg=return_msg)
         if res is not None:
             return _pandas_equals(x, y, return_msg=return_msg)
+
     if isinstance(x, np.ndarray):
         if x.dtype != y.dtype:
             return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
