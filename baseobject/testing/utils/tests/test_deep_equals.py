@@ -3,7 +3,6 @@
 from copy import deepcopy
 
 import numpy as np
-import pandas as pd
 import pytest
 
 from baseobject.testing.utils._dependencies import _check_soft_dependencies
@@ -21,6 +20,8 @@ EXAMPLES = [
 
 
 if _check_soft_dependencies("pandas", severity="none"):
+    import pandas as pd
+
     EXAMPLES += [
         pd.DataFrame({"a": [4, 2]}),
         pd.DataFrame({"a": [4, 3]}),
