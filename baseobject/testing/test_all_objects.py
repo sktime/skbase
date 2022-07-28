@@ -723,35 +723,37 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         """Check that the constructor has correct signature and behaves correctly."""
         assert getfullargspec(object_class.__init__).varkw is None
 
-        object_instance = object_class.create_test_instance()
-        assert isinstance(object_instance, object_class)
+        obj = object_class.create_test_instance()
+        assert isinstance(obj, object_class)
 
         # Ensure that each parameter is set in init
-        init_params = _get_args(type(object_instance).__init__)
-        invalid_attr = set(init_params) - set(vars(object_instance)) - {"self"}
+        init_params = _get_args(type(obj).__init__)
+        invalid_attr = set(init_params) - set(vars(obj)) - {"self"}
         assert not invalid_attr, (
-            "object %s should store all parameters"
-            " as an attribute during init. Did not find attributes"
-            " `%s`." % (object_instance.__class__.__name__, sorted(invalid_attr))
+            "Object %s should store all parameters"
+            " as an attribute during init. Did not find "
+            "attributes `%s`." % (obj.__class__.__name__, sorted(invalid_attr))
         )
 
         # Ensure that init does nothing but set parameters
         # No logic/interaction with other parameters
         def param_filter(p):
-            """Identify hyper parameters of an object."""
+            """Identify hyper parameters of an estimator."""
             return p.name != "self" and p.kind not in [p.VAR_KEYWORD, p.VAR_POSITIONAL]
 
         init_params = [
-            p for p in signature(object.__init__).parameters.values() if param_filter(p)
+            p
+            for p in signature(obj.__init__).parameters.values()
+            if param_filter(p)
         ]
 
-        params = object.get_params()
+        params = obj.get_params()
 
         # Filter out required parameters with no default value and parameters
         # set for running tests
-        required_params = getattr(object, "_required_parameters", ())
+        required_params = getattr(obj, "_required_parameters", tuple())
 
-        test_params = object_class.get_test_params()
+        test_params = obj.get_test_params()
         if isinstance(test_params, list):
             test_params = test_params[0]
         test_params = test_params.keys()
@@ -766,7 +768,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             assert param.default != param.empty, (
                 "parameter `%s` for %s has no default value and is not "
                 "included in `_required_parameters`"
-                % (param.name, object.__class__.__name__)
+                % (param.name, obj.__class__.__name__)
             )
             if type(param.default) is type:
                 assert param.default in [np.float64, np.int64]
