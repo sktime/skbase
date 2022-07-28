@@ -286,7 +286,7 @@ class QuickTester:
         Examples
         --------
         >>> from baseobject.mock_package import CompositionDummy
-        >>> from baseobject.testsing.test_all_objects import TestAllObjects
+        >>> from baseobject.testing.test_all_objects import TestAllObjects
         >>> TestAllObjects().run_tests(
         ...     CompositionDummy,
         ...     tests_to_run="test_required_params"
