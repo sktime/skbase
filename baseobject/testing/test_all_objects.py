@@ -712,7 +712,8 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
 
     def test_clone(self, object_instance):
         """Check we can call clone from scikit-learn."""
-        object_clone = object_instance.clone()
+        object_instance.clone()
+        # object_clone = object_instance.clone()
         # assert deep_equals(object_clone.get_params(), object_instance.get_params())
 
     def test_repr(self, object_instance):
