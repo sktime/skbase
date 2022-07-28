@@ -58,7 +58,7 @@ def _check_soft_dependencies(
         raise TypeError("packages must be str or tuple of str")
 
     if package_import_alias is None:
-        package_import_alias = dict()
+        package_import_alias = {}
     msg = "package_import_alias must be a dict with str keys and values"
     if not isinstance(package_import_alias, dict):
         raise TypeError(msg)
