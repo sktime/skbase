@@ -585,16 +585,13 @@ def all_objects(
     Parameters
     ----------
     object_types: class or list of classes, default=None
-
         - If class_lookup is provided, can also be str or list of str
           which kind of objects should be returned.
         - If None, no filter is applied and all estimators are returned.
         - If class or list of class, estimators are filtered to inherit from
           one of these.
         - If str or list of str, classes ca be aliased by strings, via class_lookup.
-
     return_names: bool, default=True
-
         - If True, estimator class name is included in the all_estimators()
           return in the order: name, estimator class, optional tags, either as
           a tuple or as pandas.DataFrame columns.
@@ -610,7 +607,6 @@ def all_objects(
     exclude_estimators: str or list of str, odefault=None
         Names of estimators to exclude.
     as_dataframe: bool, default=False
-
         - If False, all_estimators will return a list (either a list of
             estimators or a list of tuples, see Returns).
         - If True, all_estimators will return a pandas.DataFrame with named
