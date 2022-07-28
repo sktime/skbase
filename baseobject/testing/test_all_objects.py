@@ -742,9 +742,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             return p.name != "self" and p.kind not in [p.VAR_KEYWORD, p.VAR_POSITIONAL]
 
         init_params = [
-            p
-            for p in signature(obj.__init__).parameters.values()
-            if param_filter(p)
+            p for p in signature(obj.__init__).parameters.values() if param_filter(p)
         ]
 
         params = obj.get_params()
