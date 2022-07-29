@@ -41,7 +41,7 @@ jobs:
             miniforge-version: latest
             activate-environment: anaconda-client-env
             use-mamba: true
-      
+
       - name: Get Date
         id: get-date
         run: echo "::set-output name=today::$(/bin/date -u '+%Y%m%d')"
