@@ -28,8 +28,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  caching-example:
-    name: Caching
+  caching-environment:
+    name: caching
     runs-on: "ubuntu-latest" # FIXME: not sure what it should run on
     steps:
       - uses: actions/checkout@v2
@@ -51,14 +51,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.CONDA }}/envs
-          key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles('etc/example-environment-caching.yml') }}-${{ env.CACHE_NUMBER }}
+          key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles('etc/environment-caching.yml') }}-${{ env.CACHE_NUMBER }}
         env:
-          # Increase this value to reset cache if etc/example-environment.yml has not changed
+          # Increase this value to reset cache if etc/environment.yml has not changed
           CACHE_NUMBER: 0
         id: cache
-        
+
       - name: Update environment
-        run: mamba env update -n anaconda-client-env -f etc/example-environment-caching.yml
+        run: mamba env update -n anaconda-client-env -f etc/environment-caching.yml
         if: steps.cache.outputs.cache-hit != 'true'
 
   # Look into replacing this with pre-commit.ci
@@ -92,7 +92,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v2 # FIXME: reference cached environment here?
         name: Set up conda
         with:
           # We want to come back and add a previous step (maybe our own github action)
