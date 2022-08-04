@@ -289,9 +289,9 @@ class QuickTester:
         >>> from baseobject.testing.test_all_objects import TestAllObjects
         >>> TestAllObjects().run_tests(
         ...     CompositionDummy,
-        ...     tests_to_run="test_required_params"
+        ...     tests_to_run="test_constructor"
         ... )
-        {'test_required_params[CompositionDummy]': 'PASSED'}
+        {'test_constructor[CompositionDummy]': 'PASSED'}
         >>> TestAllObjects().run_tests(
         ...     CompositionDummy, fixtures_to_run="test_repr[CompositionDummy-1]"
         ... )
@@ -558,36 +558,6 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             "the two lists returned by create_test_instances_and_names must have "
             "equal length"
         )
-
-    def test_required_params(self, object_class):
-        """Check required parameter interface."""
-        # Check common meta-object interface
-        if hasattr(object_class, "_required_parameters"):
-            required_params = object_class._required_parameters
-
-            assert isinstance(required_params, list), (
-                f"For object: {object_class}, `_required_parameters` must be a "
-                f"tuple, but found type: {type(required_params)}"
-            )
-
-            assert all([isinstance(param, str) for param in required_params]), (
-                f"For object: {object_class}, elements of `_required_parameters` "
-                f"list must be strings"
-            )
-
-            # check if needless parameters are in _required_parameters
-            init_params = [
-                par.name for par in signature(object.__init__).parameters.values()
-            ]
-            in_required_but_not_init = [
-                param for param in required_params if param not in init_params
-            ]
-            if len(in_required_but_not_init) > 0:
-                raise ValueError(
-                    f"Found parameters in `_required_parameters` which "
-                    f"are not in `__init__`: "
-                    f"{in_required_but_not_init}"
-                )
 
     def test_object_tags(self, object_class):
         """Check conventions on object tags."""
