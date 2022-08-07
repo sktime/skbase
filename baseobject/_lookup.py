@@ -744,9 +744,7 @@ def all_objects(
             "ignore", category=UserWarning, message=".*has been moved to.*"
         )
         prefix = f"{package_name}."
-        for module_name in _walk(
-            root=root, exclude=modules_to_ignore, prefix=prefix
-        ):
+        for module_name in _walk(root=root, exclude=modules_to_ignore, prefix=prefix):
             # Filter modules
             if _is_private_module(module_name):
                 continue
