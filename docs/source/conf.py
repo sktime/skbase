@@ -50,7 +50,7 @@ extensions = [
     "sphinx.ext.linkcode",  # link to GitHub source code via linkcode_resolve()
     "nbsphinx",  # integrates example notebooks
     "sphinx_gallery.load_style",
-    # "myst_parser",
+    "myst_parser",
     "sphinx_panels",
     "sphinx_issues",
 ]
@@ -135,7 +135,7 @@ def linkcode_resolve(domain, info):
         import os
 
         fn = inspect.getsourcefile(obj)
-        fn = os.path.relpath(fn, start=os.path.dirname(sktime.__file__))
+        fn = os.path.relpath(fn, start=os.path.dirname(baseobject.__file__))
         source, lineno = inspect.getsourcelines(obj)
         return fn, lineno, lineno + len(source) - 1
 
@@ -224,16 +224,16 @@ htmlhelp_basename = "baseobjectdoc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
-latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    # 'papersize': 'letterpaper',
-    # The font size ('10pt', '11pt' or '12pt').
-    # 'pointsize': '10pt',
-    # Additional stuff for the LaTeX preamble.
-    # 'preamble': '',
-    # Latex figure (float) alignment
-    # 'figure_align': 'htbp',
-}
+# latex_elements = {
+# The paper size ('letterpaper' or 'a4paper').
+# 'papersize': 'letterpaper',
+# The font size ('10pt', '11pt' or '12pt').
+# 'pointsize': '10pt',
+# Additional stuff for the LaTeX preamble.
+# 'preamble': '',
+# Latex figure (float) alignment
+# 'figure_align': 'htbp',
+# }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,

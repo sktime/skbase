@@ -1,9 +1,3 @@
-.. _changelog:
+.. _top_level_changelog:
 
-=========
-Changelog
-=========
-
-.. note::
-
-   This page is actively under development.
+.. include:: user_documentation/changelog.rst

@@ -1,5 +1,6 @@
 .. _home:
 
+=====================
 Welcome to baseobject
 =====================
 
@@ -74,23 +75,9 @@ From here, you can navigate to:
 
     +++
 
-    .. link-button:: get_involved
+    .. link-button:: contribute
             :type: ref
             :text: Get Involved
-            :classes: btn-block btn-secondary stretched-link
-
-    ---
-
-    Developers
-    ^^^^^^^^^^
-
-    Information for developers.
-
-    +++
-
-    .. link-button:: developers
-            :type: ref
-            :text: Developers
             :classes: btn-block btn-secondary stretched-link
 
     ---
@@ -105,4 +92,18 @@ From here, you can navigate to:
     .. link-button:: about
             :type: ref
             :text: Learn More
+            :classes: btn-block btn-secondary stretched-link
+
+    ---
+
+    Changelog
+    ^^^^^^^^^
+
+    See how the package has changed.
+
+    +++
+
+    .. link-button:: changelog
+            :type: ref
+            :text: Changelog
             :classes: btn-block btn-secondary stretched-link
