@@ -39,8 +39,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+all_extras = ["pandas"]
+
 dev = [
     "pre-commit",
+    "pytest",
+    "pytest-cov"
 ]
 
 linters = [
@@ -64,6 +68,7 @@ binder = ["jupyter"]
 
 docs = [
     "jupyter",
+    "myst-parser",
     "nbsphinx>=0.8.6",
     "numpydoc",
     "pydata-sphinx-theme",
