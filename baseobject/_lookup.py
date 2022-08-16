@@ -137,28 +137,6 @@ def _is_ignored_module(
     return is_ignored
 
 
-def _is_abstract(klass: type) -> bool:
-    """Determine if a class is an abstract class.
-
-    Parameters
-    ----------
-    klass : object
-        Class to check.
-
-    Returns
-    -------
-    is_abstract : bool
-        Whether the input class is an abstract class or not.
-    """
-    # Simplify check by starting as an abstract class
-    is_abstract = True
-    if not (hasattr(klass, "__abstractmethods__")):
-        is_abstract = False
-    elif not len(klass.__abstractmethods__):
-        is_abstract = False
-    return is_abstract
-
-
 def _filter_by_class(
     klass: type, class_filter: Optional[Union[type, Sequence[type]]] = None
 ) -> bool:
@@ -238,6 +216,36 @@ def _filter_by_tags(
         )
 
     return has_tag
+
+
+def _walk(root, exclude=None, prefix=""):
+    """Recursively return all modules and sub-modules as list of strings.
+
+    Unlike pkgutil.walk_packages, does not import modules on exclusion list.
+
+    Parameters
+    ----------
+    root : Path
+        Root path in which to look for submodules
+    exclude : tuple of str or None, optional, default = None
+        List of sub-modules to ignore in the return, including sub-modules
+    prefix: str, optional, default = ""
+        This str is pre-appended to all strings in the return
+
+    Yields
+    ------
+    str : sub-module strings
+        Iterates over all sub-modules of root that do not contain any of the
+        strings on the `exclude` list string is prefixed by the string `prefix`
+    """
+    for loader, module_name, is_pkg in pkgutil.iter_modules(path=[root]):
+        if not _is_ignored_module(module_name, modules_to_ignore=exclude):
+            yield f"{prefix}{module_name}", is_pkg, loader
+            if is_pkg:
+                yield from (
+                    (f"{prefix}{module_name}.{x[0]}", x[1], x[2])
+                    for x in _walk(f"{root}/{module_name}", exclude=exclude)
+                )
 
 
 def _import_module(
@@ -363,6 +371,8 @@ def _get_module_info(
     path: str,
     package_base_classes: Union[type, Tuple[type, ...]],
     exclude_non_public_items: bool = True,
+    class_filter: Optional[Union[type, Sequence[type]]] = None,
+    tag_filter: Optional[Union[str, Sequence[str], Mapping[str, Any]]] = None,
 ) -> ModuleInfo:
     # Make package_base_classes a tuple if it was supplied as a class
     base_classes_none = False
@@ -380,7 +390,11 @@ def _get_module_info(
     module_classes: MutableMapping[str, ClassInfo] = {}
     for name, klass in inspect.getmembers(module, inspect.isclass):
         # Skip a class if non-public items should be excluded and it starts with "_"
-        if exclude_non_public_items and klass.__name__.startswith("_"):
+        if (
+            (exclude_non_public_items and klass.__name__.startswith("_"))
+            or not _filter_by_tags(klass, tag_filter=tag_filter)
+            or not _filter_by_class(klass, class_filter=class_filter)
+        ):
             continue
         # Otherwise, store info about the class
         if klass.__module__ == module.__name__ or name in designed_imports:
@@ -454,6 +468,8 @@ def package_metadata(
     exclude_nonpublic_modules: bool = True,
     modules_to_ignore: Union[List[str], Tuple[str]] = ("tests",),
     package_base_classes: Union[type, Tuple[type, ...]] = (BaseObject,),
+    class_filter: Optional[Union[type, Sequence[type]]] = None,
+    tag_filter: Optional[Union[str, Sequence[str], Mapping[str, Any]]] = None,
     suppress_import_stdout: bool = True,
 ) -> Mapping[str, ModuleInfo]:
     """Return a dictionary mapping all package modules to their metadata.
@@ -491,6 +507,10 @@ def package_metadata(
     package_base_classes: type or Sequence[type], default = (BaseObject,)
         The base classes used to determine if any classes found in metadata descend
         from a base class.
+    class_filter : objects or iterable of objects
+        Classes that `klass` is checked against.
+    tag_filter : str, iterable of str or dict
+        Filter used to determine if `klass` has tag or expected tag values.
 
     Other Parameters
     ----------------
@@ -514,6 +534,8 @@ def package_metadata(
         path,
         package_base_classes,
         exclude_non_public_items=exclude_non_public_items,
+        class_filter=class_filter,
+        tag_filter=tag_filter,
     )
 
     # Now walk through any submodules
@@ -524,11 +546,9 @@ def package_metadata(
         warnings.filterwarnings(
             "ignore", category=UserWarning, message=".*has been moved to.*"
         )
-        for _, name, is_pkg in pkgutil.walk_packages(path=[path], prefix=prefix):
+        for name, is_pkg, _ in _walk(path, exclude=modules_to_ignore, prefix=prefix):
             # Used to skip-over ignored modules and non-public modules
-            if _is_ignored_module(name, modules_to_ignore=modules_to_ignore) or (
-                exclude_nonpublic_modules and _is_non_public_module(name)
-            ):
+            if exclude_nonpublic_modules and _is_non_public_module(name):
                 continue
 
             try:
@@ -541,6 +561,8 @@ def package_metadata(
                     path,
                     package_base_classes,
                     exclude_non_public_items=exclude_non_public_items,
+                    class_filter=class_filter,
+                    tag_filter=tag_filter,
                 )
             except ImportError:
                 continue
@@ -687,9 +709,6 @@ def all_objects(
     #         return False
     #     return True
 
-    def _is_private_module(module):
-        return "._" in module
-
     def _is_base_class(name):
         return name.startswith("_") or name.startswith("Base")
 
@@ -698,45 +717,7 @@ def all_objects(
         # not an abstract class
         return issubclass(klass, BaseObject) and not _is_base_class(name)
 
-    def _walk(root, exclude=None, prefix=""):
-        """Return all modules contained as sub-modules (recursive) as string list.
-
-        Unlike pkgutil.walk_packages, does not import modules on exclusion list.
-
-        Parameters
-        ----------
-        root : Path
-            root path in which to look for submodules
-        exclude : tuple of str or None, optional, default = None
-            list of sub-modules to ignore in the return, including sub-modules
-        prefix: str, optional, default = ""
-            this str is appended to all strings in the return
-
-        Yields
-        ------
-        str : sub-module strings
-            iterates over all sub-modules of root
-            that do not contain any of the strings on the `exclude` list
-            string is prefixed by the string `prefix`
-        """
-
-        def _is_ignored_module(module):
-            if exclude is None:
-                return False
-            module_parts = module.split(".")
-            return any(part in exclude for part in module_parts)
-
-        for _, module_name, is_pgk in pkgutil.iter_modules(path=[root]):
-            if not _is_ignored_module(module_name):
-                yield f"{prefix}{module_name}"
-                if is_pgk:
-                    yield from (
-                        f"{prefix}{module_name}.{x}"
-                        for x in _walk(f"{root}/{module_name}", exclude=exclude)
-                    )
-
-    # Ignore deprecation warnings triggered at import time and from walking
-    # packages
+    # Ignore deprecation warnings triggered at import time and from walking packages
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=FutureWarning)
         warnings.simplefilter("module", category=ImportWarning)
@@ -744,9 +725,11 @@ def all_objects(
             "ignore", category=UserWarning, message=".*has been moved to.*"
         )
         prefix = f"{package_name}."
-        for module_name in _walk(root=root, exclude=modules_to_ignore, prefix=prefix):
+        for module_name, _, _ in _walk(
+            root=root, exclude=modules_to_ignore, prefix=prefix
+        ):
             # Filter modules
-            if _is_private_module(module_name):
+            if _is_non_public_module(module_name):
                 continue
 
             try:
@@ -772,7 +755,7 @@ def all_objects(
                 warnings.warn(str(e), ImportWarning)
 
     # Drop duplicates
-    all_estimators = set(all_estimators)
+    all_estimators = list(set(all_estimators))
 
     # Filter based on given estimator types
     def _is_in_estimator_types(estimator, estimator_types):
