@@ -564,7 +564,7 @@ def package_metadata(
 
 
 def all_objects(
-    estimator_types=None,
+    object_types=None,
     filter_tags=None,
     exclude_estimators=None,
     return_names=True,
@@ -584,17 +584,14 @@ def all_objects(
 
     Parameters
     ----------
-    estimator_types: class or list of classes, default=None
-
+    object_types: class or list of classes, default=None
         - If class_lookup is provided, can also be str or list of str
           which kind of objects should be returned.
         - If None, no filter is applied and all estimators are returned.
         - If class or list of class, estimators are filtered to inherit from
           one of these.
         - If str or list of str, classes ca be aliased by strings, via class_lookup.
-
     return_names: bool, default=True
-
         - If True, estimator class name is included in the all_estimators()
           return in the order: name, estimator class, optional tags, either as
           a tuple or as pandas.DataFrame columns.
@@ -610,7 +607,6 @@ def all_objects(
     exclude_estimators: str or list of str, odefault=None
         Names of estimators to exclude.
     as_dataframe: bool, default=False
-
         - If False, all_estimators will return a list (either a list of
             estimators or a list of tuples, see Returns).
         - If True, all_estimators will return a pandas.DataFrame with named
@@ -632,7 +628,7 @@ def all_objects(
     ignore_modules : str or lits of str, optional. Default=empty list
         list of module names to ignore in search.
     class_lookup : dict[str, class], default=None
-        Dictionary of aliases for classes used in estimator_types.
+        Dictionary of aliases for classes used in object_types.
 
     Other Parameters
     ----------------
@@ -742,17 +738,17 @@ def all_objects(
     all_estimators = set(all_estimators)
 
     # Filter based on given estimator types
-    def _is_in_estimator_types(estimator, estimator_types):
+    def _is_in_object_types(estimator, object_types):
         return any(
-            inspect.isclass(x) and isinstance(estimator, x) for x in estimator_types
+            inspect.isclass(x) and isinstance(estimator, x) for x in object_types
         )
 
-    if estimator_types:
-        estimator_types = _check_estimator_types(estimator_types, class_lookup)
+    if object_types:
+        object_types = _check_object_types(object_types, class_lookup)
         all_estimators = [
             (name, estimator)
             for name, estimator in all_estimators
-            if _is_in_estimator_types(estimator, estimator_types)
+            if _is_in_object_types(estimator, object_types)
         ]
 
     # Filter based on given exclude list
@@ -938,29 +934,29 @@ def _check_tag_cond(estimator, filter_tags=None, as_dataframe=True):
     return cond_sat
 
 
-def _check_estimator_types(estimator_types, class_lookup=None):
+def _check_object_types(object_types, class_lookup=None):
     """Return list of classes corresponding to type strings.
 
     Parameters
     ----------
-    estimator_types : str, class, or list of string or class
+    object_types : str, class, or list of string or class
     class_lookup : dict[string, class], default=None
 
     Returns
     -------
     list of class, i-th element is:
-        class_lookup[estimator_types[i]] if estimator_types[i] was a string
-        estimator_types[i] otherwise
-    if class_lookup is none, only checks whether estimator_types is class or list of.
+        class_lookup[object_types[i]] if object_types[i] was a string
+        object_types[i] otherwise
+    if class_lookup is none, only checks whether object_types is class or list of.
 
     Raises
     ------
-    ValueError if estimator_types is not of the expected type.
+    ValueError if object_types is not of the expected type.
     """
-    estimator_types = deepcopy(estimator_types)
+    object_types = deepcopy(object_types)
 
-    if not isinstance(estimator_types, list):
-        estimator_types = [estimator_types]  # make iterable
+    if not isinstance(object_types, list):
+        object_types = [object_types]  # make iterable
 
     def _get_err_msg(estimator_type):
         if class_lookup is None:
@@ -976,19 +972,19 @@ def _check_estimator_types(estimator_types, class_lookup=None):
                 f"{repr(estimator_type)}"
             )
 
-    for i, estimator_type in enumerate(estimator_types):
+    for i, estimator_type in enumerate(object_types):
         if not isinstance(estimator_type, (type, str)):
             raise ValueError(_get_err_msg(estimator_type))
         if isinstance(estimator_type, str):
             if estimator_type not in class_lookup.keys():
                 raise ValueError(_get_err_msg(estimator_type))
             estimator_type = class_lookup[estimator_type]
-            estimator_types[i] = estimator_type
+            object_types[i] = estimator_type
         elif isinstance(estimator_type, type):
             pass
         else:
             raise ValueError(_get_err_msg(estimator_type))
-    return estimator_types
+    return object_types
 
 
 def _make_dataframe(all_objects, columns):

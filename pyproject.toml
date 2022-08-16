@@ -130,4 +130,4 @@ ignore = ["D004"]
 ignore_path = ["docs/_build"]
 
 [tool.bandit]
-exclude_dirs = ["*/tests/*"]
+exclude_dirs = ["*/tests/*", "*/testing/*"]
