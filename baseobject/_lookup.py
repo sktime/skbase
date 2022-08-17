@@ -46,7 +46,7 @@ if sys.version_info >= (3, 8):
 else:
     from typing_extensions import TypedDict
 
-__all__: List[str] = ["all_objects", "package_metadata"]
+__all__: List[str] = ["all_objects", "gather_package_metadata"]
 __author__: List[str] = [
     "fkiraly",
     "mloning",
@@ -449,7 +449,9 @@ def _get_module_info(
         "__all__": designed_imports,
         "authors": authors,
         "is_package": is_pkg,
-        "contains_concrete_class_implementations": False,
+        "contains_concrete_class_implementations": any(
+            v["is_concrete_implementation"] for v in module_classes.values()
+        ),
         "contains_base_classes": any(
             v["is_base_class"] for v in module_classes.values()
         ),
@@ -460,7 +462,7 @@ def _get_module_info(
     return module_info
 
 
-def package_metadata(
+def gather_package_metadata(
     package_name: str,
     path: Optional[str] = None,
     recursive: bool = True,
@@ -520,8 +522,26 @@ def package_metadata(
     Returns
     -------
     module_info: dict
-        Dictionary mapping string submodule name (key) to a dictionary of the
-        submodules metadata.
+        Mapping of string module name (key) to a dictionary of the
+        module's metadata. The metadata dictionary includes the
+        following key:value pairs:
+
+        - "path": str path to the submodule.
+        - "name": str name of hte submodule.
+        - "classes": dictionary with submodule's class names (keys) mapped to
+          dictionaries with metadata about the class.
+        - "functions": dictionary with function names (keys) mapped to
+          dictionary with metadata about each function.
+        - "__all__": list of string code artifact names that appear in the
+          submodules __all__ attribute
+        - "authors": contents of the submodules __authors__ attribute
+        - "is_package": whether the submodule is a Python package
+        - "contains_concrete_class_implementations": whether any module classes
+          inherit from ``BaseObject`` and are not `package_base_classes`.
+        - "contains_base_classes": whether any module classes that are
+          `package_base_classes`.
+        - "contains_base_objects": whether any module classes that
+          inherit from ``BaseObject``.
     """
     module, path, loader = _determine_module_path(package_name, path)
     module_info: MutableMapping[str, ModuleInfo] = {}
@@ -571,7 +591,7 @@ def package_metadata(
                 name_ending: str = name.split(".")[1] if "." in name else name
                 updated_path: str = "\\".join([path, name_ending])
                 module_info.update(
-                    package_metadata(
+                    gather_package_metadata(
                         package_name=name,
                         path=updated_path,
                         recursive=recursive,
@@ -579,6 +599,9 @@ def package_metadata(
                         exclude_nonpublic_modules=exclude_nonpublic_modules,
                         modules_to_ignore=modules_to_ignore,
                         package_base_classes=package_base_classes,
+                        class_filter=class_filter,
+                        tag_filter=tag_filter,
+                        suppress_import_stdout=suppress_import_stdout,
                     )
                 )
 
