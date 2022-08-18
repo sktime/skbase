@@ -257,7 +257,7 @@ numpydoc_show_class_members = True
 # see https://github.com/numpy/numpydoc/issues/69
 numpydoc_class_members_toctree = False
 
-numpydoc_validation_checks = {"all"}
+numpydoc_validation_checks = {"all", "GL01", "SA01", "EX01"}
 
 # -- Options for nbsphinx extension ------------------------------------------
 nbsphinx_execute = "never"  # always  # whether to run notebooks

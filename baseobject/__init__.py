@@ -1,8 +1,7 @@
 #!/usr/bin/env python3 -u
 # -*- coding: utf-8 -*-
 # copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
-
-"""BaseObject."""
+""":mod:`baseobject` contains classes with scikit-learn and sktime design principles."""
 
 __version__ = "0.1.0"
 
