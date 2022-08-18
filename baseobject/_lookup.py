@@ -46,7 +46,7 @@ if sys.version_info >= (3, 8):
 else:
     from typing_extensions import TypedDict
 
-__all__: List[str] = ["all_objects", "gather_package_metadata"]
+__all__: List[str] = ["all_objects", "get_package_metadata"]
 __author__: List[str] = [
     "fkiraly",
     "mloning",
@@ -462,7 +462,7 @@ def _get_module_info(
     return module_info
 
 
-def gather_package_metadata(
+def get_package_metadata(
     package_name: str,
     path: Optional[str] = None,
     recursive: bool = True,
@@ -591,7 +591,7 @@ def gather_package_metadata(
                 name_ending: str = name.split(".")[1] if "." in name else name
                 updated_path: str = "\\".join([path, name_ending])
                 module_info.update(
-                    gather_package_metadata(
+                    get_package_metadata(
                         package_name=name,
                         path=updated_path,
                         recursive=recursive,
