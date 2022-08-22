@@ -29,7 +29,7 @@ Base classes
 .. currentmodule:: baseobject
 
 .. autosummary::
-    :toctree: auto_generated/
+    :toctree: api_reference/auto_generated/
     :template: class.rst
 
     BaseObject

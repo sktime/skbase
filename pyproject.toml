@@ -127,7 +127,7 @@ omit = ["*/setup.py", "tests/*"]
 [tool.doc8]
 max-line-length = 88
 ignore = ["D004"]
-ignore_path = ["docs/_build", "docs/source/auto_generated"]
+ignore_path = ["docs/_build", "docs/source/api_reference/auto_generated"]
 
 [tool.bandit]
 exclude_dirs = ["*/tests/*", "*/testing/*"]

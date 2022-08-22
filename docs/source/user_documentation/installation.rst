@@ -10,7 +10,7 @@ Installation
 * operating systems Mac OS X, Unix-like OS, Windows 8.1 and higher
 
 Checkout the full list of pre-compiled wheels on
-`PyPI <https://pypi.org/simple/sktime/>`_.
+`PyPI <https://pypi.org/simple/baseobject/>`_.
 
 Release versions
 ================
@@ -56,6 +56,8 @@ but attempt to use functionality that requires soft dependencies to be installed
 To resolve this, install the missing package, or install ``baseobject``
 with maximum dependencies (see above).
 
+.. _dev_install:
+
 Development versions
 ====================
 
@@ -79,7 +81,7 @@ To install the latest version using the ``git`` command line, use the following 
 1. Use your command line tool to navigate to the directory where you want to clone
    ``baseobject``
 2. Clone the repository: :code:`git clone https://github.com/sktime/baseobject.git`
-3. Move into the package's root directory of the local clone: :code:`cd baseobject`
+3. Move into the root directory of the package's local clone: :code:`cd baseobject`
 4. Make sure you are on the main branch: :code:`git checkout main`
 5. Make sure your local version is up-to-date: :code:`git pull`
 
@@ -88,7 +90,7 @@ See Github's `documentation <github_docs>`_ for additional details.
 .. hint::
 
     If you want to checkout an earlier version of ``baseobject`` you can use the
-    following git command line after cloning: :code: git checkout <VERSION>
+    following git command line after cloning to run: :code:`git checkout <VERSION>`
 
     Where ``<VERSION>`` is a valid version string that can be found by inspecting the
     repository's ``git`` tags, by running ``git tag``.
@@ -127,11 +129,11 @@ are also installed.
 
     By including "[dev]" above, ``pre-commit`` and other tools you'll want to use
     when developing ``baseobject`` are also installed. In most cases, you'll
-    let ``pre-commit`` for linting your code locally. However, some integrated
-    development environments (for example, VS Code) will automatically apply
-    linters (including reformatting) on save. If you want to easily Install
-    all the linters in your environment use
-    :code: pip install --editable .[dev,linters]
+    let ``pre-commit`` manage installation environments for your linting tools.
+    However, some integrated development environments (for example, VS Code)
+    will automatically apply linters (including reformatting) on save. If you want
+    to easily Install all the linters in your environment use
+    :code:`pip install --editable .[dev,linters]`.
 
 Building binary packages and installers
 =======================================

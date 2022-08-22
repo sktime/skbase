@@ -4,8 +4,8 @@ Development
 
 .. note::
 
-    If you are new to ``baseobject`` you may want to see how you can
-    :ref:`get involved <contrib_guide>`.
+    If you are new to ``baseobject`` you may want to see how you can get
+    started :ref:`contributing <contribute>`.
 
 .. toctree::
    :maxdepth: 1
