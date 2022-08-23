@@ -46,7 +46,7 @@ if sys.version_info >= (3, 8):
 else:
     from typing_extensions import TypedDict
 
-__all__: List[str] = ["all_objects", "package_metadata"]
+__all__: List[str] = ["all_objects", "get_package_metadata"]
 __author__: List[str] = [
     "fkiraly",
     "mloning",
@@ -137,28 +137,6 @@ def _is_ignored_module(
     return is_ignored
 
 
-def _is_abstract(klass: type) -> bool:
-    """Determine if a class is an abstract class.
-
-    Parameters
-    ----------
-    klass : object
-        Class to check.
-
-    Returns
-    -------
-    is_abstract : bool
-        Whether the input class is an abstract class or not.
-    """
-    # Simplify check by starting as an abstract class
-    is_abstract = True
-    if not (hasattr(klass, "__abstractmethods__")):
-        is_abstract = False
-    elif not len(klass.__abstractmethods__):
-        is_abstract = False
-    return is_abstract
-
-
 def _filter_by_class(
     klass: type, class_filter: Optional[Union[type, Sequence[type]]] = None
 ) -> bool:
@@ -238,6 +216,36 @@ def _filter_by_tags(
         )
 
     return has_tag
+
+
+def _walk(root, exclude=None, prefix=""):
+    """Recursively return all modules and sub-modules as list of strings.
+
+    Unlike pkgutil.walk_packages, does not import modules on exclusion list.
+
+    Parameters
+    ----------
+    root : Path
+        Root path in which to look for submodules
+    exclude : tuple of str or None, optional, default = None
+        List of sub-modules to ignore in the return, including sub-modules
+    prefix: str, optional, default = ""
+        This str is pre-appended to all strings in the return
+
+    Yields
+    ------
+    str : sub-module strings
+        Iterates over all sub-modules of root that do not contain any of the
+        strings on the `exclude` list string is prefixed by the string `prefix`
+    """
+    for loader, module_name, is_pkg in pkgutil.iter_modules(path=[root]):
+        if not _is_ignored_module(module_name, modules_to_ignore=exclude):
+            yield f"{prefix}{module_name}", is_pkg, loader
+            if is_pkg:
+                yield from (
+                    (f"{prefix}{module_name}.{x[0]}", x[1], x[2])
+                    for x in _walk(f"{root}/{module_name}", exclude=exclude)
+                )
 
 
 def _import_module(
@@ -363,6 +371,8 @@ def _get_module_info(
     path: str,
     package_base_classes: Union[type, Tuple[type, ...]],
     exclude_non_public_items: bool = True,
+    class_filter: Optional[Union[type, Sequence[type]]] = None,
+    tag_filter: Optional[Union[str, Sequence[str], Mapping[str, Any]]] = None,
 ) -> ModuleInfo:
     # Make package_base_classes a tuple if it was supplied as a class
     base_classes_none = False
@@ -380,7 +390,11 @@ def _get_module_info(
     module_classes: MutableMapping[str, ClassInfo] = {}
     for name, klass in inspect.getmembers(module, inspect.isclass):
         # Skip a class if non-public items should be excluded and it starts with "_"
-        if exclude_non_public_items and klass.__name__.startswith("_"):
+        if (
+            (exclude_non_public_items and klass.__name__.startswith("_"))
+            or not _filter_by_tags(klass, tag_filter=tag_filter)
+            or not _filter_by_class(klass, class_filter=class_filter)
+        ):
             continue
         # Otherwise, store info about the class
         if klass.__module__ == module.__name__ or name in designed_imports:
@@ -435,7 +449,9 @@ def _get_module_info(
         "__all__": designed_imports,
         "authors": authors,
         "is_package": is_pkg,
-        "contains_concrete_class_implementations": False,
+        "contains_concrete_class_implementations": any(
+            v["is_concrete_implementation"] for v in module_classes.values()
+        ),
         "contains_base_classes": any(
             v["is_base_class"] for v in module_classes.values()
         ),
@@ -446,7 +462,7 @@ def _get_module_info(
     return module_info
 
 
-def package_metadata(
+def get_package_metadata(
     package_name: str,
     path: Optional[str] = None,
     recursive: bool = True,
@@ -454,6 +470,8 @@ def package_metadata(
     exclude_nonpublic_modules: bool = True,
     modules_to_ignore: Union[List[str], Tuple[str]] = ("tests",),
     package_base_classes: Union[type, Tuple[type, ...]] = (BaseObject,),
+    class_filter: Optional[Union[type, Sequence[type]]] = None,
+    tag_filter: Optional[Union[str, Sequence[str], Mapping[str, Any]]] = None,
     suppress_import_stdout: bool = True,
 ) -> Mapping[str, ModuleInfo]:
     """Return a dictionary mapping all package modules to their metadata.
@@ -491,6 +509,10 @@ def package_metadata(
     package_base_classes: type or Sequence[type], default = (BaseObject,)
         The base classes used to determine if any classes found in metadata descend
         from a base class.
+    class_filter : objects or iterable of objects
+        Classes that `klass` is checked against.
+    tag_filter : str, iterable of str or dict
+        Filter used to determine if `klass` has tag or expected tag values.
 
     Other Parameters
     ----------------
@@ -500,8 +522,26 @@ def package_metadata(
     Returns
     -------
     module_info: dict
-        Dictionary mapping string submodule name (key) to a dictionary of the
-        submodules metadata.
+        Mapping of string module name (key) to a dictionary of the
+        module's metadata. The metadata dictionary includes the
+        following key:value pairs:
+
+        - "path": str path to the submodule.
+        - "name": str name of hte submodule.
+        - "classes": dictionary with submodule's class names (keys) mapped to
+          dictionaries with metadata about the class.
+        - "functions": dictionary with function names (keys) mapped to
+          dictionary with metadata about each function.
+        - "__all__": list of string code artifact names that appear in the
+          submodules __all__ attribute
+        - "authors": contents of the submodules __authors__ attribute
+        - "is_package": whether the submodule is a Python package
+        - "contains_concrete_class_implementations": whether any module classes
+          inherit from ``BaseObject`` and are not `package_base_classes`.
+        - "contains_base_classes": whether any module classes that are
+          `package_base_classes`.
+        - "contains_base_objects": whether any module classes that
+          inherit from ``BaseObject``.
     """
     module, path, loader = _determine_module_path(package_name, path)
     module_info: MutableMapping[str, ModuleInfo] = {}
@@ -514,6 +554,8 @@ def package_metadata(
         path,
         package_base_classes,
         exclude_non_public_items=exclude_non_public_items,
+        class_filter=class_filter,
+        tag_filter=tag_filter,
     )
 
     # Now walk through any submodules
@@ -524,11 +566,9 @@ def package_metadata(
         warnings.filterwarnings(
             "ignore", category=UserWarning, message=".*has been moved to.*"
         )
-        for _, name, is_pkg in pkgutil.walk_packages(path=[path], prefix=prefix):
+        for name, is_pkg, _ in _walk(path, exclude=modules_to_ignore, prefix=prefix):
             # Used to skip-over ignored modules and non-public modules
-            if _is_ignored_module(name, modules_to_ignore=modules_to_ignore) or (
-                exclude_nonpublic_modules and _is_non_public_module(name)
-            ):
+            if exclude_nonpublic_modules and _is_non_public_module(name):
                 continue
 
             try:
@@ -541,6 +581,8 @@ def package_metadata(
                     path,
                     package_base_classes,
                     exclude_non_public_items=exclude_non_public_items,
+                    class_filter=class_filter,
+                    tag_filter=tag_filter,
                 )
             except ImportError:
                 continue
@@ -549,7 +591,7 @@ def package_metadata(
                 name_ending: str = name.split(".")[1] if "." in name else name
                 updated_path: str = "\\".join([path, name_ending])
                 module_info.update(
-                    package_metadata(
+                    get_package_metadata(
                         package_name=name,
                         path=updated_path,
                         recursive=recursive,
@@ -557,6 +599,9 @@ def package_metadata(
                         exclude_nonpublic_modules=exclude_nonpublic_modules,
                         modules_to_ignore=modules_to_ignore,
                         package_base_classes=package_base_classes,
+                        class_filter=class_filter,
+                        tag_filter=tag_filter,
+                        suppress_import_stdout=suppress_import_stdout,
                     )
                 )
 
@@ -564,7 +609,7 @@ def package_metadata(
 
 
 def all_objects(
-    estimator_types=None,
+    object_types=None,
     filter_tags=None,
     exclude_estimators=None,
     return_names=True,
@@ -584,17 +629,14 @@ def all_objects(
 
     Parameters
     ----------
-    estimator_types: class or list of classes, default=None
-
+    object_types: class or list of classes, default=None
         - If class_lookup is provided, can also be str or list of str
           which kind of objects should be returned.
         - If None, no filter is applied and all estimators are returned.
         - If class or list of class, estimators are filtered to inherit from
           one of these.
         - If str or list of str, classes ca be aliased by strings, via class_lookup.
-
     return_names: bool, default=True
-
         - If True, estimator class name is included in the all_estimators()
           return in the order: name, estimator class, optional tags, either as
           a tuple or as pandas.DataFrame columns.
@@ -610,7 +652,6 @@ def all_objects(
     exclude_estimators: str or list of str, odefault=None
         Names of estimators to exclude.
     as_dataframe: bool, default=False
-
         - If False, all_estimators will return a list (either a list of
             estimators or a list of tuples, see Returns).
         - If True, all_estimators will return a pandas.DataFrame with named
@@ -632,7 +673,7 @@ def all_objects(
     ignore_modules : str or lits of str, optional. Default=empty list
         list of module names to ignore in search.
     class_lookup : dict[str, class], default=None
-        Dictionary of aliases for classes used in estimator_types.
+        Dictionary of aliases for classes used in object_types.
 
     Other Parameters
     ----------------
@@ -687,13 +728,6 @@ def all_objects(
     #         return False
     #     return True
 
-    def _is_private_module(module):
-        return "._" in module
-
-    def _is_ignored_module(module):
-        module_parts = module.split(".")
-        return any(part in modules_to_ignore for part in module_parts)
-
     def _is_base_class(name):
         return name.startswith("_") or name.startswith("Base")
 
@@ -702,8 +736,7 @@ def all_objects(
         # not an abstract class
         return issubclass(klass, BaseObject) and not _is_base_class(name)
 
-    # Ignore deprecation warnings triggered at import time and from walking
-    # packages
+    # Ignore deprecation warnings triggered at import time and from walking packages
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=FutureWarning)
         warnings.simplefilter("module", category=ImportWarning)
@@ -711,9 +744,11 @@ def all_objects(
             "ignore", category=UserWarning, message=".*has been moved to.*"
         )
         prefix = f"{package_name}."
-        for _, module_name, _ in pkgutil.walk_packages(path=[root], prefix=prefix):
+        for module_name, _, _ in _walk(
+            root=root, exclude=modules_to_ignore, prefix=prefix
+        ):
             # Filter modules
-            if _is_ignored_module(module_name) or _is_private_module(module_name):
+            if _is_non_public_module(module_name):
                 continue
 
             try:
@@ -739,20 +774,20 @@ def all_objects(
                 warnings.warn(str(e), ImportWarning)
 
     # Drop duplicates
-    all_estimators = set(all_estimators)
+    all_estimators = list(set(all_estimators))
 
     # Filter based on given estimator types
-    def _is_in_estimator_types(estimator, estimator_types):
+    def _is_in_object_types(estimator, object_types):
         return any(
-            inspect.isclass(x) and isinstance(estimator, x) for x in estimator_types
+            inspect.isclass(x) and isinstance(estimator, x) for x in object_types
         )
 
-    if estimator_types:
-        estimator_types = _check_estimator_types(estimator_types, class_lookup)
+    if object_types:
+        object_types = _check_object_types(object_types, class_lookup)
         all_estimators = [
             (name, estimator)
             for name, estimator in all_estimators
-            if _is_in_estimator_types(estimator, estimator_types)
+            if _is_in_object_types(estimator, object_types)
         ]
 
     # Filter based on given exclude list
@@ -938,29 +973,29 @@ def _check_tag_cond(estimator, filter_tags=None, as_dataframe=True):
     return cond_sat
 
 
-def _check_estimator_types(estimator_types, class_lookup=None):
+def _check_object_types(object_types, class_lookup=None):
     """Return list of classes corresponding to type strings.
 
     Parameters
     ----------
-    estimator_types : str, class, or list of string or class
+    object_types : str, class, or list of string or class
     class_lookup : dict[string, class], default=None
 
     Returns
     -------
     list of class, i-th element is:
-        class_lookup[estimator_types[i]] if estimator_types[i] was a string
-        estimator_types[i] otherwise
-    if class_lookup is none, only checks whether estimator_types is class or list of.
+        class_lookup[object_types[i]] if object_types[i] was a string
+        object_types[i] otherwise
+    if class_lookup is none, only checks whether object_types is class or list of.
 
     Raises
     ------
-    ValueError if estimator_types is not of the expected type.
+    ValueError if object_types is not of the expected type.
     """
-    estimator_types = deepcopy(estimator_types)
+    object_types = deepcopy(object_types)
 
-    if not isinstance(estimator_types, list):
-        estimator_types = [estimator_types]  # make iterable
+    if not isinstance(object_types, list):
+        object_types = [object_types]  # make iterable
 
     def _get_err_msg(estimator_type):
         if class_lookup is None:
@@ -976,19 +1011,19 @@ def _check_estimator_types(estimator_types, class_lookup=None):
                 f"{repr(estimator_type)}"
             )
 
-    for i, estimator_type in enumerate(estimator_types):
+    for i, estimator_type in enumerate(object_types):
         if not isinstance(estimator_type, (type, str)):
             raise ValueError(_get_err_msg(estimator_type))
         if isinstance(estimator_type, str):
             if estimator_type not in class_lookup.keys():
                 raise ValueError(_get_err_msg(estimator_type))
             estimator_type = class_lookup[estimator_type]
-            estimator_types[i] = estimator_type
+            object_types[i] = estimator_type
         elif isinstance(estimator_type, type):
             pass
         else:
             raise ValueError(_get_err_msg(estimator_type))
-    return estimator_types
+    return object_types
 
 
 def _make_dataframe(all_objects, columns):
