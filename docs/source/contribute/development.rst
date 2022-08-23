@@ -5,7 +5,7 @@ Development
 .. note::
 
     If you are new to ``baseobject`` you may want to see how you can get
-    started :ref:`contributing <contribute>`.
+    started :ref:`contributing <how_to_contrib>`.
 
 .. toctree::
    :maxdepth: 1

@@ -1,4 +1,5 @@
 .. _reviewer_guide:
+.. _rev_guide:
 
 ==============
 Reviewer Guide

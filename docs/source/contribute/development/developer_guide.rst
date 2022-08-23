@@ -14,6 +14,8 @@ Developer guide
    developer_guide/coding_standards
    developer_guide/creating_docs
    developer_guide/testing_framework
+   developer_guide/dependencies
+   developer_guide/enhancement_proposal
 
 .. panels::
     :card: + intro-card text-center
@@ -100,4 +102,32 @@ Developer guide
     .. link-button:: developer_guide/testing_framework
             :type: ref
             :text: Testing Framework
+            :classes: btn-block btn-secondary stretched-link
+
+    ---
+
+    Dependency Management
+    ^^^^^^^^^^^^^^^^^^^^^
+
+    How we manage dependencies
+
+    +++
+
+    .. link-button:: developer_guide/dependencies
+            :type: ref
+            :text: Dependencies
+            :classes: btn-block btn-secondary stretched-link
+
+    ---
+
+    Proposing Enhancements
+    ^^^^^^^^^^^^^^^^^^^^^^
+
+    How to propose a major change
+
+    +++
+
+    .. link-button:: developer_guide/enhancement_proposal
+            :type: ref
+            :text: Proposing Enhancements
             :classes: btn-block btn-secondary stretched-link
