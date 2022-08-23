@@ -13,51 +13,41 @@ the project, and participate in the governance process. This document describes
 how that participation takes place, which roles we have in our community,
 how we make decisions, and how we acknowledge contributions.
 
-We are particularly motivated to support new and/or anxious contributors,
-people who are looking to learn and develop their skills,
-and anyone who has experienced discrimination in the past.
-
-Go to our :ref:`contributing guide <contributing>` for more details.
-
 .. list-table::
    :header-rows: 1
 
    * - Section
      - Purpose
-   * - :ref:`code-of-conduct`
-     - How we expect all members of the sktime community to interact
+   * - :ref:`Code of conduct <gov_coc>`
+     - How members of the community should interact
    * - :ref:`roles`
-     - What roles we have in baseobjects's community and what rights and
+     - The roles used in ``baseobjects's`` community and what rights and
        responsibilities they have
-   * - :ref:`decision-making`
+   * - :ref:`decision-making <decisions>`
      - How and by whom decisions are made
-   * - :ref:`acknowledging-contributions`
+   * - :ref:`acknowledging-contributions <acknowledging>`
      - How we acknowledge contributions
    * - :ref:`outlook`
      - What we may change in the future
 
-.. _code-of-conduct:
+.. _gov_coc:
 
 Code of Conduct
 ===============
 
-We value the participation of every member of our community and want to
-ensure an that every contributor has an enjoyable and fulfilling
-experience. Accordingly, everyone who participates in the ``baseobject`` project
-is expected to show respect and courtesy to other community members at
-all times.
+The ``baseobject`` project believes that everyone should be able to participate
+in our community without fear of harrassment or discrimination (see our
+:ref:`Code of Conduct guide <coc>`). Check out our
+:ref:`contributing guide <contrib_guide>` for more details on how you can get
+involved in the community.
 
-We ask all members of the community to conform to the ``sktime`` `Code of
-Conduct <https://github.com/alan-turing-institute/sktime/blob/main/CODE_OF_CONDUCT.rst>`__.
-
-.. _roles:
 
 Roles
 =====
 
-We distinguish between the following key roles that community members may
-exercise. For each role, we describe their rights and responsibilities,
-and appointment process in more detail below.
+``baseobject`` distinguishes between the following key community roles. We
+describe each role's rights and responsibilities, and appointment
+process in more detail below.
 
 .. list-table::
    :header-rows: 1
@@ -68,7 +58,7 @@ and appointment process in more detail below.
    * - :ref:`contribs`
      - \-
      - Concrete contribution
-   * - :ref:`core-developers`
+   * - :ref:`core-devs`
      - Direct write access, issue/PR management, veto right, voting, nomination
      - Nomination by core developers, vote by core developers, 2/3 majority
    * - :ref:`coc-committee-members`
@@ -96,361 +86,193 @@ see the :ref:`acknowledging-contributions` section below.
 All of our contributors are listed under the `contributors <contributors.md>`_
 section of our documentation.
 
-.. _core-developers:
+.. _core-devs:
 
 Core developers
 ---------------
 
-Core developers are contributors who have shown that they are dedicated
-to the continued development of the project through ongoing engagement
-with the community.
+Core developers are contributors who have shown dedication to the continued
+development of the project through ongoing engagement with the community (
+see the :ref:`core development team <team>`).
 
-See the :ref:`core development team <team>`.
+Core developers help ensure the smooth functioning of the project by:
 
-.. _rights-and-responsibilities-1:
+- managing issues and Pull Requests
+- closing resolved issues
+- reviewing others contributions in accordance with the project
+  :ref:`reviewers guide <rev_guide>`)
+- approving and merging Pull Requests
+- participating in the project's decision making process
+- nominating new core developers and Community Council members
 
-Rights and responsibilities
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Community members can become core developers if they are nominated by an existing
+core developer and they receive affirmative votes from two-thirds of
+existing core developers over the course of a business day voting period.
 
-.. list-table::
-   :header-rows: 1
-
-   * - Right/responsibility
-     - Description
-   * - Direct access
-     - Being a core developer allows contributors to more easily carry on with
-       their project related activities by giving them direct access to the project’s
-       repository.
-   * - Issue/PR management
-     - Core developers are responsible for reviewing and managing issues and pull
-       requests. This includes commenting on issues, reviewing code contributions,
-       merging approved pull requests, and closing issues once resolved.
-   * - Decision making
-     - They can participate in the decision making process by vetoing changes and
-       casting votes.
-   * - Nomination
-     - They can nominate new core developers, CoC committee members and CC members.
-
-
-.. _appointment-1:
-
-Appointment
-~~~~~~~~~~~
-
-New core developers can be nominated by any current core developer. Once
-they have been nominated, there will be a vote by the current core
-developers.
-
-Voting on appointments is one of the few activities that takes
-place on the project’s private communication channels. The vote will be
-anonymous.
-
-While it is expected that most votes will be unanimous, a 2/3 majority of
-the cast votes is enough. The vote needs to be open for five days excluding
-weekends.
-
-Core developers that have not contributed to the project (commits or
-GitHub comments) in the past 12 months will automatically become *inactive*
-and give up their rights and responsibilities. When they become active
-again, they can retake their role without having to be appointed.
-
-.. _coc-committee-members:
-
-CoC committee members
----------------------
-
-CoC members are contributors with special rights and responsibilities.
-The current members of the CoC committee are listed in :ref:`team`.
-
-.. _rights-and-responsibilities-2:
-
-Rights and responsibilities
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-CoC committee members are responsible for investigating potential CoC
-incidents and enforcing the CoC.
-They are the point of contact for reporting potential CoC incidents.
-
-In addition, they are responsible for maintaining and improving the CoC.
-
-.. _appointment-2:
-
-Appointment
-~~~~~~~~~~~
-
-Membership of the CC is by nomination by a core developer and a vote by
-all core developers. A nomination will result in discussion which will stay
-open for 5 days excluding weekends and then a vote by the core
-developers which will stay open for 5 days excluding weekends. CoC committee
-membership votes are subject to:
-
-* a 2/3 majority of all cast votes, and
-* a simple majority approval of all the current CoC committee members.
-
-The vote will take place in private communication channels and will be
-anonymous.
-
-To avoid deadlocks if there is an even number of CoC committee members, one
-of them will have a tie breaking privilege.
+Core developers who continue to participate in their role's duties, can serve
+as long as they would like. Core developers will move to inactive status if
+they do not engage in their role over a 12 month period; they can also
+resign at any time.
 
 .. _cc-members:
 
-CC members
-----------
+Community Council members
+-------------------------
 
-CC (community council) members are core developers with additional rights and
-responsibilities to avoid deadlocks and ensure a smooth progress of the
-project.
+Community Council (CC) members are core developers with additional rights and
+responsibilities for maintaining the project
+(see the :ref:`community council members <team>`).
 
-Current CC members are listed in :ref:`team`.
+This includes:
 
-.. _rights-and-responsibilities-3:
+- providing technical direction
+- strategic planning, roadmapping and project management
+- managing community infrastructure (e.g., Github repositories, continuous integration
+  accounts, etc)
+- fostering collaborations with external organisations
+- avoiding deadlocks and ensuring a smooth functioning of the project
 
-Rights and responsibilities
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Community members can become CC members if they are nominated by an existing
+core developers and receive affirmative votes from two-thirds of core developers
+and a simple majority (with tie breaking) of existing CC members. Like other
+appointment votes, the voting will take place in private communication
+channels and will be anonymous.
 
-.. list-table::
-   :header-rows: 1
+CC members who continue to engage with the project can serve as long as they'd like.
+However, CC members who do not actively engage in their CC responsibilities are
+expected to resign. In the event, a CC member who no longer engages in their
+responsibilities does not resign, the remaining CC members and core developers
+can vote to remove them (same rules as appointment).
 
-   * - Right/responsibility
-     - Description
-   * - Decision making: conflict resolution
-     - see :ref:`stage-3` below
-   * - Technical direction
-     - Strategic planning, development roadmap
-   * - Project management
-     - Funding, collaborations with external organisations, community infrastructure
-       (chat server, GitHub repositories, continuous integration accounts,
-       social media accounts)
-
-
-.. _appointment-3:
-
-Appointment
-~~~~~~~~~~~
-
-Membership of the CC is by nomination by a core developer and a vote by
-all core developers. A nomination will result in discussion which stay open
-for 5 days excluding weekends and then a vote by core developers which will
-stay open for 5 days excluding weekends. CC membership votes are subject to:
-
-* a 2/3 majority of all cast votes, and
-* a simple majority approval of all the current CC members.
-
-The vote will take place in private communication channels and will be
-anonymous.
-
-To avoid deadlocks if there is an even number of CC members, one of them
-will have a tie breaking privilege.
-
-CC members who do not actively engage with the CC responsibilities are
-expected to resign.
-
-Communications
-~~~~~~~~~~~~~~
-
-The CC has regular public meetings that the full community is welcome to attend.
-
-For more details about our meetings, please go to our
-`community-org repository <https://github.com/sktime/community-org/>`_.
-
-To contact the CC directly, please send an email to info@sktime.org.
-
-.. _decision-making:
+.. _decisions:
 
 Decision making
 ===============
 
-The purpose of this section is to formalize the decision-making process
-used by the sktime project. We clarify:
-
-* what types of changes we make decision on,
-* how decisions are made, and
-* who participates in the decision making.
-
 ``baseobject's`` decision-making process is designed to take into account
-feedback from all community members and strives to find consensus. In while
-avoiding deadlocks when no consensus can be found.
+feedback from all community members and strives to find consensus. In cases,
+where consensus cannot be found, it seeks to avoid deadlocks.
 
-All discussion and votes takes place on the project’s `issue
+To accomplish this, this section outlines the decision-making process used
+by the project.
+
+Where we make decisions
+-----------------------
+
+Most of the project's decisions and voting takes place on the project’s `issue
 tracker <https://github.com/sktime/baseobject/issues>`__,
 `pull requests <https://github.com/sktime/baseobject/pulls>`__ or an
-:ref:`steps`. Some sensitive discussions and appointment votes occur on
-private chats.
+:ref:`steps`. However, some sensitive discussions and all appointment votes
+occur on private chats.
 
-The CC reserves the right to overrule decisions.
+Types of decisions
+------------------
 
-We distinguish between the following types of proposed changes. The
-corresponding decision making process is described in more detail below.
+The consensus based decision-making process for major types of project
+decisions are summarized below.
 
 .. list-table::
    :header-rows: 1
 
    * - Type of change
      - Decision making process
-   * - Code additions, such as new algorithms
-     - Lazy consensus, supported by the :ref:`functionality-inclusion-guidelines`
-   * - Minor documentation changes, such as typo fixes,
-       or addition/correction of a sentence
-     - Lazy consensus
-   * - Code changes and major documentation changes
-     - Lazy consensus
+   * - Code additions or changes
+     - :ref:`Lazy consensus <lazy>`
+   * - Documentation changes
+     - :ref:`Lazy consensus <lazy>`
    * - Changes to the API design, hard dependencies, or supported versions
-     - Lazy consensus based on an :ref:`steps`
-   * - Changes to sktime's governance (this document and the CoC)
-     - Lazy consensus based on an :ref:`steps`
-   * - Appointment
-     - Voting
+     - :ref:`Lazy consensus <lazy>` based on an :ref:`BEP <gov_bep>`
+   * - Changes to sktime's governance
+     - :ref:`Lazy consensus <lazy>` based on an :ref:`BEP <gov_bep>`
+   * - Appointment to core developer or Community Council status
+     - Anonymous voting
 
-.. _stage-1:
 
-Stage 1: lazy consensus with veto right
----------------------------------------
+How we make decisions
+---------------------
 
-sktime uses a “consensus seeking” process for making decisions. The
-community tries to find a resolution that has no open objections among
-core developers.
+.. _lazy:
 
--  To accept proposed changes, we require approval by one core developer
-   (lazy consensus) and no rejection by a core developer (veto right).
--  Approvals and rejections can be expressed as +1 and -1 comments,
-   respectively.
--  Core developers are expected to give reasonable time to others to
-   give their opinion on the pull request if they’re not confident
-   others would agree.
--  More important changes that impact the full project require a more
-   detailed analysis and a consensus that is both explicit and informed.
-   These changes require an :ref:`steps`.
+Lazy consensus
+^^^^^^^^^^^^^^
 
-When no consensus can be found, the decision is escaled to :ref:`stage-2`.
+``baseobject`` uses "lazy" consensus for many decisions, by seeking a resolution
+that has no objections among the core development team. For a change to be
+approved "lazily", core developers must be given a *reasonable* amount of time
+to consider it, and it must receive approval from at least one core developer
+and no rejections (excercise of core developer veto right).
 
-.. _stage-2:
+Since most decisions (excluding appointments and other sensitive issues) occur
+in the project's repository, core developers are expected to express their
+consensus (or veto) in the comments of the project's issues and Pull Requests.
 
-Stage 2: voting
----------------
+.. _gov_bep:
 
-When no consensus can be found, any core developer can call for a vote
-at any point during the discussion.
+``baseobject`` enhancement proposals
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
--  The vote will conclude 5 days excluding weekends from the call for the vote.
--  Votes are voluntary. Abstentions are allowed. You can
-   abstain by simply not casting a vote.
--  All votes are a binary vote: for or against accepting the proposed
-   changes.
--  Votes are casts as comments: +1 (approval) or -1 (rejection).
+Decisions about the project's design have a more detailed approval process,
+commensurate with their broader impact on the project. Any changes
+to the project's core API design, hard dependencies or supported versions
+should first be presented in a ``baseobject`` enhancement proposal (BEP).
 
-For all types of changes, except appointments, votes take place on the
-related public issue or pull request. The winning condition is a 2/3
-majority of the votes casts by core developers including CC members. If the
-proposed change cannot gather a 2/3 majority of the votes cast by core
-developers, the decision is escalated to the :ref:`stage-3`.
+This ensures a greater amount of information is available to decision-makers.
+Accordingly, the timeline for accepting a proposed BEP is typically longer
+than smaller project changes. However, reasonable effort will be made to
+review the BEP promptly.
 
-For appointments, votes take place in private communication channels
-and are anonymous. The winning conditions vary depending on the role as
-described in :ref:`roles` above. Appointment decisions are not escalated to
-the CC. If a nomination cannot gather sufficient support, the nomination is
-rejected.
+See the developer guide for more information on creating a :ref:`BEP <bep>`.
 
-.. _stage-3:
+Resolving conflicts
+^^^^^^^^^^^^^^^^^^^
 
-Stage 3: conflict resolution
-----------------------------
+When consensus can't be found lazily, any core developer can call for a vote
+on a topic. This triggers a 5 day voting period, where core developers vote
+for or against the proposed changes (abstentions are allowed) by commenting
+on the relevant issue or Pull Request.
 
-If the proposed change cannot gather a 2/3 majority of the votes cast,
-the CC tries to resolve the deadlock.
+Proposed changes must receive two-thirds of the votes casts. In the event a
+a proposed change does not gather the necesssary votes, then:
 
--  The CC will use consensus seeking.
--  If no consensus can be found within a month, the decision is made
-   through a simple majority vote (with tie breaking) among the CC
-   members.
--  Any CC decision must be supported by an :ref:`steps`, which has been made
-   public and discussed before the vote.
+- The core developer who triggered the vote can choose to drop the issue
+- The proposed changes can be escalated to the CC, who will try to resolve
+  the conflict
 
-.. _functionality-inclusion-guidelines:
+The CC will seek to understand the core development team's varied viewpoints, and
+and arrive at consensus, before bringing the topic up for a simple majority
+vote of CC members within a month. Any CC decision must be supported by an
+:ref:`gov_bep`, which has been made public and discussed before the vote.
 
-Functionality inclusion guidelines
-----------------------------------
-
-Curation is about how we select contributions, which criteria we use in
-order to decide which contributions to include, and in which cases we
-deprecate and remove contributions.
-
-We have the following guidelines:
-
--  We only consider published algorithms which have been shown to be
-   competitive in comparative benchmarking studies or practically useful
-   in applied projects. A technique that provides a clear-cut
-   improvement (e.g. an enhanced data structure or a more efficient
-   approximation technique) on a widely-used method will also be
-   considered for inclusion.
--  From the algorithms or techniques that meet the above criteria, only
-   those which fit well within the current API of sktime are accepted.
-   For algorithms that do not fit well into the current API, the API
-   will have to be extended first. For extending current API, see the
-   `decision making process <#Decision-making>`__ for major changes.
--  The contributor should support the importance of the proposed
-   addition with research papers and/or implementations in other similar
-   packages, demonstrate its usefulness via common
-   use-cases/applications and corroborate performance improvements, if
-   any, with benchmarks and/or plots. It is expected that the proposed
-   algorithm should outperform the methods that are already implemented
-   in sktime in at least some areas.
--  We strive to consolidate existing functionality if helps to improve
-   the usability and maintainability of the project. For example, when
-   there are multiple techniques for the same purpose, we prefer to
-   combine them into a single class and make case distinctions based on
-   hyper-parameters.
-
-Note that your implementation need not be in sktime to be used together
-with sktime tools. You can implement your favorite algorithm in a sktime
-compatible way in one of `our companion
-repositories <https://github.com/sktime>`__ on GitHub. We will be happy
-to list it under `related
-software <https://github.com/alan-turing-institute/sktime/wiki/related-software>`__.
-
-If algorithms require major dependencies, we encourage to create a
-separate companion repository. For example, for deep learning techniques
-based on TensorFlow and Keras, we have
-`sktime-dl <https://github.com/sktime/sktime-dl>`__. For smaller
-dependencies which are limited to a few files, we encourage to use soft
-dependencies, which are only required for particular modules, but not
-for most of sktime’s functionality and not for installing sktime.
-
-.. _acknowledging-contributions:
+.. _acknowledging:
 
 Acknowledging contributions
 ===========================
 
-sktime is collaboratively developed by its diverse community of
-developers, users, educators, and other stakeholders. We value all kinds
-of contributions and are committed to recognising each of them fairly.
+The ``baseobject`` project values all kinds
+of contributions and the development team is committed to recognising
+each of them fairly.
 
-We follow the `all-contributors <https://allcontributors.org>`__
+The project follows the `all-contributors <https://allcontributors.org>`_
 specification to recognise all contributors, including those that don’t
-contribute code. Please see our list of all contributors `here <contributors.md>`_.
+contribute code. Please see our list of `all contributors <contributors.md>`_.
 
-If you think, we’ve missed anything, please let us know or open a PR
-with the appropriate changes to
-`sktime/.all-contributorsrc <https://github.com/alan-turing-institute/sktime/blob/main/.all-contributorsrc>`__.
+Please let us know or open a PR with the appropriate changes to
+`baseobject/.all-contributorsrc
+<https://github.com/sktime/baseobject/blob/main/.all-contributorsrc>`_
+if we have missed anything.
 
-Note that contributors do not own their contributions. sktime is an
+Note that contributors do not own their contributions. ``baseobject`` is an
 open-source project, and all code is contributed under `our open-source
-license <https://github.com/alan-turing-institute/sktime/blob/main/LICENSE>`__.
+license <https://github.com/sktime/baseobject/blob/main/LICENSE>`_.
 All contributors acknowledge that they have all the rights to the code
 they contribute to make it available under this license.
-
-The project belongs to the sktime community, and all parts of it are
-always considered “work in progress” so that they can evolve over time
-with newer contributions.
-
-.. _outlook:
 
 Outlook
 =======
 
-We are open to improvement suggestions for our governance model. Once
-the community grows more and sktime’s code base becomes more
-consolidated, we will consider the following changes:
+As with other parts of the project, the governance may change as the project
+matures. We anticipate that as the community grows, we may consider the
+following changes:
 
 -  Allow for more time to discuss changes, and more time to cast vote
    when no consensus can be found,
@@ -458,7 +280,7 @@ consolidated, we will consider the following changes:
    during consensus seeking stage,
 -  Reduce time for maintainers to reply to issues
 
-.. _references:
+Suggestions on potential governance changes are also welcome.
 
 References
 ==========
@@ -466,5 +288,5 @@ References
 Our governance model is inspired by various existing governance
 structures. In particular, we’d like to acknowledge:
 
-* sktime’s `governance model <https://www.sktime.org/en/latest/governance.html>`__
-* scikit-learn’s `governance model <https://scikit-learn.org/stable/governance.html>`__
+* `sktime’s governance model <https://www.sktime.org/en/latest/governance.html>`_
+* `scikit-learn’s governance model <https://scikit-learn.org/stable/governance.html>`_

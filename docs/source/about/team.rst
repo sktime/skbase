@@ -32,8 +32,6 @@ Code of Conduct Committee
      - GitHub ID
    * - Franz Kiraly
      - :user:`fkiraly`
-   * - Ryan Kuhns
-     - :user:`rnkuhns`
 
 Core Developers
 ===============
