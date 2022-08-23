@@ -8,11 +8,13 @@ History
 in order to make it easier for others to use `scikit-learn`_ and `sktime`_
 design principles in a range of projects.
 
-The project draws on their experiences working on `sktime`_ (where Franz Király is
-a Community Council member and project cofounder and Ryan Kuhns was a
-former core developer). It also builds on and was heavily inspired by
-`scikti-learn's <scikit-learn-about>`_ `BaseEstimator API <scikit-learn-est>`_
-as part of its API.
+The project builds on and was heavily inspired by
+`scikti-learn's <scikit-learn-about>`_ `BaseEstimator API <scikit-learn-est>`_.
+`sktime`_ built on this by developing a ``BaseObject`` that inherited these
+design principles and added an `sktime`_ interface for
+general parametric objects. Work on ``baseobject`` is focused on continuing to
+build on these efforts, while further genericizing the design concept to use-cases
+other than fittable estimators.
 
 Development is supported by the original project
 members, new core developers and the broader community (see
