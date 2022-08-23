@@ -99,8 +99,7 @@ glossary term, and the developer can use:
     :term:`the link text <the glossary term>`
 
 In the event a term is not already in the glossary, developers should add the term
-to the glossary (sktime/docs/source/glossary.rst) and include a reference
-(as shown above) to the added term.
+to the :ref:`glossary` and include a reference (as shown above) to the added term.
 
 Likewise, a developer can link to a particular area of the user guide by including
 an explicit cross-reference and following the steps for referencing in Sphinx
@@ -177,8 +176,8 @@ on ``baseobject`` or its core dependencies. Examples should also be designed to
 run quickly where possible. For quick running code artifacts, additional examples
 can be included to illustrate the affect of different parameter settings.
 
-Examples of Good sktime Docstrings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Examples of Good ``baseobject`` Docstrings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Here are a few examples of ``baseobject`` code artifacts with good documentation.
 

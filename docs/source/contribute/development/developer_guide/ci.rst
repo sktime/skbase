@@ -28,7 +28,7 @@ you should use your command line tool to run :code:`pre-commit install`. This
 will setup pre-commit locally, and trigger the repositories pre-commit hooks
 to run prior committing your code locally.
 
-.. hint::
+.. note::
 
 
     The project also continues to make use of the deprecated
@@ -79,10 +79,10 @@ integration services ``baseobject`` uses.
 |               |                       | /baseobject/blob/main/              |
 |               |                       | .pre-commit-config.yaml>`_          |
 +---------------+-----------------------+-------------------------------------+
-| `Read the     | Build/deploy          | `.readthedocs.yml                   |
+| `Read the     | Build/deploy          | `.readthedocs.yaml                  |
 | Docs <h       | documentation         | <https://github.com/sktime          |
 | ttps://readth |                       | /baseobject/blob/main/              |
-| edocs.org>`__ |                       | .readthedocs.yml>`_                 |
+| edocs.org>`__ |                       | .readthedocs.yaml>`_                |
 +---------------+-----------------------+-------------------------------------+
 | `Codecov      | Test coverage         | `.codecov.yml <https                |
 | <https://c    |                       | ://github.com/sktime/baseobject     |
