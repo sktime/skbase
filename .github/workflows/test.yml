@@ -98,7 +98,7 @@ jobs:
         shell: bash -l {0}
         run: |
           python -VV
-          python -m pip install .[test,docs]
+          python -m pip install .[test]
 
       # Commented out for now. Turn on once dependencies are shrunk.
       # - name: Run Safety security check
