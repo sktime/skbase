@@ -531,6 +531,14 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             f"found {type(object_instance)}"
         )
 
+        msg = (
+            f"{object_class.__name__}.__init__ should call "
+            f"super({object_class.__name__}, self).__init__, "
+            "but that does not seem to be the case. Please ensure to call the "
+            f"parent class's constructor in {object_class.__name__}.__init__"
+        )
+        assert hasattr(object_instance, "_tags_dynamic"), msg
+
     def test_create_test_instances_and_names(self, object_class):
         """Check that create_test_instances_and_names works."""
         objects, names = object_class.create_test_instances_and_names()

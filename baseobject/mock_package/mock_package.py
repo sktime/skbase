@@ -14,6 +14,8 @@ class CompositionDummy(BaseObject):
         self.foo_ = deepcopy(foo)
         self.bar = bar
 
+        super(CompositionDummy, self).__init__()
+
     @classmethod
     def get_test_params(cls, parameter_set="default"):
         """Return testing parameter settings for the estimator.
