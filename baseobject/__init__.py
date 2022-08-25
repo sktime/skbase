@@ -10,7 +10,10 @@ __all__ = [
     "BaseObject",
     "BaseEstimator",
     "_HeterogenousMetaEstimator",
+    "all_objects",
+    "get_package_metadata",
 ]
 
 from baseobject._base import BaseEstimator, BaseObject
+from baseobject._lookup import all_objects, get_package_metadata
 from baseobject._meta import _HeterogenousMetaEstimator
