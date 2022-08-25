@@ -47,6 +47,10 @@ Object Retrieval
 Testing
 =======
 
+.. automodule:: baseobject.testing
+    :no-members:
+    :no-inherited-members:
+
 .. currentmodule:: baseobject.testing
 
 .. autosummary::
