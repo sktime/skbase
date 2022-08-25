@@ -9,9 +9,16 @@ Overview
 
 ``baseobject`` is a consensus-based project that is part of the ``sktime`` community.
 Anyone with an interest in the project can join the community, contribute to
-the project, and participate in the governance process. This document describes
-how that participation takes place, which roles we have in our community,
+the project, and participate in the governance process. The rest of this document
+describes how that participation takes place, which roles we have in our community,
 how we make decisions, and how we acknowledge contributions.
+
+.. note::
+
+    As a new project, ``baseobject`` has adopted a governance structure similar
+    to ``sktime``. In the future this could change as the project grows. But for
+    the time being, any governance process not covered by this document, defaults
+    to ``sktime's`` process.
 
 .. _gov_coc:
 
@@ -20,9 +27,7 @@ Code of Conduct
 
 The ``baseobject`` project believes that everyone should be able to participate
 in our community without fear of harrassment or discrimination (see our
-:ref:`Code of Conduct guide <coc>`). Check out our
-:ref:`contributing guide <contrib_guide>` for more details on how you can get
-involved in the community.
+:ref:`Code of Conduct guide <coc>`).
 
 Roles
 =====
@@ -87,8 +92,7 @@ additional rights and responsibilities for maintaining the project, including:
 
 - providing technical direction
 - strategic planning, roadmapping and project management
-- managing community infrastructure (e.g., Github repositories, continuous integration
-  accounts, etc)
+- managing community infrastructure (e.g., Github repository, etc)
 - fostering collaborations with external organisations
 - avoiding deadlocks and ensuring a smooth functioning of the project
 
@@ -122,10 +126,9 @@ tracker <https://github.com/sktime/baseobject/issues>`__,
 :ref:`steps`. However, some sensitive discussions and all appointment votes
 occur on private chats.
 
-Core developers are expected to express their
-consensus (or veto) in the medium where a given decision takes place. For changes
-included in the Project's issues and Pull Requests, this is through comments
-or Github's built-in review process.
+Core developers are expected to express their consensus (or veto) in the medium
+where a given decision takes place. For changes included in the Project's issues
+and Pull Requests, this is through comments or Github's built-in review process.
 
 Types of decisions
 ------------------
@@ -177,16 +180,17 @@ See the developer guide for more information on creating a :ref:`BEP <bep>`.
 Resolving conflicts
 ^^^^^^^^^^^^^^^^^^^
 
-When consensus can't be found lazily, core developers can call for a vote on a topic.
-If triggered, a topic must receive two-thirds of core developer votes cast
+When consensus can't be found lazily, core developers can call for a vote
+on a topic. A topic must receive two-thirds of core developer votes cast
 (abstentions are allowed) via comments on the relevant issue or
 Pull Request over a 5 day voting period.
 
 In the event a proposed change does not gather the necesssary votes, then:
 
 - The core developer who triggered the vote can choose to drop the issue
-- The proposed changes can be escalated to the CC, resolve the conflict, before
-  bringing the topic up for a simple majority vote of CC members.
+- The proposed changes can be escalated to the CC, who will seek to learn more
+  about the team member viewpoints, before bringing the topic up for a simple
+  majority vote of CC members.
 
 .. _acknowledging:
 
