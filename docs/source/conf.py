@@ -185,6 +185,11 @@ html_theme_options = {
             "url": "https://github.com/sktime/baseobject",
             "icon": "fab fa-github",
         },
+        {
+            "name": "Slack",
+            "url": "https://join.slack.com/t/sktime-group/shared_invite/zt-1cghagwee-sqLJ~eHWGYgzWbqUX937ig",  # noqa: E501
+            "icon": "fab fa-slack",
+        },
     ],
     # "favicons": [
     #     {"rel": "icon", "sizes": "16x16", "href": "images/sktime-favicon.ico",}
