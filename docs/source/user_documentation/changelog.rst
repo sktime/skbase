@@ -9,8 +9,8 @@ to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_. The source
 code for all `releases <https://github.com/sktime/baseobject/releases>`_
 is available on GitHub.
 
-You can also subscribe to sktime's PyPi release
-`here <https://libraries.io/pypi/baseobject>`_.
+You can also subscribe to ``baseobject's``
+`PyPi release <https://libraries.io/pypi/baseobject>`_.
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
