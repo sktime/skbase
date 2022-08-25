@@ -68,9 +68,9 @@ from baseobject._exceptions import NotFittedError
 
 
 class BaseObject(_BaseEstimator):
-    """Base class for parametric objects with tags sktime.
+    """Base class for parametric objects with sktime style tag interface.
 
-    Extends scikit-learn's BaseEstimator to include sktime interface for tags.
+    Extends scikit-learn's BaseEstimator to include sktime style interface for tags.
     """
 
     def __init__(self):
@@ -814,9 +814,9 @@ class TagAliaserMixin:
 
 
 class BaseEstimator(BaseObject):
-    """Base class for defining estimators in sktime.
+    """Base class for estimators with scikit-learn and sktime design patterns.
 
-    Extends sktime's BaseObject to include basic functionality for fittable estimators.
+    Extends BaseObject to include basic functionality for fittable estimators.
     """
 
     def __init__(self):
