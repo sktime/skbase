@@ -7,24 +7,17 @@ API Reference
 Welcome to the API reference for ``baseobject``.
 
 The API reference provides a technical manual, describing the class and
-function interface provided by the package.
-
-See the :ref:`user_guide` for additional details.
-
-.. _base_ref:
-
-Base
-====
-
-The :mod:`baseobject` module contains base classes for creating parametric
-objects with scikit-learn and sktime style design principles.
+function interface provided by the package. See the :ref:`user_guide` for
+additional details.
 
 .. automodule:: baseobject
     :no-members:
     :no-inherited-members:
 
-Base classes
-------------
+.. _base_ref:
+
+Base Classes
+============
 
 .. currentmodule:: baseobject
 
@@ -34,3 +27,32 @@ Base classes
 
     BaseObject
     BaseEstimator
+
+.. _obj_retrieval:
+
+Object Retrieval
+================
+
+.. currentmodule:: baseobject
+
+.. autosummary::
+    :toctree: api_reference/auto_generated/
+    :template: function.rst
+
+    all_objects
+    get_package_metadata
+
+.. _obj_testing:
+
+Testing
+=======
+
+.. currentmodule:: baseobject.testing
+
+.. autosummary::
+    :toctree: api_reference/auto_generated/
+    :template: class.rst
+
+    BaseFixtureGenerator
+    QuickTester
+    TestAllObjects

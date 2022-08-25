@@ -1,2 +1,12 @@
 # -*- coding: utf-8 -*-
 """Test framework."""
+from typing import List
+
+from baseobject.testing.test_all_objects import (
+    BaseFixtureGenerator,
+    QuickTester,
+    TestAllObjects,
+)
+
+__all__: List[str] = ["BaseFixtureGenerator", "QuickTester", "TestAllObjects"]
+__author__: List[str] = ["fkiraly"]
