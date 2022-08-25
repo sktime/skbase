@@ -36,7 +36,26 @@ For additional details see our :ref:`full installation guide <full_install>`.
 Key Concepts
 ============
 
-TO BE ADDED.
+``baseobject`` seeks to provide a general :term:`framework`  for creating and
+working with classes that follow `scikit-learn`_, `sktime`_ style design patterns.
+
+Primary functionality is provided through base classes that provide interfaces for:
+
+ - `scikit-learn`_ style parameter getting and setting
+ - using :term:`tags <tag>` to record characteristics of the class that can
+   be used to alter the classes code or how it interacts with other functionality
+ - generating test instances
+
+To make it easy to build :term:`toolboxes <toolbox>` and
+:term:`applications <application>` that use ``baseobject's``, interfaces
+are also provided for:
+
+- retrieving information on ``baseobjects``
+- testing ``baseobjects``
+
+.. warning::
+
+    The ``baseobject`` package is new and its interfaces are still experimental.
 
 Quickstart
 ==========
@@ -44,3 +63,6 @@ The code snippets below are designed to introduce ``baseobject's``
 functionality. For more detailed information see the :ref:`tutorials`,
 :ref:`user_guide` and :ref:`api_ref` in ``baseobject's``
 :ref:`user_documentation`.
+
+.. _scikit-learn: https://scikit-learn.org/stable/index.html
+.. _sktime: https://www.sktime.org/en/stable/index.html
