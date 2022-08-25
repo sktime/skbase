@@ -16,13 +16,13 @@ individuals looking to develop their skills.
 
 If you want to get started contributing, we recommend:
 
-- Say hello on `slack <https://sktime-group.slack.com/#baseobject>`_
-- Follow our :ref:`developer guide <dev_guide>` to make sure your setup to
-  contribute
+- Say hello on `Slack`_
+- Use our :ref:`developer guide <dev_guide>` to setup a contributing environment
 - Pick a good first `issue <https://github.com/sktime/BaseObject/issues>`_
   to work on that will let you get familiar with our contributing process
 
 Once your first Pull Request is merged you may decide to continue contributing
-regularly. Talk with the development team on
-`slack <https://sktime-group.slack.com/#baseobject>`_ about your interests and
+regularly. Talk with the development team on `Slack`_ about your interests and
 how you can best contribute to the project.
+
+.. _Slack: https://join.slack.com/t/sktime-group/shared_invite/zt-1cghagwee-sqLJ~eHWGYgzWbqUX937ig # noqa

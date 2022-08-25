@@ -10,9 +10,14 @@ Testing Framework
     testing framework to develop your own package, see our
     :ref:`testing user guide <user_guide_testing>`.
 
-``baseobject`` uses ``pytest`` to test the correctness of code.
+``baseobject`` uses ``pytest`` to verify code is working as expected.
 This page gives an overview of the tests, an introduction on adding new tests,
 and how to extend the testing framework.
+
+.. warning::
+
+  This page is under construction. We plan to add more tests and increased
+  documentation on the testing framework in an upcoming release.
 
 Test module architecture
 ========================
@@ -34,7 +39,5 @@ Module conventions are as follows:
     * *module* tests focused on testing a specific class interface should contain a file
       ``test_all_[name_of_class].py``
 * ``tests`` folders may contain ``_config.py`` files to collect test
-  configuration settings for that module
-* Generic utilities for tests are located in the module ``utils._testing``.
-* Tests for these utilities should be contained in the ``utils._testing.tests`` folder.
+  configuration settings for that modules
 * *module* and *low* level tests should not repeat tests performed at a higher level

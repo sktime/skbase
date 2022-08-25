@@ -8,7 +8,7 @@ Git and GitHub workflow
    If your not familiar with ``git`` you may want to start by reviewing
    `Git's documentation <https://git-scm.com/doc>`_ and then trying
    out the workflow. If you get stuck, chat with us on
-   `Slack <https://sktime-group.slack.com/#baseobject>`_.
+   `Slack <https://join.slack.com/t/sktime-group/shared_invite/zt-1cghagwee-sqLJ~eHWGYgzWbqUX937ig>`_.
 
 The preferred workflow for contributing to ``baseobject's`` repository is to
 fork the `main repository <https://github.com//sktime/baseobject>`_ on GitHub,
