@@ -9,7 +9,7 @@ Welcome to ``baseobject's`` user guide!
 
 The purpose of the user guide is to provide further explanations and context
 to developers who want to use ``baseobject`` to help create their own
-packages that use ``scikit-leran`` and ``sktime`` style design patterns.
+packages.
 
 If your just looking for a technical specification of the functionality
 that ``baseobject`` provides, see the :ref:`api_ref`.
@@ -25,8 +25,7 @@ that ``baseobject`` provides, see the :ref:`api_ref`.
    :hidden:
 
    user_guide/overview
-   user_guide/param_getting_setting
-   user_guide/tags
+   user_guide/base_classes
    user_guide/lookup
    user_guide/testing
 
@@ -50,30 +49,16 @@ that ``baseobject`` provides, see the :ref:`api_ref`.
 
     ---
 
-    Parameters
-    ^^^^^^^^^^
+    Base Classes
+    ^^^^^^^^^^^^
 
-    Getting and setting parameters.
-
-    +++
-
-    .. link-button:: user_guide/param_getting_setting
-            :type: ref
-            :text: Working with parameters
-            :classes: btn-block btn-secondary stretched-link
-
-    ---
-
-    Tags
-    ^^^^
-
-    Using class tags.
+    The BaseObject class interface.
 
     +++
 
-    .. link-button:: user_guide/tags
+    .. link-button:: user_guide/base_classes
             :type: ref
-            :text: Tags
+            :text: Class Interface
             :classes: btn-block btn-secondary stretched-link
 
     ---
