@@ -10,11 +10,11 @@ design principles in a range of projects.
 
 The project builds on and was heavily inspired by
 `scikti-learn's <scikit-learn-about>`_ `BaseEstimator API <scikit-learn-est>`_.
-`sktime`_ built on this by developing a ``BaseObject`` that inherited these
+`sktime`_ built on this by developing a ``BaseObject`` that built on these
 design principles and added an `sktime`_ interface for
-general parametric objects. Work on ``baseobject`` is focused on continuing to
-build on these efforts, while further genericizing the design concept to use-cases
-other than fittable estimators.
+general parametric objects. The ``baseobject`` project is focused on continuing
+to build on these efforts, while further genericizing the design concept to
+a variety of use-cases.
 
 Development is supported by the original project
 members, new core developers and the broader community (see

@@ -13,23 +13,6 @@ the project, and participate in the governance process. This document describes
 how that participation takes place, which roles we have in our community,
 how we make decisions, and how we acknowledge contributions.
 
-.. list-table::
-   :header-rows: 1
-
-   * - Section
-     - Purpose
-   * - :ref:`Code of conduct <gov_coc>`
-     - How members of the community should interact
-   * - :ref:`roles`
-     - The roles used in ``baseobjects's`` community and what rights and
-       responsibilities they have
-   * - :ref:`decision-making <decisions>`
-     - How and by whom decisions are made
-   * - :ref:`acknowledging-contributions <acknowledging>`
-     - How we acknowledge contributions
-   * - :ref:`outlook`
-     - What we may change in the future
-
 .. _gov_coc:
 
 Code of Conduct
@@ -41,44 +24,23 @@ in our community without fear of harrassment or discrimination (see our
 :ref:`contributing guide <contrib_guide>` for more details on how you can get
 involved in the community.
 
-
 Roles
 =====
 
-``baseobject`` distinguishes between the following key community roles. We
-describe each role's rights and responsibilities, and appointment
-process in more detail below.
+``baseobject`` distinguishes between the following key community roles:
 
-.. list-table::
-   :header-rows: 1
-
-   * - Role
-     - Rights/responsibilities
-     - Appointment
-   * - :ref:`contribs`
-     - \-
-     - Concrete contribution
-   * - :ref:`core-devs`
-     - Direct write access, issue/PR management, veto right, voting, nomination
-     - Nomination by core developers, vote by core developers, 2/3 majority
-   * - :ref:`coc-committee-members`
-     - CoC maintenance, investigation and enforcement
-     - Nomination by core developers, vote by core developers, 2/3 majority and
-       simple CoC majority
-   * - :ref:`cc-members`
-     - Conflict resolution, technical leadership, project management
-     - Nomination by core developers, vote by core developers, 2/3 majority and
-       simple CC majority
+- :ref:`Contributors`
+- :ref:`Core developers <core-devs>`
+- :ref:`Community Council members <cc-members>`
 
 .. _contribs:
 
 Contributors
 ------------
 
-Contributors are community members who have contributed in concrete ways
-to the project. Anyone can become a contributor, and contributions can
-take many forms – not only code – as detailed in the
-:ref:`contributing guide <contributing>`
+Anyone can become a contributor by making a concrete contribution
+to the project. Contributions can take many forms – not only code – as detailed
+in the :ref:`contributing guide <contributing>`
 
 For more details on how we acknowledge contributions,
 see the :ref:`acknowledging-contributions` section below.
@@ -95,8 +57,10 @@ Core developers are contributors who have shown dedication to the continued
 development of the project through ongoing engagement with the community (
 see the :ref:`core development team <team>`).
 
-Core developers help ensure the smooth functioning of the project by:
+The :ref:`core developmer team <team>`  helps ensure the smooth functioning of
+the project by:
 
+- ongoing engagement with community
 - managing issues and Pull Requests
 - closing resolved issues
 - reviewing others contributions in accordance with the project
@@ -105,9 +69,8 @@ Core developers help ensure the smooth functioning of the project by:
 - participating in the project's decision making process
 - nominating new core developers and Community Council members
 
-Community members can become core developers if they are nominated by an existing
-core developer and they receive affirmative votes from two-thirds of
-existing core developers over the course of a business day voting period.
+Any core developer nominee must receive affirmative votes from two-thirds of
+existing core developers over the course of a 5 business day voting period.
 
 Core developers who continue to participate in their role's duties, can serve
 as long as they would like. Core developers will move to inactive status if
@@ -119,11 +82,8 @@ resign at any time.
 Community Council members
 -------------------------
 
-Community Council (CC) members are core developers with additional rights and
-responsibilities for maintaining the project
-(see the :ref:`community council members <team>`).
-
-This includes:
+Community Council (CC) :ref:`team members <team>` are core developers with
+additional rights and responsibilities for maintaining the project, including:
 
 - providing technical direction
 - strategic planning, roadmapping and project management
@@ -132,26 +92,23 @@ This includes:
 - fostering collaborations with external organisations
 - avoiding deadlocks and ensuring a smooth functioning of the project
 
-Community members can become CC members if they are nominated by an existing
-core developers and receive affirmative votes from two-thirds of core developers
-and a simple majority (with tie breaking) of existing CC members. Like other
-appointment votes, the voting will take place in private communication
-channels and will be anonymous.
+CC nominees must be nominated by an existing core developer and receive
+affirmative votes from two-thirds of core developers and a simple majority
+(with tie breaking) of existing CC members.
 
 CC members who continue to engage with the project can serve as long as they'd like.
 However, CC members who do not actively engage in their CC responsibilities are
 expected to resign. In the event, a CC member who no longer engages in their
 responsibilities does not resign, the remaining CC members and core developers
-can vote to remove them (same rules as appointment).
+can vote to remove them (same voting rules as appointment).
 
 .. _decisions:
 
 Decision making
 ===============
 
-``baseobject's`` decision-making process is designed to take into account
-feedback from all community members and strives to find consensus. In cases,
-where consensus cannot be found, it seeks to avoid deadlocks.
+``baseobject's`` tries to take feedback from all community members into account
+when making decisions and strives to find consensus and avoid deadlocks.
 
 To accomplish this, this section outlines the decision-making process used
 by the project.
@@ -164,6 +121,11 @@ tracker <https://github.com/sktime/baseobject/issues>`__,
 `pull requests <https://github.com/sktime/baseobject/pulls>`__ or an
 :ref:`steps`. However, some sensitive discussions and all appointment votes
 occur on private chats.
+
+Core developers are expected to express their
+consensus (or veto) in the medium where a given decision takes place. For changes
+included in the Project's issues and Pull Requests, this is through comments
+or Github's built-in review process.
 
 Types of decisions
 ------------------
@@ -196,61 +158,43 @@ How we make decisions
 Lazy consensus
 ^^^^^^^^^^^^^^
 
-``baseobject`` uses "lazy" consensus for many decisions, by seeking a resolution
-that has no objections among the core development team. For a change to be
-approved "lazily", core developers must be given a *reasonable* amount of time
-to consider it, and it must receive approval from at least one core developer
+Changes are approved "lazily" when after *reasonable* amount of time
+the change receives approval from at least one core developer
 and no rejections (excercise of core developer veto right).
-
-Since most decisions (excluding appointments and other sensitive issues) occur
-in the project's repository, core developers are expected to express their
-consensus (or veto) in the comments of the project's issues and Pull Requests.
 
 .. _gov_bep:
 
 ``baseobject`` enhancement proposals
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Decisions about the project's design have a more detailed approval process,
+Project design decisions have a more detailed approval process,
 commensurate with their broader impact on the project. Any changes
 to the project's core API design, hard dependencies or supported versions
 should first be presented in a ``baseobject`` enhancement proposal (BEP).
-
-This ensures a greater amount of information is available to decision-makers.
-Accordingly, the timeline for accepting a proposed BEP is typically longer
-than smaller project changes. However, reasonable effort will be made to
-review the BEP promptly.
 
 See the developer guide for more information on creating a :ref:`BEP <bep>`.
 
 Resolving conflicts
 ^^^^^^^^^^^^^^^^^^^
 
-When consensus can't be found lazily, any core developer can call for a vote
-on a topic. This triggers a 5 day voting period, where core developers vote
-for or against the proposed changes (abstentions are allowed) by commenting
-on the relevant issue or Pull Request.
+When consensus can't be found lazily, core developers can call for a vote on a topic.
+If triggered, a topic must receive two-thirds of core developer votes cast
+(abstentions are allowed) via comments on the relevant issue or
+Pull Request over a 5 day voting period.
 
-Proposed changes must receive two-thirds of the votes casts. In the event a
-a proposed change does not gather the necesssary votes, then:
+In the event a proposed change does not gather the necesssary votes, then:
 
 - The core developer who triggered the vote can choose to drop the issue
-- The proposed changes can be escalated to the CC, who will try to resolve
-  the conflict
-
-The CC will seek to understand the core development team's varied viewpoints, and
-and arrive at consensus, before bringing the topic up for a simple majority
-vote of CC members within a month. Any CC decision must be supported by an
-:ref:`gov_bep`, which has been made public and discussed before the vote.
+- The proposed changes can be escalated to the CC, resolve the conflict, before
+  bringing the topic up for a simple majority vote of CC members.
 
 .. _acknowledging:
 
 Acknowledging contributions
 ===========================
 
-The ``baseobject`` project values all kinds
-of contributions and the development team is committed to recognising
-each of them fairly.
+The ``baseobject`` project values all kinds of contributions and the
+development team is committed to recognising each of them fairly.
 
 The project follows the `all-contributors <https://allcontributors.org>`_
 specification to recognise all contributors, including those that don’t
@@ -261,26 +205,19 @@ Please let us know or open a PR with the appropriate changes to
 <https://github.com/sktime/baseobject/blob/main/.all-contributorsrc>`_
 if we have missed anything.
 
-Note that contributors do not own their contributions. ``baseobject`` is an
-open-source project, and all code is contributed under `our open-source
-license <https://github.com/sktime/baseobject/blob/main/LICENSE>`_.
-All contributors acknowledge that they have all the rights to the code
-they contribute to make it available under this license.
+.. note::
+
+  ``baseobject`` is an open-source project. All code is contributed
+  under `our open-source
+  license <https://github.com/sktime/baseobject/blob/main/LICENSE>`_.
+  Contributors acknowledge that they have rights to make their contribution
+  (code or otherwise) available under this license.
 
 Outlook
 =======
 
 As with other parts of the project, the governance may change as the project
-matures. We anticipate that as the community grows, we may consider the
-following changes:
-
--  Allow for more time to discuss changes, and more time to cast vote
-   when no consensus can be found,
--  Require more positive votes (less lazy consensus) to accept changes
-   during consensus seeking stage,
--  Reduce time for maintainers to reply to issues
-
-Suggestions on potential governance changes are also welcome.
+matures. Suggestions on potential governance changes are also welcome.
 
 References
 ==========
