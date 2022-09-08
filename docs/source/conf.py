@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
-"""Configure BaseObject's Sphinx documentation."""
+# copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
+"""Configure skbase Sphinx documentation."""
 
 # -- Path setup --------------------------------------------------------------
 

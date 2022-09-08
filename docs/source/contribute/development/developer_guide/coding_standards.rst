@@ -9,13 +9,13 @@ Coding standards
 Coding style
 ============
 
-``baseobject`` follows standard Python code style conventions, including the
+``skbase`` follows standard Python code style conventions, including the
 `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_ coding guidelines.
 
 Code formatting and linting
 ---------------------------
 
-``baseobject`` uses a variety of tools to enforce code formatting conventions,
+``skbase`` uses a variety of tools to enforce code formatting conventions,
 including:
 
 * `black <https://black.readthedocs.io/en/stable/>`_ with configuration in
@@ -29,10 +29,10 @@ including:
   ``pyproject.toml``
 * ``numpydoc`` to enforce numpy `docstring standard
   <https://numpydoc.readthedocs.io/en/latest/index.html>`_ ,
-  along with ``baseobject`` specific conventions described in our
+  along with ``skbase`` specific conventions described in our
   :ref:`documentation conventions <developer_guide_documentation>`.
 
-These are automatically run on Pull Requests using ``baseobject's``
+These are automatically run on Pull Requests using ``skbase``'s
 :ref:`ci` workflows.
 
 Setting up local code quality checks
@@ -45,15 +45,15 @@ and linting tools are run prior to committing your code locally.
 Using pre-commit locally
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-To set up pre-commit, follow ``baseobject's``
+To set up pre-commit, follow ``skbase``'s
 :ref:`development installation <dev_install>` instructions. Then navigate to
 the directory of your local clone of your forked repository and run
 :code:`pre-commit install`.
 
-Once installed, pre-commit will automatically run all ``baseobject`` code quality
+Once installed, pre-commit will automatically run all ``skbase`` code quality
 checks on the files you changed whenever you make a new commit.
 
-You can find all of ``baseobjects`` pre-commit configurations in
+You can find all of ``skbase``'s pre-commit configurations in
 `.pre-commit-config.yaml
 <https://github.com/sktime/baseobject/blob/main/.pre-commit-config.yaml>`_.
 
@@ -82,13 +82,13 @@ the linters in your environment use the hint in the
 In Visual Studio Code, we also recommend to add ``"editor.ruler": [79, 88]``
 to your local ``settings.json`` to display the max line length.
 
-``baseobject`` specific code formatting conventions
----------------------------------------------------
+``skbase`` specific code formatting conventions
+-----------------------------------------------
 
 -  Check out our :ref:`glossary`.
 -  Avoid multiple statements on one line. Prefer a line return after a
    control flow statement (``if``/``for``).
--  Use absolute imports for references inside ``baseobject``.
+-  Use absolute imports for references inside ``skbase``.
 -  Don’t use ``import *`` in the source code. It is considered
    harmful by the official Python recommendations. It makes the code
    harder to read as the origin of symbols is no longer explicitly

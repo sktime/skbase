@@ -1,10 +1,10 @@
 .. _home:
 
-=====================
-Welcome to baseobject
-=====================
+=================
+Welcome to skbase
+=================
 
-``baseobject`` provides base classes for creating scikit-learn-like parametric
+``skbase`` provides base classes for creating scikit-learn-like parametric
 objects, along with tools to make it easier to build your own packages
 that follow these design patterns.
 
@@ -29,7 +29,7 @@ From here, you can navigate to:
     Get Started
     ^^^^^^^^^^^
 
-    Get started using ``baseobject`` quickly.
+    Get started using ``skbase`` quickly.
 
     +++
 
@@ -57,7 +57,7 @@ From here, you can navigate to:
     API Reference
     ^^^^^^^^^^^^^
 
-    Understand baseobjects's API.
+    Understand ``skbase``'s API.
 
     +++
 
@@ -85,7 +85,7 @@ From here, you can navigate to:
     About
     ^^^^^
 
-    Learn more about ``baseobject``.
+    Learn more about ``skbase``.
 
     +++
 
