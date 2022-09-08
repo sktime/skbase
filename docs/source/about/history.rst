@@ -4,7 +4,7 @@
 History
 =======
 
-``skbase`` was started in May 2022 by Franz Király and Ryan Kuhns
+``baseobject`` was started in May 2022 by Franz Király and Ryan Kuhns
 in order to make it easier for others to use `scikit-learn`_ and `sktime`_
 design principles in a range of projects.
 
@@ -12,7 +12,7 @@ The project builds on and was heavily inspired by
 `scikti-learn's <scikit-learn-about>`_ `BaseEstimator API <scikit-learn-est>`_.
 `sktime`_ built on this by developing a ``BaseObject`` that built on these
 design principles and added an `sktime`_ interface for
-general parametric objects. The ``skbase`` project is focused on continuing
+general parametric objects. The ``baseobject`` project is focused on continuing
 to build on these efforts, while further genericizing the design concept to
 a variety of use-cases.
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
+# copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
 """Tests for BaseObject universal base class.
 
 tests in this module:

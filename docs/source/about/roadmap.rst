@@ -4,7 +4,7 @@
 Roadmap
 =======
 
-Welcome to ``skbase``'s roadmap.
+Welcome to `baseobjects`'s roadmap.
 
 .. note::
 
@@ -14,7 +14,7 @@ Welcome to ``skbase``'s roadmap.
 Project Goals
 =============
 
-``skbase`` aims to provide easy-to-use tools for working with and
+``baseobject`` aims to provide easy-to-use tools for working with and
 developing new packages that use `scikit-learn`_ and `sktime`_ style
 parametric objects.
 
@@ -22,14 +22,14 @@ To accomplish this we plan to:
 
 - Add additional unit tests
 - Refactor existing package functionality to minimize dependencies
-- Finalizing and implementing an API for ``BaseObject``-s
-- Expanding the user guide documentation that explains ``skbase``'s core concepts
-- Provide tutorials on using ``skbase`` in your own projects
+- Finalizing and implementing an API for ``BaseObjects``
+- Expanding the user guide documentation that explains ``baseobject's`` core concepts
+- Provide tutorials on using ``baseobject`` in your own projects
 
 We are also considering creating:
 
 - A template repository that developers can use to easily create their own
-  package based on ``skbase``'s design and also test the ``skbase``
+  package based on ``baseobject's`` design and also test the ``baseobject``
   package's testing interface.
 
 .. _scikit-learn: https://scikit-learn.org/stable/index.html

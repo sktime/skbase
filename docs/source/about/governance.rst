@@ -7,7 +7,7 @@ Governance
 Overview
 ========
 
-``skbase`` is a consensus-based project that is part of the ``sktime`` community.
+``baseobject`` is a consensus-based project that is part of the ``sktime`` community.
 Anyone with an interest in the project can join the community, contribute to
 the project, and participate in the governance process. The rest of this document
 describes how that participation takes place, which roles we have in our community,
@@ -15,7 +15,7 @@ how we make decisions, and how we acknowledge contributions.
 
 .. note::
 
-    As a new project, ``skbase`` has adopted a governance structure similar
+    As a new project, ``baseobject`` has adopted a governance structure similar
     to ``sktime``. In the future this could change as the project grows. But for
     the time being, any governance process not covered by this document, defaults
     to ``sktime's`` process.
@@ -25,14 +25,14 @@ how we make decisions, and how we acknowledge contributions.
 Code of Conduct
 ===============
 
-The ``skbase`` project believes that everyone should be able to participate
+The ``baseobject`` project believes that everyone should be able to participate
 in our community without fear of harrassment or discrimination (see our
 :ref:`Code of Conduct guide <coc>`).
 
 Roles
 =====
 
-``skbase`` distinguishes between the following key community roles:
+``baseobject`` distinguishes between the following key community roles:
 
 - :ref:`Contributors`
 - :ref:`Core developers <core-devs>`
@@ -111,7 +111,7 @@ can vote to remove them (same voting rules as appointment).
 Decision making
 ===============
 
-The ``skbase`` community tries to take feedback from all community members into account
+``baseobject's`` tries to take feedback from all community members into account
 when making decisions and strives to find consensus and avoid deadlocks.
 
 To accomplish this, this section outlines the decision-making process used
@@ -167,13 +167,13 @@ and no rejections (excercise of core developer veto right).
 
 .. _gov_bep:
 
-``skbase`` enhancement proposals
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``baseobject`` enhancement proposals
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Project design decisions have a more detailed approval process,
 commensurate with their broader impact on the project. Any changes
 to the project's core API design, hard dependencies or supported versions
-should first be presented in a ``skbase`` enhancement proposal (BEP).
+should first be presented in a ``baseobject`` enhancement proposal (BEP).
 
 See the developer guide for more information on creating a :ref:`BEP <bep>`.
 
@@ -211,7 +211,7 @@ if we have missed anything.
 
 .. note::
 
-  ``skbase`` is an open-source project. All code is contributed
+  ``baseobject`` is an open-source project. All code is contributed
   under `our open-source
   license <https://github.com/sktime/baseobject/blob/main/LICENSE>`_.
   Contributors acknowledge that they have rights to make their contribution
