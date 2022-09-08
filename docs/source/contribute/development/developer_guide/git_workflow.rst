@@ -10,7 +10,7 @@ Git and GitHub workflow
    out the workflow. If you get stuck, chat with us on
    `Slack <https://join.slack.com/t/sktime-group/shared_invite/zt-1cghagwee-sqLJ~eHWGYgzWbqUX937ig>`_.
 
-The preferred workflow for contributing to ``baseobject's`` repository is to
+The preferred workflow for contributing to ``skbase``'s repository is to
 fork the `main repository <https://github.com//sktime/baseobject>`_ on GitHub,
 clone your fork locally and create a development installation, and then create
 a new feature branch for your development.
@@ -22,7 +22,7 @@ a new feature branch for your development.
     details on how to fork a repository see `this
     guide <https://help.github.com/articles/fork-a-repo/>`_.
 
-2.  Follow ``baseobject's`` :ref:`development installation <dev_install>` instructions.
+2.  Follow ``skbase``'s :ref:`development installation <dev_install>` instructions.
 
 3.  Configure and link the remote for your fork to the upstream
     repository:
@@ -102,5 +102,5 @@ a new feature branch for your development.
     .. note::
 
         Pull requests are updated automatically if you push new changes to the
-        same branch. This will trigger ``baseobject's``
+        same branch. This will trigger ``skbase``'s
         :ref:`continuous integration <ci>` routine to re-run automatically.

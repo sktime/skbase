@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
+# copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 # NotFittedError re-use code developed in scikit-learn. These elements
 # are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
 # conditions see https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
-"""Custom exceptions used in ``baseobject``."""
+"""Custom exceptions used in ``skbase``."""
 from typing import List
 
 __author__: List[str] = ["mloning", "rnkuhns"]

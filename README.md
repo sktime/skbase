@@ -1,5 +1,5 @@
 
-# Welcome to BaseObject
+# Welcome to skbase
 
 > A base class for scikit-learn-like and sktime-like parametric objects
 
@@ -21,7 +21,7 @@ design patterns.
 
 To learn more about the package checkout our [documentation](https://baseobject.readthedocs.io/en/latest/).
 
-## :hourglass_flowing_sand: Install baseobject
+## :hourglass_flowing_sand: Install skbase
 For trouble shooting or more information, see our
 [detailed installation instructions](https://baseobject.readthedocs.io/en/latest/user_documentation/installation.html).
 
@@ -32,17 +32,17 @@ For trouble shooting or more information, see our
 [pip]: https://pip.pypa.io/en/stable/
 
 ### pip
-baseobject releases are available as source packages and binary wheels via PyPI
-and can be installed using pip. Checkout the full list of pre-compiled [wheels on PyPi](https://pypi.org/simple/baseobject/).
+skbase releases are available as source packages and binary wheels via PyPI
+and can be installed using pip. Checkout the full list of pre-compiled [wheels on PyPi](https://pypi.org/simple/skbase/).
 
 To install the core package use:
 
 ```bash
-pip install baseobject
+pip install skbase
 ```
 
 or, if you want to install with the maximum set of dependencies, use:
 
 ```bash
-pip install baseobject[all_extras]
+pip install skbase[all_extras]
 ```

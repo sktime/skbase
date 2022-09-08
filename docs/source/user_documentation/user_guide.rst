@@ -5,14 +5,14 @@
 User Guide
 ==========
 
-Welcome to ``baseobject's`` user guide!
+Welcome to ``skbase``'s user guide!
 
 The purpose of the user guide is to provide further explanations and context
-to developers who want to use ``baseobject`` to help create their own
+to developers who want to use ``skbase`` to help create their own
 packages.
 
 If your just looking for a technical specification of the functionality
-that ``baseobject`` provides, see the :ref:`api_ref`.
+that ``skbase`` provides, see the :ref:`api_ref`.
 
 .. note::
 
@@ -38,7 +38,7 @@ that ``baseobject`` provides, see the :ref:`api_ref`.
     Overview
     ^^^^^^^^
 
-    Get an overview of ``baseobject's`` interfaces and design patterns.
+    Get an overview of ``baseobject``'s interfaces and design patterns.
 
     +++
 
@@ -52,7 +52,7 @@ that ``baseobject`` provides, see the :ref:`api_ref`.
     Base Classes
     ^^^^^^^^^^^^
 
-    The BaseObject class interface.
+    The skbase class interface.
 
     +++
 
@@ -66,7 +66,7 @@ that ``baseobject`` provides, see the :ref:`api_ref`.
     Retrieval
     ^^^^^^^^^
 
-    Tools for collecting ``baseobjects`` and metadata on your project.
+    Tools for collecting ``BaseObject``-s, and metadata on your project.
 
     +++
 
@@ -80,7 +80,7 @@ that ``baseobject`` provides, see the :ref:`api_ref`.
     Testing
     ^^^^^^^
 
-    Tools for testing ``baseobjects``.
+    Tools for testing ``BaseObject``-s.
 
     +++
 
