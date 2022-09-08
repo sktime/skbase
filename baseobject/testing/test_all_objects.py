@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# copyright: baseobject developers, BSD-3-Clause License (see LICENSE file)
+# copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Suite of tests for all objects.
 
 adapted from scikit-learn's and sktime's estimator_checks

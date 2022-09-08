@@ -5,7 +5,7 @@ Development Team
 ================
 
 Information about the rights and responsibilities associated with each role
-are described in baseobject's :ref:`governance` document. A list of
+are described in ``skbase``'s :ref:`governance` document. A list of
 all contributors can be found under the `contributors <contributors.md>`_
 section.
 

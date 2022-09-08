@@ -7,16 +7,16 @@ Dependencies
 Types of dependencies
 =====================
 
-``baseobject`` has three types of dependencies:
+``skbase`` has three types of dependencies:
 
-* "core" dependencies that are required for ``baseobject`` to install and run
+* "core" dependencies that are required for ``skbase`` to install and run
 * "soft" dependencies that are required to import or use specific,
   non-core functionality
-* "developer" dependencies are required for developing ``baseobject`` but not
+* "developer" dependencies are required for developing ``skbase`` but not
   rquired of end-users (e.g., ``pytest``)
 
-Making it easy to install and use ``BaseObjects`` in a variety of projects is
-on of ``baseobject's`` goals. Therefore, we seeks to minimizing the number of
+Making it easy to install and use ``skbase`` in a variety of projects is
+on of ``skbase``'s goals. Therefore, we seeks to minimizing the number of
 dependencies needed to provide the proejct's functionality.
 
 Soft Dependencies
@@ -25,7 +25,7 @@ Soft Dependencies
 A soft dependency is a dependency that is only required to import
 certain modules, but not necessary to use most of the package's functionality.
 Accordingly, soft dependencies are not automatically installed alongside
-``baseobject``. If you want to install soft dependencies, you'll either need
+``skbase``. If you want to install soft dependencies, you'll either need
 to do so manually or use follow the installation instructions and install
 the optional "[all_extras]" version of the package.
 

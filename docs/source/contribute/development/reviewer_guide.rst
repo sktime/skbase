@@ -5,7 +5,7 @@
 Reviewer Guide
 ==============
 
-Pull Request reviewers play an important role in ``baseobject's`` development.
+Pull Request reviewers play an important role in ``skbase``'s development.
 
 .. warning::
 
@@ -49,15 +49,15 @@ Documenation
 ============
 
 * Are the docstrings complete and understandable to users?
-* Do they follow the NumPy format and ``baseobject`` conventions?
+* Do they follow the NumPy format and ``skbase`` conventions?
 * If the same parameter, attribute, return object or error is included elsewhere
-  in ``baseobject`` are the docstring descriptions as similar as possible
+  in ``skbase`` are the docstring descriptions as similar as possible
 * Does the online documentation render correctly with the changes?
 * Do the docstrings contain links to the relevant topics in the
   :ref:`glossary` or :ref:`user_guide`?
 
 .. note::
 
-    If a Pull Request does not meet ``baseobject's``
+    If a Pull Request does not meet ``skbase``'s
     :ref:`documentation guide <developer_guide_documentation>` a reviewer should
     require the documentation be updated prior to approving the Pull Request.

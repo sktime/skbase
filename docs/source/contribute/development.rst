@@ -4,7 +4,7 @@ Development
 
 .. note::
 
-    If you are new to ``baseobject`` you may want to see how you can get
+    If you are new to ``skbase`` you may want to see how you can get
     started :ref:`contributing <how_to_contrib>`.
 
 .. toctree::

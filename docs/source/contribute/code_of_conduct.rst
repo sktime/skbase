@@ -4,7 +4,7 @@
 Code of conduct
 ===============
 
-The ``baseobject`` project believes that everyone should be able to participate
+The ``skbase`` project believes that everyone should be able to participate
 in our community without fear of harrassment or discrimination. All contributors
 are expected to show respect and courtesy to other members of the community
 at all times.
@@ -18,7 +18,7 @@ to Dr. Franz Király by email at f.kiraly@ucl.ac.uk.
 
 .. note::
 
-    ``baseobject`` is a new project, and processes associated with the project's
+    ``skbase`` is a new project, and processes associated with the project's
     Code of Conduct (including how to report incidents) and may change as the
-    project matures. However, ``baseobject's`` Code of Conduct will remain
+    project matures. However, ``skbase``'s Code of Conduct will remain
     dedicated to promoting a community without harrassment and discrimination.
