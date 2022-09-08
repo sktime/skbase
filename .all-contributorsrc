@@ -61,7 +61,7 @@
         ]
       }
   ],
-  "projectName": "skbase",
+  "projectName": "BaseObject",
   "projectOwner": "sktime",
   "repoType": "github",
   "repoHost": "https://github.com",

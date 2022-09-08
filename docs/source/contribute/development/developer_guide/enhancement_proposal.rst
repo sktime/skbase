@@ -7,14 +7,14 @@ Enhancement Proposals
 Description
 ===========
 
-A ``skbase`` enhancement proposal (BEP) is a software design document
-providing information to the ``skbase`` community.
+A ``baseobject`` enhancement proposal (BEP) is a software design document
+providing information to the ``baseobject`` community.
 The proposal should provide a rationale and concise technical specification of
 the proposed design.
 
 We intend BEPs to be the primary mechanisms for proposing major changes,
 for collecting community input on an issue, and for documenting the design
-decisions that have gone into ``skbase``.
+decisions that have gone into ``baseobject``.
 
 Smaller changes will be discussed and implemented directly on issues and pull requests.
 
@@ -23,7 +23,7 @@ Submitting a BEP
 
 To create a new BEP, please copy and use sktime's `template`_ (update any
 references to sktime when drafting your BEP) and open a pull request on
-the ``skbase`` repository.
+the ``baseobject`` repository.
 
 .. _template: https://github.com/sktime/enhancement-proposals/blob/main/TEMPLATE.md
 

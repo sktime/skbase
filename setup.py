@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Install script for skbase. Based on sktime install."""
+"""Install script for baseobject. Based on sktime install."""
 
 __author__ = ["mloning", "lmmentel", "fkiraly"]
 

@@ -5,7 +5,7 @@ Glossary of Common Terms
 ========================
 
 The glossary below defines common terms and API elements used throughout
-``skbase``.
+``baseobject``.
 
 .. note::
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -u
 # -*- coding: utf-8 -*-
-# copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
+# copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
 # _HeterogenousMetaEstimator re-use code developed in scikit-learn. These elements
 # are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
 # conditions see https://github.com/scikit-learn/scikit-learn/blob/main/COPYING

@@ -4,7 +4,7 @@
 Get Involved
 ============
 
-``skbase`` is a community-driven project and your help is extremely welcome. If you
+``baseobject`` is a community-driven project and your help is extremely welcome. If you
 get stuck, please don't hesitate to chat with us or raise an issue.
 
 .. toctree::
@@ -24,7 +24,7 @@ get stuck, please don't hesitate to chat with us or raise an issue.
     How to contribute
     ^^^^^^^^^^^^^^^^^
 
-    New to ``skbase``? Learn how you can contribute.
+    New to ``baseobject``? Learn how you can contribute.
 
     +++
 
@@ -38,7 +38,7 @@ get stuck, please don't hesitate to chat with us or raise an issue.
     Development
     ^^^^^^^^^^^
 
-    Help develop ``skbase``.
+    Help develop ``baseobject``.
 
     +++
 
@@ -52,7 +52,7 @@ get stuck, please don't hesitate to chat with us or raise an issue.
     Development Team
     ^^^^^^^^^^^^^^^^
 
-    Meet ``skbase's`` core development team.
+    Meet ``baseobject's`` core development team.
 
     +++
 
