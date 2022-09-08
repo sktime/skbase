@@ -9,13 +9,12 @@
 __author__ = ["mloning", "fkiraly"]
 __all__ = ["_HeterogenousMetaEstimator"]
 
-from abc import ABCMeta
 from inspect import isclass
 
 from baseobject import BaseEstimator
 
 
-class _HeterogenousMetaEstimator(BaseEstimator, metaclass=ABCMeta):
+class _HeterogenousMetaEstimator(BaseEstimator):
     """Handles parameter management for estimators composed of named estimators.
 
     Partly adapted from sklearn utils.metaestimator.py.
