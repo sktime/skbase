@@ -13,6 +13,10 @@ design patterns.
 | **Code** |  [![!pypi](https://img.shields.io/pypi/v/baseobject?color=orange)](https://pypi.org/project/baseobject/)  [![!python-versions](https://img.shields.io/pypi/pyversions/baseobject)](https://www.python.org/) [![!black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit) |
 | **Downloads**| [![Downloads](https://static.pepy.tech/personalized-badge/baseobject?period=week&units=international_system&left_color=grey&right_color=blue&left_text=weekly%20(pypi))](https://pepy.tech/project/baseobject) [![Downloads](https://static.pepy.tech/personalized-badge/baseobject?period=month&units=international_system&left_color=grey&right_color=blue&left_text=monthly%20(pypi))](https://pepy.tech/project/baseobject) [![Downloads](https://static.pepy.tech/personalized-badge/baseobject?period=total&units=international_system&left_color=grey&right_color=blue&left_text=cumulative%20(pypi))](https://pepy.tech/project/baseobject) |
 
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+
 ## Documentation
 
 To learn more about the package checkout our [documentation](https://baseobject.readthedocs.io/en/latest/).

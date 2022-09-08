@@ -68,9 +68,9 @@ from baseobject._exceptions import NotFittedError
 
 
 class BaseObject(_BaseEstimator):
-    """Base class for parametric objects with tags sktime.
+    """Base class for parametric objects with sktime style tag interface.
 
-    Extends scikit-learn's BaseEstimator to include sktime interface for tags.
+    Extends scikit-learn's BaseEstimator to include sktime style interface for tags.
     """
 
     def __init__(self):
@@ -80,19 +80,24 @@ class BaseObject(_BaseEstimator):
     def reset(self):
         """Reset the object to a clean post-init state.
 
-        Equivalent to sklearn.clone but overwrites self.
-        After self.reset() call, self is equal in value to
-        `type(self)(**self.get_params(deep=False))`
+        Using reset, runs __init__ with current values of hyper-parameters
+        (result of get_params). This Removes any object attributes, except:
 
-        Detail behaviour:
-        removes any object attributes, except:
-            hyper-parameters = arguments of __init__
-            object attributes containing double-underscores, i.e., the string "__"
-        runs __init__ with current values of hyper-parameters (result of get_params)
+            - hyper-parameters = arguments of __init__
+            - object attributes containing double-underscores, i.e., the string "__"
 
-        Not affected by the reset are:
-        object attributes containing double-underscores
-        class and object methods, class attributes
+        Class and object methods, and class attributes are also unaffected.
+
+        Returns
+        -------
+        self
+            Instance of class reset to a clean post-init state but retaining
+            the current hyper-parameter values.
+
+        Notes
+        -----
+        Equivalent to sklearn.clone but overwrites self. After self.reset()
+        call, self is equal in value to `type(self)(**self.get_params(deep=False))`
         """
         # retrieve parameters to copy them later
         params = self.get_params(deep=False)
@@ -114,21 +119,27 @@ class BaseObject(_BaseEstimator):
 
         A clone is a different object without shared references, in post-init state.
         This function is equivalent to returning sklearn.clone of self.
-        Equal in value to `type(self)(**self.get_params(deep=False))`.
+
+        Notes
+        -----
+        Also equal in value to `type(self)(**self.get_params(deep=False))`.
         """
         return clone(self)
 
     @classmethod
     def _get_init_signature(cls):
-        """Get init sigature of cls, for use in parameter inspection.
+        """Get class init sigature.
+
+        Useful in parameter inspection.
 
         Returns
         -------
-        list of inspect Parameter objects (including defaults)
+        List
+            The inspected parameter objects (including defaults).
 
         Raises
         ------
-        RuntimeError if cls has varargs in __init__
+        RuntimeError if cls has varargs in __init__.
         """
         # fetch the constructor or the original constructor before
         # deprecation wrapping if any
@@ -160,11 +171,12 @@ class BaseObject(_BaseEstimator):
 
     @classmethod
     def get_param_names(cls):
-        """Get parameter names for the object.
+        """Get object's parameter names.
 
         Returns
         -------
-        param_names: list of str, alphabetically sorted list of parameter names of cls
+        param_names: list[str]
+            Alphabetically sorted list of parameter names of cls.
         """
         parameters = cls._get_init_signature()
         param_names = sorted([p.name for p in parameters])
@@ -172,13 +184,13 @@ class BaseObject(_BaseEstimator):
 
     @classmethod
     def get_param_defaults(cls):
-        """Get parameter defaults for the object.
+        """Get object's parameter defaults.
 
         Returns
         -------
-        default_dict: dict with str keys
-            keys are all parameters of cls that have a default defined in __init__
-            values are the defaults, as defined in __init__
+        default_dict: dict[str, Any]
+            Keys are all parameters of cls that have a default defined in __init__
+            values are the defaults, as defined in __init__.
         """
         parameters = cls._get_init_signature()
         default_dict = {
@@ -190,17 +202,18 @@ class BaseObject(_BaseEstimator):
         """Set the parameters of this object.
 
         The method works on simple estimators as well as on nested objects.
-        The latter have parameters of the form ``<component>__<parameter>`` so that it's
-        possible to update each component of a nested object.
+        The latter have parameters of the form ``<component>__<parameter>`` so
+        that it's possible to update each component of a nested object.
 
         Parameters
         ----------
         **params : dict
-            BaseObject parameters
+            BaseObject parameters.
 
         Returns
         -------
-        self : reference to self (after parameters have been set)
+        self
+            Reference to self (after parameters have been set).
         """
         if not params:
             # Simple optimization to gain speed (inspect is slow)
@@ -233,14 +246,17 @@ class BaseObject(_BaseEstimator):
 
     @classmethod
     def get_class_tags(cls):
-        """Get class tags from estimator class and all its parent classes.
+        """Get class tags from the class and all its parent classes.
+
+        Retrieves tag: value pairs from _tags class attribute. Does not return
+        information from dynamic tags (set via set_tags or clone_tags)
+        that are defined on instances.
 
         Returns
         -------
         collected_tags : dict
-            Dictionary of tag name : tag value pairs. Collected from _tags
-            class attribute via nested inheritance. NOT overridden by dynamic
-            tags set by set_tags or mirror_tags.
+            Dictionary of class tag name: tag value pairs. Collected from _tags
+            class attribute via nested inheritance.
         """
         collected_tags = {}
 
@@ -258,13 +274,16 @@ class BaseObject(_BaseEstimator):
 
     @classmethod
     def get_class_tag(cls, tag_name, tag_value_default=None):
-        """Get tag value from estimator class (only class tags).
+        """Get a class tag's value.
+
+        Does not return information from dynamic tags (set via set_tags or clone_tags)
+        that are defined on instances.
 
         Parameters
         ----------
         tag_name : str
             Name of tag value.
-        tag_value_default : any type
+        tag_value_default : any
             Default/fallback value if tag is not found.
 
         Returns
@@ -308,14 +327,14 @@ class BaseObject(_BaseEstimator):
 
         Returns
         -------
-        tag_value :
+        tag_value : Any
             Value of the `tag_name` tag in self. If not found, returns an error if
-            raise_error is True, otherwise it returns `tag_value_default`.
+            `raise_error` is True, otherwise it returns `tag_value_default`.
 
         Raises
         ------
-        ValueError if raise_error is True i.e. if tag_name is not in self.get_tags(
-        ).keys()
+        ValueError if raise_error is True i.e. if `tag_name` is not in
+        self.get_tags().keys()
         """
         collected_tags = self.get_tags()
 
@@ -331,18 +350,17 @@ class BaseObject(_BaseEstimator):
 
         Parameters
         ----------
-        tag_dict : dict
-            Dictionary of tag name : tag value pairs.
+        **tag_dict : dict
+            Dictionary of tag name: tag value pairs.
 
         Returns
         -------
-        Self :
+        Self
             Reference to self.
 
         Notes
         -----
-        Changes object state by settting tag values in tag_dict as dynamic tags
-        in self.
+        Changes object state by settting tag values in tag_dict as dynamic tags in self.
         """
         tag_update = deepcopy(tag_dict)
         if hasattr(self, "_tags_dynamic"):
@@ -353,7 +371,7 @@ class BaseObject(_BaseEstimator):
         return self
 
     def clone_tags(self, estimator, tag_names=None):
-        """clone/mirror tags from another estimator as dynamic override.
+        """Clone tags from another estimator as dynamic override.
 
         Parameters
         ----------
@@ -550,14 +568,16 @@ class BaseObject(_BaseEstimator):
         return False
 
     def is_composite(self):
-        """Check if the object is composite.
+        """Check if the object is composed of other BaseObjects.
 
         A composite object is an object which contains objects, as parameters.
         Called on an instance, since this may differ by instance.
 
         Returns
         -------
-        composite: bool, whether self contains a parameter which is BaseObject
+        composite: bool
+            Whether an object has any parameters whose values
+            are BaseObjects.
         """
         # walk through method resolution order and inspect methods
         #   of classes and direct parents, "adjacent" classes in mro
@@ -567,7 +587,7 @@ class BaseObject(_BaseEstimator):
         return composite
 
     def _components(self, base_class=None):
-        """Retirn references to all state changing BaseObject type attributes.
+        """Return references to all state changing BaseObject type attributes.
 
         This *excludes* the blue-print-like components passed in the __init__.
 
@@ -794,9 +814,9 @@ class TagAliaserMixin:
 
 
 class BaseEstimator(BaseObject):
-    """Base class for defining estimators in sktime.
+    """Base class for estimators with scikit-learn and sktime design patterns.
 
-    Extends sktime's BaseObject to include basic functionality for fittable estimators.
+    Extends BaseObject to include basic functionality for fittable estimators.
     """
 
     def __init__(self):
@@ -806,11 +826,25 @@ class BaseEstimator(BaseObject):
 
     @property
     def is_fitted(self):
-        """Whether `fit` has been called."""
+        """Whether `fit` has been called.
+
+        Inspects object's `_is_fitted` attribute that should initialize to False
+        during object construction, and be set to True in calls to an object's
+        `fit` method.
+
+        Returns
+        -------
+        bool
+            Whether the estimator has been `fit`.
+        """
         return self._is_fitted
 
     def check_is_fitted(self):
         """Check if the estimator has been fitted.
+
+        Inspects object's `_is_fitted` attribute that should initialize to False
+        during object construction, and be set to True in calls to an object's
+        `fit` method.
 
         Raises
         ------

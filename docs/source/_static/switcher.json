@@ -1,0 +1,12 @@
+[
+    {
+      "name": "dev",
+      "version": "latest",
+      "url": "https://baseobject.readthedocs.io/en/latest/"
+    },
+    {
+      "name": "0.1.0",
+      "version": "stable",
+      "url": "https://baseobject.readthedocs.io/en/stable/"
+    }
+]
