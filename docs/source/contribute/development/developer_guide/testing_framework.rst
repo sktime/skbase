@@ -4,13 +4,13 @@ Testing Framework
 
 .. note::
 
-    This page explains ``baseobject's`` testing framework with an emphasis on how
+    This page explains ``skbase``'s testing framework with an emphasis on how
     the package's developers  are expected to interact with the test suite. If
-    you are developer and want to learn how you can use the ``baseobject``
+    you are developer and want to learn how you can use the ``skbase``
     testing framework to develop your own package, see our
     :ref:`testing user guide <user_guide_testing>`.
 
-``baseobject`` uses ``pytest`` to verify code is working as expected.
+``skbase`` uses ``pytest`` to verify code is working as expected.
 This page gives an overview of the tests, an introduction on adding new tests,
 and how to extend the testing framework.
 
@@ -22,7 +22,7 @@ and how to extend the testing framework.
 Test module architecture
 ========================
 
-``baseobject`` uses a tiered approach to test its functionality:
+``skbase`` uses a tiered approach to test its functionality:
 
 - *package level* tests in ``tests/test_base.py`` are designed to verify the
   ``BaseObject`` interface

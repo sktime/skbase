@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# copyright: BaseObject developers, BSD-3-Clause License (see LICENSE file)
+# copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tools to lookup information on code artifacts in a Python package or module.
 
 This module exports the following methods for registry lookup:
@@ -7,7 +7,7 @@ This module exports the following methods for registry lookup:
 package_metadata()
     Walk package and return metadata on included classes and functions by module.
 all_objects(object_types, filter_tags)
-    Look (and optionally filter) BaseObject descendents in a package or module.
+    Look (and optionally filter) BaseObject descendants in a package or module.
 
 """
 # all_objects is based on the sktime all_estimator retrieval utility, which
