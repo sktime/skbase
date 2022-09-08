@@ -29,7 +29,7 @@ from baseobject.testing.utils.inspect import _get_args
 
 
 class BaseFixtureGenerator:
-    """Fixture generator for base testing functionality in sktime.
+    """Fixture generator for baseobject testing functionality.
 
     Test classes inheriting from this and not overriding pytest_generate_tests
         will have object and scenario fixtures parametrized out of the box.
@@ -519,7 +519,7 @@ class QuickTester:
 
 
 class TestAllObjects(BaseFixtureGenerator, QuickTester):
-    """Package level tests for all sktime objects."""
+    """Package level tests for BaseObjects."""
 
     def test_create_test_instance(self, object_class):
         """Check first that create_test_instance logic works."""
