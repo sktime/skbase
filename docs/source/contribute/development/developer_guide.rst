@@ -25,7 +25,7 @@ Developer guide
     Installation
     ^^^^^^^^^^^^
 
-    Install a development version of ``skbase``.
+    Install a development version of ``baseobject``.
 
     +++
 
@@ -95,7 +95,7 @@ Developer guide
     Testing Framework
     ^^^^^^^^^^^^^^^^^
 
-    How we test ``skbase``.
+    How we test ``baseobject``.
 
     +++
 

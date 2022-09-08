@@ -4,7 +4,7 @@
 About
 =====
 
-Learn more about the ``skbase`` project and its community.
+Learn more about the ``baseobject`` project and its community.
 
 .. toctree::
    :maxdepth: 1
@@ -25,7 +25,7 @@ Learn more about the ``skbase`` project and its community.
     Mission
     ^^^^^^^
 
-    ``skbase's`` mission.
+    ``baseobject's`` mission.
 
     +++
 
@@ -39,7 +39,7 @@ Learn more about the ``skbase`` project and its community.
     History
     ^^^^^^^
 
-    Learn about ``skbase's`` history.
+    Learn about ``baseobject's`` history.
 
     +++
 
@@ -53,7 +53,7 @@ Learn more about the ``skbase`` project and its community.
     Development Team
     ^^^^^^^^^^^^^^^^
 
-    ``skbase's`` core development team.
+    ``baseobject's`` core development team.
 
     +++
 
@@ -67,7 +67,7 @@ Learn more about the ``skbase`` project and its community.
     Contributors
     ^^^^^^^^^^^^
 
-    All of ``skbase's`` contributors.
+    All of ``baseobject's`` contributors.
 
     +++
 

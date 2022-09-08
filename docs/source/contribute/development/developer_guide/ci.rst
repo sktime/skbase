@@ -7,7 +7,7 @@ Continuous integration
 .. _gha: https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
 .. _precommit: https://pre-commit.ci/
 
-``skbase`` uses `Github Actions <gha>`_ continuous integration (CI) services
+``baseobject`` uses `Github Actions <gha>`_ continuous integration (CI) services
 to ensure contributions meet the project's standards. See the sections below to
 see how the project automatically validates code quality, and builds and tests
 your changes.
@@ -17,7 +17,7 @@ Code quality checks
 
 
 
-``skbase`` uses `pre-commit.ci <precommit>`_ to help maintain the project's
+``baseobject`` uses `pre-commit.ci <precommit>`_ to help maintain the project's
 :ref:`coding style <code_style>`, by automating the code quality checks spelled out in
 the .pre-commit-config.yaml in the project's root directory. These checks run
 automatically when you open a Pull Request or push a new commit to an existing
@@ -43,8 +43,8 @@ to run prior committing your code locally.
 Unit testing
 ============
 
-``skbase`` uses `pytest <https://docs.pytest.org/en/latest/>`_ for unit testing.
-To check if your code passes all tests locally, follow ``skbase``'s
+``baseobject`` uses `pytest <https://docs.pytest.org/en/latest/>`_ for unit testing.
+To check if your code passes all tests locally, follow ``baseobject's``
 :ref:`development installation <dev_install>` instructions, which will install
 ``pytest`` along with other development tools.
 

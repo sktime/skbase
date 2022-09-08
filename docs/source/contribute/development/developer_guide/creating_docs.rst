@@ -4,40 +4,40 @@
 Documentation standards
 =======================
 
-Providing instructive documentation is a key part of ``skbase``'s mission.
+Providing instructive documentation is a key part of ``baseobject's`` mission.
 To meet this, developers are expected to follow the project's documentation standards.
 
 These include:
 
 * Documenting code using NumPy docstrings
-* Following ``skbase``'s docstring convention for public code artifacts and modules
+* Following ``baseobject's`` docstring convention for public code artifacts and modules
 * Adding new public functionality to the :ref:`api_ref`
   and :ref:`user guide <user_guide>`
 
-More detailed information on ``skbase``'s documentation format is provided below.
+More detailed information on ``baseobjects's`` documentation format is provided below.
 
 Docstring conventions
 =====================
 
-``skbase`` uses the numpydoc_ Sphinx extension and follows
+``baseobject`` uses the numpydoc_ Sphinx extension and follows
 `NumPy docstring format <https://numpydoc.readthedocs.io/en/latest/format.html>`_.
 
-To ensure docstrings meet expectations, ``skbase`` uses a combination of
+To ensure docstrings meet expectations, ``baseobject`` uses a combination of
 validations built into numpydoc_, pydocstyle_ pre-commit checks
 (set to the NumPy convention) and automated testing of docstring examples to
 ensurecthe code runs without error.
 
 However, the automated docstring validation in pydocstyle_ only covers basic
-formatting. Passing these tests is necessary to meet the ``skbase``
+formatting. Passing these tests is necessary to meet the ``baseobject``
 docstring conventions, but is not sufficient for doing so.
 
-To ensure docstrings meet ``skbase``'s conventions, developers are expected
-to check their docstrings against numpydoc_ and ``skbase`` conventions and
+To ensure docstrings meet ``baseobject's`` conventions, developers are expected
+to check their docstrings against numpydoc_ and ``baseobject`` conventions and
 ref:`reviewer's <reviewer_guide_doc>` are expected to also focus feedback on
 docstring quality.
 
-``skbase`` specific conventions
--------------------------------
+``baseobject`` specific conventions
+-----------------------------------
 
 Beyond basic NumPy docstring formatting conventions, developers should focus on:
 
@@ -47,11 +47,11 @@ Beyond basic NumPy docstring formatting conventions, developers should focus on:
   :ref:`user_guide` in the extended summary
 - Including an `Examples` section that demonstrates at least basic functionality
   in all public code artifacts
-- Adding a `See Also` section that references related ``skbase`` code
+- Adding a `See Also` section that references related ``baseobject`` code
   artifacts as applicable
 - Including citations to relevant sources in a `References` section
 
-Accordingly, most public code artifacts in ``skbase``
+Accordingly, most public code artifacts in ``baseobject``
 should generally include the following NumPy docstring convention sections:
 
 1. Summary
@@ -112,7 +112,7 @@ to the user guide and link to it if it does not already exist.
 See Also
 ~~~~~~~~
 
-This section should reference other ``skbase`` code artifcats related to the code
+This section should reference other ``baseobject`` code artifcats related to the code
 artifact being documented by the docstring. Developers should use judgement in
 determining related code artifcats.
 
@@ -124,13 +124,13 @@ The notes section can include several types of information, including:
 - Mathematical details of a code object or other important implementation details
   (using ..math or :math:`` functionality)
 - Links to alternative implementations of the code artifact that are external to
-  ``skbase``
+  ``baseobject``
 - A discussion of state changing methods
 
 References
 ~~~~~~~~~~
 
-Objects that implement functionality covered in a research article or
+``baseobjects`` that implement functionality covered in a research article or
 other package, should include an applicable citation.
 
 This should be done by adding references into the references section of the docstring,
@@ -166,20 +166,20 @@ out the ".. [1]" directive as shown below.
 Examples
 ~~~~~~~~
 
-Most code artifacts in ``skbase`` should include an examples section. At
+Most code artifacts in ``baseobject`` should include an examples section. At
 a minimum this should include a single example that illustrates basic functionality.
 
 
 The examples should use simple data (e.g. randomly generated data, etc)
-generated using a ``skbase`` dependency and whereever possible only depend
-on ``skbase`` or its core dependencies. Examples should also be designed to
+generated using a ``baseobject`` dependency and whereever possible only depend
+on ``baseobject`` or its core dependencies. Examples should also be designed to
 run quickly where possible. For quick running code artifacts, additional examples
 can be included to illustrate the affect of different parameter settings.
 
-Examples of Good ``skbase`` Docstrings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Examples of Good ``baseobject`` Docstrings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here are a few examples of ``skbase`` code artifacts with good documentation.
+Here are a few examples of ``baseobject`` code artifacts with good documentation.
 
 Classes
 ^^^^^^^
