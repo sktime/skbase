@@ -38,7 +38,7 @@ from typing import (
     Union,
 )
 
-from baseobject import BaseObject
+from skbase import BaseObject
 
 # Conditionally import TypedDict based on Python version
 if sys.version_info >= (3, 8):

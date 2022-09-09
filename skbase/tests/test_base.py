@@ -30,7 +30,7 @@ from copy import deepcopy
 
 import pytest
 
-from baseobject import BaseObject
+from skbase import BaseObject
 
 
 # Fixture class for testing tag system

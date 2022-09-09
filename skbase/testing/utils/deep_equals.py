@@ -14,7 +14,7 @@ __all__ = ["deep_equals"]
 
 import numpy as np
 
-from baseobject.testing.utils._dependencies import _check_soft_dependencies
+from skbase.testing.utils._dependencies import _check_soft_dependencies
 
 
 def deep_equals(x, y, return_msg=False):

@@ -18,6 +18,6 @@ __all__ = [
     "get_package_metadata",
 ]
 
-from baseobject._base import BaseEstimator, BaseObject
-from baseobject._lookup import all_objects, get_package_metadata
-from baseobject._meta import _HeterogenousMetaEstimator
+from skbase._base import BaseEstimator, BaseObject
+from skbase._lookup import all_objects, get_package_metadata
+from skbase._meta import _HeterogenousMetaEstimator

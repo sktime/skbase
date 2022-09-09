@@ -19,13 +19,13 @@ from sklearn.utils.estimator_checks import (
     check_get_params_invariance as _check_get_params_invariance,
 )
 
-from baseobject import BaseObject
-from baseobject._lookup import all_objects
-from baseobject.testing.utils._conditional_fixtures import (
+from skbase import BaseObject
+from skbase._lookup import all_objects
+from skbase.testing.utils._conditional_fixtures import (
     create_conditional_fixtures_and_names,
 )
-from baseobject.testing.utils.deep_equals import deep_equals
-from baseobject.testing.utils.inspect import _get_args
+from skbase.testing.utils.deep_equals import deep_equals
+from skbase.testing.utils.inspect import _get_args
 
 
 class BaseFixtureGenerator:

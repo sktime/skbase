@@ -11,7 +11,7 @@ __all__ = ["_HeterogenousMetaEstimator"]
 
 from inspect import isclass
 
-from baseobject import BaseEstimator
+from skbase import BaseEstimator
 
 
 class _HeterogenousMetaEstimator(BaseEstimator):

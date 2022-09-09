@@ -64,7 +64,7 @@ from copy import deepcopy
 from sklearn import clone
 from sklearn.base import BaseEstimator as _BaseEstimator
 
-from baseobject._exceptions import NotFittedError
+from skbase._exceptions import NotFittedError
 
 
 class BaseObject(_BaseEstimator):
