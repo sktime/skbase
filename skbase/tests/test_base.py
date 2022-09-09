@@ -29,7 +29,6 @@ __all__ = [
 from copy import deepcopy
 
 import pytest
-
 from skbase import BaseObject
 
 
