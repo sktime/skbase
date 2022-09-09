@@ -7,7 +7,7 @@ The included functionality makes it easy to re-use scikit-learn and
 sktime design principles in your project.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __author__ = ["mloning", "RNKuhns", "fkiraly"]
 __all__ = [
