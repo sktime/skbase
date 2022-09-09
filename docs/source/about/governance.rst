@@ -197,7 +197,7 @@ In the event a proposed change does not gather the necesssary votes, then:
 Acknowledging contributions
 ===========================
 
-The ``baseobject`` project values all kinds of contributions and the
+The ``skbase`` project values all kinds of contributions and the
 development team is committed to recognising each of them fairly.
 
 The project follows the `all-contributors <https://allcontributors.org>`_

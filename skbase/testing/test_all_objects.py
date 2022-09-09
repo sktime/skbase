@@ -29,7 +29,7 @@ from skbase.testing.utils.inspect import _get_args
 
 
 class BaseFixtureGenerator:
-    """Fixture generator for baseobject testing functionality.
+    """Fixture generator for skbase testing functionality.
 
     Test classes inheriting from this and not overriding pytest_generate_tests
         will have object and scenario fixtures parametrized out of the box.
@@ -74,7 +74,7 @@ class BaseFixtureGenerator:
     # ------------------------------------------------------
 
     # package to search for objects
-    package_name = "baseobject.mock_package"
+    package_name = "skbase.mock_package"
 
     # which object types are generated; None=all, or scitype string like "forecaster"
     object_type_filter = None
@@ -285,8 +285,8 @@ class QuickTester:
 
         Examples
         --------
-        >>> from baseobject.mock_package import CompositionDummy
-        >>> from baseobject.testing.test_all_objects import TestAllObjects
+        >>> from skbase.mock_package import CompositionDummy
+        >>> from skbase.testing.test_all_objects import TestAllObjects
         >>> TestAllObjects().run_tests(
         ...     CompositionDummy,
         ...     tests_to_run="test_constructor"

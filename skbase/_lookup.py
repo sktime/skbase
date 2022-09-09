@@ -616,7 +616,7 @@ def all_objects(
     as_dataframe=False,
     return_tags=None,
     suppress_import_stdout=True,
-    package_name="baseobject",
+    package_name="skbase",
     path: Optional[str] = None,
     ignore_modules=None,
     class_lookup=None,
@@ -663,7 +663,7 @@ def all_objects(
         If str or list of str, the tag values named in return_tags will be
         fetched for each object and will be appended as either columns or
         tuple entries.
-    package_name : str, default="baseobject".
+    package_name : str, default="skbase".
         should be set to default to package or module name if used for search.
         objects will be searched inside the package/module called package_name,
         this can include sub-module dots, e.g., "package.module1.module2".
