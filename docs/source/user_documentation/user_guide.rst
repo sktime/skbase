@@ -38,7 +38,7 @@ that ``skbase`` provides, see the :ref:`api_ref`.
     Overview
     ^^^^^^^^
 
-    Get an overview of ``baseobject``'s interfaces and design patterns.
+    Get an overview of ``skbase``'s interfaces and design patterns.
 
     +++
 

@@ -11,7 +11,7 @@ __all__ = ["_HeterogenousMetaEstimator"]
 
 from inspect import isclass
 
-from baseobject import BaseEstimator
+from skbase import BaseEstimator
 
 
 class _HeterogenousMetaEstimator(BaseEstimator):
@@ -355,8 +355,8 @@ class _HeterogenousMetaEstimator(BaseEstimator):
 
         Parameters
         ----------
-        self : `baseobject` estimator, instance of composite_class (when invoked)
-        other : `baseobject` estimator, should inherit from composite_class \
+        self : `skbase` estimator, instance of composite_class (when invoked)
+        other : `skbase` estimator, should inherit from composite_class \
             or base_class otherwise, `NotImplemented` is returned
         base_class : estimator base class assumed as base class for self, other,
             and estimator components of composite_class, in case of concatenation

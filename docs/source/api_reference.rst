@@ -10,7 +10,7 @@ The API reference provides a technical manual, describing the class and
 function interface provided by the package. See the :ref:`user_guide` for
 additional details.
 
-.. automodule:: baseobject
+.. automodule:: skbase
     :no-members:
     :no-inherited-members:
 
@@ -19,7 +19,7 @@ additional details.
 Base Classes
 ============
 
-.. currentmodule:: baseobject
+.. currentmodule:: skbase
 
 .. autosummary::
     :toctree: api_reference/auto_generated/
@@ -33,7 +33,7 @@ Base Classes
 Object Retrieval
 ================
 
-.. currentmodule:: baseobject
+.. currentmodule:: skbase
 
 .. autosummary::
     :toctree: api_reference/auto_generated/
@@ -47,11 +47,11 @@ Object Retrieval
 Testing
 =======
 
-.. automodule:: baseobject.testing
+.. automodule:: skbase.testing
     :no-members:
     :no-inherited-members:
 
-.. currentmodule:: baseobject.testing
+.. currentmodule:: skbase.testing
 
 .. autosummary::
     :toctree: api_reference/auto_generated/

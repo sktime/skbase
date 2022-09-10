@@ -61,10 +61,9 @@ import warnings
 from collections import defaultdict
 from copy import deepcopy
 
+from skbase._exceptions import NotFittedError
 from sklearn import clone
 from sklearn.base import BaseEstimator as _BaseEstimator
-
-from baseobject._exceptions import NotFittedError
 
 
 class BaseObject(_BaseEstimator):

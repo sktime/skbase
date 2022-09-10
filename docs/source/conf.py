@@ -25,17 +25,17 @@ if not env_rtd == "True":
     pass
     # sys.path.insert(0, os.path.abspath("../.."))
 
-# import baseobject
+# import skbase
 
 # -- Project information -----------------------------------------------------
 
-project = "baseobject"
-copyright = "2022 (BSD-3-Clause License"
-author = "BaseObject Developers"
+project = "skbase"
+copyright = "2022 (BSD-3-Clause License)"
+author = "skbase Developers"
 
 
 # The full version, including alpha/beta/rc tags
-# release = baseobject.__version__
+# release = skbase.__version__
 
 # -- General configuration ---------------------------------------------------
 
@@ -135,14 +135,14 @@ def linkcode_resolve(domain, info):
         import os
 
         fn = inspect.getsourcefile(obj)
-        fn = os.path.relpath(fn, start=os.path.dirname(baseobject.__file__))
+        fn = os.path.relpath(fn, start=os.path.dirname(skbase.__file__))
         source, lineno = inspect.getsourcelines(obj)
         return fn, lineno, lineno + len(source) - 1
 
     if domain != "py" or not info["module"]:
         return None
     try:
-        filename = "baseobject/%s#L%d-L%d" % find_source()
+        filename = "skbase/%s#L%d-L%d" % find_source()
     except Exception:
         filename = info["module"].replace(".", "/") + ".py"
     return "https://github.com/sktime/baseobject/blob/{version_match}/{filename}"
@@ -166,7 +166,7 @@ version_match = os.environ.get("READTHEDOCS_VERSION")
 # If it is an integer, we're in a PR build and the version isn't correct.
 if not version_match or version_match.isdigit():
     # For local development, infer the version to match from the package.
-    release = "0.1.0"  # baseobject.__version__
+    release = "0.2.0"  # skbase.__version__
     if "dev" in release:
         version_match = "latest"
         # We want to keep the relative reference if we are in dev mode
@@ -273,7 +273,7 @@ nbsphinx_timeout = 600  # seconds, set to -1 to disable timeout
 current_file = "{{ env.doc2path( env.docname, base=None) }}"
 
 # make sure Binder points to latest stable release, not main
-binder_base = "https://mybinder.org/v2/gh//baseobject/"
+binder_base = "https://mybinder.org/v2/gh//skbase/"
 binder_url = binder_base + f"{version_match}?filepath={current_file}"
 nbsphinx_prolog = f"""
 .. |binder| image:: https://mybinder.org/badge_logo.svg

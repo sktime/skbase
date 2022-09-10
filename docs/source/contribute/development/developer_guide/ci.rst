@@ -53,7 +53,7 @@ and run:
 
    .. code:: bash
 
-      pytest ./baseobject
+      pytest ./skbase
 
 or if you have `make <https://www.gnu.org/software/make/>`_ installed:
 
@@ -65,7 +65,7 @@ Infrastructure
 ==============
 
 This section gives an overview of the infrastructure and continuous
-integration services ``baseobject`` uses.
+integration services ``skbase`` uses.
 
 +---------------+-----------------------+-------------------------------------+
 | Platform      | Operation             | Project Configuration               |

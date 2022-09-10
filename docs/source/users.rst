@@ -24,7 +24,7 @@ Documentation
     Installation
     ^^^^^^^^^^^^
 
-    Install ``baseobject``.
+    Install ``skbase``.
 
     +++
 
@@ -52,7 +52,7 @@ Documentation
     User Guide
     ^^^^^^^^^^
 
-    Learn about using ``baseobject``.
+    Learn about using ``skbase``.
 
     +++
 
@@ -94,7 +94,7 @@ Documentation
     Related Software
     ^^^^^^^^^^^^^^^^
 
-    Explore software related to ``baseobject``.
+    Explore software related to ``skbase``.
 
     +++
 

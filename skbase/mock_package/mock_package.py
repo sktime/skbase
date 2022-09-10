@@ -3,7 +3,7 @@
 
 from copy import deepcopy
 
-from baseobject import BaseObject
+from skbase import BaseObject
 
 
 class CompositionDummy(BaseObject):
