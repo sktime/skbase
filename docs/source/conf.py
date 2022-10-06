@@ -177,7 +177,8 @@ if not version_match or version_match.isdigit():
 
 html_theme_options = {
     "logo": {
-        "text": "BaseObject",
+        "text": "skbase",
+        "alt_text": "skbase",
     },
     "icon_links": [
         {
@@ -190,21 +191,23 @@ html_theme_options = {
             "url": "https://join.slack.com/t/sktime-group/shared_invite/zt-1cghagwee-sqLJ~eHWGYgzWbqUX937ig",  # noqa: E501
             "icon": "fab fa-slack",
         },
+        {
+            "name": "PyPI",
+            "url": "https://pypi.org/project/skbase",
+            "icon": "fa-solid fa-box",
+        },
     ],
-    # "favicons": [
-    #     {"rel": "icon", "sizes": "16x16", "href": "images/sktime-favicon.ico",}
-    # ],
     "icon_links_label": "Quick Links",
     "show_nav_level": 1,
     "show_prev_next": False,
     "use_edit_page_button": False,
     "navbar_start": ["navbar-logo", "version-switcher"],
     "navbar_center": ["navbar-nav"],
-    "navbar_end": ["navbar-icon-links"],
     "switcher": {
         "json_url": json_url,
         "version_match": version_match,
     },
+    "header_links_before_dropdown": 6,
 }
 
 html_context = {
@@ -214,9 +217,7 @@ html_context = {
     "doc_path": "docs/source/",
     "default_mode": "light",
 }
-html_sidebars = {
-    "**": ["search-field.html", "sidebar-nav-bs.html", "sidebar-ethical-ads.html"]
-}
+html_sidebars = {"**": ["sidebar-nav-bs.html", "sidebar-ethical-ads.html"]}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -225,7 +226,7 @@ html_static_path = ["_static"]
 
 # -- Options for HTMLHelp output ---------------------------------------------
 # Output file base name for HTML help builder.
-htmlhelp_basename = "baseobjectdoc"
+htmlhelp_basename = "skbasedoc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -246,9 +247,9 @@ htmlhelp_basename = "baseobjectdoc"
 latex_documents = [
     (
         master_doc,
-        "baseobject.tex",
-        "BaseObject Documentation",
-        "BaseObject developers",
+        "skbase.tex",
+        "skbase Documentation",
+        "skbase developers",
         "manual",
     ),
 ]
