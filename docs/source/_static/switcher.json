@@ -1,17 +1,12 @@
 [
   {
-      "name": "dev",
-      "version": "latest",
-      "url": "https://baseobject.readthedocs.io/en/latest/"
-    },
-    {
-      "name": "0.2.0 (stable)",
-      "version": "stable",
-      "url": "https://baseobject.readthedocs.io/en/stable/"
-    },
-    {
-      "name": "0.1.0",
-      "version": "v0.1.0",
-      "url": "https://baseobject.readthedocs.io/en/v0.1.0/"
-    }
+    "name": "dev",
+    "version": "latest",
+    "url": "https://baseobject.readthedocs.io/en/latest/"
+  },
+  {
+    "name": "0.1.0",
+    "version": "stable",
+    "url": "https://baseobject.readthedocs.io/en/stable/"
+  }
 ]
