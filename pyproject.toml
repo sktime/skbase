@@ -109,7 +109,7 @@ addopts = [
 profile = "black"
 src_paths = ["isort", "test"]
 multi_line_output = 3
-known_first_party = ["baseobject"]
+known_first_party = ["skbase"]
 
 [tool.black]
 line-length = 88
