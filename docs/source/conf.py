@@ -164,30 +164,19 @@ json_url = "https://baseobject.readthedocs.io/en/latest/_static/switcher.json"
 # Define the version we use for matching in the version switcher.
 version_match = os.environ.get("READTHEDOCS_VERSION")
 
-print("++++++++++++++++++++++++++++++++++++++++++")
-print("++++++++++++++++++++++++++++++++++++++++++")
-print("++++++++++++++++++++++++++++++++++++++++++")
-print("++++++++++++++++++++++++++++++++++++++++++")
-print(f"version_match is {version_match}")
-print("++++++++++++++++++++++++++++++++++++++++++")
-print("++++++++++++++++++++++++++++++++++++++++++")
-print("++++++++++++++++++++++++++++++++++++++++++")
-print("++++++++++++++++++++++++++++++++++++++++++")
 # If READTHEDOCS_VERSION doesn't exist, we're not on RTD
 # If it is an integer, we're in a PR build and the version isn't correct.
 if not version_match or version_match.isdigit():
     # For local development, infer the version to match from the package.
     release = skbase.__version__
-    if not env_rtd == "True":
-        release = release + "dev"  # If we aren't on read-the-docs assume dev version
-    if "dev" in release:
+    if "dev" in release or "rc" in release:
         version_match = "latest"
         # We want to keep the relative reference if we are in dev mode
         # but we want the whole url if we are effectively in a released version
+        json_url = "_static/switcher.json"
     else:
         version_match = "v" + release
 
-    json_url = "/_static/switcher.json"
 
 html_theme_options = {
     "logo": {
