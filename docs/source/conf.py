@@ -53,6 +53,7 @@ extensions = [
     "myst_parser",
     "sphinx_panels",
     "sphinx_issues",
+    "sphinx_copybutton",
 ]
 
 # -- Internationalization ------------------------------------------------
@@ -264,6 +265,10 @@ numpydoc_show_class_members = True
 numpydoc_class_members_toctree = False
 
 numpydoc_validation_checks = {"all", "GL01", "SA01", "EX01"}
+
+# -- Options for sphinx-copybutton extension----------------------------------
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
 
 # -- Options for nbsphinx extension ------------------------------------------
 nbsphinx_execute = "never"  # always  # whether to run notebooks

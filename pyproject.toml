@@ -75,6 +75,7 @@ docs = [
     "sphinx_issues",
     "sphinx-gallery",
     "sphinx-panels",
+    "sphinx-copybutton",
     "sphinx",
 ]
 
