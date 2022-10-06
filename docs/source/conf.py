@@ -26,9 +26,7 @@ if not env_rtd == "True":
     sys.path.insert(0, os.path.abspath("../.."))
     import skbase
 
-    release = skbase.__version__
-
-# import skbase
+import skbase
 
 # -- Project information -----------------------------------------------------
 
@@ -179,7 +177,9 @@ print("++++++++++++++++++++++++++++++++++++++++++")
 # If it is an integer, we're in a PR build and the version isn't correct.
 if not version_match or version_match.isdigit():
     # For local development, infer the version to match from the package.
-    release = release + "dev"
+    release = skbase.__version__
+    if not env_rtd == "True":
+        release = release + "dev"  # If we aren't on read-the-docs assume dev version
     if "dev" in release:
         version_match = "latest"
         # We want to keep the relative reference if we are in dev mode
