@@ -122,7 +122,7 @@ show_missing = true
 
 [tool.coverage.run]
 source = ["skbase"]
-omit = ["*/setup.py", "tests/*"]
+omit = ["*/setup.py", "tests/*", "docs/*", "skbase/tests/*"]
 
 [tool.doc8]
 max-line-length = 88
