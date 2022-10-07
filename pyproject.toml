@@ -121,7 +121,7 @@ convention = "numpy"
 show_missing = true
 
 [tool.coverage.run]
-source = ["baseobject"]
+source = ["skbase"]
 omit = ["*/setup.py", "tests/*"]
 
 [tool.doc8]
