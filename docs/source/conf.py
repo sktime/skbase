@@ -9,11 +9,11 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
+import datetime
 import os
 import sys
 
-import skbase
-
+# sys.path.insert(0, os.path.abspath("."))
 # -- Path setup --------------------------------------------------------------
 
 # When we build the docs on readthedocs, we build the package and want to
@@ -22,13 +22,16 @@ import skbase
 env_rtd = os.environ.get("READTHEDOCS")
 # Check if on Read the docs
 if not env_rtd == "True":
-    sys.path.insert(0, os.path.abspath("../.."))
+    pass
+    # sys.path.insert(0, os.path.abspath("../.."))
 
+# import skbase
 
 # -- Project information -----------------------------------------------------
 
+current_year = datetime.datetime.now().year
 project = "skbase"
-copyright = "2022 (BSD-3-Clause License)"
+copyright = f"{current_year} (BSD-3-Clause License)"
 author = "skbase Developers"
 
 
@@ -51,7 +54,6 @@ extensions = [
     "myst_parser",
     "sphinx_panels",
     "sphinx_issues",
-    "sphinx_copybutton",
 ]
 
 # -- Internationalization ------------------------------------------------
@@ -59,7 +61,7 @@ extensions = [
 language = "en"
 
 # ReadTheDocs has its own way of generating sitemaps, etc.
-if not env_rtd:
+if env_rtd != "True":
     extensions += ["sphinx_sitemap"]
 
     # -- Sitemap -------------------------------------------------------------
@@ -67,7 +69,6 @@ if not env_rtd:
     sitemap_locales = [None]
     sitemap_url_scheme = "{link}"
 
-# TODO: Understand what this changes
 # Use bootstrap CSS from theme.
 panels_add_bootstrap_css = False
 
@@ -151,7 +152,7 @@ def linkcode_resolve(domain, info):
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
+
 html_theme = "pydata_sphinx_theme"
 
 # Define the json_url for our version switcher.
@@ -165,7 +166,7 @@ version_match = os.environ.get("READTHEDOCS_VERSION")
 # If it is an integer, we're in a PR build and the version isn't correct.
 if not version_match or version_match.isdigit():
     # For local development, infer the version to match from the package.
-    release = skbase.__version__
+    release = "0.2.0"  # skbase.__version__
     if "dev" in release or "rc" in release:
         version_match = "latest"
         # We want to keep the relative reference if we are in dev mode
@@ -173,7 +174,6 @@ if not version_match or version_match.isdigit():
         json_url = "_static/switcher.json"
     else:
         version_match = "v" + release
-
 
 html_theme_options = {
     "logo": {
