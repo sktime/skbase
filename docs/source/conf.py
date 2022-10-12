@@ -12,7 +12,7 @@
 import os
 import sys
 
-# sys.path.insert(0, os.path.abspath("."))
+import skbase
 
 # -- Path setup --------------------------------------------------------------
 
@@ -22,11 +22,8 @@ import sys
 env_rtd = os.environ.get("READTHEDOCS")
 # Check if on Read the docs
 if not env_rtd == "True":
-
     sys.path.insert(0, os.path.abspath("../.."))
-    import skbase
 
-import skbase
 
 # -- Project information -----------------------------------------------------
 
@@ -311,8 +308,3 @@ intersphinx_mapping = {
     "scikit-learn": ("https://scikit-learn.org/stable/", None),
     "sktime": ("https://www.sktime.org/en/stable/", None),
 }
-
-# import os
-
-# print("PYTHONPATH:", os.environ.get("PYTHONPATH"))
-# print("PATH:", os.environ.get("PATH"))
