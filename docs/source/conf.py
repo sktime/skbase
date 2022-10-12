@@ -13,6 +13,8 @@ import datetime
 import os
 import sys
 
+import skbase
+
 # sys.path.insert(0, os.path.abspath("."))
 # -- Path setup --------------------------------------------------------------
 
@@ -24,8 +26,6 @@ env_rtd = os.environ.get("READTHEDOCS")
 if not env_rtd == "True":
     pass
     # sys.path.insert(0, os.path.abspath("../.."))
-
-# import skbase
 
 # -- Project information -----------------------------------------------------
 
