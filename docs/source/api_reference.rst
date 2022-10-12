@@ -1,8 +1,8 @@
 .. _api_ref:
 
-=============
-API Reference
-=============
+===
+API
+===
 
 Welcome to the API reference for ``skbase``.
 
