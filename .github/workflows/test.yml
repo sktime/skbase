@@ -32,15 +32,15 @@ jobs:
   code-quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
       - id: file_changes
         uses: trilom/file-changes-action@v1.2.4
         with:
           output: " "
       - name: List changed files
         run: echo '${{ steps.file_changes.outputs.files}}'
-      - uses: pre-commit/action@v2.0.0
+      - uses: pre-commit/action@v3.0.0
         with:
           extra_args: --files ${{ steps.file_changes.outputs.files}}
       - name: Check for missing init files
@@ -117,4 +117,4 @@ jobs:
           pytest --cov=./ --cov-report=xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
