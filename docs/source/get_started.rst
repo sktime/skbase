@@ -50,8 +50,8 @@ To make it easy to build :term:`toolboxes <toolbox>` and
 :term:`applications <application>` that use ``skbase``'s, interfaces
 are also provided for:
 
-- retrieving information on ``BaseObject``-s
-- testing ``BaseObject``-s
+- retrieving information on ``BaseObject``'s
+- testing ``BaseObject``'s
 
 .. warning::
 
