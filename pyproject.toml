@@ -102,6 +102,10 @@ build-backend = "setuptools.build_meta"
 [tool.pytest.ini_options]
 # ignore certain folders
 addopts = [
+    "--doctest-modules",
+    "--ignore build_tools",
+    "--ignore examples",
+    "--ignore docs",
     "--doctest-modules"
 ]
 
