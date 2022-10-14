@@ -103,8 +103,7 @@ build-backend = "setuptools.build_meta"
 # ignore certain folders
 addopts = [
     "--doctest-modules",
-    "--ignore docs",
-    "--doctest-modules"
+    "--ignore=docs",
 ]
 
 [tool.isort]
