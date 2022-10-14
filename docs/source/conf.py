@@ -24,8 +24,8 @@ import skbase
 env_rtd = os.environ.get("READTHEDOCS")
 # Check if on Read the docs
 if not env_rtd == "True":
-    pass
-    # sys.path.insert(0, os.path.abspath("../.."))
+    print("Not on ReadTheDocs")
+    sys.path.insert(0, os.path.abspath("../.."))
 
 # -- Project information -----------------------------------------------------
 
