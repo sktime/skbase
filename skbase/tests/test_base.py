@@ -25,7 +25,7 @@ __all__ = [
     "test_reset",
     "test_reset_composite",
 ]
-
+import inspect
 from copy import deepcopy
 
 import pytest
@@ -46,7 +46,6 @@ class FixtureClassChild(FixtureClassParent):
 
 
 FIXTURE_CLASSCHILD = FixtureClassChild
-
 FIXTURE_CLASSCHILD_TAGS = {"A": 42, "B": 2, "C": 1234, 3: "E"}
 
 # Fixture class for testing tag system, object overrides class tags
@@ -54,6 +53,21 @@ FIXTURE_OBJECT = FixtureClassChild()
 FIXTURE_OBJECT._tags_dynamic = {"A": 42424241, "B": 3}
 
 FIXTURE_OBJECT_TAGS = {"A": 42424241, "B": 3, "C": 1234, 3: "E"}
+
+
+class InvalidInitSignatureTester(BaseObject):
+    def __init__(self, a, *args):
+        pass
+
+
+class InitSignatureTester(BaseObject):
+    def __init__(self, a, b=7, **kwargs):
+        self.a = a
+        self.b = b
+
+
+FIXTURE_INVALID_INIT = InvalidInitSignatureTester
+FIXTURE_INIT = InitSignatureTester
 
 
 def test_get_class_tags():
@@ -274,3 +288,21 @@ def test_components():
     assert set(comp_comps.keys()) == {"foo_"}
     assert comp_comps["foo_"] == composite.foo_
     assert comp_comps["foo_"] != composite.foo
+
+
+def test_get_init_signature():
+    """Test error is raised when invalid init signature is used."""
+    init_sig = FIXTURE_INIT._get_init_signature()
+    init_sig_is_list = isinstance(init_sig, list)
+    init_sig_elements_are_params = all(
+        isinstance(p, inspect.Parameter) for p in init_sig
+    )
+    assert (
+        init_sig_is_list and init_sig_elements_are_params
+    ), "`_get_init_signature` is not returning expected result."
+
+
+def test_get_init_signature_raises_error_for_invalid_signature():
+    """Test error is raised when invalid init signature is used."""
+    with pytest.raises(RuntimeError):
+        FIXTURE_INVALID_INIT._get_init_signature()
