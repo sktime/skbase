@@ -68,6 +68,7 @@ class InitSignatureTester(BaseObject):
 
 FIXTURE_INVALID_INIT = InvalidInitSignatureTester
 FIXTURE_INIT = InitSignatureTester
+FIXTURE_INIT_EXPECTED_PARAM_NAMES = ["a", "b"]
 
 
 def test_get_class_tags():
@@ -306,3 +307,12 @@ def test_get_init_signature_raises_error_for_invalid_signature():
     """Test error is raised when invalid init signature is used."""
     with pytest.raises(RuntimeError):
         FIXTURE_INVALID_INIT._get_init_signature()
+
+
+def test_get_param_names():
+    """Test that get_param_names returns list of string parameter names."""
+    param_names = FIXTURE_INIT.get_param_names()
+    assert param_names == sorted(FIXTURE_INIT_EXPECTED_PARAM_NAMES)
+
+    param_names = BaseObject.get_param_names()
+    assert param_names == []
