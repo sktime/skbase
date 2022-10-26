@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
+# Elements of these tests re-use code developed in scikit-learn. These elements
+# are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
+# conditions see https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
 """Tests for BaseObject universal base class.
 
 tests in this module:
@@ -12,6 +15,10 @@ tests in this module:
 
     test_reset           - tests reset logic on a simple, non-composite estimator
     test_reset_composite - tests reset logic on a composite estimator
+    test_components      - tests logic for returning components of composite estimator
+
+    test_get_init_signature
+    test_get_init_signature_raises_error_for_invalid_signature
 """
 
 __author__ = ["fkiraly"]
@@ -72,7 +79,7 @@ FIXTURE_INIT_EXPECTED_PARAM_NAMES = ["a", "b"]
 
 
 def test_get_class_tags():
-    """Tests get_class_tags class method of BaseObject for correctness.
+    """Test get_class_tags class method of BaseObject for correctness.
 
     Raises
     ------
@@ -86,7 +93,7 @@ def test_get_class_tags():
 
 
 def test_get_class_tag():
-    """Tests get_class_tag class method of BaseObject for correctness.
+    """Test get_class_tag class method of BaseObject for correctness.
 
     Raises
     ------
@@ -114,7 +121,7 @@ def test_get_class_tag():
 
 
 def test_get_tags():
-    """Tests get_tags method of BaseObject for correctness.
+    """Test get_tags method of BaseObject for correctness.
 
     Raises
     ------
@@ -128,7 +135,7 @@ def test_get_tags():
 
 
 def test_get_tag():
-    """Tests get_tag method of BaseObject for correctness.
+    """Test get_tag method of BaseObject for correctness.
 
     Raises
     ------
@@ -156,7 +163,7 @@ def test_get_tag():
 
 
 def test_get_tag_raises():
-    """Tests that get_tag method raises error for unknown tag.
+    """Test that get_tag method raises error for unknown tag.
 
     Raises
     ------
@@ -173,7 +180,7 @@ FIXTURE_OBJECT_SET_DYN = {"A": 42424243, "B": 3, "E": 3}
 
 
 def test_set_tags():
-    """Tests set_tags method of BaseObject for correctness.
+    """Test set_tags method of BaseObject for correctness.
 
     Raises
     ------
@@ -195,7 +202,7 @@ class CompositionDummy(BaseObject):
 
 
 def test_is_composite():
-    """Tests is_composite tag for correctness.
+    """Test is_composite tag for correctness.
 
     Raises
     ------
@@ -225,7 +232,7 @@ class ResetTester(BaseObject):
 
 
 def test_reset():
-    """Tests reset method for correct behaviour, on a simple estimator.
+    """Test reset method for correct behaviour, on a simple estimator.
 
     Raises
     ------
@@ -267,7 +274,7 @@ def test_reset_composite():
 
 
 def test_components():
-    """Tests component retrieval.
+    """Test component retrieval.
 
     Raises
     ------
@@ -316,3 +323,7 @@ def test_get_param_names():
 
     param_names = BaseObject.get_param_names()
     assert param_names == []
+
+
+# This section tests the clone functionality
+#
