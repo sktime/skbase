@@ -251,6 +251,67 @@ def test_set_tags_works_with_missing_tags_dynamic_attribute():
     assert "some_tag" in tags and tags["some_tag"] == "something"
 
 
+def test_clone_tags():
+    """Test clone_tags works as expected."""
+
+    class TestClass(BaseObject):
+        _tags = {"some_tag": True, "another_tag": 37}
+
+    class AnotherTestClass(BaseObject):
+        pass
+
+    # Simple example of cloning all tags with no tags overlapping
+    base_obj = FIXTURE_EXAMPLE()
+    test_obj = TestClass()
+    assert base_obj.get_tags() == {}
+    base_obj.clone_tags(test_obj)
+    assert base_obj.get_class_tags() == {}
+    assert base_obj.get_tags() == test_obj.get_tags()
+
+    # Simple examples cloning named tags with no tags overlapping
+    base_obj = FIXTURE_EXAMPLE()
+    test_obj = TestClass()
+    assert base_obj.get_tags() == {}
+    base_obj.clone_tags(test_obj, tag_names="some_tag")
+    assert base_obj.get_class_tags() == {}
+    assert base_obj.get_tags() == {"some_tag": True}
+    base_obj.clone_tags(test_obj, tag_names=["another_tag"])
+    assert base_obj.get_class_tags() == {}
+    assert base_obj.get_tags() == test_obj.get_tags()
+
+    # Overlapping tag example where there is tags in each object that aren't
+    # in the other object
+    another_base_obj = AnotherTestClass()
+    another_base_obj.set_tags(some_tag=False, a_new_tag="words")
+    another_base_obj_tags = another_base_obj.get_tags()
+    test_obj = TestClass()
+    assert test_obj.get_tags() == TestClass.get_class_tags()
+    test_obj.clone_tags(another_base_obj)
+    test_obj_tags = test_obj.get_tags()
+    assert test_obj.get_class_tags() == TestClass.get_class_tags()
+    # Verify all tags in another_base_obj were cloned into test_obj
+    for tag in another_base_obj_tags:
+        assert test_obj_tags.get(tag) == another_base_obj_tags[tag]
+    # Verify tag that was in test_obj but not another_base_obj still has same value
+    # and there aren't any other tags
+    assert (
+        "another_tag" in test_obj_tags
+        and test_obj_tags["another_tag"] == 37
+        and len(test_obj_tags) == 3
+    )
+
+    # Overlapping tag example using named tags in clone
+    another_base_obj = AnotherTestClass()
+    another_base_obj.set_tags(some_tag=False, a_new_tag="words")
+    another_base_obj_tags = another_base_obj.get_tags()
+    test_obj = TestClass()
+    assert test_obj.get_tags() == TestClass.get_class_tags()
+    test_obj.clone_tags(another_base_obj, tag_names=["a_new_tag"])
+    test_obj_tags = test_obj.get_tags()
+    assert test_obj.get_class_tags() == TestClass.get_class_tags()
+    assert test_obj_tags.get("a_new_tag") == "words"
+
+
 # Test composition related interface functionality
 class CompositionDummy(BaseObject):
     """Potentially composite object, for testing."""
