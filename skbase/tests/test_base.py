@@ -30,7 +30,10 @@ __all__ = [
     "test_get_tag",
     "test_set_tags",
     "test_set_tags_works_with_missing_tags_dynamic_attribute",
+    "test_clone_tags",
     "test_components",
+    "test_components_raises_error_base_class_is_not_class",
+    "test_components_raises_error_base_class_is_not_baseobject_subclass",
     "test_reset",
     "test_reset_composite",
     "test_get_init_signature",
@@ -336,22 +339,6 @@ def test_is_composite():
     assert composite.is_composite()
 
 
-class ResetTester(BaseObject):
-
-    clsvar = 210
-
-    def __init__(self, a, b=42):
-        self.a = a
-        self.b = b
-        self.c = 84
-
-    def foo(self, d=126):
-        self.d = deepcopy(d)
-        self._d = deepcopy(d)
-        self.d_ = deepcopy(d)
-        self.f__o__o = 252
-
-
 def test_components():
     """Test component retrieval.
 
@@ -367,6 +354,8 @@ def test_components():
 
     non_comp_comps = non_composite._components()
     comp_comps = composite._components()
+    comp_comps_baseobject_filter = composite._components(BaseObject)
+    comp_comps_filter = composite._components(FIXTURE_EXAMPLE)
 
     assert isinstance(non_comp_comps, dict)
     assert set(non_comp_comps.keys()) == set()
@@ -375,6 +364,52 @@ def test_components():
     assert set(comp_comps.keys()) == {"foo_"}
     assert comp_comps["foo_"] == composite.foo_
     assert comp_comps["foo_"] != composite.foo
+
+    assert comp_comps == comp_comps_baseobject_filter
+    assert comp_comps_filter == {}
+
+
+def test_components_raises_error_base_class_is_not_class():
+    """Test _component method raises error if base_class param is not class."""
+    non_composite = CompositionDummy(foo=42)
+    composite = CompositionDummy(foo=non_composite)
+    with pytest.raises(
+        TypeError, match="base_class must be a class, but found <class 'int'>"
+    ):
+        composite._components(7)
+
+    with pytest.raises(
+        TypeError,
+        match="base_class must be a class, but found <class 'skbase._base.BaseObject'>",
+    ):
+        composite._components(BaseObject())
+
+
+def test_components_raises_error_base_class_is_not_baseobject_subclass():
+    """Test _component method raises error if base_class is not BaseObject subclass."""
+
+    class SomeClass:
+        pass
+
+    composite = CompositionDummy(foo=SomeClass())
+    with pytest.raises(TypeError, match="base_class must be a subclass of BaseObject"):
+        composite._components(SomeClass)
+
+
+class ResetTester(BaseObject):
+
+    clsvar = 210
+
+    def __init__(self, a, b=42):
+        self.a = a
+        self.b = b
+        self.c = 84
+
+    def foo(self, d=126):
+        self.d = deepcopy(d)
+        self._d = deepcopy(d)
+        self.d_ = deepcopy(d)
+        self.f__o__o = 252
 
 
 # Test parameter interface (get_params, set_params, reset and related methods)
