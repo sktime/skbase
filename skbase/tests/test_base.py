@@ -37,6 +37,9 @@ from copy import deepcopy
 
 import pytest
 
+# TODO: Update with import of skbase clone function once implemented
+from sklearn.base import clone
+
 from skbase import BaseObject
 
 
@@ -67,15 +70,35 @@ class InvalidInitSignatureTester(BaseObject):
         pass
 
 
-class InitSignatureTester(BaseObject):
-    def __init__(self, a, b=7, **kwargs):
+class Example(BaseObject):
+    """Example that illustrates BaseObject usage."""
+
+    def __init__(self, a="something", b=7, c=None):
         self.a = a
         self.b = b
+        self.c = c
+
+
+class Buggy(BaseObject):
+    """A buggy BaseObject that does not set its parameters right."""
+
+    def __init__(self, a=None):
+        self.a = 1
+        self._a = a
+
+
+class ModifyParam(BaseObject):
+    """A non-conforming BaseObject that modifyies parameters in init."""
+
+    def __init__(self, a=None):
+        self.a = deepcopy(a)
 
 
 FIXTURE_INVALID_INIT = InvalidInitSignatureTester
-FIXTURE_INIT = InitSignatureTester
-FIXTURE_INIT_EXPECTED_PARAM_NAMES = ["a", "b"]
+FIXTURE_EXAMPLE = Example
+FIXTURE_EXAMPLE_EXPECTED_PARAM_NAMES = ["a", "b", "c"]
+FIXTURE_BUGGY = Buggy
+FIXTURE_MODIFY_PARAM = ModifyParam
 
 
 def test_get_class_tags():
@@ -300,7 +323,7 @@ def test_components():
 
 def test_get_init_signature():
     """Test error is raised when invalid init signature is used."""
-    init_sig = FIXTURE_INIT._get_init_signature()
+    init_sig = FIXTURE_EXAMPLE._get_init_signature()
     init_sig_is_list = isinstance(init_sig, list)
     init_sig_elements_are_params = all(
         isinstance(p, inspect.Parameter) for p in init_sig
@@ -318,12 +341,84 @@ def test_get_init_signature_raises_error_for_invalid_signature():
 
 def test_get_param_names():
     """Test that get_param_names returns list of string parameter names."""
-    param_names = FIXTURE_INIT.get_param_names()
-    assert param_names == sorted(FIXTURE_INIT_EXPECTED_PARAM_NAMES)
+    param_names = FIXTURE_EXAMPLE.get_param_names()
+    assert param_names == sorted(FIXTURE_EXAMPLE_EXPECTED_PARAM_NAMES)
 
     param_names = BaseObject.get_param_names()
     assert param_names == []
 
 
 # This section tests the clone functionality
-#
+# These have been adapted from sklearn's tests of clone to use the clone
+# method that is included as part of the BaseObject interface
+def test_clone():
+    # Tests that clone creates a correct deep copy.
+    # We create an estimator, make a copy of its original state
+    # (which, in this case, is the current state of the estimator),
+    # and check that the obtained copy is a correct deep copy.
+    base_obj = FIXTURE_EXAMPLE(a=7.0, b="some_str")
+    new_base_obj = base_obj.clone()
+    assert base_obj is not new_base_obj
+    assert base_obj.get_params() == new_base_obj.get_params()
+
+
+def test_clone_2():
+    # Tests that clone doesn't copy everything.
+    # We first create an estimator, give it an own attribute, and
+    # make a copy of its original state. Then we check that the copy doesn't
+    # have the specific attribute we manually added to the initial estimator.
+
+    base_obj = FIXTURE_EXAMPLE(a=7.0, b="some_str")
+    base_obj.own_attribute = "test"
+    new_base_obj = base_obj.clone()
+    assert not hasattr(new_base_obj, "own_attribute")
+
+
+def test_clone_raises_error_for_nonconforming_objects():
+    """Test that clone raises an error on nonconforming BaseObjects."""
+    buggy = FIXTURE_BUGGY()
+    buggy.a = 2
+    with pytest.raises(RuntimeError):
+        buggy.clone()
+
+    varg_obj = FIXTURE_INVALID_INIT(a=7)
+    with pytest.raises(RuntimeError):
+        varg_obj.clone()
+
+    obj_that_modifies = FIXTURE_MODIFY_PARAM(a=[0])
+    with pytest.raises(RuntimeError):
+        obj_that_modifies.clone()
+
+
+# def test_clone_empty_array():
+#     # Regression test for cloning estimators with empty arrays
+#     clf = MyEstimator(empty=np.array([]))
+#     clf2 = clone(clf)
+#     assert_array_equal(clf.empty, clf2.empty)
+
+#     clf = MyEstimator(empty=sp.csr_matrix(np.array([[0]])))
+#     clf2 = clone(clf)
+#     assert_array_equal(clf.empty.data, clf2.empty.data)
+
+
+# def test_clone_nan():
+#     # Regression test for cloning estimators with default parameter as np.nan
+#     clf = MyEstimator(empty=np.nan)
+#     clf2 = clone(clf)
+
+#     assert clf.empty is clf2.empty
+
+
+def test_clone_estimator_types():
+    """Test clone works for parameters that are types rather than instances."""
+    base_obj = Example(c=Example)
+    new_base_obj = base_obj.clone()
+
+    assert base_obj.c == new_base_obj.c
+
+
+def test_clone_class_rather_than_instance_raises_error():
+    """Test clone raises expected error when cloning a class instead of an instance."""
+    msg = "You should provide an instance of scikit-learn estimator"
+    with pytest.raises(TypeError, match=msg):
+        clone(FIXTURE_EXAMPLE)
