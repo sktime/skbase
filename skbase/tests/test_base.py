@@ -29,6 +29,7 @@ __all__ = [
     "test_get_tags",
     "test_get_tag",
     "test_set_tags",
+    "test_set_tags_works_with_missing_tags_dynamic_attribute",
     "test_components",
     "test_reset",
     "test_reset_composite",
@@ -237,6 +238,17 @@ def test_set_tags():
 
     assert FIXTURE_OBJECT_SET._tags_dynamic == FIXTURE_OBJECT_SET_DYN, msg
     assert FIXTURE_OBJECT_SET.get_tags() == FIXTURE_OBJECT_SET_TAGS, msg
+
+
+def test_set_tags_works_with_missing_tags_dynamic_attribute():
+    """Test set_tags will still work if _tags_dynamic is missing."""
+    base_obj = deepcopy(FIXTURE_OBJECT)
+    delattr(base_obj, "_tags_dynamic")
+    assert not hasattr(base_obj, "_tags_dynamic")
+    base_obj.set_tags(some_tag="something")
+    tags = base_obj.get_tags()
+    assert hasattr(base_obj, "_tags_dynamic")
+    assert "some_tag" in tags and tags["some_tag"] == "something"
 
 
 # Test composition related interface functionality
