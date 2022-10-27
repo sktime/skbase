@@ -43,6 +43,9 @@ from sklearn.base import clone
 
 from skbase import BaseObject
 
+# TODO: Determine if we need to add sklearn style test of
+# test_set_params_passes_all_parameters
+
 
 # Fixture class for testing tag system
 class FixtureClassParent(BaseObject):
@@ -97,7 +100,8 @@ class ModifyParam(BaseObject):
 
 FIXTURE_INVALID_INIT = InvalidInitSignatureTester
 FIXTURE_EXAMPLE = Example
-FIXTURE_EXAMPLE_EXPECTED_PARAM_NAMES = ["a", "b", "c"]
+FIXTURE_EXAMPLE_EXPECTED_PARAMS = {"a": "something", "b": 7, "c": None}
+FIXTURE_EXAMPLE_EXPECTED_PARAM_NAMES = sorted([*FIXTURE_EXAMPLE_EXPECTED_PARAMS])
 FIXTURE_BUGGY = Buggy
 FIXTURE_MODIFY_PARAM = ModifyParam
 
@@ -216,6 +220,7 @@ def test_set_tags():
     assert FIXTURE_OBJECT_SET.get_tags() == FIXTURE_OBJECT_SET_TAGS, msg
 
 
+# Test composition related interface functionality
 class CompositionDummy(BaseObject):
     """Potentially composite object, for testing."""
 
@@ -255,6 +260,33 @@ class ResetTester(BaseObject):
         self.f__o__o = 252
 
 
+def test_components():
+    """Test component retrieval.
+
+    Raises
+    ------
+    AssertionError if logic behind _components is incorrect, logic tested:
+        calling _components on a non-composite returns an empty dict
+        calling _components on a composite returns name/BaseObject pair in dict,
+        and BaseObject returned is identical with attribute of the same name
+    """
+    non_composite = CompositionDummy(foo=42)
+    composite = CompositionDummy(foo=non_composite)
+
+    non_comp_comps = non_composite._components()
+    comp_comps = composite._components()
+
+    assert isinstance(non_comp_comps, dict)
+    assert set(non_comp_comps.keys()) == set()
+
+    assert isinstance(comp_comps, dict)
+    assert set(comp_comps.keys()) == {"foo_"}
+    assert comp_comps["foo_"] == composite.foo_
+    assert comp_comps["foo_"] != composite.foo
+
+
+# Test parameter interface (get_params, set_params, reset and related methods)
+# Some tests of get_params and set_params are adapted from sklearn tests
 def test_reset():
     """Test reset method for correct behaviour, on a simple estimator.
 
@@ -297,31 +329,6 @@ def test_reset_composite():
     assert not hasattr(x.a, "d")
 
 
-def test_components():
-    """Test component retrieval.
-
-    Raises
-    ------
-    AssertionError if logic behind _components is incorrect, logic tested:
-        calling _components on a non-composite returns an empty dict
-        calling _components on a composite returns name/BaseObject pair in dict,
-        and BaseObject returned is identical with attribute of the same name
-    """
-    non_composite = CompositionDummy(foo=42)
-    composite = CompositionDummy(foo=non_composite)
-
-    non_comp_comps = non_composite._components()
-    comp_comps = composite._components()
-
-    assert isinstance(non_comp_comps, dict)
-    assert set(non_comp_comps.keys()) == set()
-
-    assert isinstance(comp_comps, dict)
-    assert set(comp_comps.keys()) == {"foo_"}
-    assert comp_comps["foo_"] == composite.foo_
-    assert comp_comps["foo_"] != composite.foo
-
-
 def test_get_init_signature():
     """Test error is raised when invalid init signature is used."""
     init_sig = FIXTURE_EXAMPLE._get_init_signature()
@@ -347,6 +354,100 @@ def test_get_param_names():
 
     param_names = BaseObject.get_param_names()
     assert param_names == []
+
+
+class NoParamInterface:
+    def __init__(self, a=7, b=12):
+        self.a = a
+        self.b = b
+
+
+def test_get_params():
+    """Test get_params returns expected parameters."""
+    # Simple test of returned params
+    base_obj = FIXTURE_EXAMPLE()
+    params = base_obj.get_params()
+    assert params == FIXTURE_EXAMPLE_EXPECTED_PARAMS
+
+    composite = CompositionDummy(foo=base_obj, bar=84)
+    params = composite.get_params()
+    assert "foo__a" in params and "foo__b" in params and "foo__c" in params
+    assert "bar" in params and params["bar"] == 84
+    assert "foo" in params and isinstance(params["foo"], FIXTURE_EXAMPLE)
+    assert "foo__a" not in composite.get_params(deep=False)
+
+    # Since NoParamInterface does not have get_params we should just return
+    # "foo" and "bar" in params and no other parameters
+    composite = CompositionDummy(foo=NoParamInterface())
+    params = composite.get_params()
+    assert "foo" in params and "bar" in params and len(params) == 2
+
+
+def test_set_params():
+    """Test set_params works as expected."""
+    # Simple case of setting a parameter
+    base_obj = FIXTURE_EXAMPLE()
+    base_obj.set_params(b="updated param value")
+    expected_params = deepcopy(FIXTURE_EXAMPLE_EXPECTED_PARAMS)
+    expected_params["b"] = "updated param value"
+    assert base_obj.get_params() == expected_params
+
+    # Setting parameter of a composite class
+    composite = CompositionDummy(foo=FIXTURE_EXAMPLE(), bar=84)
+    composite.set_params(bar=95, foo__b="updated param value")
+    params = composite.get_params()
+    assert params["bar"] == 95
+    assert (
+        params["foo__b"] == "updated param value"
+        and composite.foo.b == "updated param value"
+    )
+
+
+def test_set_params_raises_error_non_existent_param():
+    """Test set_params raises an error when passed a non-existent parameter name."""
+    # non-existing parameter in svc
+    base_obj = FIXTURE_EXAMPLE()
+    with pytest.raises(ValueError):
+        base_obj.set_params(non_existant_param="updated param value")
+
+    # non-existing parameter of composite
+    composite = CompositionDummy(foo=FIXTURE_EXAMPLE(), bar=84)
+    with pytest.raises(ValueError):
+        composite.set_params(foo__non_existant_param=True)
+
+
+def test_set_params_raises_error_non_interface_composite():
+    """Test set_params raises error when setting param of non-conforming composite."""
+    # When a composite is made up of a class that doesn't have the BaseObject
+    # parameter interface, we should get a AttributeError when trying to
+    # set the composite's params
+    composite = CompositionDummy(foo=NoParamInterface())
+    with pytest.raises(AttributeError):
+        composite.set_params(foo__a=88)
+
+
+def test_raises_on_get_params_for_param_arg_not_assigned_to_attribute():
+    class BadObject(BaseObject):
+        # Here we don't assign param to self.param as expected in interface
+        def __init__(self, param=5):
+            pass
+
+    est = BadObject()
+    msg = "'BadObject' object has no attribute 'param'"
+
+    with pytest.raises(AttributeError, match=msg):
+        est.get_params()
+
+
+def test_set_params_with_no_param_to_set_returns_object():
+    """Test set_params correctly returns self when no parameters are set."""
+    base_obj = FIXTURE_EXAMPLE()
+    orig_params = deepcopy(base_obj.get_params())
+    base_obj_set_params = base_obj.set_params()
+    assert (
+        isinstance(base_obj_set_params, FIXTURE_EXAMPLE)
+        and base_obj_set_params.get_params() == orig_params
+    )
 
 
 # This section tests the clone functionality
