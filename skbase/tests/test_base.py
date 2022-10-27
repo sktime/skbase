@@ -21,7 +21,7 @@ tests in this module:
     test_get_init_signature_raises_error_for_invalid_signature
 """
 
-__author__ = ["fkiraly"]
+__author__ = ["fkiraly", "RNKuhns"]
 
 __all__ = [
     "test_get_class_tags",
@@ -29,8 +29,27 @@ __all__ = [
     "test_get_tags",
     "test_get_tag",
     "test_set_tags",
+    "test_components",
     "test_reset",
     "test_reset_composite",
+    "test_get_init_signature",
+    "test_get_init_signature_raises_error_for_invalid_signature",
+    "test_get_param_names",
+    "test_get_params",
+    "test_set_params",
+    "test_set_params_raises_error_non_existent_param",
+    "test_set_params_raises_error_non_interface_composite",
+    "test_raises_on_get_params_for_param_arg_not_assigned_to_attribute",
+    "test_set_params_with_no_param_to_set_returns_object",
+    "test_clone",
+    "test_clone_2",
+    "test_clone_class_rather_than_instance_raises_error",
+    "test_clone_estimator_types",
+    "test_clone_raises_error_for_nonconforming_objects",
+    "test_baseobject_repr",
+    "test_baseobject_str",
+    "test_baseobject_repr_mimebundle_",
+    "test_repr_html_wraps",
 ]
 import inspect
 from copy import deepcopy
@@ -427,6 +446,8 @@ def test_set_params_raises_error_non_interface_composite():
 
 
 def test_raises_on_get_params_for_param_arg_not_assigned_to_attribute():
+    """Test get_params raises error if param not assigned to same named attribute."""
+
     class BadObject(BaseObject):
         # Here we don't assign param to self.param as expected in interface
         def __init__(self, param=5):
