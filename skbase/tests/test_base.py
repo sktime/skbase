@@ -352,9 +352,9 @@ def test_get_param_names():
 # These have been adapted from sklearn's tests of clone to use the clone
 # method that is included as part of the BaseObject interface
 def test_clone():
-    # Tests that clone creates a correct deep copy.
-    # We create an estimator, make a copy of its original state
-    # (which, in this case, is the current state of the estimator),
+    """Test that clone is making a deep copy as expected."""
+    # Creates a BaseObject and makes a copy of its original state
+    # (which, in this case, is the current state of the BaseObject),
     # and check that the obtained copy is a correct deep copy.
     base_obj = FIXTURE_EXAMPLE(a=7.0, b="some_str")
     new_base_obj = base_obj.clone()
@@ -363,7 +363,7 @@ def test_clone():
 
 
 def test_clone_2():
-    # Tests that clone doesn't copy everything.
+    """Test that clone does not copy attributes not set in constructor."""
     # We first create an estimator, give it an own attribute, and
     # make a copy of its original state. Then we check that the copy doesn't
     # have the specific attribute we manually added to the initial estimator.
