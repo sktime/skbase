@@ -36,6 +36,7 @@ import inspect
 from copy import deepcopy
 
 import pytest
+from sklearn import config_context
 
 # TODO: Update with import of skbase clone function once implemented
 from sklearn.base import clone
@@ -422,3 +423,56 @@ def test_clone_class_rather_than_instance_raises_error():
     msg = "You should provide an instance of scikit-learn estimator"
     with pytest.raises(TypeError, match=msg):
         clone(FIXTURE_EXAMPLE)
+
+
+# Tests of BaseObject pretty printing representation inspired by sklearn
+def test_baseobject_repr():
+    """Test BaseObject repr works as expected."""
+    # Simple test where all parameters are left at defaults
+    # Should not see parameters and values in printed representation
+    base_obj = FIXTURE_EXAMPLE()
+    assert repr(base_obj) == "Example()"
+
+    # Check that we can alter the detail about params that is printed
+    # using config_context with ``print_changed_only=False``
+    with config_context(print_changed_only=False):
+        assert repr(base_obj) == "Example(a='something', b=7, c=None)"
+
+    simple_composite = CompositionDummy(foo=Example())
+    assert repr(simple_composite) == "CompositionDummy(foo=Example())"
+
+    long_base_obj_repr = Example(a=["long_params"] * 1000)
+    assert len(repr(long_base_obj_repr)) == 543
+
+
+def test_baseobject_str():
+    """Test BaseObject string representation works."""
+    base_obj = FIXTURE_EXAMPLE()
+    str(base_obj)
+
+
+def test_baseobject_repr_mimebundle_():
+    """Test display configuration controls output."""
+    # Checks the display configuration flag controls the json output
+    base_obj = FIXTURE_EXAMPLE()
+    output = base_obj._repr_mimebundle_()
+    assert "text/plain" in output
+    assert "text/html" in output
+
+    with config_context(display="text"):
+        output = base_obj._repr_mimebundle_()
+        assert "text/plain" in output
+        assert "text/html" not in output
+
+
+def test_repr_html_wraps():
+    """Test display configuration flag controls the html output."""
+    base_obj = FIXTURE_EXAMPLE()
+
+    output = base_obj._repr_html_()
+    assert "<style>" in output
+
+    with config_context(display="text"):
+        msg = "_repr_html_ is only defined when"
+        with pytest.raises(AttributeError, match=msg):
+            output = base_obj._repr_html_()
