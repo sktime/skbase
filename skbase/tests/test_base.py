@@ -104,6 +104,32 @@ class Example(BaseObject):
         self.a = a
         self.b = b
         self.c = c
+        super().__init__()
+
+    def some_method():
+        """To be implemented by child class."""
+        pass
+
+
+class ExampleChild(Example):
+    """Child of Example class."""
+
+    def some_method():
+        """Child class' implementation."""
+        pass
+
+    def some_other_method():
+        """To be implemented in the child class."""
+
+
+class RequiredParam(BaseObject):
+    """BaseObject class with _required_parameters."""
+
+    _required_parameters = ["a"]
+
+    def __init__self(self, a, b=7):
+        self.a = a
+        self.b = b
 
 
 class Buggy(BaseObject):
@@ -125,6 +151,8 @@ FIXTURE_INVALID_INIT = InvalidInitSignatureTester
 FIXTURE_EXAMPLE = Example
 FIXTURE_EXAMPLE_EXPECTED_PARAMS = {"a": "something", "b": 7, "c": None}
 FIXTURE_EXAMPLE_EXPECTED_PARAM_NAMES = sorted([*FIXTURE_EXAMPLE_EXPECTED_PARAMS])
+FIXTURE_EXAMPLE_CHILD = ExampleChild
+FIXTURE_REQUIRED_PARAM = RequiredParam
 FIXTURE_BUGGY = Buggy
 FIXTURE_MODIFY_PARAM = ModifyParam
 
@@ -708,3 +736,80 @@ def test_repr_html_wraps():
         msg = "_repr_html_ is only defined when"
         with pytest.raises(AttributeError, match=msg):
             output = base_obj._repr_html_()
+
+
+# Test BaseObject's ability to generate test instances
+def test_get_test_params():
+    """Test get_test_params returns empty dictionary."""
+    base_obj = FIXTURE_EXAMPLE()
+    test_params = base_obj.get_test_params()
+    assert isinstance(test_params, dict) and len(test_params) == 0
+
+
+def test_get_test_params_raises_error_when_params_required():
+    """Test get_test_params raises an error when parameters are required."""
+    with pytest.raises(ValueError):
+        FIXTURE_REQUIRED_PARAM().get_test_params()
+
+
+def test_create_test_instance():
+    """Test first that create_test_instance logic works."""
+    base_obj = FIXTURE_EXAMPLE.create_test_instance()
+
+    # Check that init does not construct object of other class than itself
+    assert isinstance(base_obj, FIXTURE_EXAMPLE().__class__), (
+        "Object returned by create_test_instance must be an instance of the class, "
+        f"but found {type(base_obj)}."
+    )
+
+    msg = (
+        f"{FIXTURE_EXAMPLE.__name__}.__init__ should call "
+        f"super({FIXTURE_EXAMPLE.__name__}, self).__init__, "
+        "but that does not seem to be the case. Please ensure to call the "
+        f"parent class's constructor in {FIXTURE_EXAMPLE.__name__}.__init__"
+    )
+    assert hasattr(base_obj, "_tags_dynamic"), msg
+
+
+def test_create_test_instances_and_names():
+    """Test that create_test_instances_and_names works."""
+    base_objs, names = FIXTURE_EXAMPLE.create_test_instances_and_names()
+
+    assert isinstance(base_objs, list), (
+        "First return of create_test_instances_and_names must be a list, "
+        f"but found {type(base_objs)}."
+    )
+    assert isinstance(names, list), (
+        "Second return of create_test_instances_and_names must be a list, "
+        f"but found {type(names)}."
+    )
+
+    assert all([isinstance(est, FIXTURE_EXAMPLE().__class__) for est in base_objs]), (
+        "List elements of first return returned by create_test_instances_and_names "
+        "all must be an instance of the class"
+    )
+
+    assert all([isinstance(name, str) for name in names]), (
+        "List elements of second return returned by create_test_instances_and_names"
+        " all must be strings."
+    )
+
+    assert len(base_objs) == len(names), (
+        "The two lists returned by create_test_instances_and_names must have "
+        "equal length."
+    )
+
+
+# Tests _has_implementation_of interface
+def test_has_implementation_of():
+    """Test _has_implementation_of detects methods in class with overrides in mro."""
+    base_obj = FIXTURE_EXAMPLE_CHILD()
+    # When the class overrides a parent classes method should return True
+    assert base_obj._has_implementation_of("some_method")
+    # When class implements method first time it shoudl return False
+    assert not base_obj._has_implementation_of("some_other_method")
+
+    # If the method is defined the first time in the parent class it should not
+    # return _has_implementation_of == True
+    base_obj_parent = FIXTURE_EXAMPLE()
+    assert not base_obj_parent._has_implementation_of("some_method")
