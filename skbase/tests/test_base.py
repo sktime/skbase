@@ -685,9 +685,10 @@ def test_baseobject_repr_mimebundle_():
     """Test display configuration controls output."""
     # Checks the display configuration flag controls the json output
     base_obj = FIXTURE_EXAMPLE()
-    output = base_obj._repr_mimebundle_()
-    assert "text/plain" in output
-    assert "text/html" in output
+    with config_context(display="diagram"):
+        output = base_obj._repr_mimebundle_()
+        assert "text/plain" in output
+        assert "text/html" in output
 
     with config_context(display="text"):
         output = base_obj._repr_mimebundle_()
@@ -699,8 +700,9 @@ def test_repr_html_wraps():
     """Test display configuration flag controls the html output."""
     base_obj = FIXTURE_EXAMPLE()
 
-    output = base_obj._repr_html_()
-    assert "<style>" in output
+    with config_context(display="diagram"):
+        output = base_obj._repr_html_()
+        assert "<style>" in output
 
     with config_context(display="text"):
         msg = "_repr_html_ is only defined when"
