@@ -1,7 +1,7 @@
 .. _user_guide_lookup:
 
 ===========================
-Retrieving ``BaseObjects``
+Retrieving ``BaseObject``-s
 ===========================
 
 .. note::
