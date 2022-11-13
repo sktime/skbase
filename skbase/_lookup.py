@@ -512,6 +512,11 @@ def get_package_metadata(
         a leading underscore).
     modules_to_ignore : list[str] or tuple[str], default=()
         The modules that should be ignored when walking the package.
+        If passed, ignores modules identical with, or submodule of a module whose name
+        is in the list/tuple `modules_to_ignore`.
+        E.g., if `modules_to_ignore` contains the string `"foo"`, then returns `True`
+        for `module_name`-s `"bar.foo"`, `"foo"`, `"foo.bar"`, `"bar.foo.bar"`, etc
+
     package_base_classes: type or Sequence[type], default = (BaseObject,)
         The base classes used to determine if any classes found in metadata descend
         from a base class.
