@@ -774,12 +774,12 @@ def all_objects(
                 warnings.warn(str(e), ImportWarning)
 
     # Drop duplicates
-    all_estimators = list(set(all_estimators))
+    all_estimators = set(all_estimators)
 
     # Filter based on given estimator types
     def _is_in_object_types(estimator, object_types):
         return any(
-            inspect.isclass(x) and isinstance(estimator, x) for x in object_types
+            inspect.isclass(x) and issubclass(estimator, x) for x in object_types
         )
 
     if object_types:
