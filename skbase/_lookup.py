@@ -682,7 +682,11 @@ def all_objects(
         If provided, this should be the path that should be used as root
         to find `package_name` and start the search for any submodules/packages.
     ignore_modules : str or lits of str, optional. Default=empty list
-        list of module names to ignore in search.
+        The modules that should be ignored in search.
+        If passed, ignores modules identical with, or submodule of a module whose name
+        is in the list/tuple `ignore_modules`.
+        E.g., if `ignore_modules` contains the string `"foo"`, then returns `True`
+        for `module_name`-s `"bar.foo"`, `"foo"`, `"foo.bar"`, `"bar.foo.bar"`, etc
     class_lookup : dict[str, class], default=None
         Dictionary of aliases for classes used in object_types.
 
