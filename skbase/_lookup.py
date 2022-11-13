@@ -117,6 +117,12 @@ def _is_ignored_module(
 ) -> bool:
     """Determine if module is one of the ignored modules.
 
+    Ignores a module if identical with, or submodule of a module whose name
+    is in the list/tuple `modules_to_ignore`.
+
+    E.g., if `modules_to_ignore` contains the string `"foo"`, then `True` will be
+    returned for `module_name`-s `"bar.foo"`, `"foo"`, `"foo.bar"`, `"bar.foo.bar"`, etc
+
     Paramters
     ---------
     module_name : str
