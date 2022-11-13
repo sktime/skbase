@@ -632,11 +632,13 @@ def all_objects(
     ignore_modules=None,
     class_lookup=None,
 ):
-    """Get a list of all estimators in the package with name `package_name`.
+    """Get a list of all `skbase` objects in the package with name `package_name`.
 
-    This function crawls the package/module and gets all classes that
-    are descendents of BaseObject. These classes can be retrieved
-    based on their inherittence from intermediate classes, and their tags.
+    This function crawls the package/module to retreive all `skbase` objects,
+    i.e., classes that are descendents of `BaseObject`,
+
+    `all_objects` retrievs `skbase` objects based on their inheritance from
+    intermediate classes, and their tags.
 
     Parameters
     ----------
@@ -663,13 +665,13 @@ def all_objects(
     exclude_estimators: str or list of str, odefault=None
         Names of estimators to exclude.
     as_dataframe: bool, default=False
-        - If False, all_estimators will return a list (either a list of
-            estimators or a list of tuples, see Returns).
-        - If True, all_estimators will return a pandas.DataFrame with named
+        - If False, `all_objects` will return a list (either a list of
+            `skbase` objects or a list of tuples, see Returns).
+        - If True, `all_objects` will return a `pandas.DataFrame` with named
             columns for all of the attributes being returned.
-            this requires soft dependency pandas to be installed.
+            this requires soft dependency `pandas` to be installed.
     return_tags: str or list of str, default=None
-        Names of tags to fetch and return each estimator's value of.
+        Names of tags to fetch and return each `skbase` object's value of.
         For a list of valid tag strings, use the registry.all_tags utility.
         If str or list of str, the tag values named in return_tags will be
         fetched for each object and will be appended as either columns or
@@ -698,28 +700,27 @@ def all_objects(
     Returns
     -------
     all_estimators will return one of the following:
-        1. list of estimators, if return_names=False, and return_tags is None
-        2. list of tuples (optional estimator name, class, ~optional estimator
-                tags), if return_names=True or return_tags is not None.
-        3. pandas.DataFrame if as_dataframe = True
+        1. pandas.DataFrame if `as_dataframe = True`, otherwise:
+        2. list of `skbase` objects, if `return_names=False`, `return_tags=None`
+        3. list of tuples (optional: object name, class, ~optional: object
+                tags), if `return_names=True` or `return_tags` is not `None`.
 
-        - If list of estimators, entries are estimators matching the query,
+        - If list of `skbase` objects, entries are estimators matching the query,
           in alphabetical order of estimator name
         - If list of tuples list of (optional estimator name, estimator,
           optional estimator tags) matching the query,
           in alphabetical order of estimator name, where:
 
-           - ``name`` is the estimator name as string, and is an
-             optional return
-            - ``estimator`` is the actual estimator
-            - ``tags`` are the estimator's values for each tag in return_tags
+            - ``name`` is the `skbase` object name as string, and is an optional return
+            - ``object`` is the actual `skbase` object class
+            - ``tags`` are the object's values for each tag in `return_tags`
               and is an optional return.
 
-        - If dataframe, all_estimators will return a pandas.DataFrame.
+        - If dataframe, `all_objects` will return a pandas.DataFrame.
           Column names represent the attributes contained in each column.
-          "estimators" will be the name of the column of estimators, "names"
-          will be the name of the column of estimator class names and the string(s)
-          passed in return_tags will serve as column names for all columns of
+          "objects" will be the name of the column of `skbase` objects, "names"
+          will be the name of the column of class names and the string(s)
+          passed in `return_tags` will serve as column names for all columns of
           tags that were optionally requested.
 
     References
@@ -829,9 +830,9 @@ def all_objects(
     # remove names if return_names=False
     if not return_names:
         all_estimators = [estimator for (name, estimator) in all_estimators]
-        columns = ["estimator"]
+        columns = ["object"]
     else:
-        columns = ["name", "estimator"]
+        columns = ["name", "object"]
 
     # add new tuple entries to all_estimators for each tag in return_tags:
     if return_tags:
