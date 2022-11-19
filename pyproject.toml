@@ -86,10 +86,10 @@ test = [
 ]
 
 [project.urls]
-homepage = "https://github.com/sktime/baseobject"
-repository = "https://github.com/sktime/baseobject"
-documentation = "https://github.com/sktime/baseobject"
-download = "https://pypi.org/project/baseobject/#files"
+homepage = "https://github.com/sktime/skbase"
+repository = "https://github.com/sktime/skbase"
+documentation = "https://github.com/sktime/skbase"
+download = "https://pypi.org/project/skbase/#files"
 
 [project.license]
 file = "LICENSE"
