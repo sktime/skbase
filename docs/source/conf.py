@@ -9,11 +9,13 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
+import datetime
 import os
 import sys
 
-# sys.path.insert(0, os.path.abspath("."))
+import skbase
 
+# sys.path.insert(0, os.path.abspath("."))
 # -- Path setup --------------------------------------------------------------
 
 # When we build the docs on readthedocs, we build the package and want to
@@ -22,15 +24,14 @@ import sys
 env_rtd = os.environ.get("READTHEDOCS")
 # Check if on Read the docs
 if not env_rtd == "True":
-    pass
-    # sys.path.insert(0, os.path.abspath("../.."))
-
-# import skbase
+    print("Not on ReadTheDocs")
+    sys.path.insert(0, os.path.abspath("../.."))
 
 # -- Project information -----------------------------------------------------
 
+current_year = datetime.datetime.now().year
 project = "skbase"
-copyright = "2022 (BSD-3-Clause License)"
+copyright = f"{current_year} (BSD-3-Clause License)"
 author = "skbase Developers"
 
 
@@ -60,7 +61,7 @@ extensions = [
 language = "en"
 
 # ReadTheDocs has its own way of generating sitemaps, etc.
-if not env_rtd:
+if env_rtd != "True":
     extensions += ["sphinx_sitemap"]
 
     # -- Sitemap -------------------------------------------------------------
@@ -68,7 +69,6 @@ if not env_rtd:
     sitemap_locales = [None]
     sitemap_url_scheme = "{link}"
 
-# TODO: Understand what this changes
 # Use bootstrap CSS from theme.
 panels_add_bootstrap_css = False
 
@@ -152,7 +152,7 @@ def linkcode_resolve(domain, info):
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
+
 html_theme = "pydata_sphinx_theme"
 
 # Define the json_url for our version switcher.
@@ -167,17 +167,18 @@ version_match = os.environ.get("READTHEDOCS_VERSION")
 if not version_match or version_match.isdigit():
     # For local development, infer the version to match from the package.
     release = "0.2.0"  # skbase.__version__
-    if "dev" in release:
+    if "dev" in release or "rc" in release:
         version_match = "latest"
         # We want to keep the relative reference if we are in dev mode
         # but we want the whole url if we are effectively in a released version
-        json_url = "/_static/switcher.json"
+        json_url = "_static/switcher.json"
     else:
         version_match = "v" + release
 
 html_theme_options = {
     "logo": {
-        "text": "BaseObject",
+        "text": "skbase",
+        "alt_text": "skbase",
     },
     "icon_links": [
         {
@@ -190,21 +191,23 @@ html_theme_options = {
             "url": "https://join.slack.com/t/sktime-group/shared_invite/zt-1cghagwee-sqLJ~eHWGYgzWbqUX937ig",  # noqa: E501
             "icon": "fab fa-slack",
         },
+        {
+            "name": "PyPI",
+            "url": "https://pypi.org/project/skbase",
+            "icon": "fa-solid fa-box",
+        },
     ],
-    # "favicons": [
-    #     {"rel": "icon", "sizes": "16x16", "href": "images/sktime-favicon.ico",}
-    # ],
     "icon_links_label": "Quick Links",
     "show_nav_level": 1,
     "show_prev_next": False,
     "use_edit_page_button": False,
     "navbar_start": ["navbar-logo", "version-switcher"],
     "navbar_center": ["navbar-nav"],
-    "navbar_end": ["navbar-icon-links"],
     "switcher": {
         "json_url": json_url,
         "version_match": version_match,
     },
+    "header_links_before_dropdown": 6,
 }
 
 html_context = {
@@ -214,9 +217,7 @@ html_context = {
     "doc_path": "docs/source/",
     "default_mode": "light",
 }
-html_sidebars = {
-    "**": ["search-field.html", "sidebar-nav-bs.html", "sidebar-ethical-ads.html"]
-}
+html_sidebars = {"**": ["sidebar-nav-bs.html", "sidebar-ethical-ads.html"]}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -225,7 +226,7 @@ html_static_path = ["_static"]
 
 # -- Options for HTMLHelp output ---------------------------------------------
 # Output file base name for HTML help builder.
-htmlhelp_basename = "baseobjectdoc"
+htmlhelp_basename = "skbasedoc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -246,9 +247,9 @@ htmlhelp_basename = "baseobjectdoc"
 latex_documents = [
     (
         master_doc,
-        "baseobject.tex",
-        "BaseObject Documentation",
-        "BaseObject developers",
+        "skbase.tex",
+        "skbase Documentation",
+        "skbase developers",
         "manual",
     ),
 ]
@@ -263,6 +264,10 @@ numpydoc_show_class_members = True
 numpydoc_class_members_toctree = False
 
 numpydoc_validation_checks = {"all", "GL01", "SA01", "EX01"}
+
+# -- Options for sphinx-copybutton extension----------------------------------
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
 
 # -- Options for nbsphinx extension ------------------------------------------
 nbsphinx_execute = "never"  # always  # whether to run notebooks
@@ -301,8 +306,3 @@ intersphinx_mapping = {
     "scikit-learn": ("https://scikit-learn.org/stable/", None),
     "sktime": ("https://www.sktime.org/en/stable/", None),
 }
-
-# import os
-
-# print("PYTHONPATH:", os.environ.get("PYTHONPATH"))
-# print("PATH:", os.environ.get("PATH"))
