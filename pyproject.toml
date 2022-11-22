@@ -32,8 +32,9 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
 ]
-requires-python = ">=3.7,<3.11"
+requires-python = ">=3.7,<3.12"
 dependencies = [
     "scikit-learn>=0.24.0,<1.2.0", "typing-extensions", "pytest"
 ]
