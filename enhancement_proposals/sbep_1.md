@@ -70,6 +70,7 @@ BaseObjects are base classes with:
 - `sktime` style interface for working with *tags*
 - `sktime` style interface for cloning and re-instantiation (resetting)
 - `sktime` style interface for generating test instances
+- `sktime` style interface for retrieving fitted parameters
 - `scikit-learn` style interface for representing objects (e.g., pretty printing
   and drawing a simple block representation in HTML)
 
@@ -97,7 +98,7 @@ including:
 
 #### BaseEstimator
 
-Scikit-learn style [estimators](https://scikit-learn.org/stable/tutorial/statistical_inference/settings.html?highlight=estimator#estimators-objects) are *"object that learn from data"*.
+Scikit-learn style [estimators](https://scikit-learn.org/stable/tutorial/statistical_inference/settings.html?highlight=estimator#estimators-objects) are *"objects that learn from data"*.
 
 In `scikit-learn` and `sktime` these can be *regressors*, *classifiers*,
 *clusterers*, *annotaters*, *transformers* and other type of classes implementing
@@ -158,9 +159,19 @@ TO BE ADDED.
 
 #### `skbase.validate`: Validating and Comparing BaseObjects
 
+When developing packages that include parametric objects, verifying and comparing
+objects is a common worfklow.
+
+To aid this `skbase` will provide functions to:
+- Check if a BaseObject complies with the expected interface
+- Functionality to test if two BaseObjects have same parameters and parameter
+  values.
+- Check if a sequence is all BaseObjects.
+- Check if a collection contains named objects in allowable interface formats.
+
 ### Example Repository
 This would be a simple example package that illustrates how `skbase`'s functionality
-can be used to create another package. It will also be used by us to test
+can be used to create another package. It will also be used by `skbase` to test
 `skbase.testing`.
 
 ### Template Repository
