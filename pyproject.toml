@@ -72,7 +72,8 @@ docs = [
     "nbsphinx>=0.8.6",
     "numpydoc",
     "pydata-sphinx-theme",
-    "sphinx_issues",
+    "sphinx-copybutton",
+    "sphinx-issues",
     "sphinx-gallery",
     "sphinx-panels",
     "sphinx",
@@ -101,7 +102,8 @@ build-backend = "setuptools.build_meta"
 [tool.pytest.ini_options]
 # ignore certain folders
 addopts = [
-    "--doctest-modules"
+    "--doctest-modules",
+    "--ignore=docs",
 ]
 
 [tool.isort]
