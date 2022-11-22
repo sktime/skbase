@@ -1,3 +1,4 @@
+#!/usr/bin/env python3 -u
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tools to lookup information on code artifacts in a Python package or module.
@@ -8,12 +9,12 @@ package_metadata()
     Walk package and return metadata on included classes and functions by module.
 all_objects(object_types, filter_tags)
     Look (and optionally filter) BaseObject descendants in a package or module.
-
 """
 # all_objects is based on the sktime all_estimator retrieval utility, which
 # is based on the sklearn estimator retrieval utility of the same name
 # See https://github.com/scikit-learn/scikit-learn/blob/main/COPYING and
 # https://github.com/alan-turing-institute/sktime/blob/main/LICENSE
+
 import importlib
 import inspect
 import io
