@@ -6,6 +6,10 @@
 The included functionality makes it easy to re-use scikit-learn and
 sktime design principles in your project.
 """
+import warnings
+
+from skbase.base import BaseEstimator, BaseObject, _HeterogenousMetaEstimator
+from skbase.lookup import all_objects, get_package_metadata
 
 __version__ = "0.2.0"
 
@@ -18,6 +22,15 @@ __all__ = [
     "get_package_metadata",
 ]
 
-from skbase._base import BaseEstimator, BaseObject
-from skbase._lookup import all_objects, get_package_metadata
-from skbase._meta import _HeterogenousMetaEstimator
+warnings.warn(
+    " ".join(
+        [
+            "Importing from the `skbase` module is deprecated as of version 0.3.0.",
+            "Ability to import from `skbase` will be removed in version 0.5.0."
+            "Import BaseObject, BaseEstimator, and _HeterogenousMetaEstimator"
+            "from skbase.base. Import lookup functionality "
+            "(all_objects, get_package_metadata) from skbase.lookup.",
+        ]
+    ),
+    DeprecationWarning,
+)
