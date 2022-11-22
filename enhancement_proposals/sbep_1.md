@@ -37,7 +37,7 @@ The rest of this design document provides an outline of the proposed interfaces.
 `skbase`'s core functionality will be available through submodule's tailored to
 a given use case.
 
-- [`skbase.base`](#skbase.base:-Base-Class-Interfaces) will include the `BaseObject` class and related base classes.
+- `skbase.base` will include the `BaseObject` class and related base classes.
 - `skbase.lookup` will include the tools for retrieving (i.e., collectiong,
   looking up) any `BaseObject`'s from a project.
 - `skbase.validate` will include tools for validating and comparing `BaseObject`'s
@@ -64,7 +64,7 @@ contexts. This includes:
 
 #### BaseObject
 
-`BaseObject`s are base classes with:
+BaseObjects are base classes with:
 
 - `scikit-learn` style interface to get and set parameters
 - `sktime` style interface for working with *tags*
@@ -73,9 +73,10 @@ contexts. This includes:
 - `scikit-learn` style interface for representing objects (e.g., pretty printing
   and drawing a simple block representation in HTML)
 
-** DESIGN DECISION: Should we include a interface point for validating parameters?
+**DESIGN DECISION: Should we include a interface point for validating parameters?
 If we did this, we might have user-facing output that raises NotImplementedError
-if the users haven't defined non-public method that does the validation.**
+if the users haven't defined non-public method that does the validation. This
+also might be something that falls just outside `skbase`.**
 
 `BaseObjects` should also follow certain design patterns and coding practices,
 including:
@@ -133,16 +134,39 @@ compliant objects). But we may decide this is beyond the scope of `skbase`.**
 
 ### Tools For Working With Base Classes
 
-#### Collecting (Retrieving) `BaseObjects`
+`skbase` should make it easy for developers to work with BaseObjects and create
+their own packages that follow `skbase`'s principles. To accomplish this
+`skbase` includes tools that make it easier to accomplish common workflows
+that arise.
+
+#### `skbase.lookup`: Collecting (Retrieving) Information on BaseObjects and Package Metadata
+
+The need to lookup classes arises in several contexts when working working with
+parametric objects, including the need to collect *similar* objects for
+testing or reporting.
+
+`skbase` provides this through two function interfaces:
+
+- `all_objects` provides the ability to recursively walk packages (or sub-packages)
+  and return the objects that meet the filters specified in the function call.
+- `get_package_metadata` provides the ability to recursively walk a package's moduels
+  and collect information on the items contained in the modules (including
+  objects and functions)
+
+#### `skbase.testing`: Testing BaseObjects
 TO BE ADDED.
 
-#### Testing `BaseObjects`
-TO BE ADDED.
+#### `skbase.validate`: Validating and Comparing BaseObjects
 
 ### Example Repository
 This would be a simple example package that illustrates how `skbase`'s functionality
-can be used to create another package. It can also be used by us to test
+can be used to create another package. It will also be used by us to test
 `skbase.testing`.
 
 ### Template Repository
-TO BE ADDED.
+To make it easy for others to use `skbase` in new projects, it is useful to provide
+a template repository that provides a starting point. This can be accomplished
+by creating and maintaining a
+[cookiecutter](https://cookiecutter.readthedocs.io/en/stable/README.html#features)
+template. Users, can then use the `cookiecutter` package's functionality to
+setup their own project.
