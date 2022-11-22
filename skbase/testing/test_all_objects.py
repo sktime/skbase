@@ -19,8 +19,8 @@ from sklearn.utils.estimator_checks import (
     check_get_params_invariance as _check_get_params_invariance,
 )
 
-from skbase import BaseObject
-from skbase._lookup import all_objects
+from skbase.base import BaseObject
+from skbase.lookup import all_objects
 from skbase.testing.utils._conditional_fixtures import (
     create_conditional_fixtures_and_names,
 )
