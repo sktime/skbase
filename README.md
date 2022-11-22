@@ -26,7 +26,7 @@ For trouble shooting or more information, see our
 [detailed installation instructions](https://baseobject.readthedocs.io/en/latest/user_documentation/installation.html).
 
 - **Operating system**: macOS X · Linux · Windows 8.1 or higher
-- **Python version**: Python 3.7, 3.8, 3.9, and 3.10
+- **Python version**: Python 3.7, 3.8, 3.9, 3.10 and 3.11
 - **Package managers**: [pip]
 
 [pip]: https://pip.pypa.io/en/stable/
