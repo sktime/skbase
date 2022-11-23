@@ -108,7 +108,9 @@ def _is_non_public_module(module_name: str) -> bool:
     is_non_public : bool
         Whether the module is non-public or not.
     """
-    is_non_public: bool = "._" in module_name
+    is_non_public: bool = "._" in module_name or (
+        "." not in module_name and module_name.startswith("_")
+    )
     return is_non_public
 
 
