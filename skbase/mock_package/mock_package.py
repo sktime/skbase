@@ -37,3 +37,11 @@ class CompositionDummy(BaseObject):
         params1 = {"foo": 42}
         params2 = {"foo": CompositionDummy(126)}
         return [params1, params2]
+
+
+class InheritsFromBaseObject(BaseObject):
+    """A class inheritting from BaseObject."""
+
+
+class AnotherClass(BaseObject):
+    """Another class inheritting from BaseObject."""
