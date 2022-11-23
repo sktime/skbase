@@ -80,8 +80,8 @@ To install the latest version using the ``git`` command line, use the following 
 
 1. Use your command line tool to navigate to the directory where you want to clone
    ``skbase``
-2. Clone the repository: :code:`git clone https://github.com/sktime/baseobject.git`
-3. Move into the root directory of the package's local clone: :code:`cd baseobject`
+2. Clone the repository: :code:`git clone https://github.com/sktime/skbase.git`
+3. Move into the root directory of the package's local clone: :code:`cd skbase`
 4. Make sure you are on the main branch: :code:`git checkout main`
 5. Make sure your local version is up-to-date: :code:`git pull`
 
@@ -96,7 +96,7 @@ See Github's `documentation <github_docs>`_ for additional details.
     repository's ``git`` tags, by running ``git tag``.
 
     You can also download a specific release version from the Github repository's
-    zip archive of `releases <https://github.com/sktime/baseobject/releases>`_.
+    zip archive of `releases <https://github.com/sktime/skbase/releases>`_.
 
 Step 2 - Build ``skbase`` from source
 -------------------------------------
@@ -153,6 +153,6 @@ References
 The installation instruction are adapted from sktime's
 `installation instructions <https://www.sktime.org/en/stable/installation.html>`_.
 
-.. _Github repository: https://github.com/sktime/BaseObject
+.. _Github repository: https://github.com/sktime/skbase
 .. _github_docs: https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
 .. _ed_installs: https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs

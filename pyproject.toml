@@ -32,8 +32,9 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
 ]
-requires-python = ">=3.7,<3.11"
+requires-python = ">=3.7,<3.12"
 dependencies = [
     "scikit-learn>=0.24.0,<1.2.0", "typing-extensions", "pytest"
 ]
@@ -87,10 +88,10 @@ test = [
 ]
 
 [project.urls]
-homepage = "https://github.com/sktime/baseobject"
-repository = "https://github.com/sktime/baseobject"
-documentation = "https://github.com/sktime/baseobject"
-download = "https://pypi.org/project/baseobject/#files"
+homepage = "https://github.com/sktime/skbase"
+repository = "https://github.com/sktime/skbase"
+documentation = "https://github.com/sktime/skbase"
+download = "https://pypi.org/project/skbase/#files"
 
 [project.license]
 file = "LICENSE"
