@@ -10,6 +10,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 import datetime
+import inspect
 import os
 import sys
 
@@ -65,9 +66,9 @@ if env_rtd != "True":
     extensions += ["sphinx_sitemap"]
 
     # -- Sitemap -------------------------------------------------------------
-    html_baseurl = os.environ.get("SITEMAP_URL_BASE", "http://127.0.0.1:8000/")
-    sitemap_locales = [None]
-    sitemap_url_scheme = "{link}"
+    # html_baseurl = os.environ.get("SITEMAP_URL_BASE", "http://127.0.0.1:8000/")
+    # sitemap_locales = [None]
+    # sitemap_url_scheme = "{link}"
 
 # Use bootstrap CSS from theme.
 panels_add_bootstrap_css = False
@@ -131,8 +132,6 @@ def linkcode_resolve(domain, info):
         obj = sys.modules[info["module"]]
         for part in info["fullname"].split("."):
             obj = getattr(obj, part)
-        import inspect
-        import os
 
         fn = inspect.getsourcefile(obj)
         fn = os.path.relpath(fn, start=os.path.dirname(skbase.__file__))
@@ -145,7 +144,7 @@ def linkcode_resolve(domain, info):
         filename = "skbase/%s#L%d-L%d" % find_source()
     except Exception:
         filename = info["module"].replace(".", "/") + ".py"
-    return "https://github.com/sktime/skbase/blob/{version_match}/{filename}"
+    return f"https://github.com/sktime/skbase/blob/{version_match}/{filename}"
 
 
 # -- Options for HTML output -------------------------------------------------
