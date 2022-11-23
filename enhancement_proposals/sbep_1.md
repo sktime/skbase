@@ -79,7 +79,7 @@ If we did this, we might have user-facing output that raises NotImplementedError
 if the users haven't defined non-public method that does the validation. This
 also might be something that falls just outside `skbase`.**
 
-`BaseObjects` should also follow certain design patterns and coding practices,
+`BaseObject`s should also follow certain design patterns and coding practices,
 including:
 
 - Specify all parameters in the classes ``__init__`` as explicit keyword arguments.
@@ -101,8 +101,8 @@ including:
 Scikit-learn style [estimators](https://scikit-learn.org/stable/tutorial/statistical_inference/settings.html?highlight=estimator#estimators-objects) are *"objects that learn from data"*.
 
 In `scikit-learn` and `sktime` these can be *regressors*, *classifiers*,
-*clusterers*, *annotaters*, *transformers* and other type of classes implementing
-learning algorithms.
+*clusterers*, *annotators*, *forecasters*, *transformers* and other type of
+classes implementing learning algorithms.
 
 `BaseEstimator` ties together the different algorithm categories through a
 common high-level interface for learning (fitting) parameters from data by inheriting
@@ -122,7 +122,7 @@ method appropriately sets the `_is_fitted` attribute), since the signature of
 `fit` is learning task specific. Therefore, the specific `fit` implementation
 is left to child classes implemented outside of `skbase`.
 
-#### HeterogenousMetaObject
+#### HeterogenousMetaObject and BasePipeline Classes
 
 **DESIGN DECISION: Do we want to provide specific base classes for useful
 implementations of HeterogenousMetaEstimator? Specifically, base pipeline
@@ -150,12 +150,25 @@ testing or reporting.
 
 - `all_objects` provides the ability to recursively walk packages (or sub-packages)
   and return the objects that meet the filters specified in the function call.
-- `get_package_metadata` provides the ability to recursively walk a package's moduels
+- `get_package_metadata` provides the ability to recursively walk a package's modules
   and collect information on the items contained in the modules (including
   objects and functions)
 
 #### `skbase.testing`: Testing BaseObjects
-TO BE ADDED.
+
+When building packages like `sktime` and `scikit-learn` that are made up of
+related objects, there is a need to make all the objects comply with expected
+interfaces and required functionality works as expected. `skbase` seeks to
+make this easy by providing extensible functionality for automatically
+collecting and testing classes that descend from BaseObject.
+
+This benefits users by:
+
+- Letting them incorporate these tests in their own projects, reducing the need
+  to spend time testing that their classes comply with the interface inheritted
+  from `BaseObject`.
+- Providing an extensible framework they can use to collect and test their own
+  object interfaces and functionality.
 
 #### `skbase.validate`: Validating and Comparing BaseObjects
 
