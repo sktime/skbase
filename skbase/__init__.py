@@ -19,5 +19,5 @@ __all__ = [
 ]
 
 from skbase._base import BaseEstimator, BaseObject
-from skbase._lookup import all_objects, get_package_metadata
 from skbase._meta import _HeterogenousMetaEstimator
+from skbase.lookup import all_objects, get_package_metadata
