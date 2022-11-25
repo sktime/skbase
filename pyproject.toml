@@ -105,7 +105,7 @@ build-backend = "setuptools.build_meta"
 addopts = [
     "--doctest-modules",
     "--ignore=docs",
-    "--cov .",
+    "--cov=.",
     "--cov-report xml",
     "--cov-report html",
 ]
