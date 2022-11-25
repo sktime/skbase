@@ -351,6 +351,7 @@ class CompositionDummy(BaseObject):
         self.foo = foo
         self.foo_ = deepcopy(foo)
         self.bar = bar
+        super().__init__()
 
 
 def test_is_composite():
@@ -432,6 +433,7 @@ class ResetTester(BaseObject):
         self.a = a
         self.b = b
         self.c = 84
+        super().__init__()
 
     def foo(self, d=126):
         self.d = deepcopy(d)
