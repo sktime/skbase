@@ -109,7 +109,7 @@ autodoc_default_options = {
 add_function_parentheses = False
 
 # Link to GitHub repo for github_issues extension
-issues_github_path = "sktime/baseobject"
+issues_github_path = "sktime/skbase"
 
 
 def linkcode_resolve(domain, info):
@@ -145,7 +145,7 @@ def linkcode_resolve(domain, info):
         filename = "skbase/%s#L%d-L%d" % find_source()
     except Exception:
         filename = info["module"].replace(".", "/") + ".py"
-    return "https://github.com/sktime/baseobject/blob/{version_match}/{filename}"
+    return "https://github.com/sktime/skbase/blob/{version_match}/{filename}"
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -183,7 +183,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/sktime/baseobject",
+            "url": "https://github.com/sktime/skbase",
             "icon": "fab fa-github",
         },
         {
@@ -288,9 +288,7 @@ nbsphinx_prolog = f"""
 """
 
 # add link to original notebook at the bottom
-notebook_url = (
-    f"https://github.com/sktime/baseobject/tree/{version_match}/{current_file}"
-)
+notebook_url = f"https://github.com/sktime/skbase/tree/{version_match}/{current_file}"
 nbsphinx_epilog = f"""
 ----
 
