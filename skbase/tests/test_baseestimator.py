@@ -4,13 +4,15 @@
 
 tests in this module:
 
-    test_has_is_fitted - Test that BaseEstimator has is_fitted interface
+    test_baseestimator_inheritance - Test BaseEstimator inherits from BaseObject.
+    test_has_is_fitted - Test that BaseEstimator has is_fitted interface.
     test_has_check_is_fitted - Test that BaseEstimator has check_is_fitted inteface.
     test_is_fitted  - Test that is_fitted property returns _is_fitted as expected.
     test_check_is_fitted   - Test that check_is_fitted works as expected.
+    test_check_is_fitted_raises_error_when_unfitted - Test check_is_fitted raises error.
 """
 
-__author__ = ["fkiraly"]
+__author__ = ["fkiraly", "RNKuhns"]
 import inspect
 
 import pytest
@@ -19,25 +21,24 @@ from skbase import BaseEstimator, BaseObject
 from skbase._exceptions import NotFittedError
 
 
-# Fixture class for testing simple fittable estimator
-class FixtureSimpleFittableEstimator(BaseEstimator):
-    """Fittable estimator for testing."""
-
-    def fit(self):
-        """Fit method for testing."""
-        self._is_fitted = True
+@pytest.fixture
+def fixture_estimator():
+    """Pytest fixture of BaseEstimator class."""
+    return BaseEstimator
 
 
 @pytest.fixture
 def fixture_estimator_instance():
     """Pytest fixture of BaseEstimator instance."""
-    return FixtureSimpleFittableEstimator()
+    return BaseEstimator()
 
 
-def test_baseestimator_inheritance():
+def test_baseestimator_inheritance(fixture_estimator, fixture_estimator_instance):
     """Check BaseEstimator correctly inherits from BaseObject."""
-    estimator_is_subclass_of_baseobejct = issubclass(BaseEstimator, BaseObject)
-    estimator_instance_is_baseobject_instance = isinstance(BaseEstimator(), BaseObject)
+    estimator_is_subclass_of_baseobejct = issubclass(fixture_estimator, BaseObject)
+    estimator_instance_is_baseobject_instance = isinstance(
+        fixture_estimator_instance, BaseObject
+    )
     assert (
         estimator_is_subclass_of_baseobejct
         and estimator_instance_is_baseobject_instance
@@ -67,16 +68,12 @@ def test_is_fitted(fixture_estimator_instance):
     expected_value_unfitted = (
         fixture_estimator_instance.is_fitted == fixture_estimator_instance._is_fitted
     )
-    fixture_estimator_instance.fit()
-    expected_value_fitted = (
-        fixture_estimator_instance.is_fitted == fixture_estimator_instance._is_fitted
-    )
     assert (
-        expected_value_unfitted and expected_value_fitted
+        expected_value_unfitted
     ), "`BaseEstimator` property `is_fitted` does not return `_is_fitted` value."
 
 
-def test_check_is_fitted_raises_error_on_unfitted_estimator(fixture_estimator_instance):
+def test_check_is_fitted_raises_error_when_unfitted(fixture_estimator_instance):
     """Test BaseEstimator `check_is_fitted` method raises an error."""
     name = fixture_estimator_instance.__class__.__name__
     match = f"This instance of {name} has not been fitted yet; please call `fit` first."
