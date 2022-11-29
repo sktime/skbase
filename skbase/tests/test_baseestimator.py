@@ -8,7 +8,6 @@ tests in this module:
     test_has_is_fitted - Test that BaseEstimator has is_fitted interface.
     test_has_check_is_fitted - Test that BaseEstimator has check_is_fitted inteface.
     test_is_fitted  - Test that is_fitted property returns _is_fitted as expected.
-    test_check_is_fitted   - Test that check_is_fitted works as expected.
     test_check_is_fitted_raises_error_when_unfitted - Test check_is_fitted raises error.
 """
 
@@ -76,6 +75,9 @@ def test_is_fitted(fixture_estimator_instance):
 def test_check_is_fitted_raises_error_when_unfitted(fixture_estimator_instance):
     """Test BaseEstimator `check_is_fitted` method raises an error."""
     name = fixture_estimator_instance.__class__.__name__
-    match = f"This instance of {name} has not been fitted yet; please call `fit` first."
+    match = f"This instance of {name} has not been fitted yet. Please call `fit` first."
     with pytest.raises(NotFittedError, match=match):
         fixture_estimator_instance.check_is_fitted()
+
+    fixture_estimator_instance._is_fitted = True
+    assert fixture_estimator_instance.check_is_fitted() is None
