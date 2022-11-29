@@ -85,6 +85,8 @@ test = [
     "coverage",
     "pytest-cov",
     "safety",
+    "numpy",
+    "scipy",
 ]
 
 [project.urls]
