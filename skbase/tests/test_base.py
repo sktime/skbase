@@ -39,6 +39,8 @@ __all__ = [
     "test_get_init_signature_raises_error_for_invalid_signature",
     "test_get_param_names",
     "test_get_params",
+    "test_get_params_invariance",
+    "test_get_params_after_set_params",
     "test_set_params",
     "test_set_params_raises_error_non_existent_param",
     "test_set_params_raises_error_non_interface_composite",
@@ -47,6 +49,10 @@ __all__ = [
     "test_clone",
     "test_clone_2",
     "test_clone_raises_error_for_nonconforming_objects",
+    "test_clone_param_is_none",
+    "test_clone_empty_array",
+    "test_clone_sparse_matrix",
+    "test_clone_nan",
     "test_clone_estimator_types",
     "test_clone_class_rather_than_instance_raises_error",
     "test_baseobject_repr",
@@ -63,7 +69,9 @@ __all__ = [
 import inspect
 from copy import deepcopy
 
+import numpy as np
 import pytest
+import scipy.sparse as sp
 from sklearn import config_context
 
 # TODO: Update with import of skbase clone function once implemented
@@ -649,6 +657,7 @@ def test_get_params(
     params = base_obj.get_params()
     assert params == fixture_class_parent_expected_params
 
+    # Test get_params with composite object
     composite = fixture_composition_dummy(foo=base_obj, bar=84)
     params = composite.get_params()
     assert "foo__a" in params and "foo__b" in params and "foo__c" in params
@@ -661,6 +670,54 @@ def test_get_params(
     composite = fixture_composition_dummy(foo=fixture_class_instance_no_param_interface)
     params = composite.get_params()
     assert "foo" in params and "bar" in params and len(params) == 2
+
+
+def test_get_params_invariance(fixture_class_parent, fixture_composition_dummy):
+    """Test that get_params(deep=False) is subset of get_params(deep=True)."""
+    composite = fixture_composition_dummy(foo=fixture_class_parent(), bar=84)
+    shallow_params = composite.get_params(deep=False)
+    deep_params = composite.get_params(deep=True)
+    assert all(item in deep_params.items() for item in shallow_params.items())
+
+
+def test_get_params_after_set_params(fixture_class_parent):
+    """Test that get_params returns the same thing before and after set_params.
+
+    Based on scikit-learn check in check_estimator.
+    """
+    base_obj = fixture_class_parent()
+
+    orig_params = base_obj.get_params(deep=False)
+    msg = "get_params result does not match what was passed to set_params"
+
+    base_obj.set_params(**orig_params)
+    curr_params = base_obj.get_params(deep=False)
+    assert set(orig_params.keys()) == set(curr_params.keys()), msg
+    for k, v in curr_params.items():
+        assert orig_params[k] is v, msg
+
+    # some fuzz values
+    test_values = [-np.inf, np.inf, None]
+
+    test_params = deepcopy(orig_params)
+    for param_name in orig_params.keys():
+        default_value = orig_params[param_name]
+        for value in test_values:
+            test_params[param_name] = value
+            try:
+                base_obj.set_params(**test_params)
+            except (TypeError, ValueError):
+                params_before_exception = curr_params
+                curr_params = base_obj.get_params(deep=False)
+                assert set(params_before_exception.keys()) == set(curr_params.keys())
+                for k, v in curr_params.items():
+                    assert params_before_exception[k] is v
+            else:
+                curr_params = base_obj.get_params(deep=False)
+                assert set(test_params.keys()) == set(curr_params.keys()), msg
+                for k, v in curr_params.items():
+                    assert test_params[k] is v, msg
+        test_params[param_name] = default_value
 
 
 def test_set_params(
@@ -784,23 +841,55 @@ def test_clone_raises_error_for_nonconforming_objects(
         obj_that_modifies.clone()
 
 
-# def test_clone_empty_array():
-#     # Regression test for cloning estimators with empty arrays
-#     clf = MyEstimator(empty=np.array([]))
-#     clf2 = clone(clf)
-#     assert_array_equal(clf.empty, clf2.empty)
-
-#     clf = MyEstimator(empty=sp.csr_matrix(np.array([[0]])))
-#     clf2 = clone(clf)
-#     assert_array_equal(clf.empty.data, clf2.empty.data)
+def test_clone_param_is_none(fixture_class_parent):
+    """Test clone with keyword parameter set to None."""
+    base_obj = fixture_class_parent(c=None)
+    new_base_obj = clone(base_obj)
+    new_base_obj2 = base_obj.clone()
+    assert base_obj.c is new_base_obj.c
+    assert base_obj.c is new_base_obj2.c
 
 
-# def test_clone_nan():
-#     # Regression test for cloning estimators with default parameter as np.nan
-#     clf = MyEstimator(empty=np.nan)
-#     clf2 = clone(clf)
+def test_clone_empty_array(fixture_class_parent):
+    """Test clone with keyword parameter is scipy sparse matrix.
 
-#     assert clf.empty is clf2.empty
+    This test is based on scikit-learn regression test to make sure clone
+    works with default parameter set to scipy sparse matrix.
+    """
+    # Regression test for cloning estimators with empty arrays
+    base_obj = fixture_class_parent(c=np.array([]))
+    new_base_obj = clone(base_obj)
+    new_base_obj2 = base_obj.clone()
+    np.testing.assert_array_equal(base_obj.c, new_base_obj.c)
+    np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
+
+
+def test_clone_sparse_matrix(fixture_class_parent):
+    """Test clone with keyword parameter is scipy sparse matrix.
+
+    This test is based on scikit-learn regression test to make sure clone
+    works with default parameter set to scipy sparse matrix.
+    """
+    base_obj = fixture_class_parent(c=sp.csr_matrix(np.array([[0]])))
+    new_base_obj = clone(base_obj)
+    new_base_obj2 = base_obj.clone()
+    np.testing.assert_array_equal(base_obj.c, new_base_obj.c)
+    np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
+
+
+def test_clone_nan(fixture_class_parent):
+    """Test clone with keyword parameter is np.nan.
+
+    This test is based on scikit-learn regression test to make sure clone
+    works with default parameter set to np.nan.
+    """
+    # Regression test for cloning estimators with default parameter as np.nan
+    base_obj = fixture_class_parent(c=np.nan)
+    new_base_obj = clone(base_obj)
+    new_base_obj2 = base_obj.clone()
+
+    assert base_obj.c is new_base_obj.c
+    assert base_obj.c is new_base_obj2.c
 
 
 def test_clone_estimator_types(fixture_class_parent):
