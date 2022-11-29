@@ -137,7 +137,6 @@ class ResetTester(BaseObject):
 
 class InvalidInitSignatureTester(BaseObject):
     def __init__(self, a, *args):
-        pass
         super().__init__()
 
 
@@ -722,7 +721,6 @@ def test_raises_on_get_params_for_param_arg_not_assigned_to_attribute():
     class BadObject(BaseObject):
         # Here we don't assign param to self.param as expected in interface
         def __init__(self, param=5):
-            pass
             super().__init__()
 
     est = BadObject()
