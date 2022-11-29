@@ -848,6 +848,6 @@ class BaseEstimator(BaseObject):
         """
         if not self.is_fitted:
             raise NotFittedError(
-                f"This instance of {self.__class__.__name__} has not "
-                f"been fitted yet; please call `fit` first."
+                f"This instance of {self.__class__.__name__} has not been fitted yet. "
+                f"Please call `fit` first."
             )
