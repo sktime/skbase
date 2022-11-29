@@ -427,7 +427,7 @@ class BaseObject(_BaseEstimator):
         """
         # if non-default parameters are required, but none have been found, raise error
         if hasattr(cls, "_required_parameters"):
-            required_parameters = getattr(cls, "required_parameters", [])
+            required_parameters = getattr(cls, "_required_parameters", [])
             if len(required_parameters) > 0:
                 raise ValueError(
                     f"Estimator: {cls} requires "
@@ -466,13 +466,8 @@ class BaseObject(_BaseEstimator):
         else:
             params = cls.get_test_params()
 
-        if isinstance(params, list):
-            if isinstance(params[0], dict):
-                params = params[0]
-            else:
-                raise TypeError(
-                    "get_test_params should either return a dict or list of dict."
-                )
+        if isinstance(params, list) and isinstance(params[0], dict):
+            params = params[0]
         elif isinstance(params, dict):
             pass
         else:
@@ -853,6 +848,6 @@ class BaseEstimator(BaseObject):
         """
         if not self.is_fitted:
             raise NotFittedError(
-                f"This instance of {self.__class__.__name__} has not "
-                f"been fitted yet; please call `fit` first."
+                f"This instance of {self.__class__.__name__} has not been fitted yet. "
+                f"Please call `fit` first."
             )
