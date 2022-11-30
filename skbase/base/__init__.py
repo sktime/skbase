@@ -6,13 +6,14 @@
 The included functionality makes it easy to re-use scikit-learn and
 sktime design principles in your project.
 """
-
-__author__ = ["mloning", "RNKuhns", "fkiraly"]
-__all__ = [
-    "BaseObject",
-    "BaseEstimator",
-    "_HeterogenousMetaEstimator",
-]
+from typing import List
 
 from skbase.base._base import BaseEstimator, BaseObject
-from skbase.base._meta import _HeterogenousMetaEstimator
+from skbase.base._meta import BaseMetaEstimator
+
+__author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
+__all__: List[str] = [
+    "BaseObject",
+    "BaseEstimator",
+    "BaseMetaEstimator",
+]

@@ -5,16 +5,17 @@
 # are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
 # conditions see https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
 """Implements meta estimator for estimators composed of other estimators."""
-
-__author__ = ["mloning", "fkiraly"]
-__all__ = ["_HeterogenousMetaEstimator"]
-
+import warnings
 from inspect import isclass
+from typing import List
 
 from skbase.base._base import BaseEstimator
 
+__author__: List[str] = ["mloning", "fkiraly"]
+__all__: List[str] = ["BaseMetaEstimator"]
 
-class _HeterogenousMetaEstimator(BaseEstimator):
+
+class BaseMetaEstimator(BaseEstimator):
     """Handles parameter management for estimators composed of named estimators.
 
     Partly adapted from sklearn utils.metaestimator.py.
@@ -656,3 +657,23 @@ def unflat_len(obj):
 def is_flat(obj):
     """Check whether list or tuple is flat, returns true if yes, false if nested."""
     return not any(isinstance(x, (list, tuple)) for x in obj)
+
+
+class _HeterogenousMetaEstimator(BaseMetaEstimator):
+    """Handles parameter management for estimators composed of named estimators.
+
+    Partly adapted from sklearn utils.metaestimator.py.
+    """
+
+    def __init__(self):
+        super().__init__()
+        warnings.warn(
+            " ".join(
+                [
+                    "_HeterogenousMetaEstimator has been depracated. Functionality is",
+                    "available as part of BaseMetaEstimator.",
+                    "_HeterogenousMetaEstimator will be removed in version 0.5.0.",
+                ]
+            ),
+            DeprecationWarning,
+        )
