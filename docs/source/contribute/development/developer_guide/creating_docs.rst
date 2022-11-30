@@ -207,17 +207,17 @@ We use `sphinx`_ to build our documentation and `readthedocs`_ to host it.
 You can find our latest documentation `here <https://www.sktime.org/en/latest/>`_.
 
 The source files can be found
-in `docs/source/ <https://github.com/sktime/baseobject/tree/main/docs/source>`_.
+in `docs/source/ <https://github.com/sktime/skbase/tree/main/docs/source>`_.
 The main configuration file for sphinx is
-`conf.py <https://github.com/sktime/baseobject/blob/main/docs/source/conf.py>`_
+`conf.py <https://github.com/sktime/skbase/blob/main/docs/source/conf.py>`_
 and the main page is
-`index.rst <https://github.com/sktime/baseobject/blob/main/docs/source/index.rst>`_.
+`index.rst <https://github.com/sktime/skbase/blob/main/docs/source/index.rst>`_.
 To add new pages, you need to add a new ``.rst`` file and link to it from the
 applicable file in the existing documentation.
 
 To build the documentation locally, you need to install a few extra
 dependencies listed in
-`pyproject.toml <https://github.com/sktime/baseobject/blob/main/pyproject.toml>`_.
+`pyproject.toml <https://github.com/sktime/skbase/blob/main/pyproject.toml>`_.
 
 1. To install extra dependencies from the root directory of your local copy
    of the forked repository, run:

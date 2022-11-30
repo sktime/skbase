@@ -10,12 +10,12 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 import datetime
+import inspect
 import os
 import sys
 
 import skbase
 
-# sys.path.insert(0, os.path.abspath("."))
 # -- Path setup --------------------------------------------------------------
 
 # When we build the docs on readthedocs, we build the package and want to
@@ -36,7 +36,7 @@ author = "skbase Developers"
 
 
 # The full version, including alpha/beta/rc tags
-# release = skbase.__version__
+release = skbase.__version__
 
 # -- General configuration ---------------------------------------------------
 
@@ -59,15 +59,6 @@ extensions = [
 # -- Internationalization ------------------------------------------------
 # specifying the natural language populates some key tags
 language = "en"
-
-# ReadTheDocs has its own way of generating sitemaps, etc.
-if env_rtd != "True":
-    extensions += ["sphinx_sitemap"]
-
-    # -- Sitemap -------------------------------------------------------------
-    html_baseurl = os.environ.get("SITEMAP_URL_BASE", "http://127.0.0.1:8000/")
-    sitemap_locales = [None]
-    sitemap_url_scheme = "{link}"
 
 # Use bootstrap CSS from theme.
 panels_add_bootstrap_css = False
@@ -109,7 +100,7 @@ autodoc_default_options = {
 add_function_parentheses = False
 
 # Link to GitHub repo for github_issues extension
-issues_github_path = "sktime/baseobject"
+issues_github_path = "sktime/skbase"
 
 
 def linkcode_resolve(domain, info):
@@ -131,8 +122,6 @@ def linkcode_resolve(domain, info):
         obj = sys.modules[info["module"]]
         for part in info["fullname"].split("."):
             obj = getattr(obj, part)
-        import inspect
-        import os
 
         fn = inspect.getsourcefile(obj)
         fn = os.path.relpath(fn, start=os.path.dirname(skbase.__file__))
@@ -145,7 +134,7 @@ def linkcode_resolve(domain, info):
         filename = "skbase/%s#L%d-L%d" % find_source()
     except Exception:
         filename = info["module"].replace(".", "/") + ".py"
-    return "https://github.com/sktime/baseobject/blob/{version_match}/{filename}"
+    return f"https://github.com/sktime/skbase/blob/{version_match}/{filename}"
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -166,7 +155,6 @@ version_match = os.environ.get("READTHEDOCS_VERSION")
 # If it is an integer, we're in a PR build and the version isn't correct.
 if not version_match or version_match.isdigit():
     # For local development, infer the version to match from the package.
-    release = "0.2.0"  # skbase.__version__
     if "dev" in release or "rc" in release:
         version_match = "latest"
         # We want to keep the relative reference if we are in dev mode
@@ -183,7 +171,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/sktime/baseobject",
+            "url": "https://github.com/sktime/skbase",
             "icon": "fab fa-github",
         },
         {
@@ -288,9 +276,7 @@ nbsphinx_prolog = f"""
 """
 
 # add link to original notebook at the bottom
-notebook_url = (
-    f"https://github.com/sktime/baseobject/tree/{version_match}/{current_file}"
-)
+notebook_url = f"https://github.com/sktime/skbase/tree/{version_match}/{current_file}"
 nbsphinx_epilog = f"""
 ----
 

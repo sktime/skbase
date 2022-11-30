@@ -3,7 +3,7 @@ name = "skbase"
 version = "0.2.0"
 description = "Base classes for sklearn-like parametric objects"
 authors = [
-    {name = "Franz Kiraly", email = "f.kiraly@ucl.ac.uk"},
+    {name = "Franz Király", email = "f.kiraly@ucl.ac.uk"},
     {name = "Markus Löning"},
     {name = "Ryan Kuhns", email = "rk.skbase@gmail.com"},
 ]
@@ -85,19 +85,21 @@ test = [
     "coverage",
     "pytest-cov",
     "safety",
+    "numpy",
+    "scipy",
 ]
 
 [project.urls]
-homepage = "https://github.com/sktime/baseobject"
-repository = "https://github.com/sktime/baseobject"
-documentation = "https://github.com/sktime/baseobject"
-download = "https://pypi.org/project/baseobject/#files"
+homepage = "https://github.com/sktime/skbase"
+repository = "https://github.com/sktime/skbase"
+documentation = "https://github.com/sktime/skbase"
+download = "https://pypi.org/project/skbase/#files"
 
 [project.license]
 file = "LICENSE"
 
 [build-system]
-requires = ["setuptools", "wheel", "toml", "build"]
+requires = ["setuptools>61", "wheel", "toml", "build"]
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
@@ -105,11 +107,14 @@ build-backend = "setuptools.build_meta"
 addopts = [
     "--doctest-modules",
     "--ignore=docs",
+    "--cov=.",
+    "--cov-report=xml",
+    "--cov-report=html",
 ]
 
 [tool.isort]
 profile = "black"
-src_paths = ["isort", "test"]
+src_paths = ["skbase/*"]
 multi_line_output = 3
 known_first_party = ["skbase"]
 
@@ -134,3 +139,20 @@ ignore_path = ["docs/_build", "docs/source/api_reference/auto_generated"]
 
 [tool.bandit]
 exclude_dirs = ["*/tests/*", "*/testing/*"]
+
+[tool.setuptools]
+zip-safe = true
+
+[tool.setuptools.package-data]
+sktime = [
+    "*.csv",
+    "*.csv.gz",
+    "*.arff",
+    "*.arff.gz",
+    "*.txt",
+    "*.ts",
+    "*.tsv",
+]
+
+[tool.setuptools.packages.find]
+exclude = ["tests", "tests.*"]
