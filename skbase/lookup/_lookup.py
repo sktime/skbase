@@ -40,7 +40,7 @@ from typing import (
 )
 
 from skbase.base import BaseObject
-from skbase.validate import _check_list_of_str_or_error
+from skbase.validate._types import _check_list_of_str_or_error
 
 # Conditionally import TypedDict based on Python version
 if sys.version_info >= (3, 8):
