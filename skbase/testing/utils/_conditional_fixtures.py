@@ -3,15 +3,13 @@
 
 Exports create_conditional_fixtures_and_names utility
 """
-
-__author__ = ["fkiraly"]
-
-__all__ = ["create_conditional_fixtures_and_names"]
-
 from copy import deepcopy
 from typing import Callable, Dict, List
 
 import numpy as np
+
+__author__: List[str] = ["fkiraly"]
+__all__: List[str] = ["create_conditional_fixtures_and_names"]
 
 
 class FixtureGenerationError(Exception):
