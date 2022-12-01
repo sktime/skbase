@@ -16,8 +16,8 @@ import inspect
 
 import pytest
 
-from skbase import BaseEstimator, BaseObject
 from skbase._exceptions import NotFittedError
+from skbase.base import BaseEstimator, BaseObject
 
 
 @pytest.fixture

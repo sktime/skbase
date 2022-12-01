@@ -4,13 +4,11 @@
 
 adapted from scikit-learn's and sktime's estimator_checks
 """
-
-__author__ = ["fkiraly"]
-
 import numbers
 import types
 from copy import deepcopy
 from inspect import getfullargspec, isclass, signature
+from typing import List
 
 import joblib
 import numpy as np
@@ -26,6 +24,8 @@ from skbase.testing.utils._conditional_fixtures import (
 )
 from skbase.testing.utils.deep_equals import deep_equals
 from skbase.testing.utils.inspect import _get_args
+
+__author__: List[str] = ["fkiraly"]
 
 
 class BaseFixtureGenerator:
