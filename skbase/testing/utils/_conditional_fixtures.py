@@ -6,18 +6,12 @@ Exports create_conditional_fixtures_and_names utility
 from copy import deepcopy
 from typing import Callable, Dict, List
 
-import numpy as np
+from skbase._exceptions import FixtureGenerationError
+from skbase.utils._misc import _remove_single
+from skbase.validate._types import _check_list_of_str
 
 __author__: List[str] = ["fkiraly"]
 __all__: List[str] = ["create_conditional_fixtures_and_names"]
-
-
-class FixtureGenerationError(Exception):
-    """Raised when a fixture fails to generate."""
-
-    def __init__(self, fixture_name="", err=None):
-        self.fixture_name = fixture_name
-        super().__init__(f"fixture {fixture_name} failed to generate. {err}")
 
 
 def create_conditional_fixtures_and_names(
@@ -206,41 +200,3 @@ def create_conditional_fixtures_and_names(
         fixture_prod = [deepcopy(x) for x in fixture_prod]
 
     return fixture_param_str, fixture_prod, fixture_names
-
-
-def _check_list_of_str(obj, name="obj"):
-    """Check whether obj is a list of str.
-
-    Parameters
-    ----------
-    obj : any object, check whether is list of str
-    name : str, default="obj", name of obj to display in error message
-
-    Returns
-    -------
-    obj, unaltered
-
-    Raises
-    ------
-    TypeError if obj is not list of str
-    """
-    if not isinstance(obj, list) or not np.all(isinstance(x, str) for x in obj):
-        raise TypeError(f"{name} must be a list of str")
-    return obj
-
-
-def _remove_single(x):
-    """Remove tuple wrapping from singleton.
-
-    Parameters
-    ----------
-    x : tuple
-
-    Returns
-    -------
-    x[0] if x is a singleton, otherwise x
-    """
-    if len(x) == 1:
-        return x[0]
-    else:
-        return x

@@ -6,8 +6,16 @@
 """Custom exceptions used in ``skbase``."""
 from typing import List
 
-__author__: List[str] = ["mloning", "rnkuhns"]
-__all__: List[str] = ["NotFittedError"]
+__author__: List[str] = ["fkiraly", "mloning", "rnkuhns"]
+__all__: List[str] = ["FixtureGenerationError", "NotFittedError"]
+
+
+class FixtureGenerationError(Exception):
+    """Raised when a fixture fails to generate."""
+
+    def __init__(self, fixture_name="", err=None):
+        self.fixture_name = fixture_name
+        super().__init__(f"fixture {fixture_name} failed to generate. {err}")
 
 
 class NotFittedError(ValueError, AttributeError):

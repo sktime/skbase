@@ -10,6 +10,27 @@ __author__: List[str] = ["RNKuhns", "fkiraly"]
 __all__: List[str] = []
 
 
+def _check_list_of_str(obj, name="obj"):
+    """Check whether obj is a list of str.
+
+    Parameters
+    ----------
+    obj : any object, check whether is list of str
+    name : str, default="obj", name of obj to display in error message
+
+    Returns
+    -------
+    obj, unaltered
+
+    Raises
+    ------
+    TypeError if obj is not list of str
+    """
+    if not isinstance(obj, list) or not all(isinstance(x, str) for x in obj):
+        raise TypeError(f"{name} must be a list of str")
+    return obj
+
+
 def _check_list_of_str_or_error(arg_to_check, arg_name):
     """Check that certain arguments are str or list of str.
 
