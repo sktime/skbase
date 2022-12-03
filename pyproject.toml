@@ -87,6 +87,7 @@ test = [
     "safety",
     "numpy",
     "scipy",
+    "pandas",
 ]
 
 [project.urls]
