@@ -38,7 +38,7 @@ soft dependency when reviewing Pull Requests. In the event you need to add a new
 soft dependency or changing the version of an existing one,
 the following files need to be updated:
 
-*  `pyproject.toml <https://github.com/sktime/baseobject/blob/main/pyproject.toml>`_,
+*  `pyproject.toml <https://github.com/sktime/skbase/blob/main/pyproject.toml>`_,
    adding the dependency or version bounds in the ``all_extras`` dependency set.
    Following the `PEP 621 <https://www.python.org/dev/peps/pep-0621/>`_ convention,
    all dependencies including build time dependencies and optional dependencies
@@ -47,9 +47,9 @@ the following files need to be updated:
 Informative warnings or error messages for missing soft dependencies should be raised,
 in a situation where a user would need them. This is handled through our
 ``_check_soft_dependencies`` `utility
-<https://github.com/sktime/baseobject/blob/main/sktime/testing/utils/_dependencies.py>`_.
+<https://github.com/sktime/skbase/blob/main/sktime/testing/utils/_dependencies.py>`_.
 
-There are specific conventions to add such warnings in ``BaseObjects``.
+There are specific conventions to add such warnings in ``BaseObject``-s.
 To add ``BaseObject`` with a soft dependency, ensure the following:
 
 *  imports of the soft dependency only happen inside the object
@@ -81,11 +81,11 @@ discussion in a core developer meeting or in the project's communication channel
 When adding a new core dependency or changing the version of an existing one,
 the following files need to be updated:
 
-*  `pyproject.toml <https://github.com/sktime/baseobject/blob/main/pyproject.toml>`_,
+*  `pyproject.toml <https://github.com/sktime/skbase/blob/main/pyproject.toml>`_,
    adding the dependency or version bounds in the ``dependencies`` dependency set.
 
 When adding a new developer dependency or changing the version of an existing one,
 the following files need to be updated:
 
-*  `pyproject.toml <https://github.com/sktime/baseobject/blob/main/pyproject.toml>`_,
+*  `pyproject.toml <https://github.com/sktime/skbase/blob/main/pyproject.toml>`_,
    adding the dependency or version bounds in the ``dev`` dependency set.
