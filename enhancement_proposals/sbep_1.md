@@ -20,7 +20,7 @@ Specifically,`skbase` will provide:
 - An [example repository](#Example-Repository) that serves the dual purpose of
   illustrating how developers can use `skbase` in their own proejcts and
   providing test cases
-- A [repository template](#Template-Repository) that developers can clone to
+- A [template repository](#Template-Repository) that developers can clone to
   easiliy set up a a new project using `skbase`'s principles
 
 Although the package will initially inherit some of this functinality from
@@ -42,7 +42,7 @@ a given use case.
   looking up) any `BaseObject`'s from a project.
 - `skbase.validate` will include tools for validating and comparing `BaseObject`'s
   and/or collections of `BaseObject`'s.
-- `skbase.testing` will include tools for testing `BaseObject`'s for interface
+- `skbase.testing` will include tools for testing `BaseObject`s for interface
   compliance.
 
 The proposed [example repository](#Example-Repository) and
@@ -58,9 +58,11 @@ contexts. This includes:
   class level interface. Other classes are subclasses of `BaseObject`.
 - [BaseEstimator](#BaseEstimator): A subclass of `BaseObject` that adds a
   high-level interface for *fittable* estimators
-- [HeterogenousMetaObject](#HeterogenousMetaObject): A subclass of `BaseObject`
+- [BaseMetaObject](#BaseMetaObject): A subclass of `BaseObject`
   that provides a high-level interface for working with classes composed of
   collections of `BaseObject`s.
+- [Base pipeline classes](#Base-Pipeline-Classes): Subclasses of `BaseMetaObject`
+  that provide generic functionalty for common pipeline use cases.
 
 #### BaseObject
 
@@ -73,11 +75,9 @@ BaseObjects are base classes with:
 - `sktime` style interface for retrieving fitted parameters
 - `scikit-learn` style interface for representing objects (e.g., pretty printing
   and drawing a simple block representation in HTML)
-
-**DESIGN DECISION: Should we include a interface point for validating parameters?
-If we did this, we might have user-facing output that raises NotImplementedError
-if the users haven't defined non-public method that does the validation. This
-also might be something that falls just outside `skbase`.**
+- Support simple composition where parameter arguments are other `BaseObject`s,
+  including the ability to get and set the parameters of component `BaseObject`s
+- Provide an interface for parameter validation.
 
 `BaseObject`s should also follow certain design patterns and coding practices,
 including:
@@ -122,16 +122,37 @@ method appropriately sets the `_is_fitted` attribute), since the signature of
 `fit` is learning task specific. Therefore, the specific `fit` implementation
 is left to child classes implemented outside of `skbase`.
 
-#### HeterogenousMetaObject and BasePipeline Classes
+#### BaseMetaObject
 
-**DESIGN DECISION: Do we want to provide specific base classes for useful
-implementations of HeterogenousMetaEstimator? Specifically, base pipeline
-classes (maybe a standard "linear" step based pipeline and eventually a
-DAG based pipeline?). In both cases, we'd be defining interface and some underlying
-functionality, but not the actual methods to execute the pipelines. For example,
-we might have `steps` parameter in constructor and basic validation of format
-that users shoudl provide steps in (and verify that input contains interface
-compliant objects). But we may decide this is beyond the scope of `skbase`.**
+The `BaseObject` interface is designed to make it easy for developers to provide uniform functionality for interacting with parametric objects in their
+projects. This makes is particularly helpful in use cases where working with
+collections of objects is important. For example, iterativately applying computations to a dataset is common-place in statistical and data processing applications.
+
+For example, `scikit-learn` and `sktime` include pipeline classes that let
+users easily iteratively apply a series of estimators to their data. Meanwhile,
+in data engineering pipelines data may undergo a series of transformations prior
+to being used or stored.s
+
+`skbase` supports these use cases by providing `BaseMetaObject`to provide a
+high-level interface of working with classes composed of collections of `BaseObject`s or `BaseEstimator`s. `BaseMetaObject` expands on the `BaseObject`
+interface by expanding support for composite objects where parameter values include
+collections of `BaseObject`s. This includes built-in parameter getting/setting on
+nested `BaseObject`s when parameter values are collections of `BaseObjects`, and
+functionality for working with the tags of nested objects.
+
+##### Base Pipeline Classes
+`skbase` intends to provide additional meta classes that expand on the `BaseMetaObject` API to include specific functionality
+for the type of common pipeline use cases found in `scikit-learn`, `sktime` and
+data processing workflows. This functionality will eventually be made available through two sub-classes of `BaseMetaObject`:
+
+- `BasePipeline` expands on the `BaseMetaObject` framework by providing
+  common functionality for (linear) stepped based pipelines like those found
+  in `scikit-learn` and `sktime`
+- `BaseDAGPipeline` expands on the `BaseMetaObject` framework by providing
+  functionality for  pipelines composed of directed-acyclic graphs (DAGs)
+
+Each base pipeline class will focus on providing generic functionality for
+implementing the specific pipeline use case, while stopping short of implementing methods for fitting, transforming or otherwise updating the state of the pipeline.
 
 ### Tools For Working With Base Classes
 
@@ -144,7 +165,10 @@ that arise.
 
 The need to lookup classes arises in several contexts when working working with
 parametric objects, including the need to collect *similar* objects for
-testing or reporting.
+testing or reporting. For example, the developer of a machine learning package
+may want to gather all the objects that subclass the base class for a given
+type of learning problem so they can be tested for interface compliance (e.g.,
+collect all *regressors* or *forecasters*).
 
 `skbase` provides this through two function interfaces:
 
