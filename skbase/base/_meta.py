@@ -10,7 +10,7 @@ from inspect import isclass
 from typing import List
 
 from skbase.base._base import BaseEstimator
-from skbase.utils._nested_seq import flatten, is_flat, unflatten
+from skbase.utils._nested_iter import flatten, is_flat, unflatten
 
 __author__: List[str] = ["mloning", "fkiraly"]
 __all__: List[str] = ["BaseMetaEstimator"]

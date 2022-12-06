@@ -4,7 +4,7 @@
 """Functionality used through `skbase`."""
 from typing import List
 
-from skbase.utils._nested_seq import flatten, is_flat, unflat_len, unflatten
+from skbase.utils._nested_iter import flatten, is_flat, unflat_len, unflatten
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]
 __all__: List[str] = ["flatten", "is_flat", "unflat_len", "unflatten"]

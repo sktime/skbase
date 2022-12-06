@@ -7,7 +7,7 @@ from copy import deepcopy
 from typing import Callable, Dict, List
 
 from skbase._exceptions import FixtureGenerationError
-from skbase.utils._misc import _remove_single
+from skbase.utils._nested_iter import _remove_single
 from skbase.validate._types import _check_list_of_str
 
 __author__: List[str] = ["fkiraly"]
