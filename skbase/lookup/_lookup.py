@@ -134,7 +134,7 @@ def _is_ignored_module(
     ---------
     module_name : str
         Name of the module.
-    modules_to_ignore : list[str] or tuple[str]
+    modules_to_ignore : str, list[str] or tuple[str]
         The modules that should be ignored when walking the package.
 
     Returns
@@ -142,11 +142,14 @@ def _is_ignored_module(
     is_ignored : bool
         Whether the module is an ignrored module or not.
     """
+    if isinstance(modules_to_ignore, str):
+        modules_to_ignore = (modules_to_ignore,)
     is_ignored: bool
-    if modules_to_ignore is not None:
-        is_ignored = any(part in modules_to_ignore for part in module_name.split("."))
-    else:
+    if modules_to_ignore is None:
         is_ignored = False
+    else:
+        is_ignored = any(part in modules_to_ignore for part in module_name.split("."))
+
     return is_ignored
 
 

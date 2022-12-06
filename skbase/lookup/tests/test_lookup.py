@@ -38,11 +38,17 @@ MOD_NAMES = {
 }
 
 
-def test_is_non_public_module():
+@pytest.fixture
+def mod_names():
+    """Pytest fixture to return module names for tests."""
+    return MOD_NAMES
+
+
+def test_is_non_public_module(mod_names):
     """Test _is_non_public_module correctly indentifies non-public modules."""
-    for mod in MOD_NAMES["public"]:
+    for mod in mod_names["public"]:
         assert _is_non_public_module(mod) is False
-    for mod in MOD_NAMES["non_public"]:
+    for mod in mod_names["non_public"]:
         assert _is_non_public_module(mod) is True
 
 
@@ -52,15 +58,19 @@ def test_is_non_public_module_raises_error():
         _is_non_public_module(7)
 
 
-def test_is_ignored_module():
+def test_is_ignored_module(mod_names):
     """Test _is_ignored_module correctly identifies modules in ignored sequence."""
     # Test case when no modules are ignored
-    for mod in MOD_NAMES["public"]:
+    for mod in mod_names["public"]:
         assert _is_ignored_module(mod) is False
 
     # No modules should be flagged as ignored if the ignored moduels aren't encountered
     modules_to_ignore = ("a_module_not_encountered",)
-    for mod in MOD_NAMES["public"]:
+    for mod in mod_names["public"]:
+        assert _is_ignored_module(mod, modules_to_ignore=modules_to_ignore) is False
+
+    modules_to_ignore = ("_some",)
+    for mod in mod_names["non_public"]:
         assert _is_ignored_module(mod, modules_to_ignore=modules_to_ignore) is False
 
     # When ignored modules are encountered then they should be flagged as True
