@@ -52,19 +52,19 @@ State:
     fitted state flag       - is_fitted (property)
     fitted state check      - check_is_fitted (raises error if not is_fitted)
 """
-
-__author__ = ["mloning", "RNKuhns", "fkiraly"]
-__all__ = ["BaseEstimator", "BaseObject"]
-
 import inspect
 import warnings
 from collections import defaultdict
 from copy import deepcopy
+from typing import List
 
 from sklearn import clone
 from sklearn.base import BaseEstimator as _BaseEstimator
 
 from skbase._exceptions import NotFittedError
+
+__author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
+__all__: List[str] = ["BaseEstimator", "BaseObject"]
 
 
 class BaseObject(_BaseEstimator):

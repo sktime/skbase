@@ -6,15 +6,14 @@ Objects compared can have one of the following valid types:
     pd.Series, pd.DataFrame, np.ndarray
     lists, tuples, or dicts of a valid type (recursive)
 """
-
-__author__ = ["fkiraly"]
-
-__all__ = ["deep_equals"]
-
+from typing import List
 
 import numpy as np
 
 from skbase.testing.utils._dependencies import _check_soft_dependencies
+
+__author__: List[str] = ["fkiraly"]
+__all__: List[str] = ["deep_equals"]
 
 
 def deep_equals(x, y, return_msg=False):

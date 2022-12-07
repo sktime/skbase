@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """Utility to check soft dependency imports, and raise warnings or errors."""
-
-__author__ = ["fkiraly", "mloning"]
-
 import io
 import sys
 import warnings
 from importlib import import_module
 from inspect import isclass
+from typing import List
 
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
+
+__author__: List[str] = ["fkiraly", "mloning"]
 
 
 def _check_soft_dependencies(

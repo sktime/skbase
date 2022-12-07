@@ -19,7 +19,7 @@ additional details.
 Base Classes
 ============
 
-.. currentmodule:: skbase
+.. currentmodule:: skbase.base
 
 .. autosummary::
     :toctree: api_reference/auto_generated/
@@ -33,7 +33,7 @@ Base Classes
 Object Retrieval
 ================
 
-.. currentmodule:: skbase
+.. currentmodule:: skbase.lookup
 
 .. autosummary::
     :toctree: api_reference/auto_generated/
@@ -41,6 +41,18 @@ Object Retrieval
 
     all_objects
     get_package_metadata
+
+.. _obj_validation:
+
+Object Validation and Comparison
+================================
+
+.. currentmodule:: skbase.validate
+
+.. autosummary::
+    :toctree: api_reference/auto_generated/
+    :template: function.rst
+
 
 .. _obj_testing:
 
