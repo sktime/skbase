@@ -1,3 +1,4 @@
+#!/usr/bin/env python3 -u
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tools to lookup information on code artifacts in a Python package or module.
@@ -8,12 +9,12 @@ package_metadata()
     Walk package and return metadata on included classes and functions by module.
 all_objects(object_types, filter_tags)
     Look (and optionally filter) BaseObject descendants in a package or module.
-
 """
 # all_objects is based on the sktime all_estimator retrieval utility, which
 # is based on the sklearn estimator retrieval utility of the same name
 # See https://github.com/scikit-learn/scikit-learn/blob/main/COPYING and
 # https://github.com/alan-turing-institute/sktime/blob/main/LICENSE
+
 import importlib
 import inspect
 import io
@@ -38,7 +39,8 @@ from typing import (
     Union,
 )
 
-from skbase import BaseObject
+from skbase.base import BaseObject
+from skbase.validate._types import _check_list_of_str_or_error
 
 # Conditionally import TypedDict based on Python version
 if sys.version_info >= (3, 8):
@@ -856,81 +858,6 @@ def all_objects(
         all_estimators = _make_dataframe(all_estimators, columns=columns)
 
     return all_estimators
-
-
-def _check_list_of_str_or_error(arg_to_check, arg_name):
-    """Check that certain arguments are str or list of str.
-
-    Parameters
-    ----------
-    arg_to_check: any
-        Argument we are testing the type of.
-    arg_name: str,
-        name of the argument we are testing, will be added to the error if
-        ``arg_to_check`` is not a str or a list of str.
-
-    Returns
-    -------
-    arg_to_check: list of str,
-        if arg_to_check was originally a str it converts it into a list of str
-        so that it can be iterated over.
-
-    Raises
-    ------
-    TypeError if arg_to_check is not a str or list of str.
-    """
-    # check that return_tags has the right type:
-    if isinstance(arg_to_check, str):
-        arg_to_check = [arg_to_check]
-    elif not isinstance(arg_to_check, list) or not all(
-        isinstance(value, str) for value in arg_to_check
-    ):
-        raise TypeError(
-            f"Input error. Argument {arg_name} must be either\
-             a str or list of str"
-        )
-    return arg_to_check
-
-
-def _check_iterable_of_class_or_error(arg_to_check, arg_name, coerce_to_list=False):
-    """Check that certain arguments are class or list of class.
-
-    Parameters
-    ----------
-    arg_to_check: any
-        Argument we are testing the type of.
-    arg_name: str
-        name of the argument we are testing, will be added to the error if
-        ``arg_to_check`` is not a str or a list of str.
-    coerce_to_list : bool, default=False
-        Whether `arg_to_check` should be coerced to a list prior to return.
-
-    Returns
-    -------
-    arg_to_check: list of class,
-        If `arg_to_check` was originally a class it converts it into a list
-        containing the class so it can be iterated over. Otherwise,
-        `arg_to_check` is returned.
-
-    Raises
-    ------
-    TypeError:
-        If `arg_to_check` is not a class or iterable of class.
-    """
-    # check that return_tags has the right type:
-    if inspect.isclass(arg_to_check):
-        arg_to_check = [arg_to_check]
-    elif not (
-        isinstance(arg_to_check, Iterable)
-        and all(inspect.isclass(value) for value in arg_to_check)
-    ):
-        raise TypeError(
-            f"Input error. Argument {arg_name} must be either\
-             a class or an iterable of classes"
-        )
-    elif coerce_to_list:
-        arg_to_check = list(arg_to_check)
-    return arg_to_check
 
 
 def _get_return_tags(obj, return_tags):
