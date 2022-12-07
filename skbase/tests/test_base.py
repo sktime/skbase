@@ -77,7 +77,7 @@ from sklearn import config_context
 # TODO: Update with import of skbase clone function once implemented
 from sklearn.base import clone
 
-from skbase import BaseObject
+from skbase.base import BaseObject
 
 # TODO: Determine if we need to add sklearn style test of
 # test_set_params_passes_all_parameters
@@ -552,9 +552,10 @@ def test_components_raises_error_base_class_is_not_class(
     ):
         composite._components(7)
 
+    msg = "base_class must be a class, but found <class 'skbase.base._base.BaseObject'>"
     with pytest.raises(
         TypeError,
-        match="base_class must be a class, but found <class 'skbase._base.BaseObject'>",
+        match=msg,
     ):
         composite._components(fixture_object())
 

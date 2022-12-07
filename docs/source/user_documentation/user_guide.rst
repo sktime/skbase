@@ -27,6 +27,7 @@ that ``skbase`` provides, see the :ref:`api_ref`.
    user_guide/overview
    user_guide/base_classes
    user_guide/lookup
+   user_guide/validate
    user_guide/testing
 
 
@@ -73,6 +74,20 @@ that ``skbase`` provides, see the :ref:`api_ref`.
     .. link-button:: user_guide/lookup
             :type: ref
             :text: Retrieval
+            :classes: btn-block btn-secondary stretched-link
+
+    ---
+
+    Validation and Comparison
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    Tools for validating and comparing ``BaseObject``-s.
+
+    +++
+
+    .. link-button:: user_guide/validate
+            :type: ref
+            :text: Validation and Comparison
             :classes: btn-block btn-secondary stretched-link
 
     ---

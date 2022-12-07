@@ -18,6 +18,8 @@ all_objects()
 # https://github.com/sktime/sktime/blob/main/LICENSE
 from typing import List
 
+from skbase.lookup._lookup import all_objects, get_package_metadata
+
 __all__: List[str] = ["all_objects", "get_package_metadata"]
 __author__: List[str] = [
     "fkiraly",
@@ -27,5 +29,3 @@ __author__: List[str] = [
     "xloem",
     "rnkuhns",
 ]
-
-from skbase.lookup._lookup import all_objects, get_package_metadata

@@ -4,13 +4,11 @@
 
 adapted from scikit-learn's and sktime's estimator_checks
 """
-
-__author__ = ["fkiraly"]
-
 import numbers
 import types
 from copy import deepcopy
 from inspect import getfullargspec, isclass, signature
+from typing import List
 
 import joblib
 import numpy as np
@@ -19,13 +17,15 @@ from sklearn.utils.estimator_checks import (
     check_get_params_invariance as _check_get_params_invariance,
 )
 
-from skbase import BaseObject
+from skbase.base import BaseObject
 from skbase.lookup import all_objects
 from skbase.testing.utils._conditional_fixtures import (
     create_conditional_fixtures_and_names,
 )
 from skbase.testing.utils.deep_equals import deep_equals
 from skbase.testing.utils.inspect import _get_args
+
+__author__: List[str] = ["fkiraly"]
 
 
 class BaseFixtureGenerator:
