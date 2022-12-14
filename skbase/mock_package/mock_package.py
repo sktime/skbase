@@ -45,3 +45,10 @@ class InheritsFromBaseObject(BaseObject):
 
 class AnotherClass(BaseObject):
     """Another class inheritting from BaseObject."""
+
+
+class NotABaseObject:
+    """A class that is not a BaseObject."""
+
+    def __init__(self, a=7):
+        self.a = a

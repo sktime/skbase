@@ -204,28 +204,36 @@ def _filter_by_tags(
     """
     if tag_filter is None:
         return True
+
     if hasattr(klass, "get_class_tags"):
         klass_tags = klass.get_class_tags()
+
+    else:
+        # If the object doesn't have tag interface it can't have the tags in tag_filter
+        return False
     # If a string is supplied verify it is in the returned tag dict
     if isinstance(tag_filter, str):
         has_tag = tag_filter in klass_tags
     # If a iterable of strings is provided, check that all are in the returned tag_dict
-    elif isinstance(tag_filter, Iterable) and all(
-        [isinstance(t, str) for t in tag_filter]
+    elif (
+        isinstance(tag_filter, Iterable)
+        and not isinstance(tag_filter, dict)
+        and all([isinstance(t, str) for t in tag_filter])
     ):
         has_tag = all([tag in klass_tags for tag in tag_filter])
-    # If a dict is suppied verify that tag and value are acceptable
-    elif isinstance(tag_filter, dict):
+    # If a dict is supplied verify that tag and value are acceptable
+    elif isinstance(tag_filter, dict) and all(isinstance(k, str) for k in tag_filter):
+        has_tag = False  # default to tag being filtered out unless it passes below
         for tag, value in tag_filter.items():
             if not isinstance(value, Iterable):
                 value = [value]
-                if tag in klass_tags:
-                    has_tag = klass_tags[tag] in set(value)
-                else:
-                    has_tag = False
-                # We can break the loop and return has_tag as False if it is ever False
-                if not has_tag:
-                    break
+            if tag in klass_tags:
+                has_tag = klass_tags[tag] in set(value)
+            else:
+                has_tag = False
+            # We can break the loop and return has_tag as False if it is ever False
+            if not has_tag:
+                break
     else:
         raise ValueError(
             "`tag_filter` should be a string tag name, iterable of string tag names, "

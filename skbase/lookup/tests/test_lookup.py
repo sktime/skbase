@@ -6,6 +6,8 @@ tests in this module:
 
     test_is_non_public_module  - tests _is_non_public_module logic
 """
+import importlib
+import pathlib
 from typing import List
 
 import pandas as pd
@@ -14,14 +16,16 @@ import pytest
 from skbase import BaseObject
 from skbase.lookup._lookup import (
     _filter_by_class,
+    _filter_by_tags,
     _is_ignored_module,
     _is_non_public_module,
+    _walk,
     all_objects,
 )
 from skbase.mock_package.mock_package import (
-    AnotherClass,
     CompositionDummy,
     InheritsFromBaseObject,
+    NotABaseObject,
 )
 
 __author__: List[str] = ["RNKuhns"]
@@ -38,10 +42,87 @@ MOD_NAMES = {
 }
 
 
+# Fixture class for testing tag system
+class FixtureClassParent(BaseObject):
+    """Fixture class to test BaseObject's usage."""
+
+    _tags = {"A": "1", "B": 2, "C": 1234, 3: "D"}
+
+    def __init__(self, a="something", b=7, c=None):
+        self.a = a
+        self.b = b
+        self.c = c
+        super().__init__()
+
+    def some_method(self):
+        """To be implemented by child class."""
+        pass
+
+
+# Fixture class for testing tag system, child overrides tags
+class FixtureClassChild(FixtureClassParent):
+    """Fixture class that is child of FixtureClassParent."""
+
+    _tags = {"A": 42, 3: "E"}
+
+    def some_method(self):
+        """Child class' implementation."""
+        pass
+
+    def some_other_method(self):
+        """To be implemented in the child class."""
+        pass
+
+
 @pytest.fixture
 def mod_names():
     """Pytest fixture to return module names for tests."""
     return MOD_NAMES
+
+
+@pytest.fixture
+def fixture_object():
+    """Pytest fixture of BaseObject class."""
+    return BaseObject
+
+
+@pytest.fixture
+def fixture_not_a_base_object():
+    """Pytest fixture for NotABaseObject."""
+    return NotABaseObject
+
+
+@pytest.fixture
+def fixture_composition_dummy():
+    """Pytest fixture for CompositionDummy."""
+    return CompositionDummy
+
+
+@pytest.fixture
+def fixture_inherits_from_base_object():
+    """Pytest fixture for InheritsFromBaseObject."""
+    return InheritsFromBaseObject
+
+
+@pytest.fixture
+def fixture_class_parent():
+    """Pytest fixture for FixtureClassParent."""
+    return FixtureClassParent
+
+
+@pytest.fixture
+def fixture_class_child():
+    """Pytest fixture for FixtureClassChild."""
+    return FixtureClassChild
+
+
+# Fixture class for testing tag system, object overrides class tags
+@pytest.fixture
+def fixture_tag_class_object():
+    """Fixture class for testing tag system, object overrides class tags."""
+    fixture_class_child = FixtureClassChild()
+    fixture_class_child._tags_dynamic = {"A": 42424241, "B": 3}
+    return fixture_class_child
 
 
 def test_is_non_public_module(mod_names):
@@ -86,23 +167,119 @@ def test_is_ignored_module(mod_names):
         )
 
 
-def test_filter_by_class():
+def test_filter_by_class(
+    fixture_object,
+    fixture_not_a_base_object,
+    fixture_composition_dummy,
+    fixture_inherits_from_base_object,
+):
     """Test _filter_by_class correctly identifies classes."""
     # Test case when no class filter is applied (should always return True)
-    assert _filter_by_class(CompositionDummy) is True
+    assert _filter_by_class(fixture_composition_dummy) is True
 
     # Test case where a signle filter is applied
-    assert _filter_by_class(CompositionDummy, BaseObject) is True
-    assert _filter_by_class(CompositionDummy, InheritsFromBaseObject) is False
+    assert _filter_by_class(fixture_composition_dummy, fixture_object) is True
+    assert _filter_by_class(fixture_not_a_base_object, fixture_object) is False
+    assert (
+        _filter_by_class(fixture_not_a_base_object, fixture_inherits_from_base_object)
+        is False
+    )
 
     # Test case when sequence of classes supplied as filter
     assert (
-        _filter_by_class(CompositionDummy, (BaseObject, InheritsFromBaseObject)) is True
+        _filter_by_class(
+            fixture_composition_dummy,
+            (fixture_object, fixture_inherits_from_base_object),
+        )
+        is True
     )
     assert (
-        _filter_by_class(CompositionDummy, (AnotherClass, InheritsFromBaseObject))
+        _filter_by_class(
+            fixture_composition_dummy,
+            (fixture_not_a_base_object, fixture_inherits_from_base_object),
+        )
         is False
     )
+
+
+def test_filter_by_tags(
+    fixture_object,
+    fixture_not_a_base_object,
+    fixture_composition_dummy,
+    fixture_class_parent,
+):
+    """Test _filter_by_tags correctly filters classes by their tags or tag values."""
+    # Test case when no tag filter is applied (should always return True)
+    assert _filter_by_tags(fixture_composition_dummy) is True
+    # Even if the class isn't a BaseObject
+    assert _filter_by_tags(fixture_not_a_base_object) is True
+
+    # Check when tag_filter is a str and present in the class
+    assert _filter_by_tags(fixture_class_parent, tag_filter="A") is True
+    # Check when tag_filter is str and not present in the class
+    assert _filter_by_tags(fixture_object, tag_filter="A") is False
+
+    # Test functionality when tag present and object doesn't have tag interface
+    # assert _filter_by_tags(NotABaseObject, tag_filter="A") is True
+
+    # Test functionality where tag_filter is Iterable of str
+    # all tags in iterable are in the class
+    assert _filter_by_tags(fixture_class_parent, ("A", "B", "C")) is True
+    # Some tags in iterable are in class and others aren't
+    assert _filter_by_tags(fixture_class_parent, ("A", "B", "C", "D", "E")) is False
+
+    # Test functionality where tag_filter is Dict[str, Any]
+    # All keys in dict are in tag_filter and values all match
+    assert _filter_by_tags(fixture_class_parent, {"A": "1", "B": 2}) is True
+    # All keys in dict are in tag_filter, but at least 1 value doesn't match
+    assert _filter_by_tags(fixture_class_parent, {"A": 1, "B": 2}) is False
+    # Atleast 1 key in dict is not in tag_filter
+    assert _filter_by_tags(fixture_class_parent, {"E": 1, "B": 2}) is False
+
+    # Iterable tags should be all strings
+    with pytest.raises(ValueError, match=r"`tag_filter` should be.*"):
+        assert _filter_by_tags(fixture_class_parent, ("A", "B", 3))
+
+    # Tags that aren't iterable have to be strings
+    with pytest.raises(ValueError, match=r"`tag_filter` should be.*"):
+        assert _filter_by_tags(fixture_class_parent, 7.0)
+
+    # Dictionary tags should have string keys
+    with pytest.raises(ValueError, match=r"`tag_filter` should be.*"):
+        assert _filter_by_tags(fixture_class_parent, {7: 11})
+
+
+def test_walk_returns_expected_format():
+    """Check walk function returns expected format."""
+
+    def _test_walk_return(p):
+        assert (
+            isinstance(p, tuple) and len(p) == 3
+        ), "_walk shoul return tuple of length 3"
+        assert (
+            isinstance(p[0], str)
+            and isinstance(p[1], bool)
+            and isinstance(p[2], importlib.machinery.FileFinder)
+        )
+
+    # Test with string relative path
+    for p in _walk(pathlib.Path("../")):
+        _test_walk_return(p)
+
+    # Test with string absolute path
+    for p in _walk(str(pathlib.Path("../").absolute())):
+        _test_walk_return(p)
+
+    # Test with pathlib.Path
+    for p in _walk(pathlib.Path("../")):
+        _test_walk_return(p)
+
+
+def test_walk_returns_expected_exclude():
+    """Check _walk returns expected result when using exclude param."""
+    results = list(_walk(pathlib.Path("../"), exclude="tests"))
+    assert len(results) == 1
+    assert results[0][0] == "_lookup" and results[0][1] is False
 
 
 @pytest.mark.parametrize("as_dataframe", [True, False])
