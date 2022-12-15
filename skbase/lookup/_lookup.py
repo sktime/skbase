@@ -275,42 +275,44 @@ def _walk(root, exclude=None, prefix=""):
 
 
 def _import_module(
-    module_name: str,
+    module: Union[str, importlib.machinery.SourceFileLoader],
     suppress_import_stdout: bool = True,
-    loader: importlib.machinery.SourceFileLoader = None,
 ) -> ModuleType:
     """Import a module, while optionally suppressing import standard out.
 
     Parameters
     ----------
-    module_name : str
-        Name of the module to be imported.
+    module : str or importlib.machinery.SourceFileLoader
+        Name of the module to be imported or a SourceFileLoader to load a module.
     suppress_import_stdout : bool, default=True
         Whether to suppress stdout printout upon import.
-    loader : importlib.machinery.SourceFileLoader, default=None
-        If provided, this should be the loader to load the module.
 
     Returns
     -------
-    module : ModuleType
+    imported_mod : ModuleType
         The module that was imported.
     """
-    if loader is None:
+    if isinstance(module, str):
         if suppress_import_stdout:
             # setup text trap, import, then restore
             sys.stdout = io.StringIO()
-            module = importlib.import_module(module_name)
+            imported_mod = importlib.import_module(module)
             sys.stdout = sys.__stdout__
         else:
-            module = importlib.import_module(module_name)
-    else:
+            imported_mod = importlib.import_module(module)
+    elif isinstance(module, importlib.machinery.SourceFileLoader):
         if suppress_import_stdout:
             sys.stdout = io.StringIO()
-            module = loader.load_module()
+            imported_mod = module.load_module()
             sys.stdout = sys.__stdout__
         else:
-            module = loader.load_module()
-    return module
+            imported_mod = module.load_module()
+    else:
+        raise ValueError(
+            "`module` should be string module name or instance of "
+            "importlib.machinery.SourceFileLoader."
+        )
+    return imported_mod
 
 
 def _determine_module_path(
@@ -375,9 +377,7 @@ def _determine_module_path(
             # if both available.
             try:
                 loader = _instantiate_loader(package_name, path_)
-                module = _import_module(
-                    package_name, suppress_import_stdout=False, loader=loader
-                )
+                module = _import_module(loader, suppress_import_stdout=False)
             except ImportError:
                 raise ValueError(
                     f"Unable to import a package named {package_name} based "

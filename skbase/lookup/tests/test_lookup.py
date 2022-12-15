@@ -8,19 +8,21 @@ tests in this module:
 """
 import importlib
 import pathlib
+from types import ModuleType
 from typing import List
 
 import pandas as pd
 import pytest
 
 from skbase import BaseObject
+from skbase.lookup import all_objects
 from skbase.lookup._lookup import (
     _filter_by_class,
     _filter_by_tags,
+    _import_module,
     _is_ignored_module,
     _is_non_public_module,
     _walk,
-    all_objects,
 )
 from skbase.mock_package.mock_package import (
     CompositionDummy,
@@ -280,6 +282,23 @@ def test_walk_returns_expected_exclude():
     results = list(_walk(pathlib.Path("../"), exclude="tests"))
     assert len(results) == 1
     assert results[0][0] == "_lookup" and results[0][1] is False
+
+
+@pytest.mark.parametrize("suppress_import_stdout", [True, False])
+def test_import_module_returns_module(suppress_import_stdout):
+    """Test that _import_module returns a module type."""
+    # Import module based on name case
+    imported_mod = _import_module(
+        "skbase", suppress_import_stdout=suppress_import_stdout
+    )
+    assert isinstance(imported_mod, ModuleType)
+
+    # Import module based on SourceFileLoader for a file path
+    # First specify path to _lookup.py relative to this file
+    path = str(pathlib.Path(".").absolute().parent / "_lookup.py")
+    loader = importlib.machinery.SourceFileLoader("_lookup", path)
+    imported_mod = _import_module(loader, suppress_import_stdout=suppress_import_stdout)
+    assert isinstance(imported_mod, ModuleType)
 
 
 @pytest.mark.parametrize("as_dataframe", [True, False])
