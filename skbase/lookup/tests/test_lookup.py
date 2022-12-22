@@ -15,8 +15,8 @@ import pandas as pd
 import pytest
 
 from skbase import BaseObject
-from skbase.lookup import all_objects
-from skbase.lookup._lookup import (
+from skbase.lookup import all_objects, get_package_metadata
+from skbase.lookup._lookup import (  # ClassInfo,; FunctionInfo,
     _determine_module_path,
     _filter_by_class,
     _filter_by_tags,
@@ -35,6 +35,18 @@ __author__: List[str] = ["RNKuhns"]
 __all__: List[str] = []
 
 
+MODULE_METADATA_EXPECTED_KEYS = (
+    "path",
+    "name",
+    "classes",
+    "functions",
+    "__all__",
+    "authors",
+    "is_package",
+    "contains_concrete_class_implementations",
+    "contains_base_classes",
+    "contains_base_objects",
+)
 MOD_NAMES = {
     "public": ("skbase", "skbase.lookup", "some_module.some_sub_module"),
     "non_public": (
@@ -329,6 +341,39 @@ def test_determine_module_path_output():
     # Test with package_name
     result = _determine_module_path("pytest")
     _check_determine_module_path(result)
+
+
+def test_get_package_metadata_returns_expected_types():
+    """Test get_package_metadata returns expected output types."""
+    results = get_package_metadata("skbase")
+    # Verify we return dict with str keys
+    assert isinstance(results, dict) and all(isinstance(k, str) for k in results)
+    for k in results:
+        mod_metadata = results[k]
+        # Verify expected metadata keys are in the module's metadata dict
+        assert all([k in mod_metadata for k in MODULE_METADATA_EXPECTED_KEYS])
+        # Verify keys with string valeus have string valeus
+        assert all(
+            isinstance(mod_metadata[k], str) for k in ("path", "name", "authors")
+        )
+        # Verify keys with bool values have bool valeus
+        assert all(
+            isinstance(mod_metadata[k], bool)
+            for k in (
+                "is_package",
+                "contains_concrete_class_implementations",
+                "contains_base_classes",
+                "contains_base_objects",
+            )
+        )
+        # Verify __all__ key
+        assert isinstance(mod_metadata["__all__"], list) and all(
+            isinstance(k, str) for k in mod_metadata["__all__"]
+        )
+        # Verify classes key
+        assert isinstance(mod_metadata["classes"], dict)
+        # Verify functions key
+        assert isinstance(mod_metadata["functions"], dict)
 
 
 @pytest.mark.parametrize("as_dataframe", [True, False])
