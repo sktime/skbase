@@ -277,13 +277,13 @@ def test_walk_returns_expected_format():
             and isinstance(p[2], importlib.machinery.FileFinder)
         )
 
-    # Test with pathlib.Path relative path
-    for p in _walk(pathlib.Path("../")):
-        _test_walk_return(p)
+    # # Test with pathlib.Path relative path
+    # for p in _walk(pathlib.Path("../")):
+    #     _test_walk_return(p)
 
-    # Test with string relative path
-    for p in _walk("../"):
-        _test_walk_return(p)
+    # # Test with string relative path
+    # for p in _walk("../"):
+    #     _test_walk_return(p)
 
     # Test with string absolute path
     for p in _walk(str(pathlib.Path("../").absolute())):
