@@ -17,6 +17,7 @@ import pytest
 from skbase import BaseObject
 from skbase.lookup import all_objects
 from skbase.lookup._lookup import (
+    _determine_module_path,
     _filter_by_class,
     _filter_by_tags,
     _import_module,
@@ -264,16 +265,20 @@ def test_walk_returns_expected_format():
             and isinstance(p[2], importlib.machinery.FileFinder)
         )
 
-    # Test with string relative path
+    # Test with pathlib.Path relative path
     for p in _walk(pathlib.Path("../")):
+        _test_walk_return(p)
+
+    # Test with string relative path
+    for p in _walk("../"):
         _test_walk_return(p)
 
     # Test with string absolute path
     for p in _walk(str(pathlib.Path("../").absolute())):
         _test_walk_return(p)
 
-    # Test with pathlib.Path
-    for p in _walk(pathlib.Path("../")):
+    # Test with pathlib.Path absolute path
+    for p in _walk(pathlib.Path("../").absolute()):
         _test_walk_return(p)
 
 
@@ -284,12 +289,20 @@ def test_walk_returns_expected_exclude():
     assert results[0][0] == "_lookup" and results[0][1] is False
 
 
+@pytest.mark.parametrize("prefix", ["some_package."])
+def test_walk_returns_expected_prefix(prefix):
+    """Check _walk returns expected result when using prefix param."""
+    results = list(_walk("../", prefix=prefix))
+    for result in results:
+        assert result[0].startswith(prefix)
+
+
 @pytest.mark.parametrize("suppress_import_stdout", [True, False])
 def test_import_module_returns_module(suppress_import_stdout):
     """Test that _import_module returns a module type."""
     # Import module based on name case
     imported_mod = _import_module(
-        "skbase", suppress_import_stdout=suppress_import_stdout
+        "pytest", suppress_import_stdout=suppress_import_stdout
     )
     assert isinstance(imported_mod, ModuleType)
 
@@ -299,6 +312,23 @@ def test_import_module_returns_module(suppress_import_stdout):
     loader = importlib.machinery.SourceFileLoader("_lookup", path)
     imported_mod = _import_module(loader, suppress_import_stdout=suppress_import_stdout)
     assert isinstance(imported_mod, ModuleType)
+
+
+def test_determine_module_path_output():
+    """Test _determine_module_path returns expected output."""
+
+    def _check_determine_module_path(result):
+        assert isinstance(result[0], ModuleType)
+        assert isinstance(result[1], str)
+        assert isinstance(result[2], importlib.machinery.SourceFileLoader)
+
+    # Test with package_name and path
+    skbase_path = pathlib.Path(".").absolute()
+    result = _determine_module_path("skbase", path=skbase_path)
+    _check_determine_module_path(result)
+    # Test with package_name
+    result = _determine_module_path("pytest")
+    _check_determine_module_path(result)
 
 
 @pytest.mark.parametrize("as_dataframe", [True, False])
