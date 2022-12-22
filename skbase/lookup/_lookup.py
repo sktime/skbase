@@ -336,6 +336,11 @@ def _determine_module_path(
     path : str or absolute pathlib.Path, default=None
         If provided, this should be the path that should be used as root
         to find any modules or submodules.
+
+    Returns
+    -------
+    module, path_, loader : ModuleType, str, importlib.machinery.SourceFileLoader
+        Returns the module, a string of its path and its SourceFileLoader.
     """
     if not isinstance(package_name, str):
         raise ValueError(
