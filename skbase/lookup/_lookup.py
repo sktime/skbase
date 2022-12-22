@@ -14,7 +14,6 @@ all_objects(object_types, filter_tags)
 # is based on the sklearn estimator retrieval utility of the same name
 # See https://github.com/scikit-learn/scikit-learn/blob/main/COPYING and
 # https://github.com/alan-turing-institute/sktime/blob/main/LICENSE
-
 import importlib
 import inspect
 import io
@@ -74,7 +73,7 @@ class ClassInfo(TypedDict):
 
 
 class FunctionInfo(TypedDict):
-    """Type definitions for information on a module's functions."""
+    """Information on a module's functions."""
 
     func: FunctionType
     name: str
@@ -459,7 +458,7 @@ def _get_module_info(
     for name, func in inspect.getmembers(module, inspect.isfunction):
         if func.__module__ == module.__name__ or name in designed_imports:
             # Skip a class if non-public items should be excluded and it starts with "_"
-            if exclude_non_public_items and klass.__name__.startswith("_"):
+            if exclude_non_public_items and func.__name__.startswith("_"):
                 continue
             # Otherwise, store info about the class
             module_functions[name] = {
@@ -624,7 +623,7 @@ def get_package_metadata(
                 continue
 
             if recursive and is_pkg:
-                name_ending: str = name.split(".")[1] if "." in name else name
+                name_ending: str = name.split(".")[-1] if "." in name else name
                 updated_path: str = "\\".join([path, name_ending])
                 module_info.update(
                     get_package_metadata(
