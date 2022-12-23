@@ -14,7 +14,8 @@ from typing import List
 import pandas as pd
 import pytest
 
-from skbase import BaseObject
+from skbase.base import BaseEstimator, BaseObject
+from skbase.base._base import TagAliaserMixin
 from skbase.lookup import all_objects, get_package_metadata
 from skbase.lookup._lookup import (  # ClassInfo,; FunctionInfo,
     _determine_module_path,
@@ -55,6 +56,12 @@ MOD_NAMES = {
         "_skbase",
     ),
 }
+
+
+@pytest.fixture
+def fixture_exclude_classes_skbase_metadata_tests():
+    """Fixture of classes to exclude from tests of get_package_metadata on skbase."""
+    return TagAliaserMixin
 
 
 # Fixture class for testing tag system
@@ -140,6 +147,65 @@ def fixture_tag_class_object():
     return fixture_class_child
 
 
+@pytest.fixture
+def fixture_test_lookup_mod_path():
+    """Fixture path to the lookup module determined from this file's path."""
+    return pathlib.Path(__file__).parent.parent
+
+
+@pytest.fixture
+def fixture_skbase_root_path(fixture_test_lookup_mod_path):
+    """Fixture to root path of skbase package."""
+    return fixture_test_lookup_mod_path.parent
+
+
+def _check_package_metadata_result(results):
+    """Check output of get_package_metadata is expected type."""
+    result_okay: bool = True
+    if not (isinstance(results, dict) and all(isinstance(k, str) for k in results)):
+        result_okay = False
+    for k in results:
+        mod_metadata = results[k]
+        # Verify expected metadata keys are in the module's metadata dict
+        if not all([k in mod_metadata for k in MODULE_METADATA_EXPECTED_KEYS]):
+            result_okay = False
+            break
+        # Verify keys with string valeus have string valeus
+        elif not all(
+            isinstance(mod_metadata[k], str) for k in ("path", "name", "authors")
+        ):
+            result_okay = False
+            break
+        # Verify keys with bool values have bool valeus
+        elif not all(
+            isinstance(mod_metadata[k], bool)
+            for k in (
+                "is_package",
+                "contains_concrete_class_implementations",
+                "contains_base_classes",
+                "contains_base_objects",
+            )
+        ):
+            result_okay = False
+            break
+        # Verify __all__ key
+        elif not isinstance(mod_metadata["__all__"], list) and all(
+            isinstance(k, str) for k in mod_metadata["__all__"]
+        ):
+            result_okay = False
+            break
+        # Verify classes key
+        elif not isinstance(mod_metadata["classes"], dict):
+            result_okay = False
+            break
+        # Verify functions key
+        elif not isinstance(mod_metadata["functions"], dict):
+            result_okay = False
+            break
+
+    return result_okay
+
+
 def test_is_non_public_module(mod_names):
     """Test _is_non_public_module correctly indentifies non-public modules."""
     for mod in mod_names["public"]:
@@ -211,7 +277,7 @@ def test_filter_by_class(
     assert (
         _filter_by_class(
             fixture_composition_dummy,
-            (fixture_not_a_base_object, fixture_inherits_from_base_object),
+            [fixture_not_a_base_object, fixture_inherits_from_base_object],
         )
         is False
     )
@@ -235,7 +301,7 @@ def test_filter_by_tags(
     assert _filter_by_tags(fixture_object, tag_filter="A") is False
 
     # Test functionality when tag present and object doesn't have tag interface
-    # assert _filter_by_tags(NotABaseObject, tag_filter="A") is True
+    assert _filter_by_tags(NotABaseObject, tag_filter="A") is False
 
     # Test functionality where tag_filter is Iterable of str
     # all tags in iterable are in the class
@@ -264,7 +330,7 @@ def test_filter_by_tags(
         assert _filter_by_tags(fixture_class_parent, {7: 11})
 
 
-def test_walk_returns_expected_format():
+def test_walk_returns_expected_format(fixture_skbase_root_path):
     """Check walk function returns expected format."""
 
     def _test_walk_return(p):
@@ -277,40 +343,34 @@ def test_walk_returns_expected_format():
             and isinstance(p[2], importlib.machinery.FileFinder)
         )
 
-    # # Test with pathlib.Path relative path
-    # for p in _walk(pathlib.Path("../")):
-    #     _test_walk_return(p)
-
-    # # Test with string relative path
-    # for p in _walk("../"):
-    #     _test_walk_return(p)
-
-    # Test with string absolute path
-    for p in _walk(str(pathlib.Path("../").absolute())):
+    # Test with string path
+    for p in _walk(str(fixture_skbase_root_path)):
         _test_walk_return(p)
 
-    # Test with pathlib.Path absolute path
-    for p in _walk(pathlib.Path("../").absolute()):
+    # Test with pathlib.Path
+    for p in _walk(fixture_skbase_root_path):
         _test_walk_return(p)
 
 
-def test_walk_returns_expected_exclude():
+def test_walk_returns_expected_exclude(fixture_test_lookup_mod_path):
     """Check _walk returns expected result when using exclude param."""
-    results = list(_walk(pathlib.Path("../"), exclude="tests"))
+    results = list(_walk(fixture_test_lookup_mod_path, exclude="tests"))
     assert len(results) == 1
     assert results[0][0] == "_lookup" and results[0][1] is False
 
 
-@pytest.mark.parametrize("prefix", ["some_package."])
-def test_walk_returns_expected_prefix(prefix):
+@pytest.mark.parametrize("prefix", ["skbase."])
+def test_walk_returns_expected_prefix(fixture_skbase_root_path, prefix):
     """Check _walk returns expected result when using prefix param."""
-    results = list(_walk("../", prefix=prefix))
+    results = list(_walk(fixture_skbase_root_path, prefix=prefix))
     for result in results:
         assert result[0].startswith(prefix)
 
 
 @pytest.mark.parametrize("suppress_import_stdout", [True, False])
-def test_import_module_returns_module(suppress_import_stdout):
+def test_import_module_returns_module(
+    fixture_test_lookup_mod_path, suppress_import_stdout
+):
     """Test that _import_module returns a module type."""
     # Import module based on name case
     imported_mod = _import_module(
@@ -320,14 +380,28 @@ def test_import_module_returns_module(suppress_import_stdout):
 
     # Import module based on SourceFileLoader for a file path
     # First specify path to _lookup.py relative to this file
-    path = str(pathlib.Path(".").absolute().parent / "_lookup.py")
+    path = str(fixture_test_lookup_mod_path / "_lookup.py")
     loader = importlib.machinery.SourceFileLoader("_lookup", path)
     imported_mod = _import_module(loader, suppress_import_stdout=suppress_import_stdout)
     assert isinstance(imported_mod, ModuleType)
 
 
-def test_determine_module_path_output():
-    """Test _determine_module_path returns expected output."""
+def test_import_module_raises_error_invalid_input():
+    """Test that _import_module raises an error with invalid input."""
+    match = " ".join(
+        [
+            "`module` should be string module name or instance of",
+            "importlib.machinery.SourceFileLoader.",
+        ]
+    )
+    with pytest.raises(ValueError, match=match):
+        _import_module(7)
+
+
+def test_determine_module_path_output_types(
+    fixture_skbase_root_path, fixture_test_lookup_mod_path
+):
+    """Test _determine_module_path returns expected output types."""
 
     def _check_determine_module_path(result):
         assert isinstance(result[0], ModuleType)
@@ -335,45 +409,55 @@ def test_determine_module_path_output():
         assert isinstance(result[2], importlib.machinery.SourceFileLoader)
 
     # Test with package_name and path
-    skbase_path = pathlib.Path(".").absolute()
-    result = _determine_module_path("skbase", path=skbase_path)
+    result = _determine_module_path("skbase", path=fixture_skbase_root_path)
     _check_determine_module_path(result)
     # Test with package_name
     result = _determine_module_path("pytest")
     _check_determine_module_path(result)
 
+    path = str(fixture_test_lookup_mod_path / "_lookup.py")
+    # Test with package_name and path
+    result = _determine_module_path("skbase.lookup._lookup", path=path)
+    _check_determine_module_path(result)
 
-def test_get_package_metadata_returns_expected_types():
+
+def test_determine_module_path_raises_error_invalid_input(fixture_skbase_root_path):
+    """Test that _import_module raises an error with invalid input."""
+    with pytest.raises(ValueError):
+        _determine_module_path(7, path=fixture_skbase_root_path)
+
+    with pytest.raises(ValueError):
+        _determine_module_path(fixture_skbase_root_path, path=fixture_skbase_root_path)
+
+    with pytest.raises(ValueError):
+        _determine_module_path("skbase", path=7)
+
+
+@pytest.mark.parametrize("recursive", [True, False])
+@pytest.mark.parametrize("exclude_non_public_items", [True, False])
+@pytest.mark.parametrize("exclude_nonpublic_modules", [True, False])
+@pytest.mark.paremtrize(
+    "package_base_classes", [BaseObject, (BaseObject, BaseEstimator), None]
+)
+@pytest.mark.parametrize("suppress_import_stdout", [True, False])
+def test_get_package_metadata_returns_expected_types(
+    recursive,
+    exclude_non_public_items,
+    exclude_nonpublic_modules,
+    suppress_import_stdout,
+    fixture_exclude_classes_skbase_metadata_tests,
+):
     """Test get_package_metadata returns expected output types."""
-    results = get_package_metadata("skbase")
+    results = get_package_metadata(
+        "skbase",
+        recursive=recursive,
+        exclude_non_public_items=exclude_non_public_items,
+        exclude_nonpublic_modules=exclude_nonpublic_modules,
+        classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
+        suppress_import_stdout=suppress_import_stdout,
+    )
     # Verify we return dict with str keys
-    assert isinstance(results, dict) and all(isinstance(k, str) for k in results)
-    for k in results:
-        mod_metadata = results[k]
-        # Verify expected metadata keys are in the module's metadata dict
-        assert all([k in mod_metadata for k in MODULE_METADATA_EXPECTED_KEYS])
-        # Verify keys with string valeus have string valeus
-        assert all(
-            isinstance(mod_metadata[k], str) for k in ("path", "name", "authors")
-        )
-        # Verify keys with bool values have bool valeus
-        assert all(
-            isinstance(mod_metadata[k], bool)
-            for k in (
-                "is_package",
-                "contains_concrete_class_implementations",
-                "contains_base_classes",
-                "contains_base_objects",
-            )
-        )
-        # Verify __all__ key
-        assert isinstance(mod_metadata["__all__"], list) and all(
-            isinstance(k, str) for k in mod_metadata["__all__"]
-        )
-        # Verify classes key
-        assert isinstance(mod_metadata["classes"], dict)
-        # Verify functions key
-        assert isinstance(mod_metadata["functions"], dict)
+    assert _check_package_metadata_result(results) is True
 
 
 @pytest.mark.parametrize("as_dataframe", [True, False])
