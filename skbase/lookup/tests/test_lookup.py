@@ -17,20 +17,18 @@ import pytest
 from skbase.base import BaseEstimator, BaseObject
 from skbase.base._base import TagAliaserMixin
 from skbase.lookup import all_objects, get_package_metadata
-from skbase.lookup._lookup import (  # ClassInfo,; FunctionInfo,
+from skbase.lookup._lookup import (
     _determine_module_path,
     _filter_by_class,
     _filter_by_tags,
+    _get_return_tags,
     _import_module,
     _is_ignored_module,
     _is_non_public_module,
     _walk,
 )
-from skbase.mock_package.mock_package import (
-    CompositionDummy,
-    InheritsFromBaseObject,
-    NotABaseObject,
-)
+from skbase.mock_package.mock_package import CompositionDummy, NotABaseObject
+from skbase.tests.conftest import FixtureClassParent
 
 __author__: List[str] = ["RNKuhns"]
 __all__: List[str] = []
@@ -64,38 +62,6 @@ def fixture_exclude_classes_skbase_metadata_tests():
     return TagAliaserMixin
 
 
-# Fixture class for testing tag system
-class FixtureClassParent(BaseObject):
-    """Fixture class to test BaseObject's usage."""
-
-    _tags = {"A": "1", "B": 2, "C": 1234, 3: "D"}
-
-    def __init__(self, a="something", b=7, c=None):
-        self.a = a
-        self.b = b
-        self.c = c
-        super().__init__()
-
-    def some_method(self):
-        """To be implemented by child class."""
-        pass
-
-
-# Fixture class for testing tag system, child overrides tags
-class FixtureClassChild(FixtureClassParent):
-    """Fixture class that is child of FixtureClassParent."""
-
-    _tags = {"A": 42, 3: "E"}
-
-    def some_method(self):
-        """Child class' implementation."""
-        pass
-
-    def some_other_method(self):
-        """To be implemented in the child class."""
-        pass
-
-
 @pytest.fixture
 def mod_names():
     """Pytest fixture to return module names for tests."""
@@ -121,30 +87,9 @@ def fixture_composition_dummy():
 
 
 @pytest.fixture
-def fixture_inherits_from_base_object():
-    """Pytest fixture for InheritsFromBaseObject."""
-    return InheritsFromBaseObject
-
-
-@pytest.fixture
 def fixture_class_parent():
     """Pytest fixture for FixtureClassParent."""
     return FixtureClassParent
-
-
-@pytest.fixture
-def fixture_class_child():
-    """Pytest fixture for FixtureClassChild."""
-    return FixtureClassChild
-
-
-# Fixture class for testing tag system, object overrides class tags
-@pytest.fixture
-def fixture_tag_class_object():
-    """Fixture class for testing tag system, object overrides class tags."""
-    fixture_class_child = FixtureClassChild()
-    fixture_class_child._tags_dynamic = {"A": 42424241, "B": 3}
-    return fixture_class_child
 
 
 @pytest.fixture
@@ -252,7 +197,7 @@ def test_filter_by_class(
     fixture_object,
     fixture_not_a_base_object,
     fixture_composition_dummy,
-    fixture_inherits_from_base_object,
+    fixture_class_parent,
 ):
     """Test _filter_by_class correctly identifies classes."""
     # Test case when no class filter is applied (should always return True)
@@ -262,22 +207,21 @@ def test_filter_by_class(
     assert _filter_by_class(fixture_composition_dummy, fixture_object) is True
     assert _filter_by_class(fixture_not_a_base_object, fixture_object) is False
     assert (
-        _filter_by_class(fixture_not_a_base_object, fixture_inherits_from_base_object)
-        is False
+        _filter_by_class(fixture_not_a_base_object, fixture_composition_dummy) is False
     )
 
     # Test case when sequence of classes supplied as filter
     assert (
         _filter_by_class(
             fixture_composition_dummy,
-            (fixture_object, fixture_inherits_from_base_object),
+            (fixture_object, fixture_class_parent),
         )
         is True
     )
     assert (
         _filter_by_class(
             fixture_composition_dummy,
-            [fixture_not_a_base_object, fixture_inherits_from_base_object],
+            [fixture_not_a_base_object, fixture_class_parent],
         )
         is False
     )
@@ -493,9 +437,13 @@ def test_get_package_metadata_returns_expected_types(
         assert expected_nonpublic_modules_returned
 
 
+# This is separate from other get_package_metadata tests b/c right now
+# tests on broader skbase package must exclude TagAliaserMixin or they will error
+# Once TagAliaserMixin is removed or get_class_tags made fully compliant, this
+# will be combined above
 @pytest.mark.parametrize(
     "classes_to_exclude",
-    [None, CompositionDummy, (CompositionDummy, InheritsFromBaseObject)],
+    [None, CompositionDummy, (CompositionDummy, NotABaseObject)],
 )
 def test_get_package_metadata_classes_to_exclude(classes_to_exclude):
     """Test get_package_metadata classes_to_exclude param works as expected."""
@@ -522,7 +470,127 @@ def test_get_package_metadata_classes_to_exclude(classes_to_exclude):
             for module in results.values()
             for klass_metadata in module["classes"].values()
         ]
-        assert classes_excluded_as_expected
+        assert all(classes_excluded_as_expected)
+
+
+@pytest.mark.parametrize(
+    "class_filter", [None, BaseEstimator, (BaseObject, BaseEstimator)]
+)
+def test_get_package_metadata_class_filter(
+    class_filter,
+    fixture_exclude_classes_skbase_metadata_tests,
+):
+    """Test get_package_metadata filters by class as expected."""
+    # Results applying filter
+    results = get_package_metadata(
+        "skbase",
+        modules_to_ignore="skbase",
+        class_filter=class_filter,
+        classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
+    )
+    filtered_classes = [
+        klass_metadata["klass"]
+        for module in results.values()
+        for klass_metadata in module["classes"].values()
+    ]
+
+    # Results without filter
+    unfiltered_results = get_package_metadata(
+        "skbase",
+        modules_to_ignore="skbase",
+        classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
+    )
+    unfiltered_classes = [
+        klass_metadata["klass"]
+        for module in unfiltered_results.values()
+        for klass_metadata in module["classes"].values()
+    ]
+
+    # Verify filtered results have right output type
+    assert _check_package_metadata_result(results) is True
+
+    # Now verify class filter is being applied correctly
+    if class_filter is None:
+        assert len(unfiltered_classes) == len(filtered_classes)
+        assert unfiltered_classes == filtered_classes
+    else:
+        assert len(unfiltered_classes) > len(filtered_classes)
+        classes_subclass_class_filter = [
+            issubclass(klass, class_filter) for klass in filtered_classes
+        ]
+        assert all(classes_subclass_class_filter)
+
+
+@pytest.mark.parametrize("tag_filter", [None, "A", ("A", "B"), {"A": "1", "B": 2}])
+def test_get_package_metadata_tag_filter(
+    tag_filter,
+    fixture_exclude_classes_skbase_metadata_tests,
+):
+    """Test get_package_metadata filters by class as expected."""
+    results = get_package_metadata(
+        "skbase",
+        exclude_nonpublic_modules=False,
+        modules_to_ignore="skbase",
+        tag_filter=tag_filter,
+        classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
+    )
+    filtered_classes = [
+        klass_metadata["klass"]
+        for module in results.values()
+        for klass_metadata in module["classes"].values()
+    ]
+
+    # Unfiltered results
+    unfiltered_results = get_package_metadata(
+        "skbase",
+        exclude_nonpublic_modules=False,
+        modules_to_ignore="skbase",
+        classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
+    )
+    unfiltered_classes = [
+        klass_metadata["klass"]
+        for module in unfiltered_results.values()
+        for klass_metadata in module["classes"].values()
+    ]
+
+    # Verify we return dict with str keys
+    # assert _check_package_metadata_result(results) is True
+
+    # Verify class filter is being applied correctly, which implies
+    # When the filter is None the result is the same size
+    # Otherwise, with the filters used in the test, fewer classes should
+    # be returned
+    if tag_filter is None:
+        assert len(unfiltered_classes) == len(filtered_classes)
+        assert unfiltered_classes == filtered_classes
+    else:
+        assert len(unfiltered_classes) > len(filtered_classes)
+
+
+def test_get_return_tags(fixture_class_parent):
+    """Test _get_return_tags returns expected."""
+
+    def _test_get_return_tags_output(results, num_requested_tags):
+        return isinstance(results, tuple) and len(results) == num_requested_tags
+
+    # Verify return with tags that exist
+    tags = fixture_class_parent.get_class_tags()
+    tag_names = [*tags.keys()]
+    results = _get_return_tags(fixture_class_parent, tag_names)
+    assert (
+        _test_get_return_tags_output(results, len(tag_names))
+        and tuple(tags.values()) == results
+    )
+
+    # Verify results when some exist and some don't exist
+    tag_names += ["a_tag_that_does_not_exist"]
+    results = _get_return_tags(fixture_class_parent, tag_names)
+    assert _test_get_return_tags_output(results, len(tag_names))
+
+    # Verify return when all tags don't exist
+    tag_names = ["a_tag_that_does_not_exist"]
+    results = _get_return_tags(fixture_class_parent, tag_names)
+    assert _test_get_return_tags_output(results, len(tag_names)) and results[0] is None
 
 
 @pytest.mark.parametrize("as_dataframe", [True, False])
