@@ -433,10 +433,9 @@ def _get_module_info(
         # Skip a class if non-public items should be excluded and it starts with "_"
         if (
             (exclude_non_public_items and klass.__name__.startswith("_"))
+            or (exclude_classes is not None and klass in exclude_classes)
             or not _filter_by_tags(klass, tag_filter=tag_filter)
             or not _filter_by_class(klass, class_filter=class_filter)
-            or exclude_classes is not None
-            and klass in exclude_classes
         ):
             continue
         # Otherwise, store info about the class
@@ -558,7 +557,8 @@ def get_package_metadata(
         The base classes used to determine if any classes found in metadata descend
         from a base class.
     class_filter : objects or iterable of objects, default=None
-        Classes that `klass` is checked against.
+        Classes that `klass` is checked against. Only classes that are subclasses
+        of the supplied `class_filter` are returned in metadata.
     tag_filter : str, iterable of str or dict, default=None
         Filter used to determine if `klass` has tag or expected tag values.
     classes_to_exclude: objects, iterable of object, default=None
