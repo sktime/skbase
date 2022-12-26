@@ -436,7 +436,8 @@ def test_determine_module_path_raises_error_invalid_input(fixture_skbase_root_pa
 @pytest.mark.parametrize("recursive", [True, False])
 @pytest.mark.parametrize("exclude_non_public_items", [True, False])
 @pytest.mark.parametrize("exclude_nonpublic_modules", [True, False])
-@pytest.mark.paremtrize(
+@pytest.mark.parametrize("modules_to_ignore", ["tests", ("testing", "tests"), None])
+@pytest.mark.parametrize(
     "package_base_classes", [BaseObject, (BaseObject, BaseEstimator), None]
 )
 @pytest.mark.parametrize("suppress_import_stdout", [True, False])
@@ -444,6 +445,8 @@ def test_get_package_metadata_returns_expected_types(
     recursive,
     exclude_non_public_items,
     exclude_nonpublic_modules,
+    modules_to_ignore,
+    package_base_classes,
     suppress_import_stdout,
     fixture_exclude_classes_skbase_metadata_tests,
 ):
@@ -453,11 +456,73 @@ def test_get_package_metadata_returns_expected_types(
         recursive=recursive,
         exclude_non_public_items=exclude_non_public_items,
         exclude_nonpublic_modules=exclude_nonpublic_modules,
+        modules_to_ignore=modules_to_ignore,
+        package_base_classes=package_base_classes,
         classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
         suppress_import_stdout=suppress_import_stdout,
     )
     # Verify we return dict with str keys
     assert _check_package_metadata_result(results) is True
+
+    # Verify correct behavior of modules_to_ignore
+    no_ignored_module_returned = all(
+        [
+            not _is_ignored_module(k, modules_to_ignore=modules_to_ignore)
+            for k in results
+        ]
+    )
+
+    assert no_ignored_module_returned
+
+    # Verify correct behavior of exclude_non_public_items
+    if exclude_non_public_items:
+        expected_nonpublic_items_returned = all(
+            [
+                not klass_metadata["name"].startswith("_")
+                for module in results.values()
+                for klass_metadata in module["classes"].values()
+            ]
+        )
+        assert expected_nonpublic_items_returned
+
+    # Verify correct behavior of exclude_nonpublic_modules
+    if exclude_nonpublic_modules:
+        expected_nonpublic_modules_returned = all(
+            not _is_non_public_module(k) for k in results
+        )
+        assert expected_nonpublic_modules_returned
+
+
+@pytest.mark.parametrize(
+    "classes_to_exclude",
+    [None, CompositionDummy, (CompositionDummy, InheritsFromBaseObject)],
+)
+def test_get_package_metadata_classes_to_exclude(classes_to_exclude):
+    """Test get_package_metadata classes_to_exclude param works as expected."""
+    results = get_package_metadata(
+        "skbase.mock_package",
+        recursive=True,
+        exclude_non_public_items=True,
+        exclude_nonpublic_modules=True,
+        modules_to_ignore=None,
+        package_base_classes=None,
+        classes_to_exclude=classes_to_exclude,
+        suppress_import_stdout=True,
+    )
+    # Verify we return dict with str keys
+    assert _check_package_metadata_result(results) is True
+    if classes_to_exclude is not None:
+        if isinstance(classes_to_exclude, type):
+            excluded_classes = (classes_to_exclude,)
+        else:
+            excluded_classes = classes_to_exclude
+        # Verify classes_to_exclude works as expected
+        classes_excluded_as_expected = [
+            klass_metadata["klass"] not in excluded_classes
+            for module in results.values()
+            for klass_metadata in module["classes"].values()
+        ]
+        assert classes_excluded_as_expected
 
 
 @pytest.mark.parametrize("as_dataframe", [True, False])
