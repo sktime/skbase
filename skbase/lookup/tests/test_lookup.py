@@ -355,7 +355,7 @@ def test_walk_returns_expected_format(fixture_skbase_root_path):
 
 def test_walk_returns_expected_exclude(fixture_test_lookup_mod_path):
     """Check _walk returns expected result when using exclude param."""
-    results = list(_walk(fixture_test_lookup_mod_path, exclude="tests"))
+    results = list(_walk(str(fixture_test_lookup_mod_path), exclude="tests"))
     assert len(results) == 1
     assert results[0][0] == "_lookup" and results[0][1] is False
 
@@ -363,7 +363,7 @@ def test_walk_returns_expected_exclude(fixture_test_lookup_mod_path):
 @pytest.mark.parametrize("prefix", ["skbase."])
 def test_walk_returns_expected_prefix(fixture_skbase_root_path, prefix):
     """Check _walk returns expected result when using prefix param."""
-    results = list(_walk(fixture_skbase_root_path, prefix=prefix))
+    results = list(_walk(str(fixture_skbase_root_path), prefix=prefix))
     for result in results:
         assert result[0].startswith(prefix)
 
