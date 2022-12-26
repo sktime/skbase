@@ -250,7 +250,7 @@ def _walk(root, exclude=None, prefix=""):
 
     Parameters
     ----------
-    root : Path
+    root : Path-like
         Root path in which to look for submodules
     exclude : tuple of str or None, optional, default = None
         List of sub-modules to ignore in the return, including sub-modules
@@ -263,6 +263,8 @@ def _walk(root, exclude=None, prefix=""):
         Iterates over all sub-modules of root that do not contain any of the
         strings on the `exclude` list string is prefixed by the string `prefix`
     """
+    if not isinstance(root, str):
+        root = str(root)
     for loader, module_name, is_pkg in pkgutil.iter_modules(path=[root]):
         if not _is_ignored_module(module_name, modules_to_ignore=exclude):
             yield f"{prefix}{module_name}", is_pkg, loader

@@ -348,9 +348,8 @@ def test_walk_returns_expected_format(fixture_skbase_root_path):
         _test_walk_return(p)
 
     # Test with pathlib.Path
-    for _ in _walk(fixture_skbase_root_path):
-        # _test_walk_return(p)
-        pass
+    for p in _walk(fixture_skbase_root_path):
+        _test_walk_return(p)
 
 
 def test_walk_returns_expected_exclude(fixture_test_lookup_mod_path):
