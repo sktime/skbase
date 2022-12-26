@@ -546,7 +546,7 @@ def get_package_metadata(
     exclude_non_public_modules : bool, default=True
         Whether to exclude nonpublic modules (modules where names start with
         a leading underscore).
-    modules_to_ignore : list[str] or tuple[str], default=()
+    modules_to_ignore : list[str] or tuple[str], default=("tests", )
         The modules that should be ignored when walking the package. If passed,
         ignores modules identical with, or submodule of a module whose name is
         in the list/tuple `modules_to_ignore`. E.g., if `modules_to_ignore`
@@ -596,16 +596,17 @@ def get_package_metadata(
     # Get any metadata at the top-level of the provided package
     # This is because the pkgutil.walk_packages doesn't include __init__
     # file when walking a package
-    module_info[package_name] = _get_module_info(
-        module,
-        loader.is_package(package_name),
-        path,
-        package_base_classes,
-        exclude_non_public_items=exclude_non_public_items,
-        class_filter=class_filter,
-        tag_filter=tag_filter,
-        classes_to_exclude=classes_to_exclude,
-    )
+    if not _is_ignored_module(package_name, modules_to_ignore=modules_to_ignore):
+        module_info[package_name] = _get_module_info(
+            module,
+            loader.is_package(package_name),
+            path,
+            package_base_classes,
+            exclude_non_public_items=exclude_non_public_items,
+            class_filter=class_filter,
+            tag_filter=tag_filter,
+            classes_to_exclude=classes_to_exclude,
+        )
 
     # Now walk through any submodules
     prefix = f"{package_name}."
@@ -638,8 +639,16 @@ def get_package_metadata(
                 continue
 
             if recursive and is_pkg:
-                name_ending: str = name.split(".")[-1] if "." in name else name
-                updated_path: str = "\\".join([path, name_ending])
+                if "." in name:
+                    name_ending = name[len(package_name) + 1 :]
+                else:
+                    name_ending = name
+
+                updated_path: str
+                if "." in name_ending:
+                    updated_path = "/".join([path, name_ending.replace(".", "/")])
+                else:
+                    updated_path = "/".join([path, name_ending])
                 module_info.update(
                     get_package_metadata(
                         package_name=name,
