@@ -41,6 +41,7 @@ class FixtureClassChild(FixtureClassParent):
     """Fixture class that is child of FixtureClassParent."""
 
     _tags = {"A": 42, 3: "E"}
+    __author__ = ["RNKuhns"]
 
     def some_method(self):
         """Child class' implementation."""
