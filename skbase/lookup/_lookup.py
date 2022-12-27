@@ -561,7 +561,18 @@ def get_package_metadata(
         of the supplied `class_filter` are returned in metadata.
     tag_filter : str, iterable of str or dict, default=None
         Filter used to determine if `klass` has tag or expected tag values.
-    classes_to_exclude: objects, iterable of object, default=None
+
+        - If a str or list of strings is provived, the return will be filtered
+          to keep classes that have all the tag(s) specified by the strings.
+        - If a dict is provided, the return will be filtered to keep classes
+          that have all dict keys as tags. Tag values are also checked such that
+
+          - If a dict key maps to a single value only classes with tag values equal
+            to the value are returned.
+          - If a dict key maps to multiple values (e.g., list) only classes with
+            tag values in these values are returned.
+
+    classes_to_exclude: objects or iterable of object, default=None
         Classes to exclude from returned metadata.
 
     Other Parameters
@@ -673,6 +684,7 @@ def get_package_metadata(
 def all_objects(
     object_types=None,
     filter_tags=None,
+    exclude_objects=None,
     exclude_estimators=None,
     return_names=True,
     as_dataframe=False,
@@ -680,6 +692,7 @@ def all_objects(
     suppress_import_stdout=True,
     package_name="skbase",
     path: Optional[str] = None,
+    modules_to_ignore=None,
     ignore_modules=None,
     class_lookup=None,
 ):
@@ -709,15 +722,28 @@ def all_objects(
         - If False, estimator class name is removed from the all_estimators()
           return.
 
-    filter_tags: dict of (str or list of str), optional (default=None)
-        For a list of valid tag strings, use the registry.all_tags utility.
-        subsets the returned estimators as follows:
-            each key/value pair is statement in "and"/conjunction
-                key is tag name to sub-set on
-                value str or list of string are tag values
-                condition is "key must be equal to value, or in set(value)".
-    exclude_estimators: str or list of str, odefault=None
+    filter_tags: str, list[str] or dict[str, Any], default=None
+        Filter used to determine if `klass` has tag or expected tag values.
+
+        - If a str or list of strings is provived, the return will be filtered
+          to keep classes that have all the tag(s) specified by the strings.
+        - If a dict is provided, the return will be filtered to keep classes
+          that have all dict keys as tags. Tag values are also checked such that
+
+          - If a dict key maps to a single value only classes with tag values equal
+            to the value are returned.
+          - If a dict key maps to multiple values (e.g., list) only classes with
+            tag values in these values are returned.
+
+    exclude_objects: str or list[str], default=None
         Names of estimators to exclude.
+    exclude_estimators: str or list[str], default=None
+        Names of estimators to exclude.
+
+        .. deprecated:: 0.3.0
+           `exclude_estimators` will be removed in version 0.5.0. Use `exclude_objects`
+           parameter with same signature instead.
+
     as_dataframe: bool, default=False
 
         - If False, `all_objects` will return a list (either a list of
@@ -739,12 +765,23 @@ def all_objects(
     path : str, default=None
         If provided, this should be the path that should be used as root
         to find `package_name` and start the search for any submodules/packages.
-    ignore_modules : str or lits of str, optional. Default=empty list
+    modules_to_ignore : str or list[str], default=None
         The modules that should be ignored in search.
         If passed, ignores modules identical with, or submodule of a module whose name
         is in the list/tuple `ignore_modules`. E.g., if `ignore_modules` contains the
         string `"foo"`, then returns `True` for `module_name`-s `"bar.foo"`,
         `"foo"`, `"foo.bar"`, `"bar.foo.bar"`, etc.
+    ignore_modules : str or list[str], default=None
+        The modules that should be ignored in search.
+        If passed, ignores modules identical with, or submodule of a module whose name
+        is in the list/tuple `ignore_modules`. E.g., if `ignore_modules` contains the
+        string `"foo"`, then returns `True` for `module_name`-s `"bar.foo"`,
+        `"foo"`, `"foo.bar"`, `"bar.foo.bar"`, etc.
+
+        .. deprecated:: 0.3.0
+           `ignore_modules` will be removed in version 0.5.0. Use `modules_to_ignore`
+           parameter with same signature instead.
+
     class_lookup : dict[str, class], default=None
         Dictionary of aliases for classes used in object_types.
 
@@ -786,10 +823,62 @@ def all_objects(
     """
     module, root, _ = _determine_module_path(package_name, path)
 
-    if ignore_modules is None:
+    if ignore_modules is not None:
+        warnings.warn(
+            " ".join(
+                [
+                    "`ignore_modules` parameter is depracated as of release 0.3.0.",
+                    "It will be removed in release 0.5.0.",
+                    "Use `modules_to_ignore` parameter instead.",
+                ]
+            ),
+            DeprecationWarning,
+        )
+        # If nothing passed for modules_to_ignore, we'll just use values
+        # passed to ignore_modules until it is removed
+        if modules_to_ignore is None:
+            modules_to_ignore = ignore_modules
+        else:
+            warnings.warn(
+                " ".join(
+                    [
+                        "`modules_to_ignore` and `ignore_modules` both had values set.",
+                        "Value of `modules_to_ignore` will be used.",
+                    ]
+                ),
+                DeprecationWarning,
+            )
+    if modules_to_ignore is None:
         modules_to_ignore = []
-    else:
-        modules_to_ignore = ignore_modules
+
+    if exclude_estimators is not None:
+        warnings.warn(
+            " ".join(
+                [
+                    "`exclude_estimators` parameter is depracated as of release 0.3.0.",
+                    "It will be removed in release 0.5.0.",
+                    "Use `exclude_objects` parameter instead.",
+                ]
+            ),
+            DeprecationWarning,
+        )
+        # If nothing passed for modules_to_ignore, we'll just use values
+        # passed to ignore_modules until it is removed
+        if exclude_objects is None:
+            exclude_objects = exclude_estimators
+        else:
+            warnings.warn(
+                " ".join(
+                    [
+                        "`exclude_objects` and `exclude_estimators` both have values.",
+                        "Value of `exclude_objects` will be used.",
+                    ]
+                ),
+                DeprecationWarning,
+            )
+
+    if exclude_objects is None:
+        exclude_objects = []
 
     all_estimators = []
 
@@ -856,14 +945,12 @@ def all_objects(
         ]
 
     # Filter based on given exclude list
-    if exclude_estimators:
-        exclude_estimators = _check_list_of_str_or_error(
-            exclude_estimators, "exclude_estimators"
-        )
+    if exclude_objects:
+        exclude_objects = _check_list_of_str_or_error(exclude_objects, "exclude_object")
         all_estimators = [
             (name, estimator)
             for name, estimator in all_estimators
-            if name not in exclude_estimators
+            if name not in exclude_objects
         ]
 
     # Drop duplicates, sort for reproducibility
@@ -884,6 +971,7 @@ def all_objects(
         columns = ["name", "object"]
 
     # add new tuple entries to all_estimators for each tag in return_tags:
+    return_tags = [] if return_tags is None else return_tags
     if return_tags:
         return_tags = _check_list_of_str_or_error(return_tags, "return_tags")
         # enrich all_estimators by adding the values for all return_tags tags:
@@ -951,9 +1039,9 @@ def _check_object_types(object_types, class_lookup=None):
         object_types = [object_types]  # make iterable
 
     def _get_err_msg(estimator_type):
-        if class_lookup is None:
+        if class_lookup is None or not isinstance(class_lookup, dict):
             return (
-                f"Parameter `estimator_type` must be None, a sclass, or a list of "
+                f"Parameter `estimator_type` must be None, a class, or a list of "
                 f"class, but found: {repr(estimator_type)}"
             )
         else:
@@ -965,10 +1053,10 @@ def _check_object_types(object_types, class_lookup=None):
             )
 
     for i, estimator_type in enumerate(object_types):
-        if not isinstance(estimator_type, (type, str)):
-            raise ValueError(_get_err_msg(estimator_type))
         if isinstance(estimator_type, str):
-            if estimator_type not in class_lookup.keys():
+            if not isinstance(class_lookup, dict) or (
+                estimator_type not in class_lookup.keys()
+            ):
                 raise ValueError(_get_err_msg(estimator_type))
             estimator_type = class_lookup[estimator_type]
             object_types[i] = estimator_type

@@ -54,6 +54,18 @@ MOD_NAMES = {
         "_skbase",
     ),
 }
+REQUIRED_CLASS_METADATA_KEYS = [
+    "klass",
+    "name",
+    "description",
+    "tags",
+    "is_concreate_implementation",
+    "is_base_class",
+    "is_base_object",
+    "authors",
+    "module_name",
+]
+REQUIRED_FUNCTION_METADATA_KEYS = ["func", "name", "description", "module_name"]
 
 
 @pytest.fixture
@@ -115,7 +127,7 @@ def _check_package_metadata_result(results):
         if not all([k in mod_metadata for k in MODULE_METADATA_EXPECTED_KEYS]):
             result_okay = False
             break
-        # Verify keys with string valeus have string valeus
+        # Verify keys with string values have string values
         elif not all(
             isinstance(mod_metadata[k], str) for k in ("path", "name", "authors")
         ):
@@ -134,21 +146,81 @@ def _check_package_metadata_result(results):
             result_okay = False
             break
         # Verify __all__ key
-        elif not isinstance(mod_metadata["__all__"], list) and all(
-            isinstance(k, str) for k in mod_metadata["__all__"]
+        elif not (
+            isinstance(mod_metadata["__all__"], list)
+            and all(isinstance(k, str) for k in mod_metadata["__all__"])
         ):
             result_okay = False
             break
         # Verify classes key
-        elif not isinstance(mod_metadata["classes"], dict):
+        elif not (
+            isinstance(mod_metadata["classes"], dict)
+            or all(
+                k not in mod_metadata["classes"] for k in REQUIRED_CLASS_METADATA_KEYS
+            )
+        ):
             result_okay = False
             break
         # Verify functions key
-        elif not isinstance(mod_metadata["functions"], dict):
+        elif not (
+            isinstance(mod_metadata["functions"], dict)
+            or all(
+                k not in mod_metadata["functions"]
+                for k in REQUIRED_FUNCTION_METADATA_KEYS
+            )
+        ):
             result_okay = False
             break
 
     return result_okay
+
+
+def _check_all_object_output_types(
+    objs, as_dataframe=True, return_names=True, return_tags=None
+):
+    """Check that all_objects output has expected types."""
+    # We expect at least one object to be returned
+    assert len(objs) > 0
+    if as_dataframe:
+        expected_obj_column = 1 if return_names else 0
+        expected_columns = 2 if return_names else 1
+        if isinstance(return_tags, str):
+            expected_columns += 1
+        elif isinstance(return_tags, list):
+            expected_columns += len(return_tags)
+        assert isinstance(objs, pd.DataFrame) and objs.shape[1] == expected_columns
+        # Verify all objects in the object columns are BaseObjects
+        assert (
+            objs.iloc[:, expected_obj_column]
+            .apply(issubclass, args=(BaseObject,))
+            .all()
+        )
+        # If names are returned, verify they are all strings
+        if return_names:
+            assert objs.iloc[:, 0].apply(isinstance, args=(str,)).all()
+            assert (
+                objs.iloc[:, 0] == objs.iloc[:, 1].apply(lambda x: x.__name__)
+            ).all()
+
+    else:
+        # Should return a list
+        assert isinstance(objs, list)
+        # checks return type specification (see docstring)
+        for obj in objs:
+            # return is list of objects if no names or tags requested
+            if not return_names and return_tags is None:
+                assert issubclass(obj, BaseObject)
+            elif return_names:
+                assert isinstance(obj, tuple)
+                assert isinstance(obj[0], str)
+                assert issubclass(obj[1], BaseObject)
+                assert obj[0] == obj[1].__name__
+                if return_tags is None:
+                    assert len(obj) == 2
+                elif isinstance(return_tags, str):
+                    assert len(obj) == 3
+                else:
+                    assert len(obj) == 2 + len(return_tags)
 
 
 def test_is_non_public_module(mod_names):
@@ -409,32 +481,50 @@ def test_get_package_metadata_returns_expected_types(
     assert _check_package_metadata_result(results) is True
 
     # Verify correct behavior of modules_to_ignore
-    no_ignored_module_returned = all(
-        [
-            not _is_ignored_module(k, modules_to_ignore=modules_to_ignore)
-            for k in results
-        ]
-    )
+    no_ignored_module_returned = [
+        not _is_ignored_module(k, modules_to_ignore=modules_to_ignore) for k in results
+    ]
 
-    assert no_ignored_module_returned
+    assert all(no_ignored_module_returned)
 
+    klass_metadata = [
+        klass_metadata
+        for module in results.values()
+        for klass_metadata in module["classes"].values()
+    ]
     # Verify correct behavior of exclude_non_public_items
     if exclude_non_public_items:
-        expected_nonpublic_items_returned = all(
-            [
-                not klass_metadata["name"].startswith("_")
-                for module in results.values()
-                for klass_metadata in module["classes"].values()
-            ]
-        )
-        assert expected_nonpublic_items_returned
+        expected_nonpublic_classes_returned = [
+            not k["name"].startswith("_") for k in klass_metadata
+        ]
+        assert all(expected_nonpublic_classes_returned)
+
+        expected_nonpublic_funcs_returned = [
+            not func_metadata["name"].startswith("_")
+            for module in results.values()
+            for func_metadata in module["functions"].values()
+        ]
+        assert all(expected_nonpublic_funcs_returned)
 
     # Verify correct behavior of exclude_nonpublic_modules
     if exclude_nonpublic_modules:
-        expected_nonpublic_modules_returned = all(
+        expected_nonpublic_modules_returned = [
             not _is_non_public_module(k) for k in results
-        )
-        assert expected_nonpublic_modules_returned
+        ]
+        assert all(expected_nonpublic_modules_returned)
+
+    if package_base_classes is not None:
+        if isinstance(package_base_classes, type):
+            package_base_classes = (package_base_classes,)
+        elif not isinstance(package_base_classes, tuple):
+            package_base_classes = tuple(package_base_classes)
+        expected_is_base_class_returned = [
+            k["klass"] in package_base_classes
+            if k["is_base_class"]
+            else k["klass"] not in package_base_classes
+            for k in klass_metadata
+        ]
+        assert all(expected_is_base_class_returned)
 
 
 # This is separate from other get_package_metadata tests b/c right now
@@ -526,7 +616,7 @@ def test_get_package_metadata_tag_filter(
     tag_filter,
     fixture_exclude_classes_skbase_metadata_tests,
 ):
-    """Test get_package_metadata filters by class as expected."""
+    """Test get_package_metadata filters by tags as expected."""
     results = get_package_metadata(
         "skbase",
         exclude_nonpublic_modules=False,
@@ -556,7 +646,7 @@ def test_get_package_metadata_tag_filter(
     # Verify we return dict with str keys
     # assert _check_package_metadata_result(results) is True
 
-    # Verify class filter is being applied correctly, which implies
+    # Verify tag filter is being applied correctly, which implies
     # When the filter is None the result is the same size
     # Otherwise, with the filters used in the test, fewer classes should
     # be returned
@@ -595,37 +685,185 @@ def test_get_return_tags(fixture_class_parent):
 
 @pytest.mark.parametrize("as_dataframe", [True, False])
 @pytest.mark.parametrize("return_names", [True, False])
-def test_all_objects_returns_expected_types(as_dataframe, return_names):
-    """Check that all_objects return argument has correct type."""
+@pytest.mark.parametrize("return_tags", [None, "A", ["A", "a_non_existant_tag"]])
+@pytest.mark.parametrize("modules_to_ignore", ["tests", ("testing", "tests"), None])
+@pytest.mark.parametrize("exclude_objects", [None, "BaseObject", ["BaseEstimator"]])
+@pytest.mark.parametrize("suppress_import_stdout", [True, False])
+def test_all_objects_returns_expected_types(
+    as_dataframe,
+    return_names,
+    return_tags,
+    modules_to_ignore,
+    exclude_objects,
+    suppress_import_stdout,
+):
+    """Test that all_objects return argument has correct type."""
     objs = all_objects(
-        package_name="skbase.mock_package",
+        package_name="skbase",
+        exclude_objects=exclude_objects,
         return_names=return_names,
         as_dataframe=as_dataframe,
+        return_tags=return_tags,
+        modules_to_ignore=modules_to_ignore,
+        suppress_import_stdout=suppress_import_stdout,
     )
     # We expect at least one object to be returned
-    assert len(objs) > 0
+    _check_all_object_output_types(
+        objs,
+        as_dataframe=as_dataframe,
+        return_names=return_names,
+        return_tags=return_tags,
+    )
 
-    if as_dataframe:
-        expected_columns = 2 if return_names else 1
-        assert isinstance(objs, pd.DataFrame) and objs.shape[1] == expected_columns
-        # Verify all objects in the object columns are BaseObjects
-        for i in range(len(objs)):
-            expected_obj_column = 1 if return_names else 0
-            assert issubclass(objs.iloc[i, expected_obj_column], BaseObject)
-            if return_names:
-                # Value in name column should be a string
-                assert isinstance(objs.iloc[i, 0], str)
-                # Value in name column should be name of object in object column
-                assert objs.iloc[i, 0] == objs.iloc[i, 1].__name__
 
+@pytest.mark.parametrize("modules_to_ignore", ["tests", ("testing", "tests"), None])
+@pytest.mark.parametrize("ignore_modules", ["tests", ("testing", "tests"), None])
+def test_all_objects_deprecated_ignore_modules(modules_to_ignore, ignore_modules):
+    """Test that all_objects return argument has correct type."""
+    objs = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        return_tags=None,
+        modules_to_ignore=modules_to_ignore,
+        ignore_modules=ignore_modules,
+    )
+    # We expect at least one object to be returned
+    _check_all_object_output_types(
+        objs, as_dataframe=True, return_names=True, return_tags=None
+    )
+
+
+@pytest.mark.parametrize("exclude_objects", [None, "BaseObject", ["BaseEstimator"]])
+@pytest.mark.parametrize("exclude_estimators", [None, "BaseObject", ["BaseEstimator"]])
+def test_all_objects_deprecated_exclude_estimators(exclude_objects, exclude_estimators):
+    """Test that all_objects return argument has correct type."""
+    objs = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        return_tags=None,
+        exclude_objects=exclude_objects,
+        exclude_estimators=exclude_estimators,
+    )
+    # We expect at least one object to be returned
+    _check_all_object_output_types(
+        objs, as_dataframe=True, return_names=True, return_tags=None
+    )
+
+
+@pytest.mark.parametrize(
+    "class_filter", [None, FixtureClassParent, [FixtureClassParent, BaseEstimator]]
+)
+def test_all_objects_class_filter(class_filter):
+    """Test all_objects filters by class type as expected."""
+    # Results applying filter
+    objs = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        return_tags=None,
+        object_types=class_filter,
+    )
+    filtered_classes = objs.iloc[:, 1].tolist()
+    # Verify filtered results have right output type
+    _check_all_object_output_types(
+        objs, as_dataframe=True, return_names=True, return_tags=None
+    )
+
+    # Results without filter
+    objs = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        return_tags=None,
+    )
+    unfiltered_classes = objs.iloc[:, 1].tolist()
+
+    # Now verify class filter is being applied correctly
+    if class_filter is None:
+        assert len(unfiltered_classes) == len(filtered_classes)
+        assert unfiltered_classes == filtered_classes
     else:
-        # Should return a list
-        assert isinstance(objs, list)
-        # checks return type specification (see docstring)
-        if return_names:
-            for obj in objs:
-                assert issubclass(obj[1], BaseObject)
-                if return_names:
-                    assert isinstance(obj, tuple) and len(obj) == 2
-                    assert isinstance(obj[0], str)
-                    assert obj[0] == obj[1].__name__
+        if not isinstance(class_filter, type):
+            class_filter = tuple(class_filter)
+        assert len(unfiltered_classes) > len(filtered_classes)
+        classes_subclass_class_filter = [
+            issubclass(klass, class_filter) for klass in filtered_classes
+        ]
+        assert all(classes_subclass_class_filter)
+
+
+@pytest.mark.parametrize("tag_filter", [None, "A", ("A", "B"), {"A": "1", "B": 2}])
+def test_all_object_tag_filter(tag_filter):
+    """Test all_objects filters by tag as expected."""
+    # Results applying filter
+    objs = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        return_tags=None,
+        filter_tags=tag_filter,
+    )
+    filtered_classes = objs.iloc[:, 1].tolist()
+    # Verify filtered results have right output type
+    _check_all_object_output_types(
+        objs, as_dataframe=True, return_names=True, return_tags=None
+    )
+
+    # Results without filter
+    objs = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        return_tags=None,
+    )
+    unfiltered_classes = objs.iloc[:, 1].tolist()
+
+    # Verify tag filter is being applied correctly, which implies
+    # When the filter is None the result is the same size
+    # Otherwise, with the filters used in the test, fewer classes should
+    # be returned
+    if tag_filter is None:
+        assert len(unfiltered_classes) == len(filtered_classes)
+        assert unfiltered_classes == filtered_classes
+    else:
+        assert len(unfiltered_classes) > len(filtered_classes)
+
+
+@pytest.mark.parametrize("class_lookup", [{"base_object": BaseObject}])
+@pytest.mark.parametrize("class_filter", [None, "base_object"])
+def test_all_object_class_lookup(class_lookup, class_filter):
+    """Test all_objects filters by tag as expected."""
+    # Results applying filter
+    objs = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        return_tags=None,
+        object_types=class_filter,
+        class_lookup=class_lookup,
+    )
+    # filtered_classes = objs.iloc[:, 1].tolist()
+    # Verify filtered results have right output type
+    _check_all_object_output_types(
+        objs, as_dataframe=True, return_names=True, return_tags=None
+    )
+
+
+@pytest.mark.parametrize("class_lookup", [None, {"base_object": BaseObject}])
+@pytest.mark.parametrize("class_filter", ["invalid_alias", 7])
+def test_all_object_class_lookup_invalid_object_types_raises(
+    class_lookup, class_filter
+):
+    """Test all_objects filters by tag as expected."""
+    # Results applying filter
+    with pytest.raises(ValueError):
+        all_objects(
+            package_name="skbase",
+            return_names=True,
+            as_dataframe=True,
+            return_tags=None,
+            object_types=class_filter,
+            class_lookup=class_lookup,
+        )
