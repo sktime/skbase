@@ -52,3 +52,7 @@ class NotABaseObject:
 
     def __init__(self, a=7):
         self.a = a
+
+
+class _NonPublicClass(BaseObject):
+    """A nonpublic class inheritting from BaseObject."""
