@@ -563,6 +563,36 @@ def test_get_package_metadata_classes_to_exclude(classes_to_exclude):
         assert all(classes_excluded_as_expected)
 
 
+@pytest.mark.parametrize("exclude_nonpublic_modules", [True, False])
+@pytest.mark.parametrize("exclude_non_public_modules", [True, False])
+def test_get_package_metadata_deprecated_exclude_nonpublic_modules(
+    exclude_nonpublic_modules,
+    exclude_non_public_modules,
+    fixture_exclude_classes_skbase_metadata_tests,
+):
+    """Test get_package_metadata returns expected output types."""
+    results = get_package_metadata(
+        "skbase",
+        recursive=True,
+        exclude_non_public_items=True,
+        exclude_non_public_modules=exclude_non_public_modules,
+        exclude_nonpublic_modules=exclude_nonpublic_modules,
+        modules_to_ignore=None,
+        package_base_classes=None,
+        classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
+        suppress_import_stdout=True,
+    )
+    # Verify we return dict with str keys
+    assert _check_package_metadata_result(results) is True
+
+    # Verify correct behavior of exclude_non_public_modules
+    if exclude_non_public_modules and exclude_nonpublic_modules:
+        expected_nonpublic_modules_returned = [
+            not _is_non_public_module(k) for k in results
+        ]
+        assert all(expected_nonpublic_modules_returned)
+
+
 @pytest.mark.parametrize(
     "class_filter", [None, BaseEstimator, (BaseObject, BaseEstimator)]
 )
