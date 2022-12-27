@@ -113,9 +113,7 @@ def _is_non_public_module(module_name: str) -> bool:
         raise ValueError(
             f"Parameter `module_name` should be str, but found {type(module_name)}."
         )
-    is_non_public: bool = "._" in module_name or (
-        "." not in module_name and module_name.startswith("_")
-    )
+    is_non_public: bool = "._" in module_name or module_name.startswith("_")
     return is_non_public
 
 
