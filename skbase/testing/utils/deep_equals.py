@@ -70,16 +70,21 @@ def deep_equals(x, y, return_msg=False):
     # we now know all types are the same
     # so now we compare values
 
+    # flag variables for available soft dependencies
+    pandas_available = _check_soft_dependencies("pandas", severity="none")
+    numpy_available = _check_soft_dependencies("numpy", severity="none")
+
+    if numpy_available:
+        import numpy as np
+
     # pandas is a soft dependency, so we compare pandas objects separately
     #   and only if pandas is installed in the environment
-    if _is_pandas(x) and _check_soft_dependencies("pandas", severity="none"):
+    if _is_pandas(x) and pandas_available:
         res = _pandas_equals(x, y, return_msg=return_msg)
         if res is not None:
             return _pandas_equals(x, y, return_msg=return_msg)
 
-    if _is_npndarray(x):
-        import numpy as np
-
+    if numpy_available and _is_npndarray(x):
         if x.dtype != y.dtype:
             return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
         return ret(np.array_equal(x, y, equal_nan=True), ".values")
@@ -96,8 +101,8 @@ def deep_equals(x, y, return_msg=False):
     # some types return a vector upon !=, this is covered in the next elif
     elif isinstance(x != y, bool) and x != y:
         return ret(False, f" !=, {x} != {y}")
-    # deal with the case where !=  returns a vector
-    elif np.any(x != y):
+    # deal with the case where != returns a vector
+    elif numpy_available and np.any(x != y) or any(x != y):
         return ret(False, f" !=, {x} != {y}")
 
     return ret(True, "")
