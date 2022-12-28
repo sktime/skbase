@@ -13,6 +13,7 @@ tests in this module:
 
 __author__ = ["fkiraly", "RNKuhns"]
 import inspect
+from copy import deepcopy
 
 import pytest
 
@@ -81,3 +82,45 @@ def test_check_is_fitted_raises_error_when_unfitted(fixture_estimator_instance):
 
     fixture_estimator_instance._is_fitted = True
     assert fixture_estimator_instance.check_is_fitted() is None
+
+
+class FittableCompositionDummy(BaseEstimator):
+    """Potentially composite object, for testing."""
+
+    def __init__(self, foo, bar=84):
+        self.foo = foo
+        self.foo_ = deepcopy(foo)
+        self.bar = bar
+
+    def fit(self):
+        """Fit, dummy."""
+        if hasattr(self.foo_, "fit"):
+            self.foo_.fit()
+        self._is_fitted = True
+
+
+def test_get_fitted_params():
+    """Tests fitted parameter retrieval.
+
+    Raises
+    ------
+    AssertionError if logic behind get_fitted_params is incorrect, logic tested:
+        calling get_fitted_params on a non-composite fittable returns the fitted param
+        calling get_fitted_params on a composite returns all nested params
+    """
+    non_composite = FittableCompositionDummy(foo=42)
+    composite = FittableCompositionDummy(foo=deepcopy(non_composite))
+
+    non_composite.fit()
+    composite.fit()
+
+    non_comp_f_params = non_composite.get_fitted_params()
+    comp_f_params = composite.get_fitted_params()
+
+    assert isinstance(non_comp_f_params, dict)
+    assert set(non_comp_f_params.keys()) == set(["foo"])
+
+    assert isinstance(comp_f_params, dict)
+    assert set(comp_f_params) == set(["foo", "foo__foo"])
+    assert comp_f_params["foo"] is composite.foo_
+    assert comp_f_params["foo"] is not composite.foo
