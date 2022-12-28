@@ -99,10 +99,10 @@ def deep_equals(x, y, return_msg=False):
         return ret(*_fh_equals(x, y, return_msg=True))
     # this elif covers case where != is boolean
     # some types return a vector upon !=, this is covered in the next elif
-    elif isinstance(x != y, bool) and x != y:
-        return ret(False, f" !=, {x} != {y}")
+    elif isinstance(x != y, bool):
+        return ret(x != y, f" !=, {x} != {y}")
     # deal with the case where != returns a vector
-    elif numpy_available and np.any(x != y) or any(x != y):
+    elif numpy_available and np.any(x != y) or any(_coerce_list(x != y)):
         return ret(False, f" !=, {x} != {y}")
 
     return ret(True, "")
@@ -124,6 +124,16 @@ def _is_npndarray(x):
     clstr = type(x).__name__
     if clstr in ["ndarray"]:
         return True
+
+
+def _coerce_list(x):
+    """Coerce x to list."""
+    if not isinstance(x, (list, tuple)):
+        x = [x]
+    if isinstance(x, tuple):
+        x = list(x)
+
+    return x
 
 
 def _pandas_equals(x, y, return_msg=False):
