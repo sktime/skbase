@@ -16,7 +16,7 @@ __all__: List[str] = [
     "ModifyParam",
     "NoParamInterface",
 ]
-__author__: List[str] = ["RNKuhns"]
+__author__: List[str] = ["fkiraly", "RNKuhns"]
 
 
 # Fixture class for testing tag system
@@ -41,7 +41,7 @@ class FixtureClassChild(FixtureClassParent):
     """Fixture class that is child of FixtureClassParent."""
 
     _tags = {"A": 42, 3: "E"}
-    __author__ = ["RNKuhns"]
+    __author__ = ["fkiraly", "RNKuhns"]
 
     def some_method(self):
         """Child class' implementation."""
@@ -94,7 +94,7 @@ class RequiredParam(BaseObject):
 
     _required_parameters = ["a"]
 
-    def __init__self(self, a, b=7):
+    def __init__(self, a, b=7):
         self.a = a
         self.b = b
         super().__init__()

@@ -879,7 +879,7 @@ def test_get_test_params(fixture_class_parent_instance):
 def test_get_test_params_raises_error_when_params_required(fixture_required_param):
     """Test get_test_params raises an error when parameters are required."""
     with pytest.raises(ValueError):
-        fixture_required_param().get_test_params()
+        fixture_required_param(7).get_test_params()
 
 
 def test_create_test_instance(fixture_class_parent, fixture_class_parent_instance):
