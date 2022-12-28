@@ -99,8 +99,8 @@ def deep_equals(x, y, return_msg=False):
         return ret(*_fh_equals(x, y, return_msg=True))
     # this elif covers case where != is boolean
     # some types return a vector upon !=, this is covered in the next elif
-    elif isinstance(x != y, bool):
-        return ret(x != y, f" !=, {x} != {y}")
+    elif isinstance(x == y, bool):
+        return ret(x == y, f" !=, {x} != {y}")
     # deal with the case where != returns a vector
     elif numpy_available and np.any(x != y) or any(_coerce_list(x != y)):
         return ret(False, f" !=, {x} != {y}")
