@@ -451,7 +451,7 @@ def test_determine_module_path_raises_error_invalid_input(fixture_skbase_root_pa
 
 @pytest.mark.parametrize("recursive", [True, False])
 @pytest.mark.parametrize("exclude_non_public_items", [True, False])
-@pytest.mark.parametrize("exclude_nonpublic_modules", [True, False])
+@pytest.mark.parametrize("exclude_non_public_modules", [True, False])
 @pytest.mark.parametrize("modules_to_ignore", ["tests", ("testing", "tests"), None])
 @pytest.mark.parametrize(
     "package_base_classes", [BaseObject, (BaseObject, BaseEstimator), None]
@@ -460,7 +460,7 @@ def test_determine_module_path_raises_error_invalid_input(fixture_skbase_root_pa
 def test_get_package_metadata_returns_expected_types(
     recursive,
     exclude_non_public_items,
-    exclude_nonpublic_modules,
+    exclude_non_public_modules,
     modules_to_ignore,
     package_base_classes,
     suppress_import_stdout,
@@ -471,7 +471,7 @@ def test_get_package_metadata_returns_expected_types(
         "skbase",
         recursive=recursive,
         exclude_non_public_items=exclude_non_public_items,
-        exclude_nonpublic_modules=exclude_nonpublic_modules,
+        exclude_non_public_modules=exclude_non_public_modules,
         modules_to_ignore=modules_to_ignore,
         package_base_classes=package_base_classes,
         classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
@@ -506,8 +506,8 @@ def test_get_package_metadata_returns_expected_types(
         ]
         assert all(expected_nonpublic_funcs_returned)
 
-    # Verify correct behavior of exclude_nonpublic_modules
-    if exclude_nonpublic_modules:
+    # Verify correct behavior of exclude_non_public_modules
+    if exclude_non_public_modules:
         expected_nonpublic_modules_returned = [
             not _is_non_public_module(k) for k in results
         ]
@@ -541,7 +541,7 @@ def test_get_package_metadata_classes_to_exclude(classes_to_exclude):
         "skbase.mock_package",
         recursive=True,
         exclude_non_public_items=True,
-        exclude_nonpublic_modules=True,
+        exclude_non_public_modules=True,
         modules_to_ignore=None,
         package_base_classes=None,
         classes_to_exclude=classes_to_exclude,
@@ -561,36 +561,6 @@ def test_get_package_metadata_classes_to_exclude(classes_to_exclude):
             for klass_metadata in module["classes"].values()
         ]
         assert all(classes_excluded_as_expected)
-
-
-@pytest.mark.parametrize("exclude_nonpublic_modules", [True, False])
-@pytest.mark.parametrize("exclude_non_public_modules", [True, False])
-def test_get_package_metadata_deprecated_exclude_nonpublic_modules(
-    exclude_nonpublic_modules,
-    exclude_non_public_modules,
-    fixture_exclude_classes_skbase_metadata_tests,
-):
-    """Test get_package_metadata returns expected output types."""
-    results = get_package_metadata(
-        "skbase",
-        recursive=True,
-        exclude_non_public_items=True,
-        exclude_non_public_modules=exclude_non_public_modules,
-        exclude_nonpublic_modules=exclude_nonpublic_modules,
-        modules_to_ignore=None,
-        package_base_classes=None,
-        classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
-        suppress_import_stdout=True,
-    )
-    # Verify we return dict with str keys
-    assert _check_package_metadata_result(results) is True
-
-    # Verify correct behavior of exclude_non_public_modules
-    if exclude_non_public_modules and exclude_nonpublic_modules:
-        expected_nonpublic_modules_returned = [
-            not _is_non_public_module(k) for k in results
-        ]
-        assert all(expected_nonpublic_modules_returned)
 
 
 @pytest.mark.parametrize(
@@ -649,7 +619,7 @@ def test_get_package_metadata_tag_filter(
     """Test get_package_metadata filters by tags as expected."""
     results = get_package_metadata(
         "skbase",
-        exclude_nonpublic_modules=False,
+        exclude_non_public_modules=False,
         modules_to_ignore="skbase",
         tag_filter=tag_filter,
         classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
@@ -663,7 +633,7 @@ def test_get_package_metadata_tag_filter(
     # Unfiltered results
     unfiltered_results = get_package_metadata(
         "skbase",
-        exclude_nonpublic_modules=False,
+        exclude_non_public_modules=False,
         modules_to_ignore="skbase",
         classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
     )
@@ -674,7 +644,7 @@ def test_get_package_metadata_tag_filter(
     ]
 
     # Verify we return dict with str keys
-    # assert _check_package_metadata_result(results) is True
+    assert _check_package_metadata_result(results) is True
 
     # Verify tag filter is being applied correctly, which implies
     # When the filter is None the result is the same size
@@ -743,42 +713,6 @@ def test_all_objects_returns_expected_types(
         as_dataframe=as_dataframe,
         return_names=return_names,
         return_tags=return_tags,
-    )
-
-
-@pytest.mark.parametrize("modules_to_ignore", ["tests", ("testing", "tests"), None])
-@pytest.mark.parametrize("ignore_modules", ["tests", ("testing", "tests"), None])
-def test_all_objects_deprecated_ignore_modules(modules_to_ignore, ignore_modules):
-    """Test that all_objects return argument has correct type."""
-    objs = all_objects(
-        package_name="skbase",
-        return_names=True,
-        as_dataframe=True,
-        return_tags=None,
-        modules_to_ignore=modules_to_ignore,
-        ignore_modules=ignore_modules,
-    )
-    # We expect at least one object to be returned
-    _check_all_object_output_types(
-        objs, as_dataframe=True, return_names=True, return_tags=None
-    )
-
-
-@pytest.mark.parametrize("exclude_objects", [None, "BaseObject", ["BaseEstimator"]])
-@pytest.mark.parametrize("exclude_estimators", [None, "BaseObject", ["BaseEstimator"]])
-def test_all_objects_deprecated_exclude_estimators(exclude_objects, exclude_estimators):
-    """Test that all_objects return argument has correct type."""
-    objs = all_objects(
-        package_name="skbase",
-        return_names=True,
-        as_dataframe=True,
-        return_tags=None,
-        exclude_objects=exclude_objects,
-        exclude_estimators=exclude_estimators,
-    )
-    # We expect at least one object to be returned
-    _check_all_object_output_types(
-        objs, as_dataframe=True, return_names=True, return_tags=None
     )
 
 

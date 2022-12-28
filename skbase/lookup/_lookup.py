@@ -118,7 +118,7 @@ def _is_non_public_module(module_name: str) -> bool:
 
 
 def _is_ignored_module(
-    module_name: str, modules_to_ignore: Union[List[str], Tuple[str]] = None
+    module_name: str, modules_to_ignore: Union[str, List[str], Tuple[str]] = None
 ) -> bool:
     """Determine if module is one of the ignored modules.
 
@@ -508,7 +508,6 @@ def get_package_metadata(
     recursive: bool = True,
     exclude_non_public_items: bool = True,
     exclude_non_public_modules: bool = True,
-    exclude_nonpublic_modules: bool = True,
     modules_to_ignore: Union[str, List[str], Tuple[str]] = ("tests",),
     package_base_classes: Union[type, Tuple[type, ...]] = (BaseObject,),
     class_filter: Optional[Union[type, Sequence[type]]] = None,
@@ -546,14 +545,6 @@ def get_package_metadata(
     exclude_non_public_modules : bool, default=True
         Whether to exclude nonpublic modules (modules where names start with
         a leading underscore).
-    exclude_nonpublic_modules : bool, default=True
-        Whether to exclude nonpublic modules (modules where names start with
-        a leading underscore).
-
-        .. deprecated:: 0.3.0
-           `exclude_nonpublic_modules` will be removed in version 0.5.0. Use
-           `exclude_non_public_modules` parameter with same signature instead.
-
     modules_to_ignore : str, tuple[str] or list[str], default="tests"
         The modules that should be ignored when searching across the modules to
         gather objects. If passed, `all_objects` ignores modules or submodules
@@ -611,20 +602,6 @@ def get_package_metadata(
         - "contains_base_objects": whether any module classes that
           inherit from ``BaseObject``.
     """
-    # If someone changed deprecated parameter from the default we'll use it but warn
-    if exclude_nonpublic_modules is not True:
-        warnings.warn(
-            " ".join(
-                [
-                    "`exclude_nonpublic_modules` parameter is depracated as of",
-                    "release 0.3.0. It will be removed in release 0.5.0.",
-                    "Use `exclude_non_public_modules` parameter instead.",
-                ]
-            ),
-            DeprecationWarning,
-        )
-        exclude_non_public_modules = exclude_nonpublic_modules
-
     module, path, loader = _determine_module_path(package_name, path)
     module_info: MutableMapping[str, ModuleInfo] = {}
     # Get any metadata at the top-level of the provided package
@@ -759,13 +736,6 @@ def all_objects(
 
     exclude_objects: str or list[str], default=None
         Names of estimators to exclude.
-    exclude_estimators: str or list[str], default=None
-        Names of estimators to exclude.
-
-        .. deprecated:: 0.3.0
-           `exclude_estimators` will be removed in version 0.5.0. Use `exclude_objects`
-           parameter with same signature instead.
-
     as_dataframe: bool, default=False
 
         - If False, `all_objects` will return a list (either a list of
@@ -794,16 +764,6 @@ def all_objects(
         of a module whose name is in the provided string(s). E.g., if
         `modules_to_ignore` contains the string `"foo"`, then `"bar.foo"`,
         `"foo"`, `"foo.bar"`, `"bar.foo.bar"` are ignored.
-    ignore_modules : str or list[str], default=None
-        The modules that should be ignored when searching across the modules to
-        gather objects. If passed, `all_objects` ignores modules or submodules
-        of a module whose name is in the provided string(s). E.g., if
-        `ignore_modules` contains the string `"foo"`, then `"bar.foo"`,
-        `"foo"`, `"foo.bar"`, `"bar.foo.bar"` are ignored.
-
-        .. deprecated:: 0.3.0
-           `ignore_modules` will be removed in version 0.5.0. Use `modules_to_ignore`
-           parameter with same signature instead.
 
     class_lookup : dict[str, class], default=None
         Dictionary of string aliases for classes used in object_types. If provided,
@@ -842,61 +802,8 @@ def all_objects(
     users to find BaseObjects in `skbase` and other packages.
     """
     module, root, _ = _determine_module_path(package_name, path)
-
-    if ignore_modules is not None:
-        warnings.warn(
-            " ".join(
-                [
-                    "`ignore_modules` parameter is depracated as of release 0.3.0.",
-                    "It will be removed in release 0.5.0.",
-                    "Use `modules_to_ignore` parameter instead.",
-                ]
-            ),
-            DeprecationWarning,
-        )
-        # If nothing passed for modules_to_ignore, we'll just use values
-        # passed to ignore_modules until it is removed
-        if modules_to_ignore is None:
-            modules_to_ignore = ignore_modules
-        else:
-            warnings.warn(
-                " ".join(
-                    [
-                        "`modules_to_ignore` and `ignore_modules` both had values set.",
-                        "Value of `modules_to_ignore` will be used.",
-                    ]
-                ),
-                DeprecationWarning,
-            )
     if modules_to_ignore is None:
         modules_to_ignore = []
-
-    if exclude_estimators is not None:
-        warnings.warn(
-            " ".join(
-                [
-                    "`exclude_estimators` parameter is depracated as of release 0.3.0.",
-                    "It will be removed in release 0.5.0.",
-                    "Use `exclude_objects` parameter instead.",
-                ]
-            ),
-            DeprecationWarning,
-        )
-        # If nothing passed for exclude_objects, we'll just use values
-        # passed to exclude_estimators until it is removed
-        if exclude_objects is None:
-            exclude_objects = exclude_estimators
-        else:
-            warnings.warn(
-                " ".join(
-                    [
-                        "`exclude_objects` and `exclude_estimators` both have values.",
-                        "Value of `exclude_objects` will be used.",
-                    ]
-                ),
-                DeprecationWarning,
-            )
-
     if exclude_objects is None:
         exclude_objects = []
 
