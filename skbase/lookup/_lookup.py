@@ -248,8 +248,9 @@ def _walk(root, exclude=None, prefix=""):
 
     Parameters
     ----------
-    root : Path-like
-        Root path in which to look for submodules
+    root : str or path-like
+        Root path in which to look for submodules. Can be a string path,
+        pathlib.Path or other path-like object.
     exclude : tuple of str or None, optional, default = None
         List of sub-modules to ignore in the return, including sub-modules
     prefix: str, optional, default = ""
