@@ -6,6 +6,7 @@ Objects compared can have one of the following valid types:
     pd.Series, pd.DataFrame, np.ndarray
     lists, tuples, or dicts of a valid type (recursive)
 """
+from inspect import isclass
 from typing import List
 
 import numpy as np
@@ -43,6 +44,7 @@ def deep_equals(x, y, return_msg=False):
         indication of what is the reason for not being equal
             concatenation of the following strings:
             .type - type is not equal
+            .class - both objects are classes but not equal
             .len - length is not equal
             .value - value is not equal
             .keys - if dict, keys of dict are not equal
@@ -86,9 +88,22 @@ def deep_equals(x, y, return_msg=False):
         return ret(*_tuple_equals(x, y, return_msg=True))
     elif isinstance(x, dict):
         return ret(*_dict_equals(x, y, return_msg=True))
+    # np.nan returns False when comparing np.nan == np.nan
+    # we deal with this by looking at the type
+    elif isinstance(x, type(np.nan)):
+        return ret(
+            isinstance(y, type(np.nan)), f"type(x)={type(x)} != type(y)={type(y)}"
+        )
+    elif isclass(x):
+        return ret(x == y, f".class, x={x.__name__} != y={y.__name__}")
     elif type(x).__name__ == "ForecastingHorizon":
         return ret(*_fh_equals(x, y, return_msg=True))
-    elif x != y:
+    # this elif covers case where != is boolean
+    # some types return a vector upon !=, this is covered in the next elif
+    elif isinstance(x != y, bool) and x != y:
+        return ret(False, f" !=, {x} != {y}")
+    # deal with the case where !=  returns a vector
+    elif np.any(x != y):
         return ret(False, f" !=, {x} != {y}")
 
     return ret(True, "")
