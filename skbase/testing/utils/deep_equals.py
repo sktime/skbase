@@ -9,8 +9,6 @@ Objects compared can have one of the following valid types:
 from inspect import isclass
 from typing import List
 
-import numpy as np
-
 from skbase.testing.utils._dependencies import _check_soft_dependencies
 
 __author__: List[str] = ["fkiraly"]
@@ -79,7 +77,9 @@ def deep_equals(x, y, return_msg=False):
         if res is not None:
             return _pandas_equals(x, y, return_msg=return_msg)
 
-    if isinstance(x, np.ndarray):
+    if _is_npndarray(x):
+        import numpy as np
+
         if x.dtype != y.dtype:
             return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
         return ret(np.array_equal(x, y, equal_nan=True), ".values")
@@ -88,12 +88,6 @@ def deep_equals(x, y, return_msg=False):
         return ret(*_tuple_equals(x, y, return_msg=True))
     elif isinstance(x, dict):
         return ret(*_dict_equals(x, y, return_msg=True))
-    # np.nan returns False when comparing np.nan == np.nan
-    # we deal with this by looking at the type
-    elif isinstance(x, type(np.nan)):
-        return ret(
-            isinstance(y, type(np.nan)), f"type(x)={type(x)} != type(y)={type(y)}"
-        )
     elif isclass(x):
         return ret(x == y, f".class, x={x.__name__} != y={y.__name__}")
     elif type(x).__name__ == "ForecastingHorizon":
@@ -118,6 +112,13 @@ def _is_pandas(x):
         return True
     else:
         return False
+
+
+def _is_npndarray(x):
+
+    clstr = type(x).__name__
+    if clstr in ["ndarray"]:
+        return True
 
 
 def _pandas_equals(x, y, return_msg=False):
