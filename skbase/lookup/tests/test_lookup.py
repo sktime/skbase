@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
-"""Tests for skbase lookup functionality.
-
-tests in this module:
-
-    test_is_non_public_module  - tests _is_non_public_module logic
-"""
+"""Tests for skbase lookup functionality."""
+# Elements of the lookup tests re-use code developed in sktime. These elements
+# are copyrighted by the sktime developers, BSD-3-Clause License. For
+# conditions see https://github.com/sktime/sktime/blob/main/LICENSE
 import importlib
 import pathlib
 from types import ModuleType
@@ -118,23 +116,19 @@ def fixture_skbase_root_path(fixture_test_lookup_mod_path):
 
 def _check_package_metadata_result(results):
     """Check output of get_package_metadata is expected type."""
-    result_okay: bool = True
     if not (isinstance(results, dict) and all(isinstance(k, str) for k in results)):
-        result_okay = False
-    for k in results:
-        mod_metadata = results[k]
+        return False
+    for k, mod_metadata in results.items():
         # Verify expected metadata keys are in the module's metadata dict
         if not all([k in mod_metadata for k in MODULE_METADATA_EXPECTED_KEYS]):
-            result_okay = False
-            break
+            return False
         # Verify keys with string values have string values
-        elif not all(
+        if not all(
             isinstance(mod_metadata[k], str) for k in ("path", "name", "authors")
         ):
-            result_okay = False
-            break
+            return False
         # Verify keys with bool values have bool valeus
-        elif not all(
+        if not all(
             isinstance(mod_metadata[k], bool)
             for k in (
                 "is_package",
@@ -143,36 +137,32 @@ def _check_package_metadata_result(results):
                 "contains_base_objects",
             )
         ):
-            result_okay = False
-            break
+            return False
         # Verify __all__ key
-        elif not (
+        if not (
             isinstance(mod_metadata["__all__"], list)
             and all(isinstance(k, str) for k in mod_metadata["__all__"])
         ):
-            result_okay = False
-            break
+            return False
         # Verify classes key
-        elif not (
+        if not (
             isinstance(mod_metadata["classes"], dict)
             or all(
                 k not in mod_metadata["classes"] for k in REQUIRED_CLASS_METADATA_KEYS
             )
         ):
-            result_okay = False
-            break
+            return False
         # Verify functions key
-        elif not (
+        if not (
             isinstance(mod_metadata["functions"], dict)
             or all(
                 k not in mod_metadata["functions"]
                 for k in REQUIRED_FUNCTION_METADATA_KEYS
             )
         ):
-            result_okay = False
-            break
+            return False
 
-    return result_okay
+    return True
 
 
 def _check_all_object_output_types(
