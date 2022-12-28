@@ -536,7 +536,9 @@ def test_components(fixture_object, fixture_class_parent, fixture_composition_du
     assert isinstance(comp_comps, dict)
     assert set(comp_comps.keys()) == {"foo_"}
     assert comp_comps["foo_"] == composite.foo_
-    assert comp_comps["foo_"] != composite.foo
+    assert comp_comps["foo_"] is composite.foo_
+    assert comp_comps["foo_"] == composite.foo
+    assert comp_comps["foo_"] is not composite.foo
 
     assert comp_comps == comp_comps_baseobject_filter
     assert comp_comps_filter == {}
