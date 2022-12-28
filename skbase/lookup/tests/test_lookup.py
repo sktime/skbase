@@ -67,39 +67,9 @@ REQUIRED_FUNCTION_METADATA_KEYS = ["func", "name", "description", "module_name"]
 
 
 @pytest.fixture
-def fixture_exclude_classes_skbase_metadata_tests():
-    """Fixture of classes to exclude from tests of get_package_metadata on skbase."""
-    return TagAliaserMixin
-
-
-@pytest.fixture
 def mod_names():
     """Pytest fixture to return module names for tests."""
     return MOD_NAMES
-
-
-@pytest.fixture
-def fixture_object():
-    """Pytest fixture of BaseObject class."""
-    return BaseObject
-
-
-@pytest.fixture
-def fixture_not_a_base_object():
-    """Pytest fixture for NotABaseObject."""
-    return NotABaseObject
-
-
-@pytest.fixture
-def fixture_composition_dummy():
-    """Pytest fixture for CompositionDummy."""
-    return CompositionDummy
-
-
-@pytest.fixture
-def fixture_class_parent():
-    """Pytest fixture for FixtureClassParent."""
-    return FixtureClassParent
 
 
 @pytest.fixture
@@ -255,85 +225,64 @@ def test_is_ignored_module(mod_names):
         )
 
 
-def test_filter_by_class(
-    fixture_object,
-    fixture_not_a_base_object,
-    fixture_composition_dummy,
-    fixture_class_parent,
-):
+def test_filter_by_class():
     """Test _filter_by_class correctly identifies classes."""
     # Test case when no class filter is applied (should always return True)
-    assert _filter_by_class(fixture_composition_dummy) is True
+    assert _filter_by_class(CompositionDummy) is True
 
     # Test case where a signle filter is applied
-    assert _filter_by_class(fixture_composition_dummy, fixture_object) is True
-    assert _filter_by_class(fixture_not_a_base_object, fixture_object) is False
-    assert (
-        _filter_by_class(fixture_not_a_base_object, fixture_composition_dummy) is False
-    )
+    assert _filter_by_class(FixtureClassParent, BaseObject) is True
+    assert _filter_by_class(NotABaseObject, BaseObject) is False
+    assert _filter_by_class(NotABaseObject, CompositionDummy) is False
 
     # Test case when sequence of classes supplied as filter
+    assert _filter_by_class(CompositionDummy, (BaseObject, FixtureClassParent)) is True
     assert (
-        _filter_by_class(
-            fixture_composition_dummy,
-            (fixture_object, fixture_class_parent),
-        )
-        is True
-    )
-    assert (
-        _filter_by_class(
-            fixture_composition_dummy,
-            [fixture_not_a_base_object, fixture_class_parent],
-        )
+        _filter_by_class(CompositionDummy, [NotABaseObject, FixtureClassParent])
         is False
     )
 
 
-def test_filter_by_tags(
-    fixture_object,
-    fixture_not_a_base_object,
-    fixture_composition_dummy,
-    fixture_class_parent,
-):
+def test_filter_by_tags():
     """Test _filter_by_tags correctly filters classes by their tags or tag values."""
     # Test case when no tag filter is applied (should always return True)
-    assert _filter_by_tags(fixture_composition_dummy) is True
+    assert _filter_by_tags(CompositionDummy) is True
     # Even if the class isn't a BaseObject
-    assert _filter_by_tags(fixture_not_a_base_object) is True
+    assert _filter_by_tags(NotABaseObject) is True
 
     # Check when tag_filter is a str and present in the class
-    assert _filter_by_tags(fixture_class_parent, tag_filter="A") is True
+    assert _filter_by_tags(FixtureClassParent, tag_filter="A") is True
     # Check when tag_filter is str and not present in the class
-    assert _filter_by_tags(fixture_object, tag_filter="A") is False
+    assert _filter_by_tags(BaseObject, tag_filter="A") is False
 
     # Test functionality when tag present and object doesn't have tag interface
     assert _filter_by_tags(NotABaseObject, tag_filter="A") is False
 
     # Test functionality where tag_filter is Iterable of str
     # all tags in iterable are in the class
-    assert _filter_by_tags(fixture_class_parent, ("A", "B", "C")) is True
+    assert _filter_by_tags(FixtureClassParent, ("A", "B", "C")) is True
     # Some tags in iterable are in class and others aren't
-    assert _filter_by_tags(fixture_class_parent, ("A", "B", "C", "D", "E")) is False
+    assert _filter_by_tags(FixtureClassParent, ("A", "B", "C", "D", "E")) is False
 
     # Test functionality where tag_filter is Dict[str, Any]
     # All keys in dict are in tag_filter and values all match
-    assert _filter_by_tags(fixture_class_parent, {"A": "1", "B": 2}) is True
+    assert _filter_by_tags(FixtureClassParent, {"A": "1", "B": 2}) is True
     # All keys in dict are in tag_filter, but at least 1 value doesn't match
-    assert _filter_by_tags(fixture_class_parent, {"A": 1, "B": 2}) is False
+    assert _filter_by_tags(FixtureClassParent, {"A": 1, "B": 2}) is False
     # Atleast 1 key in dict is not in tag_filter
-    assert _filter_by_tags(fixture_class_parent, {"E": 1, "B": 2}) is False
+    assert _filter_by_tags(FixtureClassParent, {"E": 1, "B": 2}) is False
 
     # Iterable tags should be all strings
     with pytest.raises(ValueError, match=r"`tag_filter` should be.*"):
-        assert _filter_by_tags(fixture_class_parent, ("A", "B", 3))
+        assert _filter_by_tags(FixtureClassParent, ("A", "B", 3))
 
     # Tags that aren't iterable have to be strings
     with pytest.raises(ValueError, match=r"`tag_filter` should be.*"):
-        assert _filter_by_tags(fixture_class_parent, 7.0)
+        assert _filter_by_tags(FixtureClassParent, 7.0)
 
     # Dictionary tags should have string keys
     with pytest.raises(ValueError, match=r"`tag_filter` should be.*"):
-        assert _filter_by_tags(fixture_class_parent, {7: 11})
+        assert _filter_by_tags(FixtureClassParent, {7: 11})
 
 
 def test_walk_returns_expected_format(fixture_skbase_root_path):
@@ -454,7 +403,6 @@ def test_get_package_metadata_returns_expected_types(
     modules_to_ignore,
     package_base_classes,
     suppress_import_stdout,
-    fixture_exclude_classes_skbase_metadata_tests,
 ):
     """Test get_package_metadata returns expected output types."""
     results = get_package_metadata(
@@ -464,7 +412,7 @@ def test_get_package_metadata_returns_expected_types(
         exclude_non_public_modules=exclude_non_public_modules,
         modules_to_ignore=modules_to_ignore,
         package_base_classes=package_base_classes,
-        classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
+        classes_to_exclude=TagAliaserMixin,
         suppress_import_stdout=suppress_import_stdout,
     )
     # Verify we return dict with str keys
@@ -556,17 +504,14 @@ def test_get_package_metadata_classes_to_exclude(classes_to_exclude):
 @pytest.mark.parametrize(
     "class_filter", [None, BaseEstimator, (BaseObject, BaseEstimator)]
 )
-def test_get_package_metadata_class_filter(
-    class_filter,
-    fixture_exclude_classes_skbase_metadata_tests,
-):
+def test_get_package_metadata_class_filter(class_filter):
     """Test get_package_metadata filters by class as expected."""
     # Results applying filter
     results = get_package_metadata(
         "skbase",
         modules_to_ignore="skbase",
         class_filter=class_filter,
-        classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
+        classes_to_exclude=TagAliaserMixin,
     )
     filtered_classes = [
         klass_metadata["klass"]
@@ -578,7 +523,7 @@ def test_get_package_metadata_class_filter(
     unfiltered_results = get_package_metadata(
         "skbase",
         modules_to_ignore="skbase",
-        classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
+        classes_to_exclude=TagAliaserMixin,
     )
     unfiltered_classes = [
         klass_metadata["klass"]
@@ -602,17 +547,14 @@ def test_get_package_metadata_class_filter(
 
 
 @pytest.mark.parametrize("tag_filter", [None, "A", ("A", "B"), {"A": "1", "B": 2}])
-def test_get_package_metadata_tag_filter(
-    tag_filter,
-    fixture_exclude_classes_skbase_metadata_tests,
-):
+def test_get_package_metadata_tag_filter(tag_filter):
     """Test get_package_metadata filters by tags as expected."""
     results = get_package_metadata(
         "skbase",
         exclude_non_public_modules=False,
         modules_to_ignore="skbase",
         tag_filter=tag_filter,
-        classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
+        classes_to_exclude=TagAliaserMixin,
     )
     filtered_classes = [
         klass_metadata["klass"]
@@ -625,7 +567,7 @@ def test_get_package_metadata_tag_filter(
         "skbase",
         exclude_non_public_modules=False,
         modules_to_ignore="skbase",
-        classes_to_exclude=fixture_exclude_classes_skbase_metadata_tests,
+        classes_to_exclude=TagAliaserMixin,
     )
     unfiltered_classes = [
         klass_metadata["klass"]
@@ -647,16 +589,16 @@ def test_get_package_metadata_tag_filter(
         assert len(unfiltered_classes) > len(filtered_classes)
 
 
-def test_get_return_tags(fixture_class_parent):
+def test_get_return_tags():
     """Test _get_return_tags returns expected."""
 
     def _test_get_return_tags_output(results, num_requested_tags):
         return isinstance(results, tuple) and len(results) == num_requested_tags
 
     # Verify return with tags that exist
-    tags = fixture_class_parent.get_class_tags()
+    tags = FixtureClassParent.get_class_tags()
     tag_names = [*tags.keys()]
-    results = _get_return_tags(fixture_class_parent, tag_names)
+    results = _get_return_tags(FixtureClassParent, tag_names)
     assert (
         _test_get_return_tags_output(results, len(tag_names))
         and tuple(tags.values()) == results
@@ -664,12 +606,12 @@ def test_get_return_tags(fixture_class_parent):
 
     # Verify results when some exist and some don't exist
     tag_names += ["a_tag_that_does_not_exist"]
-    results = _get_return_tags(fixture_class_parent, tag_names)
+    results = _get_return_tags(FixtureClassParent, tag_names)
     assert _test_get_return_tags_output(results, len(tag_names))
 
     # Verify return when all tags don't exist
     tag_names = ["a_tag_that_does_not_exist"]
-    results = _get_return_tags(fixture_class_parent, tag_names)
+    results = _get_return_tags(FixtureClassParent, tag_names)
     assert _test_get_return_tags_output(results, len(tag_names)) and results[0] is None
 
 
