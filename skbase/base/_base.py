@@ -874,7 +874,7 @@ class BaseEstimator(BaseObject):
                 "fitted yet, please call fit on data before get_fitted_params"
             )
 
-        fitted_params = dict()
+        fitted_params = {}
 
         def sh(x):
             """Shorthand to remove all underscores at end of a string."""
@@ -899,7 +899,7 @@ class BaseEstimator(BaseObject):
         n_new_params = 42
         old_new_params = fitted_params
         while n_new_params > 0:
-            new_params = dict()
+            new_params = {}
             for c, comp in old_new_params.items():
                 if isinstance(comp, self.GET_FITTED_PARAMS_NESTING):
                     c_f_params = self._get_fitted_params_default(comp)
