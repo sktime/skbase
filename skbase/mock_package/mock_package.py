@@ -40,7 +40,7 @@ class CompositionDummy(BaseObject):
 
 
 class InheritsFromBaseObject(BaseObject):
-    """A class inheritting from BaseObject."""
+    """A class inheriting from BaseObject."""
 
 
 class AnotherClass(BaseObject):
