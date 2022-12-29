@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests for _check_soft_dependencies utility."""
-from packaging.requirements import InvalidRequirement
-
 import pytest
+from packaging.requirements import InvalidRequirement
 
 from skbase.testing.utils._dependencies import _check_soft_dependencies
 
