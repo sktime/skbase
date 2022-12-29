@@ -25,8 +25,19 @@ from skbase.lookup._lookup import (
     _is_non_public_module,
     _walk,
 )
-from skbase.mock_package.mock_package import CompositionDummy, NotABaseObject
-from skbase.tests.conftest import FixtureClassParent
+from skbase.tests.conftest import (
+    SKBASE_BASE_CLASSES,
+    SKBASE_CLASSES_BY_MODULE,
+    SKBASE_FUNCTIONS_BY_MODULE,
+    SKBASE_MODULES,
+    SKBASE_PUBLIC_CLASSES_BY_MODULE,
+    SKBASE_PUBLIC_FUNCTIONS_BY_MODULE,
+    SKBASE_PUBLIC_MODULES,
+    SKBASE_TEST_CLASSES,
+    CompositionDummy,
+    FixtureClassParent,
+    NotABaseObject,
+)
 
 __author__: List[str] = ["RNKuhns"]
 __all__: List[str] = []
@@ -45,7 +56,12 @@ MODULE_METADATA_EXPECTED_KEYS = (
     "contains_base_objects",
 )
 MOD_NAMES = {
-    "public": ("skbase", "skbase.lookup", "some_module.some_sub_module"),
+    "public": (
+        "skbase",
+        "skbase.lookup",
+        "some_module.some_sub_module",
+        "mock_package.mock_package",
+    ),
     "non_public": (
         "skbase.lookup._lookup",
         "some_module._some_non_public_sub_module",
@@ -213,9 +229,9 @@ def test_is_ignored_module(mod_names):
         assert _is_ignored_module(mod, modules_to_ignore=modules_to_ignore) is False
 
     # When ignored modules are encountered then they should be flagged as True
-    modules_to_ignore = ("skbase",)
+    modules_to_ignore = ("skbase", "mock_package")
     for mod in MOD_NAMES["public"]:
-        if "skbase" in mod:
+        if "skbase" in mod or "mock_package" in mod:
             expected_to_ignore = True
         else:
             expected_to_ignore = False
@@ -589,6 +605,70 @@ def test_get_package_metadata_tag_filter(tag_filter):
         assert len(unfiltered_classes) > len(filtered_classes)
 
 
+@pytest.mark.parametrize("exclude_non_public_modules", [True, False])
+@pytest.mark.parametrize("exclude_non_public_items", [True, False])
+def test_get_package_metadata_returns_expected_results(
+    exclude_non_public_modules, exclude_non_public_items
+):
+    """Test that get_package_metadata_returns expected results using skbase."""
+    # exclude_non_public_modules = False
+    # exclude_non_public_items = False
+    results = get_package_metadata(
+        "skbase",
+        exclude_non_public_items=exclude_non_public_items,
+        exclude_non_public_modules=exclude_non_public_modules,
+        package_base_classes=SKBASE_BASE_CLASSES,
+        modules_to_ignore=("tests"),
+        classes_to_exclude=TagAliaserMixin,
+        suppress_import_stdout=False,
+    )
+    if exclude_non_public_modules:
+        assert tuple(results.keys()) == SKBASE_PUBLIC_MODULES
+    else:
+        assert tuple(results.keys()) == SKBASE_MODULES
+
+    for module in results:
+        # Not validating the mock_package
+        if module.startswith("skbase.mock_package"):
+            continue
+
+        if exclude_non_public_items:
+            module_funcs = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.get(module, ())
+            module_classes = SKBASE_PUBLIC_CLASSES_BY_MODULE.get(module, ())
+        else:
+            module_funcs = SKBASE_FUNCTIONS_BY_MODULE.get(module, ())
+            module_classes = SKBASE_CLASSES_BY_MODULE.get(module, ())
+
+        # Verify expected functions are returned
+        assert set(results[module]["functions"].keys()) == set(module_funcs)
+        # Verify expected classes are returned
+        assert set(results[module]["classes"].keys()) == set(module_classes)
+
+        # Verify class metadata attributes correct
+        for klass, klass_metadata in results[module]["classes"].items():
+            if klass_metadata["klass"] in SKBASE_BASE_CLASSES:
+                assert (
+                    klass_metadata["is_base_class"] is True
+                ), f"{klass} should be base class."
+            else:
+                assert (
+                    klass_metadata["is_base_class"] is False
+                ), f"{klass} should not be base class."
+
+            if issubclass(klass_metadata["klass"], BaseObject):
+                assert klass_metadata["is_base_object"] is True
+            else:
+                assert klass_metadata["is_base_object"] is False
+
+            if (
+                issubclass(klass_metadata["klass"], SKBASE_BASE_CLASSES)
+                and klass_metadata["klass"] not in SKBASE_BASE_CLASSES
+            ):
+                assert klass_metadata["is_concrete_implementation"] is True
+            else:
+                assert klass_metadata["is_concrete_implementation"] is False
+
+
 def test_get_return_tags():
     """Test _get_return_tags returns expected."""
 
@@ -618,8 +698,10 @@ def test_get_return_tags():
 @pytest.mark.parametrize("as_dataframe", [True, False])
 @pytest.mark.parametrize("return_names", [True, False])
 @pytest.mark.parametrize("return_tags", [None, "A", ["A", "a_non_existant_tag"]])
-@pytest.mark.parametrize("modules_to_ignore", ["tests", ("testing", "tests"), None])
-@pytest.mark.parametrize("exclude_objects", [None, "BaseObject", ["BaseEstimator"]])
+@pytest.mark.parametrize(
+    "modules_to_ignore", ["tests", ("testing", "mock_package"), None]
+)
+@pytest.mark.parametrize("exclude_objects", [None, "ResetTester", ["CompositionDummy"]])
 @pytest.mark.parametrize("suppress_import_stdout", [True, False])
 def test_all_objects_returns_expected_types(
     as_dataframe,
@@ -639,13 +721,49 @@ def test_all_objects_returns_expected_types(
         modules_to_ignore=modules_to_ignore,
         suppress_import_stdout=suppress_import_stdout,
     )
-    # We expect at least one object to be returned
-    _check_all_object_output_types(
-        objs,
-        as_dataframe=as_dataframe,
-        return_names=return_names,
-        return_tags=return_tags,
+    if isinstance(modules_to_ignore, str):
+        modules_to_ignore = (modules_to_ignore,)
+    if (
+        modules_to_ignore is not None
+        and "tests" in modules_to_ignore
+        and "mock_package" in modules_to_ignore
+    ):
+        assert (
+            len(objs) == 0
+        ), "Search of `skbase` should only return objects from tests module."
+    else:
+        # We expect at least one object to be returned so we verify output type/format
+        _check_all_object_output_types(
+            objs,
+            as_dataframe=as_dataframe,
+            return_names=return_names,
+            return_tags=return_tags,
+        )
+
+
+@pytest.mark.parametrize(
+    "exclude_objects", [None, "ResetTester", ["Buggy", "CompositionDummy"]]
+)
+def test_all_objects_returns_expected_output(exclude_objects):
+    """Test that all_objects return argument has correct output for skbase."""
+    objs = all_objects(
+        package_name="skbase",
+        exclude_objects=exclude_objects,
+        return_names=True,
+        as_dataframe=True,
+        modules_to_ignore="mock_package",
+        suppress_import_stdout=True,
     )
+    klasses = objs["object"].tolist()
+    test_classes = [k for k in SKBASE_TEST_CLASSES if issubclass(k, BaseObject)]
+    if exclude_objects is not None:
+        if isinstance(exclude_objects, str):
+            exclude_objects = (exclude_objects,)
+        # Exclude classes from SKBASE_TEST_CLASSES
+        test_classes = [k for k in test_classes if k.__name__ not in exclude_objects]
+
+    msg = f"{klasses} should match test classes {test_classes}."
+    assert set(klasses) == set(test_classes), msg
 
 
 @pytest.mark.parametrize(
@@ -730,7 +848,7 @@ def test_all_object_tag_filter(tag_filter):
 @pytest.mark.parametrize("class_lookup", [{"base_object": BaseObject}])
 @pytest.mark.parametrize("class_filter", [None, "base_object"])
 def test_all_object_class_lookup(class_lookup, class_filter):
-    """Test all_objects filters by tag as expected."""
+    """Test all_objects class_lookup parameter works as expected.."""
     # Results applying filter
     objs = all_objects(
         package_name="skbase",
@@ -752,7 +870,7 @@ def test_all_object_class_lookup(class_lookup, class_filter):
 def test_all_object_class_lookup_invalid_object_types_raises(
     class_lookup, class_filter
 ):
-    """Test all_objects filters by tag as expected."""
+    """Test all_objects use of object filtering raises errors as expected."""
     # Results applying filter
     with pytest.raises(ValueError):
         all_objects(
