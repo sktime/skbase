@@ -896,9 +896,10 @@ class BaseEstimator(BaseObject):
 
         # add all nested parameters from components that are sklearn estimators
         # we do this recursively as we have to reach into nested sklearn estimators
-        n_new_params = 42  # dummy value so the "while" condition is True 1st time
+        any_components_left_to_process = True
         old_new_params = fitted_params
-        while n_new_params > 0:
+        # this loop recursively and iteratively processes components inside components
+        while any_components_left_to_process:
             new_params = {}
             for c, comp in old_new_params.items():
                 if isinstance(comp, self.GET_FITTED_PARAMS_NESTING):
@@ -908,6 +909,7 @@ class BaseEstimator(BaseObject):
             fitted_params.update(new_params)
             old_new_params = new_params.copy()
             n_new_params = len(new_params)
+            any_components_left_to_process = n_new_params > 0
 
         return fitted_params
 
