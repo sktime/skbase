@@ -30,9 +30,9 @@ def test_check_soft_deps():
 
     # test warning on warning severity
     with pytest.warns():
-        assert _check_soft_dependencies("humpty", severity="warning")
+        assert not _check_soft_dependencies("humpty", severity="warning")
     with pytest.warns():
-        assert _check_soft_dependencies("numpy", "dumpty", severity="warning")
+        assert not _check_soft_dependencies("numpy", "dumpty", severity="warning")
 
     # test valid PEP 440 specifier strings
     assert _check_soft_dependencies("pytest>0.0.1")
