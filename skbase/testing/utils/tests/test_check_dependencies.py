@@ -19,7 +19,7 @@ def test_check_soft_deps():
     assert not _check_soft_dependencies("humpty", severity="none")
     assert not _check_soft_dependencies("numpy", "dumpty", severity="none")
     assert not _check_soft_dependencies("humpty", "numpy", severity="none")
-    assert not _check_soft_dependencies(["numpy", "numpy"], severity="none")
+    assert not _check_soft_dependencies(["humpty", "humpty"], severity="none")
     assert not _check_soft_dependencies(("humpty", "dumpty"), severity="none")
 
     # test error raise on error severity
