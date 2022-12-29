@@ -89,7 +89,6 @@ def _check_soft_dependencies(
             )
             raise InvalidRequirement(msg_version)
 
-        req = Requirement(package)
         package_name = req.name
         package_version_req = req.specifier
 
