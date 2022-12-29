@@ -44,4 +44,6 @@ def test_check_soft_deps():
     with pytest.raises(InvalidRequirement):
         assert _check_soft_dependencies("pytest!!!!>>>0.0.1")
     with pytest.raises(InvalidRequirement):
-        assert _check_soft_dependencies(("pytest", "!!numpy<~><>0.1.0"), severity="none")
+        assert _check_soft_dependencies(
+            ("pytest", "!!numpy<~><>0.1.0"), severity="none"
+        )
