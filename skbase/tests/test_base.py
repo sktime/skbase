@@ -1075,6 +1075,7 @@ def test_eq_dunder():
     composite_2 = FittableCompositionDummy(foo=non_composite_2)
     composite_3 = FittableCompositionDummy(foo=non_composite_3)
 
+    # test basic equality - expected equalitiesi as per parameters
     assert non_composite == non_composite
     assert composite == composite
     assert non_composite == non_composite_2
@@ -1084,9 +1085,17 @@ def test_eq_dunder():
     assert composite != composite_3
     assert composite_2 != composite_3
 
-    # equality should not be affected by fitting
+    # test interaction with clone and copy
+    assert non_composite.clone() == non_composite
+    assert composite.clone() == composite
+    assert deepcopy(non_composite) == non_composite
+    assert deepcopy(composite) == composite
+
+    # test that equality is not be affected by fitting
     composite.fit()
     non_composite_2.fit()
+    # composite_2 is an unfitted version of composite
+    # composite is an unfitted version of non_composite_2
 
     assert non_composite == non_composite
     assert composite == composite
