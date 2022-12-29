@@ -122,8 +122,7 @@ def _is_pandas(x):
 def _is_npndarray(x):
 
     clstr = type(x).__name__
-    if clstr in ["ndarray"]:
-        return True
+    return clstr == "ndarray"
 
 
 def _coerce_list(x):
