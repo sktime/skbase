@@ -883,7 +883,7 @@ class BaseEstimator(BaseObject):
             else:
                 return x
 
-        # add all nested parameters from components that are sktime BaseObject
+        # add all nested parameters from components that are skbase BaseEstimator
         c_dict = self._components()
         for c, comp in c_dict.items():
             if isinstance(comp, BaseEstimator) and comp._is_fitted:
@@ -896,7 +896,7 @@ class BaseEstimator(BaseObject):
 
         # add all nested parameters from components that are sklearn estimators
         # we do this recursively as we have to reach into nested sklearn estimators
-        n_new_params = 42
+        n_new_params = 42  # dummy value so the "while" condition is True 1st time
         old_new_params = fitted_params
         while n_new_params > 0:
             new_params = {}
