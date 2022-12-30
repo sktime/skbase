@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
 """Common functionality for skbase unit tests."""
-from copy import deepcopy
 from typing import List
 
 from skbase.base import BaseEstimator, BaseObject
 
 __all__: List[str] = [
-    "FixtureClassParent",
-    "FixtureClassChild",
-    "CompositionDummy",
-    "ResetTester",
-    "InvalidInitSignatureTester",
-    "RequiredParam",
-    "Buggy",
-    "ModifyParam",
-    "NoParamInterface",
+    "SKBASE_BASE_CLASSES",
+    "SKBASE_MODULES",
+    "SKBASE_PUBLIC_MODULES",
+    "SKBASE_PUBLIC_CLASSES_BY_MODULE",
+    "SKBASE_CLASSES_BY_MODULE",
+    "SKBASE_PUBLIC_FUNCTIONS_BY_MODULE",
+    "SKBASE_FUNCTIONS_BY_MODULE",
 ]
 __author__: List[str] = ["fkiraly", "RNKuhns"]
 
@@ -26,9 +23,9 @@ SKBASE_MODULES = (
     "skbase.base._base",
     "skbase.base._meta",
     "skbase.lookup",
+    "skbase.lookup.tests",
+    "skbase.lookup.tests.test_lookup",
     "skbase.lookup._lookup",
-    "skbase.mock_package",
-    "skbase.mock_package.mock_package",
     "skbase.testing",
     "skbase.testing.test_all_objects",
     "skbase.testing.utils",
@@ -36,6 +33,13 @@ SKBASE_MODULES = (
     "skbase.testing.utils._dependencies",
     "skbase.testing.utils.deep_equals",
     "skbase.testing.utils.inspect",
+    "skbase.testing.utils.tests",
+    "skbase.testing.utils.tests.test_deep_equals",
+    "skbase.tests",
+    "skbase.tests.conftest",
+    "skbase.tests.test_base",
+    "skbase.tests.test_baseestimator",
+    "skbase.tests.mock_package.test_mock_package",
     "skbase.utils",
     "skbase.utils._nested_iter",
     "skbase.validate",
@@ -45,13 +49,20 @@ SKBASE_PUBLIC_MODULES = (
     "skbase",
     "skbase.base",
     "skbase.lookup",
-    "skbase.mock_package",
-    "skbase.mock_package.mock_package",
+    "skbase.lookup.tests",
+    "skbase.lookup.tests.test_lookup",
     "skbase.testing",
     "skbase.testing.test_all_objects",
     "skbase.testing.utils",
     "skbase.testing.utils.deep_equals",
     "skbase.testing.utils.inspect",
+    "skbase.testing.utils.tests",
+    "skbase.testing.utils.tests.test_deep_equals",
+    "skbase.tests",
+    "skbase.tests.conftest",
+    "skbase.tests.test_base",
+    "skbase.tests.test_baseestimator",
+    "skbase.tests.mock_package.test_mock_package",
     "skbase.utils",
     "skbase.validate",
 )
@@ -83,22 +94,12 @@ SKBASE_CLASSES_BY_MODULE.update(
 )
 SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
     "skbase": ("all_objects", "get_package_metadata"),
-    "skbase._exceptions": (),
-    "skbase.base": (),
-    "skbase.base._base": (),
-    "skbase.base._meta": (),
     "skbase.lookup": ("all_objects", "get_package_metadata"),
     "skbase.lookup._lookup": ("all_objects", "get_package_metadata"),
-    "skbase.testing": (),
-    "skbase.testing.utils._dependencies": (),
-    "skbase.testing.test_all_objects": (),
-    "skbase.testing.utils": (),
     "skbase.testing.utils._conditional_fixtures": (
         "create_conditional_fixtures_and_names",
     ),
     "skbase.testing.utils.deep_equals": ("deep_equals",),
-    "skbase.testing.utils.inspect": (),
-    "skbase.validate": (),
     "skbase.utils": ("flatten", "is_flat", "unflat_len", "unflatten"),
     "skbase.utils._nested_iter": (
         "flatten",
@@ -106,7 +107,6 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
         "unflat_len",
         "unflatten",
     ),
-    "skbase.validate.types": (),
 }
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
 SKBASE_FUNCTIONS_BY_MODULE.update(
@@ -153,157 +153,3 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
         ),
     }
 )
-
-
-# Fixture class for testing tag system
-class FixtureClassParent(BaseObject):
-    """Fixture class to test BaseObject's usage."""
-
-    _tags = {"A": "1", "B": 2, "C": 1234, 3: "D"}
-
-    def __init__(self, a="something", b=7, c=None):
-        self.a = a
-        self.b = b
-        self.c = c
-        super().__init__()
-
-    def some_method(self):
-        """To be implemented by child class."""
-        pass
-
-
-# Fixture class for testing tag system, child overrides tags
-class FixtureClassChild(FixtureClassParent):
-    """Fixture class that is child of FixtureClassParent."""
-
-    _tags = {"A": 42, 3: "E"}
-    __author__ = ["fkiraly", "RNKuhns"]
-
-    def some_method(self):
-        """Child class' implementation."""
-        pass
-
-    def some_other_method(self):
-        """To be implemented in the child class."""
-        pass
-
-
-# Test composition related interface functionality
-class CompositionDummy(BaseObject):
-    """Potentially composite object, for testing."""
-
-    def __init__(self, foo, bar=84):
-        self.foo = foo
-        self.foo_ = deepcopy(foo)
-        self.bar = bar
-
-        super(CompositionDummy, self).__init__()
-
-    @classmethod
-    def get_test_params(cls, parameter_set="default"):
-        """Return testing parameter settings for the estimator.
-
-        Parameters
-        ----------
-        parameter_set : str, default="default"
-            Name of the set of test parameters to return, for use in tests. If no
-            special parameters are defined for a value, will return `"default"` set.
-
-        Returns
-        -------
-        params : dict or list of dict, default = {}
-            Parameters to create testing instances of the class
-            Each dict are parameters to construct an "interesting" test instance, i.e.,
-            `MyClass(**params)` or `MyClass(**params[i])` creates a valid test instance.
-            `create_test_instance` uses the first (or only) dictionary in `params`
-        """
-        params1 = {"foo": 42}
-        params2 = {"foo": CompositionDummy(126)}
-        return [params1, params2]
-
-
-class ResetTester(BaseObject):
-    """Class for testing reset functionality."""
-
-    clsvar = 210
-
-    def __init__(self, a, b=42):
-        self.a = a
-        self.b = b
-        self.c = 84
-        super().__init__()
-
-    def foo(self, d=126):
-        """Foo gets done."""
-        self.d = deepcopy(d)
-        self._d = deepcopy(d)
-        self.d_ = deepcopy(d)
-        self.f__o__o = 252
-
-
-class InvalidInitSignatureTester(BaseObject):
-    """Class for testing invalid signature."""
-
-    def __init__(self, a, *args):
-        super().__init__()
-
-
-class RequiredParam(BaseObject):
-    """BaseObject class with _required_parameters."""
-
-    _required_parameters = ["a"]
-
-    def __init__(self, a, b=7):
-        self.a = a
-        self.b = b
-        super().__init__()
-
-
-class Buggy(BaseObject):
-    """A buggy BaseObject that does not set its parameters right."""
-
-    def __init__(self, a=None):
-        self.a = 1
-        self._a = a
-        super().__init__()
-
-
-class ModifyParam(BaseObject):
-    """A non-conforming BaseObject that modifyies parameters in init."""
-
-    def __init__(self, a=7):
-        self.a = deepcopy(a)
-        super().__init__()
-
-
-class NoParamInterface:
-    """Simple class without BaseObject's param interface for testing get_params."""
-
-    def __init__(self, a=7, b=12):
-        self.a = a
-        self.b = b
-        super().__init__()
-
-
-class _NonPublicClass(BaseObject):
-    """A nonpublic class inheritting from BaseObject."""
-
-
-class NotABaseObject:
-    """A class that is not a BaseObject."""
-
-    def __init__(self, a=7):
-        self.a = a
-
-
-SKBASE_TEST_CLASSES = [
-    FixtureClassParent,
-    FixtureClassChild,
-    CompositionDummy,
-    ResetTester,
-    InvalidInitSignatureTester,
-    RequiredParam,
-    Buggy,
-    ModifyParam,
-    NoParamInterface,
-]

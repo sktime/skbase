@@ -6,6 +6,7 @@
 # conditions see https://github.com/sktime/sktime/blob/main/LICENSE
 import importlib
 import pathlib
+from copy import deepcopy
 from types import ModuleType
 from typing import List
 
@@ -33,10 +34,12 @@ from skbase.tests.conftest import (
     SKBASE_PUBLIC_CLASSES_BY_MODULE,
     SKBASE_PUBLIC_FUNCTIONS_BY_MODULE,
     SKBASE_PUBLIC_MODULES,
-    SKBASE_TEST_CLASSES,
+)
+from skbase.tests.mock_package.test_mock_package import (
+    MOCK_PACKAGE_OBJECTS,
     CompositionDummy,
-    FixtureClassParent,
     NotABaseObject,
+    Parent,
 )
 
 __author__: List[str] = ["RNKuhns"]
@@ -55,12 +58,46 @@ MODULE_METADATA_EXPECTED_KEYS = (
     "contains_base_classes",
     "contains_base_objects",
 )
+
+SAMPLE_METADATA = {
+    "some_module": {
+        "path": "//some_drive/some_path/",
+        "name": "some_module",
+        "classes": {
+            CompositionDummy.__name__: {
+                "klass": CompositionDummy,
+                "name": CompositionDummy.__name__,
+                "description": "This class does something.",
+                "tags": {},
+                "is_concrete_implementation": True,
+                "is_base_class": False,
+                "is_base_object": True,
+                "authors": "JDoe",
+                "module_name": "some_module",
+            },
+        },
+        "functions": {
+            get_package_metadata.__name__: {
+                "func": get_package_metadata,
+                "name": get_package_metadata.__name__,
+                "description": "This function does stuff.",
+                "module_name": "some_module",
+            },
+        },
+        "__all__": ["SomeClass", "some_function"],
+        "authors": "JDoe",
+        "is_package": True,
+        "contains_concrete_class_implementations": True,
+        "contains_base_classes": False,
+        "contains_base_objects": True,
+    }
+}
 MOD_NAMES = {
     "public": (
         "skbase",
         "skbase.lookup",
         "some_module.some_sub_module",
-        "mock_package.mock_package",
+        "tests.test_mock_package",
     ),
     "non_public": (
         "skbase.lookup._lookup",
@@ -73,7 +110,7 @@ REQUIRED_CLASS_METADATA_KEYS = [
     "name",
     "description",
     "tags",
-    "is_concreate_implementation",
+    "is_concrete_implementation",
     "is_base_class",
     "is_base_object",
     "authors",
@@ -100,11 +137,19 @@ def fixture_skbase_root_path(fixture_test_lookup_mod_path):
     return fixture_test_lookup_mod_path.parent
 
 
+@pytest.fixture
+def fixture_sample_package_metadata():
+    """Fixture of sample module metadata."""
+    return SAMPLE_METADATA
+
+
 def _check_package_metadata_result(results):
     """Check output of get_package_metadata is expected type."""
     if not (isinstance(results, dict) and all(isinstance(k, str) for k in results)):
         return False
     for k, mod_metadata in results.items():
+        if not isinstance(mod_metadata, dict):
+            return False
         # Verify expected metadata keys are in the module's metadata dict
         if not all([k in mod_metadata for k in MODULE_METADATA_EXPECTED_KEYS]):
             return False
@@ -130,24 +175,39 @@ def _check_package_metadata_result(results):
             and all(isinstance(k, str) for k in mod_metadata["__all__"])
         ):
             return False
-        # Verify classes key
+        # Verify classes key is a dict that contains string keys and dict values
         if not (
             isinstance(mod_metadata["classes"], dict)
-            or all(
-                k not in mod_metadata["classes"] for k in REQUIRED_CLASS_METADATA_KEYS
+            and all(
+                isinstance(k, str) and isinstance(v, dict)
+                for k, v in mod_metadata["classes"].items()
             )
         ):
             return False
-        # Verify functions key
+        # Then verify sub-dict values for each class have required keys
+        elif not all(
+            k in c_meta
+            for c_meta in mod_metadata["classes"].values()
+            for k in REQUIRED_CLASS_METADATA_KEYS
+        ):
+            return False
+        # Verify functions key is a dict that contains string keys and dict values
         if not (
             isinstance(mod_metadata["functions"], dict)
-            or all(
-                k not in mod_metadata["functions"]
-                for k in REQUIRED_FUNCTION_METADATA_KEYS
+            and all(
+                isinstance(k, str) and isinstance(v, dict)
+                for k, v in mod_metadata["functions"].items()
             )
         ):
             return False
-
+        # Then verify sub-dict values for each function have required keys
+        elif not all(
+            k in f_meta
+            for f_meta in mod_metadata["functions"].values()
+            for k in REQUIRED_FUNCTION_METADATA_KEYS
+        ):
+            return False
+    # Otherwise return True
     return True
 
 
@@ -199,6 +259,55 @@ def _check_all_object_output_types(
                     assert len(obj) == 2 + len(return_tags)
 
 
+def test_check_package_metadata_result(fixture_sample_package_metadata):
+    """Test _check_package_metadata_result works as expected."""
+
+    def _update_mod_metadata(metadata, dict_update):
+        mod_metadata = deepcopy(metadata)
+        # mod_metadata["some_module"] = mod_metadata["some_module"].copy()
+        mod_metadata["some_module"].update(dict_update.copy())
+        return mod_metadata
+
+    assert _check_package_metadata_result(fixture_sample_package_metadata) is True
+    # Input not dict returns False
+    assert _check_package_metadata_result(7) is False
+    # Input that doesn't have string keys mapping to dicts is False
+    assert _check_package_metadata_result({"something": 7}) is False
+    # If keys map to dicts that don't have expected keys then False
+    assert _check_package_metadata_result({"something": {"something_else": 7}}) is False
+    # Make sure keys with wrong type through errors
+    mod_metadata = _update_mod_metadata(fixture_sample_package_metadata, {"name": 7})
+    assert _check_package_metadata_result(mod_metadata) is False
+    # key expected to be boolean set to wrong type
+    mod_metadata = _update_mod_metadata(
+        fixture_sample_package_metadata, {"contains_base_objects": 7}
+    )
+    assert _check_package_metadata_result(mod_metadata) is False
+    # __all__ key is not list
+    mod_metadata = _update_mod_metadata(fixture_sample_package_metadata, {"__all__": 7})
+    assert _check_package_metadata_result(mod_metadata) is False
+    # classes key doesn't map to sub-dict with string keys and dict values
+    mod_metadata = _update_mod_metadata(
+        fixture_sample_package_metadata, {"classes": {"something": 7}}
+    )
+    assert _check_package_metadata_result(mod_metadata) is False
+    # functions key doesn't map to sub-dict with string keys and dict values
+    mod_metadata = _update_mod_metadata(
+        fixture_sample_package_metadata, {"functions": {"something": 7}}
+    )
+    assert _check_package_metadata_result(mod_metadata) is False
+    # Classes key maps to sub-dict with string keys and dict values, but the
+    # dict values don't have correct keys
+    mod_metadata = deepcopy(fixture_sample_package_metadata)
+    mod_metadata["some_module"]["classes"]["CompositionDummy"].pop("name")
+    assert _check_package_metadata_result(mod_metadata) is False
+    # function key maps to sub-dict with string keys and dict values, but the
+    # dict values don't have correct keys
+    mod_metadata = deepcopy(fixture_sample_package_metadata)
+    mod_metadata["some_module"]["functions"]["get_package_metadata"].pop("name")
+    assert _check_package_metadata_result(mod_metadata) is False
+
+
 def test_is_non_public_module(mod_names):
     """Test _is_non_public_module correctly indentifies non-public modules."""
     for mod in mod_names["public"]:
@@ -229,9 +338,9 @@ def test_is_ignored_module(mod_names):
         assert _is_ignored_module(mod, modules_to_ignore=modules_to_ignore) is False
 
     # When ignored modules are encountered then they should be flagged as True
-    modules_to_ignore = ("skbase", "mock_package")
+    modules_to_ignore = ("skbase", "test_mock_package")
     for mod in MOD_NAMES["public"]:
-        if "skbase" in mod or "mock_package" in mod:
+        if "skbase" in mod or "test_mock_package" in mod:
             expected_to_ignore = True
         else:
             expected_to_ignore = False
@@ -247,16 +356,13 @@ def test_filter_by_class():
     assert _filter_by_class(CompositionDummy) is True
 
     # Test case where a signle filter is applied
-    assert _filter_by_class(FixtureClassParent, BaseObject) is True
+    assert _filter_by_class(Parent, BaseObject) is True
     assert _filter_by_class(NotABaseObject, BaseObject) is False
     assert _filter_by_class(NotABaseObject, CompositionDummy) is False
 
     # Test case when sequence of classes supplied as filter
-    assert _filter_by_class(CompositionDummy, (BaseObject, FixtureClassParent)) is True
-    assert (
-        _filter_by_class(CompositionDummy, [NotABaseObject, FixtureClassParent])
-        is False
-    )
+    assert _filter_by_class(CompositionDummy, (BaseObject, Parent)) is True
+    assert _filter_by_class(CompositionDummy, [NotABaseObject, Parent]) is False
 
 
 def test_filter_by_tags():
@@ -267,7 +373,7 @@ def test_filter_by_tags():
     assert _filter_by_tags(NotABaseObject) is True
 
     # Check when tag_filter is a str and present in the class
-    assert _filter_by_tags(FixtureClassParent, tag_filter="A") is True
+    assert _filter_by_tags(Parent, tag_filter="A") is True
     # Check when tag_filter is str and not present in the class
     assert _filter_by_tags(BaseObject, tag_filter="A") is False
 
@@ -276,29 +382,29 @@ def test_filter_by_tags():
 
     # Test functionality where tag_filter is Iterable of str
     # all tags in iterable are in the class
-    assert _filter_by_tags(FixtureClassParent, ("A", "B", "C")) is True
+    assert _filter_by_tags(Parent, ("A", "B", "C")) is True
     # Some tags in iterable are in class and others aren't
-    assert _filter_by_tags(FixtureClassParent, ("A", "B", "C", "D", "E")) is False
+    assert _filter_by_tags(Parent, ("A", "B", "C", "D", "E")) is False
 
     # Test functionality where tag_filter is Dict[str, Any]
     # All keys in dict are in tag_filter and values all match
-    assert _filter_by_tags(FixtureClassParent, {"A": "1", "B": 2}) is True
+    assert _filter_by_tags(Parent, {"A": "1", "B": 2}) is True
     # All keys in dict are in tag_filter, but at least 1 value doesn't match
-    assert _filter_by_tags(FixtureClassParent, {"A": 1, "B": 2}) is False
+    assert _filter_by_tags(Parent, {"A": 1, "B": 2}) is False
     # Atleast 1 key in dict is not in tag_filter
-    assert _filter_by_tags(FixtureClassParent, {"E": 1, "B": 2}) is False
+    assert _filter_by_tags(Parent, {"E": 1, "B": 2}) is False
 
     # Iterable tags should be all strings
     with pytest.raises(ValueError, match=r"`tag_filter` should be.*"):
-        assert _filter_by_tags(FixtureClassParent, ("A", "B", 3))
+        assert _filter_by_tags(Parent, ("A", "B", 3))
 
     # Tags that aren't iterable have to be strings
     with pytest.raises(ValueError, match=r"`tag_filter` should be.*"):
-        assert _filter_by_tags(FixtureClassParent, 7.0)
+        assert _filter_by_tags(Parent, 7.0)
 
     # Dictionary tags should have string keys
     with pytest.raises(ValueError, match=r"`tag_filter` should be.*"):
-        assert _filter_by_tags(FixtureClassParent, {7: 11})
+        assert _filter_by_tags(Parent, {7: 11})
 
 
 def test_walk_returns_expected_format(fixture_skbase_root_path):
@@ -470,8 +576,6 @@ def test_get_package_metadata_returns_expected_types(
     if package_base_classes is not None:
         if isinstance(package_base_classes, type):
             package_base_classes = (package_base_classes,)
-        elif not isinstance(package_base_classes, tuple):
-            package_base_classes = tuple(package_base_classes)
         expected_is_base_class_returned = [
             k["klass"] in package_base_classes
             if k["is_base_class"]
@@ -492,7 +596,7 @@ def test_get_package_metadata_returns_expected_types(
 def test_get_package_metadata_classes_to_exclude(classes_to_exclude):
     """Test get_package_metadata classes_to_exclude param works as expected."""
     results = get_package_metadata(
-        "skbase.mock_package",
+        "skbase.tests",
         recursive=True,
         exclude_non_public_items=True,
         exclude_non_public_modules=True,
@@ -611,27 +715,31 @@ def test_get_package_metadata_returns_expected_results(
     exclude_non_public_modules, exclude_non_public_items
 ):
     """Test that get_package_metadata_returns expected results using skbase."""
-    # exclude_non_public_modules = False
-    # exclude_non_public_items = False
     results = get_package_metadata(
         "skbase",
         exclude_non_public_items=exclude_non_public_items,
         exclude_non_public_modules=exclude_non_public_modules,
         package_base_classes=SKBASE_BASE_CLASSES,
-        modules_to_ignore=("tests"),
+        modules_to_ignore="tests",
         classes_to_exclude=TagAliaserMixin,
         suppress_import_stdout=False,
     )
+    public_modules_excluding_tests = [
+        module
+        for module in SKBASE_PUBLIC_MODULES
+        if not _is_ignored_module(module, modules_to_ignore="tests")
+    ]
+    modules_excluding_tests = [
+        module
+        for module in SKBASE_MODULES
+        if not _is_ignored_module(module, modules_to_ignore="tests")
+    ]
     if exclude_non_public_modules:
-        assert tuple(results.keys()) == SKBASE_PUBLIC_MODULES
+        assert tuple(results.keys()) == tuple(public_modules_excluding_tests)
     else:
-        assert tuple(results.keys()) == SKBASE_MODULES
+        assert tuple(results.keys()) == tuple(modules_excluding_tests)
 
     for module in results:
-        # Not validating the mock_package
-        if module.startswith("skbase.mock_package"):
-            continue
-
         if exclude_non_public_items:
             module_funcs = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.get(module, ())
             module_classes = SKBASE_PUBLIC_CLASSES_BY_MODULE.get(module, ())
@@ -676,9 +784,9 @@ def test_get_return_tags():
         return isinstance(results, tuple) and len(results) == num_requested_tags
 
     # Verify return with tags that exist
-    tags = FixtureClassParent.get_class_tags()
+    tags = Parent.get_class_tags()
     tag_names = [*tags.keys()]
-    results = _get_return_tags(FixtureClassParent, tag_names)
+    results = _get_return_tags(Parent, tag_names)
     assert (
         _test_get_return_tags_output(results, len(tag_names))
         and tuple(tags.values()) == results
@@ -686,22 +794,20 @@ def test_get_return_tags():
 
     # Verify results when some exist and some don't exist
     tag_names += ["a_tag_that_does_not_exist"]
-    results = _get_return_tags(FixtureClassParent, tag_names)
+    results = _get_return_tags(Parent, tag_names)
     assert _test_get_return_tags_output(results, len(tag_names))
 
     # Verify return when all tags don't exist
     tag_names = ["a_tag_that_does_not_exist"]
-    results = _get_return_tags(FixtureClassParent, tag_names)
+    results = _get_return_tags(Parent, tag_names)
     assert _test_get_return_tags_output(results, len(tag_names)) and results[0] is None
 
 
 @pytest.mark.parametrize("as_dataframe", [True, False])
 @pytest.mark.parametrize("return_names", [True, False])
 @pytest.mark.parametrize("return_tags", [None, "A", ["A", "a_non_existant_tag"]])
-@pytest.mark.parametrize(
-    "modules_to_ignore", ["tests", ("testing", "mock_package"), None]
-)
-@pytest.mark.parametrize("exclude_objects", [None, "ResetTester", ["CompositionDummy"]])
+@pytest.mark.parametrize("modules_to_ignore", ["tests", ("testing", "lookup"), None])
+@pytest.mark.parametrize("exclude_objects", [None, "Child", ["CompositionDummy"]])
 @pytest.mark.parametrize("suppress_import_stdout", [True, False])
 def test_all_objects_returns_expected_types(
     as_dataframe,
@@ -726,7 +832,7 @@ def test_all_objects_returns_expected_types(
     if (
         modules_to_ignore is not None
         and "tests" in modules_to_ignore
-        and "mock_package" in modules_to_ignore
+        # and "mock_package" in modules_to_ignore
     ):
         assert (
             len(objs) == 0
@@ -742,33 +848,35 @@ def test_all_objects_returns_expected_types(
 
 
 @pytest.mark.parametrize(
-    "exclude_objects", [None, "ResetTester", ["Buggy", "CompositionDummy"]]
+    "exclude_objects", [None, "Parent", ["Child", "CompositionDummy"]]
 )
 def test_all_objects_returns_expected_output(exclude_objects):
     """Test that all_objects return argument has correct output for skbase."""
     objs = all_objects(
-        package_name="skbase",
+        package_name="skbase.tests.mock_package",
         exclude_objects=exclude_objects,
         return_names=True,
         as_dataframe=True,
-        modules_to_ignore="mock_package",
+        modules_to_ignore="conftest",
         suppress_import_stdout=True,
     )
     klasses = objs["object"].tolist()
-    test_classes = [k for k in SKBASE_TEST_CLASSES if issubclass(k, BaseObject)]
+    test_classes = [
+        k
+        for k in MOCK_PACKAGE_OBJECTS
+        if issubclass(k, BaseObject) and not k.__name__.startswith("_")
+    ]
     if exclude_objects is not None:
         if isinstance(exclude_objects, str):
             exclude_objects = (exclude_objects,)
-        # Exclude classes from SKBASE_TEST_CLASSES
+        # Exclude classes from MOCK_PACKAGE_OBJECTS
         test_classes = [k for k in test_classes if k.__name__ not in exclude_objects]
 
     msg = f"{klasses} should match test classes {test_classes}."
     assert set(klasses) == set(test_classes), msg
 
 
-@pytest.mark.parametrize(
-    "class_filter", [None, FixtureClassParent, [FixtureClassParent, BaseEstimator]]
-)
+@pytest.mark.parametrize("class_filter", [None, Parent, [Parent, BaseEstimator]])
 def test_all_objects_class_filter(class_filter):
     """Test all_objects filters by class type as expected."""
     # Results applying filter

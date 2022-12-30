@@ -78,20 +78,72 @@ from sklearn import config_context
 from sklearn.base import clone
 
 from skbase.base import BaseObject
-from skbase.tests.conftest import (
-    Buggy,
-    CompositionDummy,
-    FixtureClassChild,
-    FixtureClassParent,
-    InvalidInitSignatureTester,
-    ModifyParam,
-    NoParamInterface,
-    RequiredParam,
-    ResetTester,
-)
+from skbase.tests.mock_package.test_mock_package import Child, CompositionDummy, Parent
+
 
 # TODO: Determine if we need to add sklearn style test of
 # test_set_params_passes_all_parameters
+class ResetTester(BaseObject):
+    """Class for testing reset functionality."""
+
+    clsvar = 210
+
+    def __init__(self, a, b=42):
+        self.a = a
+        self.b = b
+        self.c = 84
+        super().__init__()
+
+    def foo(self, d=126):
+        """Foo gets done."""
+        self.d = deepcopy(d)
+        self._d = deepcopy(d)
+        self.d_ = deepcopy(d)
+        self.f__o__o = 252
+
+
+class InvalidInitSignatureTester(BaseObject):
+    """Class for testing invalid signature."""
+
+    def __init__(self, a, *args):
+        super().__init__()
+
+
+class RequiredParam(BaseObject):
+    """BaseObject class with _required_parameters."""
+
+    _required_parameters = ["a"]
+
+    def __init__(self, a, b=7):
+        self.a = a
+        self.b = b
+        super().__init__()
+
+
+class NoParamInterface:
+    """Simple class without BaseObject's param interface for testing get_params."""
+
+    def __init__(self, a=7, b=12):
+        self.a = a
+        self.b = b
+        super().__init__()
+
+
+class Buggy(BaseObject):
+    """A buggy BaseObject that does not set its parameters right."""
+
+    def __init__(self, a=None):
+        self.a = 1
+        self._a = a
+        super().__init__()
+
+
+class ModifyParam(BaseObject):
+    """A non-conforming BaseObject that modifyies parameters in init."""
+
+    def __init__(self, a=7):
+        self.a = deepcopy(a)
+        super().__init__()
 
 
 @pytest.fixture
@@ -102,33 +154,33 @@ def fixture_object():
 
 @pytest.fixture
 def fixture_class_parent():
-    """Pytest fixture for FixtureClassParent."""
-    return FixtureClassParent
+    """Pytest fixture for Parent class."""
+    return Parent
 
 
 @pytest.fixture
 def fixture_class_child():
-    """Pytest fixture for FixtureClassChild."""
-    return FixtureClassChild
+    """Pytest fixture for Child class."""
+    return Child
 
 
 @pytest.fixture
 def fixture_class_parent_instance():
-    """Pytest fixture for instance of FixtureClassParent."""
-    return FixtureClassParent()
+    """Pytest fixture for instance of Parent class."""
+    return Parent()
 
 
 @pytest.fixture
 def fixture_class_child_instance():
-    """Pytest fixture for instance of FixtureClassChild."""
-    return FixtureClassChild()
+    """Pytest fixture for instance of Child class."""
+    return Child()
 
 
 # Fixture class for testing tag system, object overrides class tags
 @pytest.fixture
 def fixture_tag_class_object():
     """Fixture class for testing tag system, object overrides class tags."""
-    fixture_class_child = FixtureClassChild()
+    fixture_class_child = Child()
     fixture_class_child._tags_dynamic = {"A": 42424241, "B": 3}
     return fixture_class_child
 
@@ -147,7 +199,7 @@ def fixture_reset_tester():
 
 @pytest.fixture
 def fixture_class_child_tags(fixture_class_child):
-    """Pytest fixture for tags of FixtureClassChild."""
+    """Pytest fixture for tags of Child."""
     return fixture_class_child.get_class_tags()
 
 
@@ -161,13 +213,13 @@ def fixture_object_instance_set_tags(fixture_tag_class_object):
 @pytest.fixture
 def fixture_object_tags():
     """Fixture object tags."""
-    return {"A": 42424241, "B": 3, "C": 1234, 3: "E"}
+    return {"A": 42424241, "B": 3, "C": 1234, "3": "E"}
 
 
 @pytest.fixture
 def fixture_object_set_tags():
     """Fixture object tags."""
-    return {"A": 42424243, "B": 3, "C": 1234, 3: "E", "E": 3}
+    return {"A": 42424243, "B": 3, "C": 1234, "3": "E", "E": 3}
 
 
 @pytest.fixture
@@ -202,7 +254,7 @@ def fixture_modify_param():
 
 @pytest.fixture
 def fixture_class_parent_expected_params():
-    """Pytest fixture class for expected params of FixtureClassParent."""
+    """Pytest fixture class for expected params of Parent."""
     return {"a": "something", "b": 7, "c": None}
 
 
@@ -823,18 +875,18 @@ def test_baseobject_repr(fixture_class_parent, fixture_composition_dummy):
     # Simple test where all parameters are left at defaults
     # Should not see parameters and values in printed representation
     base_obj = fixture_class_parent()
-    assert repr(base_obj) == "FixtureClassParent()"
+    assert repr(base_obj) == "Parent()"
 
     # Check that we can alter the detail about params that is printed
     # using config_context with ``print_changed_only=False``
     with config_context(print_changed_only=False):
-        assert repr(base_obj) == "FixtureClassParent(a='something', b=7, c=None)"
+        assert repr(base_obj) == "Parent(a='something', b=7, c=None)"
 
     simple_composite = fixture_composition_dummy(foo=fixture_class_parent())
-    assert repr(simple_composite) == "CompositionDummy(foo=FixtureClassParent())"
+    assert repr(simple_composite) == "CompositionDummy(foo=Parent())"
 
     long_base_obj_repr = fixture_class_parent(a=["long_params"] * 1000)
-    assert len(repr(long_base_obj_repr)) == 675
+    assert len(repr(long_base_obj_repr)) == 535
 
 
 def test_baseobject_str(fixture_class_parent_instance):
