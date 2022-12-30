@@ -64,6 +64,7 @@ __all__ = [
     "test_create_test_instance",
     "test_create_test_instances_and_names",
     "test_has_implementation_of",
+    "test_eq_dunder",
 ]
 
 import inspect
@@ -77,7 +78,7 @@ from sklearn import config_context
 # TODO: Update with import of skbase clone function once implemented
 from sklearn.base import clone
 
-from skbase.base import BaseObject
+from skbase.base import BaseEstimator, BaseObject
 
 # TODO: Determine if we need to add sklearn style test of
 # test_set_params_passes_all_parameters
@@ -535,7 +536,9 @@ def test_components(fixture_object, fixture_class_parent, fixture_composition_du
     assert isinstance(comp_comps, dict)
     assert set(comp_comps.keys()) == {"foo_"}
     assert comp_comps["foo_"] == composite.foo_
-    assert comp_comps["foo_"] != composite.foo
+    assert comp_comps["foo_"] is composite.foo_
+    assert comp_comps["foo_"] == composite.foo
+    assert comp_comps["foo_"] is not composite.foo
 
     assert comp_comps == comp_comps_baseobject_filter
     assert comp_comps_filter == {}
@@ -1036,3 +1039,69 @@ def test_has_implementation_of(
     # If the method is defined the first time in the parent class it should not
     # return _has_implementation_of == True
     assert not fixture_class_parent_instance._has_implementation_of("some_method")
+
+
+class FittableCompositionDummy(BaseEstimator):
+    """Potentially composite object, for testing."""
+
+    def __init__(self, foo, bar=84):
+        self.foo = foo
+        self.foo_ = deepcopy(foo)
+        self.bar = bar
+
+    def fit(self):
+        if hasattr(self.foo_, "fit"):
+            self.foo_.fit()
+        self._is_fitted = True
+
+
+def test_eq_dunder():
+    """Tests equality dunder for BaseObject descendants.
+
+    Equality should be determined only by get_params results.
+
+    Raises
+    ------
+    AssertionError if logic behind __eq__ is incorrect, logic tested:
+        equality of non-composites depends only on params, not on identity
+        equality of composites depends only on params, not on identity
+        result is not affected by fitting the estimator
+    """
+    non_composite = FittableCompositionDummy(foo=42)
+    non_composite_2 = FittableCompositionDummy(foo=42)
+    non_composite_3 = FittableCompositionDummy(foo=84)
+
+    composite = FittableCompositionDummy(foo=non_composite)
+    composite_2 = FittableCompositionDummy(foo=non_composite_2)
+    composite_3 = FittableCompositionDummy(foo=non_composite_3)
+
+    # test basic equality - expected equalitiesi as per parameters
+    assert non_composite == non_composite
+    assert composite == composite
+    assert non_composite == non_composite_2
+    assert non_composite != non_composite_3
+    assert non_composite_2 != non_composite_3
+    assert composite == composite_2
+    assert composite != composite_3
+    assert composite_2 != composite_3
+
+    # test interaction with clone and copy
+    assert non_composite.clone() == non_composite
+    assert composite.clone() == composite
+    assert deepcopy(non_composite) == non_composite
+    assert deepcopy(composite) == composite
+
+    # test that equality is not be affected by fitting
+    composite.fit()
+    non_composite_2.fit()
+    # composite_2 is an unfitted version of composite
+    # composite is an unfitted version of non_composite_2
+
+    assert non_composite == non_composite
+    assert composite == composite
+    assert non_composite == non_composite_2
+    assert non_composite != non_composite_3
+    assert non_composite_2 != non_composite_3
+    assert composite == composite_2
+    assert composite != composite_3
+    assert composite_2 != composite_3
