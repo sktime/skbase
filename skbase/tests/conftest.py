@@ -137,6 +137,8 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_tuple_equals",
             "_fh_equals",
             "deep_equals",
+            "_is_npndarray",
+            "_coerce_list",
         ),
         "skbase.testing.utils.inspect": ("_get_args",),
         "skbase.utils._nested_iter": (
@@ -153,3 +155,36 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
         ),
     }
 )
+
+
+# Fixture class for testing tag system
+class Parent(BaseObject):
+    """Parent class to test BaseObject's usage."""
+
+    _tags = {"A": "1", "B": 2, "C": 1234, "3": "D"}
+
+    def __init__(self, a="something", b=7, c=None):
+        self.a = a
+        self.b = b
+        self.c = c
+        super().__init__()
+
+    def some_method(self):
+        """To be implemented by child class."""
+        pass
+
+
+# Fixture class for testing tag system, child overrides tags
+class Child(Parent):
+    """Child class that is child of FixtureClassParent."""
+
+    _tags = {"A": 42, "3": "E"}
+    __author__ = ["fkiraly", "RNKuhns"]
+
+    def some_method(self):
+        """Child class' implementation."""
+        pass
+
+    def some_other_method(self):
+        """To be implemented in the child class."""
+        pass

@@ -581,10 +581,15 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             )
             assert isinstance(tags, dict), msg
             assert len(tags) > 0, f"_tags dict of class {object_class} is empty"
-            invalid_tags = [tag for tag in tags.keys() if tag not in self.valid_tags]
+            if self.valid_tags is None:
+                invalid_tags = tags
+            else:
+                invalid_tags = [
+                    tag for tag in tags.keys() if tag not in self.valid_tags
+                ]
             assert len(invalid_tags) == 0, (
                 f"_tags of {object_class} contains invalid tags: {invalid_tags}. "
-                f"For a list of valid tags, see {self.__name__}.valid_tags. "
+                f"For a list of valid tags, see {self.__class__.__name__}.valid_tags."
             )
 
         # Avoid ambiguous class attributes

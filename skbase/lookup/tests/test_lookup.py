@@ -34,12 +34,12 @@ from skbase.tests.conftest import (
     SKBASE_PUBLIC_CLASSES_BY_MODULE,
     SKBASE_PUBLIC_FUNCTIONS_BY_MODULE,
     SKBASE_PUBLIC_MODULES,
+    Parent,
 )
 from skbase.tests.mock_package.test_mock_package import (
     MOCK_PACKAGE_OBJECTS,
     CompositionDummy,
     NotABaseObject,
-    Parent,
 )
 
 __author__: List[str] = ["RNKuhns"]

@@ -79,7 +79,8 @@ from sklearn import config_context
 from sklearn.base import clone
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.tests.mock_package.test_mock_package import Child, CompositionDummy, Parent
+from skbase.tests.conftest import Child, Parent
+from skbase.tests.mock_package.test_mock_package import CompositionDummy
 
 
 # TODO: Determine if we need to add sklearn style test of
