@@ -34,11 +34,8 @@ that ``skbase`` provides, see the :ref:`api_ref`.
 .. grid:: 1 2 2 2
     :gutter: 3
 
-    .. grid-item-card::
+    .. grid-item-card:: Overview
         :text-align: center
-
-        Overview
-        ^^^^^^^^
 
         Get an overview of ``skbase``'s interfaces and design patterns.
 
@@ -51,11 +48,8 @@ that ``skbase`` provides, see the :ref:`api_ref`.
 
             Overview
 
-    .. grid-item-card::
+    .. grid-item-card:: Base Classes
         :text-align: center
-
-        Base Classes
-        ^^^^^^^^^^^^
 
         The skbase class interface.
 
@@ -68,11 +62,8 @@ that ``skbase`` provides, see the :ref:`api_ref`.
 
             Class Interface
 
-    .. grid-item-card::
+    .. grid-item-card:: Retrieval
         :text-align: center
-
-        Retrieval
-        ^^^^^^^^^
 
         Tools for collecting ``BaseObject``-s, and metadata on your project.
 
@@ -85,11 +76,8 @@ that ``skbase`` provides, see the :ref:`api_ref`.
 
             Retrieval
 
-    .. grid-item-card::
+    .. grid-item-card:: Validation and Comparison
         :text-align: center
-
-        Validation and Comparison
-        ^^^^^^^^^^^^^^^^^^^^^^^^^
 
         Tools for validating and comparing ``BaseObject``-s.
 
@@ -102,11 +90,8 @@ that ``skbase`` provides, see the :ref:`api_ref`.
 
             Validation and Comparison
 
-    .. grid-item-card::
+    .. grid-item-card:: Testing
         :text-align: center
-
-        Testing
-        ^^^^^^^
 
         Tools for testing ``BaseObject``-s.
 

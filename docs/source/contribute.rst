@@ -19,11 +19,8 @@ get stuck, please don't hesitate to chat with us or raise an issue.
 .. grid:: 1 2 2 2
     :gutter: 3
 
-    .. grid-item-card::
+    .. grid-item-card:: How to Contribute
         :text-align: center
-
-        How to contribute
-        ^^^^^^^^^^^^^^^^^
 
         New to ``skbase``? Learn how you can contribute.
 
@@ -36,11 +33,8 @@ get stuck, please don't hesitate to chat with us or raise an issue.
 
             Contribute
 
-    .. grid-item-card::
+    .. grid-item-card:: Development
         :text-align: center
-
-        Development
-        ^^^^^^^^^^^
 
         Help develop ``skbase``.
 
@@ -53,11 +47,8 @@ get stuck, please don't hesitate to chat with us or raise an issue.
 
             Development
 
-    .. grid-item-card::
+    .. grid-item-card:: Development Team
         :text-align: center
-
-        Development Team
-        ^^^^^^^^^^^^^^^^
 
         Meet ``skbase``'score development team.
 
@@ -70,11 +61,8 @@ get stuck, please don't hesitate to chat with us or raise an issue.
 
             Development Team
 
-    .. grid-item-card::
+    .. grid-item-card:: Code of Conduct
         :text-align: center
-
-        Code of Conduct
-        ^^^^^^^^^^^^^^^
 
         Understand our code of conduct.
 

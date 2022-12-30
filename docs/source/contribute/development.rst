@@ -19,11 +19,8 @@ Development
 .. grid:: 1 2 2 2
     :gutter: 3
 
-    .. grid-item-card::
+    .. grid-item-card:: Developer Guide
         :text-align: center
-
-        Developer Guide
-        ^^^^^^^^^^^^^^^
 
         Learn our development conventions.
 
@@ -36,11 +33,8 @@ Development
 
             Developer Guide
 
-    .. grid-item-card::
+    .. grid-item-card:: Reviewer Guide
         :text-align: center
-
-        Reviewer Guide
-        ^^^^^^^^^^^^^^
 
         How we review contributions.
 
@@ -53,11 +47,8 @@ Development
 
             Reviewer Guide
 
-    .. grid-item-card::
+    .. grid-item-card:: Roadmap
         :text-align: center
-
-        Roadmap
-        ^^^^^^^
 
         What's on our development horizon.
 
@@ -70,11 +61,8 @@ Development
 
             Roadmap
 
-    .. grid-item-card::
+    .. grid-item-card:: Governance
         :text-align: center
-
-        Governance
-        ^^^^^^^^^^
 
         Understand our code of conduct.
 

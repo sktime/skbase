@@ -34,11 +34,8 @@ Developer guide
 
             Installation
 
-    .. grid-item-card::
+    .. grid-item-card:: Git Workflow
         :text-align: center
-
-        Git Workflow
-        ^^^^^^^^^^^^
 
         Our Git and Github workflow.
 
@@ -51,11 +48,8 @@ Developer guide
 
             Git and Github Workflow
 
-    .. grid-item-card::
+    .. grid-item-card:: Continuous Integration
         :text-align: center
-
-        Continuous Integration
-        ^^^^^^^^^^^^^^^^^^^^^^
 
         Continuous Integration.
 
@@ -68,11 +62,8 @@ Developer guide
 
             Continuous Integration
 
-    .. grid-item-card::
+    .. grid-item-card:: Coding Standards
         :text-align: center
-
-        Coding Standards
-        ^^^^^^^^^^^^^^^^
 
         Our code requirements.
 
@@ -85,11 +76,8 @@ Developer guide
 
             Coding Standards
 
-    .. grid-item-card::
+    .. grid-item-card:: Documentation Standards
         :text-align: center
-
-        Documentation Standards
-        ^^^^^^^^^^^^^^^^^^^^^^^
 
         Our documentation requirements.
 
@@ -100,13 +88,10 @@ Developer guide
             :click-parent:
             :expand:
 
-            Documentation StandardsCoding Standards
+            Documentation Standards
 
-    .. grid-item-card::
+    .. grid-item-card:: Testing Framework
         :text-align: center
-
-        Testing Framework
-        ^^^^^^^^^^^^^^^^^
 
         How we test ``skbase``.
 
@@ -119,11 +104,8 @@ Developer guide
 
             Testing Framework
 
-    .. grid-item-card::
+    .. grid-item-card:: Dependency Management
         :text-align: center
-
-        Dependency Management
-        ^^^^^^^^^^^^^^^^^^^^^
 
         How we manage dependencies
 
@@ -136,11 +118,8 @@ Developer guide
 
             Dependencies
 
-    .. grid-item-card::
+    .. grid-item-card:: Proposing Enhancements
         :text-align: center
-
-        Proposing Enhancements
-        ^^^^^^^^^^^^^^^^^^^^^^
 
         How to propose a major change
 

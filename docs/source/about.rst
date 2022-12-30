@@ -20,11 +20,8 @@ Learn more about the ``skbase`` project and its community.
 .. grid:: 1 2 2 2
     :gutter: 3
 
-    .. grid-item-card::
+    .. grid-item-card:: Mission
         :text-align: center
-
-        Mission
-        ^^^^^^^
 
         ``skbase``'s mission.
 
@@ -37,11 +34,8 @@ Learn more about the ``skbase`` project and its community.
 
             Mission
 
-    .. grid-item-card::
+    .. grid-item-card:: History
         :text-align: center
-
-        History
-        ^^^^^^^
 
         Learn about ``skbase``'s history.
 
@@ -54,11 +48,8 @@ Learn more about the ``skbase`` project and its community.
 
             History
 
-    .. grid-item-card::
+    .. grid-item-card:: Development Team
         :text-align: center
-
-        Development Team
-        ^^^^^^^^^^^^^^^^
 
         ``skbase``'s core development team.
 
@@ -71,11 +62,8 @@ Learn more about the ``skbase`` project and its community.
 
             Development Team
 
-    .. grid-item-card::
+    .. grid-item-card:: Contributors
         :text-align: center
-
-        Contributors
-        ^^^^^^^^^^^^
 
         All of ``skbase``'s contributors.
 
@@ -88,11 +76,8 @@ Learn more about the ``skbase`` project and its community.
 
             Contributors
 
-    .. grid-item-card::
+    .. grid-item-card:: Governance
         :text-align: center
-
-        Governance
-        ^^^^^^^^^^
 
         How we govern the project.
 
@@ -105,11 +90,8 @@ Learn more about the ``skbase`` project and its community.
 
             Governance
 
-    .. grid-item-card::
+    .. grid-item-card:: Roadmap
         :text-align: center
-
-        Roadmap
-        ^^^^^^^
 
         Where we plan to take ``skbase``.
 

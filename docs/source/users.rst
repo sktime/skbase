@@ -19,11 +19,8 @@ Documentation
 .. grid:: 1 2 2 2
     :gutter: 3
 
-    .. grid-item-card::
+    .. grid-item-card:: Installation
         :text-align: center
-
-        Installation
-        ^^^^^^^^^^^^
 
         Install ``skbase``.
 
@@ -36,11 +33,8 @@ Documentation
 
             Installation
 
-    .. grid-item-card::
+    .. grid-item-card:: Tutorials
         :text-align: center
-
-        Tutorials
-        ^^^^^^^^^
 
         Introductory Tutorials.
 
@@ -53,11 +47,8 @@ Documentation
 
             Tutorials
 
-    .. grid-item-card::
+    .. grid-item-card:: User Guide
         :text-align: center
-
-        User Guide
-        ^^^^^^^^^^
 
         Learn about using ``skbase``.
 
@@ -70,11 +61,8 @@ Documentation
 
             User Guide
 
-    .. grid-item-card::
+    .. grid-item-card:: Glossary
         :text-align: center
-
-        Glossary
-        ^^^^^^^^
 
         Understand common terminology.
 
@@ -87,11 +75,8 @@ Documentation
 
             Glossary
 
-    .. grid-item-card::
+    .. grid-item-card:: Changelog
         :text-align: center
-
-        Changelog
-        ^^^^^^^^^
 
         Information for developers.
 
@@ -104,11 +89,8 @@ Documentation
 
             Changelog
 
-    .. grid-item-card::
+    .. grid-item-card:: Related Software
         :text-align: center
-
-        Related Software
-        ^^^^^^^^^^^^^^^^
 
         Explore software related to ``skbase``.
 

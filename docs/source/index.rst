@@ -24,11 +24,8 @@ From here, you can navigate to:
 .. grid:: 1 2 2 2
     :gutter: 3
 
-    .. grid-item-card::
+    .. grid-item-card:: Get Started
         :text-align: center
-
-        Get Started
-        ^^^^^^^^^^^
 
         Get started using ``skbase`` quickly.
 
@@ -41,11 +38,8 @@ From here, you can navigate to:
 
             Get Started
 
-    .. grid-item-card::
+    .. grid-item-card:: User Documentation
         :text-align: center
-
-        User Documentation
-        ^^^^^^^^^^^^^^^^^^
 
         Find user documentation.
 
@@ -58,11 +52,8 @@ From here, you can navigate to:
 
             Users
 
-    .. grid-item-card::
+    .. grid-item-card:: API Reference
         :text-align: center
-
-        API Reference
-        ^^^^^^^^^^^^^
 
         Understand ``skbase``'s API.
 
@@ -75,11 +66,8 @@ From here, you can navigate to:
 
             API Reference
 
-    .. grid-item-card::
+    .. grid-item-card:: Get Involved
         :text-align: center
-
-        Get Involved
-        ^^^^^^^^^^^^
 
         Find out how you can contribute.
 
@@ -92,11 +80,8 @@ From here, you can navigate to:
 
             Get Involved
 
-    .. grid-item-card::
+    .. grid-item-card:: About
         :text-align: center
-
-        About
-        ^^^^^
 
         Learn more about ``skbase``.
 
@@ -109,13 +94,10 @@ From here, you can navigate to:
 
             Learn More
 
-    .. grid-item-card::
+    .. grid-item-card:: Changelog
         :text-align: center
 
-    Changelog
-    ^^^^^^^^^
-
-    See how the package has changed.
+        See how the package has changed.
 
         +++
 
