@@ -18,13 +18,10 @@ Developer guide
    developer_guide/enhancement_proposal
 
 .. grid:: 1 2 2 2
-    :gutter: 2
+    :gutter: 3
 
-    .. grid-item-card::
+    .. grid-item-card:: Installation
         :text-align: center
-
-        Installation
-        ^^^^^^^^^^^^
 
         Install a development version of ``skbase``.
 

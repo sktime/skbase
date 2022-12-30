@@ -17,7 +17,7 @@ get stuck, please don't hesitate to chat with us or raise an issue.
    contribute/code_of_conduct
 
 .. grid:: 1 2 2 2
-    :gutter: 2
+    :gutter: 3
 
     .. grid-item-card::
         :text-align: center

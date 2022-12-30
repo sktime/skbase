@@ -17,7 +17,7 @@ Development
    development/contrib_governance
 
 .. grid:: 1 2 2 2
-    :gutter: 2
+    :gutter: 3
 
     .. grid-item-card::
         :text-align: center
