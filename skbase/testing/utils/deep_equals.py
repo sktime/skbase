@@ -6,9 +6,8 @@ Objects compared can have one of the following valid types:
     pd.Series, pd.DataFrame, np.ndarray
     lists, tuples, or dicts of a valid type (recursive)
 """
+from inspect import isclass
 from typing import List
-
-import numpy as np
 
 from skbase.testing.utils._dependencies import _check_soft_dependencies
 
@@ -43,6 +42,7 @@ def deep_equals(x, y, return_msg=False):
         indication of what is the reason for not being equal
             concatenation of the following strings:
             .type - type is not equal
+            .class - both objects are classes but not equal
             .len - length is not equal
             .value - value is not equal
             .keys - if dict, keys of dict are not equal
@@ -70,14 +70,21 @@ def deep_equals(x, y, return_msg=False):
     # we now know all types are the same
     # so now we compare values
 
+    # flag variables for available soft dependencies
+    pandas_available = _check_soft_dependencies("pandas", severity="none")
+    numpy_available = _check_soft_dependencies("numpy", severity="none")
+
+    if numpy_available:
+        import numpy as np
+
     # pandas is a soft dependency, so we compare pandas objects separately
     #   and only if pandas is installed in the environment
-    if _is_pandas(x) and _check_soft_dependencies("pandas", severity="none"):
+    if _is_pandas(x) and pandas_available:
         res = _pandas_equals(x, y, return_msg=return_msg)
         if res is not None:
             return _pandas_equals(x, y, return_msg=return_msg)
 
-    if isinstance(x, np.ndarray):
+    if numpy_available and _is_npndarray(x):
         if x.dtype != y.dtype:
             return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
         return ret(np.array_equal(x, y, equal_nan=True), ".values")
@@ -86,9 +93,16 @@ def deep_equals(x, y, return_msg=False):
         return ret(*_tuple_equals(x, y, return_msg=True))
     elif isinstance(x, dict):
         return ret(*_dict_equals(x, y, return_msg=True))
+    elif isclass(x):
+        return ret(x == y, f".class, x={x.__name__} != y={y.__name__}")
     elif type(x).__name__ == "ForecastingHorizon":
         return ret(*_fh_equals(x, y, return_msg=True))
-    elif x != y:
+    # this elif covers case where != is boolean
+    # some types return a vector upon !=, this is covered in the next elif
+    elif isinstance(x == y, bool):
+        return ret(x == y, f" !=, {x} != {y}")
+    # deal with the case where != returns a vector
+    elif numpy_available and np.any(x != y) or any(_coerce_list(x != y)):
         return ret(False, f" !=, {x} != {y}")
 
     return ret(True, "")
@@ -103,6 +117,22 @@ def _is_pandas(x):
         return True
     else:
         return False
+
+
+def _is_npndarray(x):
+
+    clstr = type(x).__name__
+    return clstr == "ndarray"
+
+
+def _coerce_list(x):
+    """Coerce x to list."""
+    if not isinstance(x, (list, tuple)):
+        x = [x]
+    if isinstance(x, tuple):
+        x = list(x)
+
+    return x
 
 
 def _pandas_equals(x, y, return_msg=False):
