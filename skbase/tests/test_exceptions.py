@@ -11,7 +11,7 @@ import pytest
 
 from skbase._exceptions import FixtureGenerationError, NotFittedError
 
-__author__: List[str] = ["fkiraly", "RNKuhns"]
+__author__: List[str] = ["RNKuhns"]
 
 ALL_EXCEPTIONS = [FixtureGenerationError, NotFittedError]
 
