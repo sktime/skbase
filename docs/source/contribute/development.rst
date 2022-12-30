@@ -16,61 +16,73 @@ Development
    development/contrib_roadmap
    development/contrib_governance
 
-.. panels::
-    :card: + intro-card text-center
+.. grid:: 1 2 2 2
+    :gutter: 2
 
-    ---
+    .. grid-item-card::
+        :text-align: center
 
-    Developer Guide
-    ^^^^^^^^^^^^^^^
+        Developer Guide
+        ^^^^^^^^^^^^^^^
 
-    Learn our development conventions.
+        Learn our development conventions.
 
-    +++
+        +++
 
-    .. link-button:: development/developer_guide
-            :type: ref
-            :text: Developer Guide
-            :classes: btn-block btn-secondary stretched-link
+        .. button-ref:: development/developer_guide
+            :color: primary
+            :click-parent:
+            :expand:
 
-    ---
+            Developer Guide
 
-    Reviewer Guide
-    ^^^^^^^^^^^^^^
+    .. grid-item-card::
+        :text-align: center
 
-    How we review contributions.
+        Reviewer Guide
+        ^^^^^^^^^^^^^^
 
-    +++
+        How we review contributions.
 
-    .. link-button:: development/reviewer_guide
-            :type: ref
-            :text: Reviewer Guide
-            :classes: btn-block btn-secondary stretched-link
+        +++
 
-    ---
+        .. button-ref:: development/reviewer_guide
+            :color: primary
+            :click-parent:
+            :expand:
 
-    Roadmap
-    ^^^^^^^
+            Reviewer Guide
 
-    What's on our development horizon.
+    .. grid-item-card::
+        :text-align: center
 
-    +++
+        Roadmap
+        ^^^^^^^
 
-    .. link-button:: development/contrib_roadmap
-            :type: ref
-            :text: Roadmap
-            :classes: btn-block btn-secondary stretched-link
+        What's on our development horizon.
 
-    ---
+        +++
 
-    Governance
-    ^^^^^^^^^^
+        .. button-ref:: development/contrib_roadmap
+            :color: primary
+            :click-parent:
+            :expand:
 
-    Understand our code of conduct.
+            Roadmap
 
-    +++
+    .. grid-item-card::
+        :text-align: center
 
-    .. link-button:: development/contrib_governance
-            :type: ref
-            :text: Governance
-            :classes: btn-block btn-secondary stretched-link
+        Governance
+        ^^^^^^^^^^
+
+        Understand our code of conduct.
+
+        +++
+
+        .. button-ref:: development/contrib_governance
+            :color: primary
+            :click-parent:
+            :expand:
+
+            Governance
