@@ -17,89 +17,89 @@ Learn more about the ``skbase`` project and its community.
    about/governance
    about/roadmap
 
-.. panels::
-    :card: + intro-card text-center
+.. grid:: 1 2 2 2
+    :gutter: 3
 
-    ---
+    .. grid-item-card:: Mission
+        :text-align: center
 
-    Mission
-    ^^^^^^^
+        ``skbase``'s mission.
 
-    ``skbase's`` mission.
+        +++
 
-    +++
+        .. button-ref:: about/mission
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: about/mission
-            :type: ref
-            :text: Mission
-            :classes: btn-block btn-secondary stretched-link
+            Mission
 
-    ---
+    .. grid-item-card:: History
+        :text-align: center
 
-    History
-    ^^^^^^^
+        Learn about ``skbase``'s history.
 
-    Learn about ``skbase's`` history.
+        +++
 
-    +++
+        .. button-ref:: about/history
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: about/history
-            :type: ref
-            :text: History
-            :classes: btn-block btn-secondary stretched-link
+            History
 
-    ---
+    .. grid-item-card:: Development Team
+        :text-align: center
 
-    Development Team
-    ^^^^^^^^^^^^^^^^
+        ``skbase``'s core development team.
 
-    ``skbase's`` core development team.
+        +++
 
-    +++
+        .. button-ref:: about/team
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: about/team
-            :type: ref
-            :text: Development Team
-            :classes: btn-block btn-secondary stretched-link
+            Development Team
 
-    ---
+    .. grid-item-card:: Contributors
+        :text-align: center
 
-    Contributors
-    ^^^^^^^^^^^^
+        All of ``skbase``'s contributors.
 
-    All of ``skbase's`` contributors.
+        +++
 
-    +++
+        .. button-ref:: about/contributors
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: about/contributors
-            :type: ref
-            :text: Contributors
-            :classes: btn-block btn-secondary stretched-link
+            Contributors
 
-    ---
+    .. grid-item-card:: Governance
+        :text-align: center
 
-    Governance
-    ^^^^^^^^^^
+        How we govern the project.
 
-    How we govern the project.
+        +++
 
-    +++
+        .. button-ref:: about/governance
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: about/governance
-            :type: ref
-            :text: Governance
-            :classes: btn-block btn-secondary stretched-link
+            Governance
 
-    ---
+    .. grid-item-card:: Roadmap
+        :text-align: center
 
-    Roadmap
-    ^^^^^^^
+        Where we plan to take ``skbase``.
 
-    Planned Development.
+        +++
 
-    +++
+        .. button-ref:: about/roadmap
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: about/roadmap
-            :type: ref
-            :text: Roadmap
-            :classes: btn-block btn-secondary stretched-link
+            Roadmap

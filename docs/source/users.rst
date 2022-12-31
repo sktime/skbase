@@ -16,89 +16,89 @@ Documentation
    user_documentation/related_software
 
 
-.. panels::
-    :card: + intro-card text-center
+.. grid:: 1 2 2 2
+    :gutter: 3
 
-    ---
+    .. grid-item-card:: Installation
+        :text-align: center
 
-    Installation
-    ^^^^^^^^^^^^
+        Install ``skbase``.
 
-    Install ``skbase``.
+        +++
 
-    +++
+        .. button-ref:: user_documentation/installation
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: user_documentation/installation
-            :type: ref
-            :text: Installation
-            :classes: btn-block btn-secondary stretched-link
+            Installation
 
-    ---
+    .. grid-item-card:: Tutorials
+        :text-align: center
 
-    Tutorials
-    ^^^^^^^^^
+        Introductory Tutorials.
 
-    Introductory Tutorials.
+        +++
 
-    +++
+        .. button-ref:: user_documentation/tutorials
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: user_documentation/tutorials
-            :type: ref
-            :text: Tutorials
-            :classes: btn-block btn-secondary stretched-link
+            Tutorials
 
-    ---
+    .. grid-item-card:: User Guide
+        :text-align: center
 
-    User Guide
-    ^^^^^^^^^^
+        Learn about using ``skbase``.
 
-    Learn about using ``skbase``.
+        +++
 
-    +++
+        .. button-ref:: user_documentation/user_guide
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: user_documentation/user_guide
-            :type: ref
-            :text: User Guide
-            :classes: btn-block btn-secondary stretched-link
+            User Guide
 
-    ---
+    .. grid-item-card:: Glossary
+        :text-align: center
 
-    Glossary
-    ^^^^^^^^
+        Understand common terminology.
 
-    Understand common terminology.
+        +++
 
-    +++
+        .. button-ref:: user_documentation/glossary
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: user_documentation/glossary
-            :type: ref
-            :text: Glossary
-            :classes: btn-block btn-secondary stretched-link
+            Glossary
 
-    ---
+    .. grid-item-card:: Changelog
+        :text-align: center
 
-    Changelog
-    ^^^^^^^^^
+        Information for developers.
 
-    Information for developers.
+        +++
 
-    +++
+        .. button-ref:: user_documentation/changelog
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: user_documentation/changelog
-            :type: ref
-            :text: Developers
-            :classes: btn-block btn-secondary stretched-link
+            Changelog
 
-    ---
+    .. grid-item-card:: Related Software
+        :text-align: center
 
-    Related Software
-    ^^^^^^^^^^^^^^^^
+        Explore software related to ``skbase``.
 
-    Explore software related to ``skbase``.
+        +++
 
-    +++
+        .. button-ref:: user_documentation/related_software
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: user_documentation/related_software
-            :type: ref
-            :text: Learn More
-            :classes: btn-block btn-secondary stretched-link
+            Related Software

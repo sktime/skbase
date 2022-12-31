@@ -31,75 +31,75 @@ that ``skbase`` provides, see the :ref:`api_ref`.
    user_guide/testing
 
 
-.. panels::
-    :card: + intro-card text-center
+.. grid:: 1 2 2 2
+    :gutter: 3
 
-    ---
+    .. grid-item-card:: Overview
+        :text-align: center
 
-    Overview
-    ^^^^^^^^
+        Get an overview of ``skbase``'s interfaces and design patterns.
 
-    Get an overview of ``skbase``'s interfaces and design patterns.
+        +++
 
-    +++
+        .. button-ref:: user_guide/overview
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: user_guide/overview
-            :type: ref
-            :text: Overview
-            :classes: btn-block btn-secondary stretched-link
+            Overview
 
-    ---
+    .. grid-item-card:: Base Classes
+        :text-align: center
 
-    Base Classes
-    ^^^^^^^^^^^^
+        The skbase class interface.
 
-    The skbase class interface.
+        +++
 
-    +++
+        .. button-ref:: user_guide/base_classes
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: user_guide/base_classes
-            :type: ref
-            :text: Class Interface
-            :classes: btn-block btn-secondary stretched-link
+            Class Interface
 
-    ---
+    .. grid-item-card:: Retrieval
+        :text-align: center
 
-    Retrieval
-    ^^^^^^^^^
+        Tools for collecting ``BaseObject``-s, and metadata on your project.
 
-    Tools for collecting ``BaseObject``-s, and metadata on your project.
+        +++
 
-    +++
+        .. button-ref:: user_guide/lookup
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: user_guide/lookup
-            :type: ref
-            :text: Retrieval
-            :classes: btn-block btn-secondary stretched-link
+            Retrieval
 
-    ---
+    .. grid-item-card:: Validation and Comparison
+        :text-align: center
 
-    Validation and Comparison
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
+        Tools for validating and comparing ``BaseObject``-s.
 
-    Tools for validating and comparing ``BaseObject``-s.
+        +++
 
-    +++
+        .. button-ref:: user_guide/validate
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: user_guide/validate
-            :type: ref
-            :text: Validation and Comparison
-            :classes: btn-block btn-secondary stretched-link
+            Validation and Comparison
 
-    ---
+    .. grid-item-card:: Testing
+        :text-align: center
 
-    Testing
-    ^^^^^^^
+        Tools for testing ``BaseObject``-s.
 
-    Tools for testing ``BaseObject``-s.
+        +++
 
-    +++
+        .. button-ref:: user_guide/testing
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: user_guide/testing
-            :type: ref
-            :text: Testing
-            :classes: btn-block btn-secondary stretched-link
+            Testing

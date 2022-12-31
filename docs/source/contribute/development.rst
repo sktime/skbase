@@ -16,61 +16,61 @@ Development
    development/contrib_roadmap
    development/contrib_governance
 
-.. panels::
-    :card: + intro-card text-center
+.. grid:: 1 2 2 2
+    :gutter: 3
 
-    ---
+    .. grid-item-card:: Developer Guide
+        :text-align: center
 
-    Developer Guide
-    ^^^^^^^^^^^^^^^
+        Learn our development conventions.
 
-    Learn our development conventions.
+        +++
 
-    +++
+        .. button-ref:: development/developer_guide
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: development/developer_guide
-            :type: ref
-            :text: Developer Guide
-            :classes: btn-block btn-secondary stretched-link
+            Developer Guide
 
-    ---
+    .. grid-item-card:: Reviewer Guide
+        :text-align: center
 
-    Reviewer Guide
-    ^^^^^^^^^^^^^^
+        How we review contributions.
 
-    How we review contributions.
+        +++
 
-    +++
+        .. button-ref:: development/reviewer_guide
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: development/reviewer_guide
-            :type: ref
-            :text: Reviewer Guide
-            :classes: btn-block btn-secondary stretched-link
+            Reviewer Guide
 
-    ---
+    .. grid-item-card:: Roadmap
+        :text-align: center
 
-    Roadmap
-    ^^^^^^^
+        What's on our development horizon.
 
-    What's on our development horizon.
+        +++
 
-    +++
+        .. button-ref:: development/contrib_roadmap
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: development/contrib_roadmap
-            :type: ref
-            :text: Roadmap
-            :classes: btn-block btn-secondary stretched-link
+            Roadmap
 
-    ---
+    .. grid-item-card:: Governance
+        :text-align: center
 
-    Governance
-    ^^^^^^^^^^
+        Understand our code of conduct.
 
-    Understand our code of conduct.
+        +++
 
-    +++
+        .. button-ref:: development/contrib_governance
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: development/contrib_governance
-            :type: ref
-            :text: Governance
-            :classes: btn-block btn-secondary stretched-link
+            Governance

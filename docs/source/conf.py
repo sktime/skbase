@@ -54,7 +54,10 @@ extensions = [
     "myst_parser",
     "sphinx_panels",
     "sphinx_issues",
+    "sphinx_design",
 ]
+
+myst_enable_extensions = ["colon_fence"]
 
 # -- Internationalization ------------------------------------------------
 # specifying the natural language populates some key tags

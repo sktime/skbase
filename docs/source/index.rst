@@ -21,89 +21,89 @@ that follow these design patterns.
 
 From here, you can navigate to:
 
-.. panels::
-    :card: + intro-card text-center
+.. grid:: 1 2 2 2
+    :gutter: 3
 
-    ---
+    .. grid-item-card:: Get Started
+        :text-align: center
 
-    Get Started
-    ^^^^^^^^^^^
+        Get started using ``skbase`` quickly.
 
-    Get started using ``skbase`` quickly.
+        +++
 
-    +++
+        .. button-ref:: get_started
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: get_started
-            :type: ref
-            :text: Get Started
-            :classes: btn-block btn-secondary stretched-link
+            Get Started
 
-    ---
+    .. grid-item-card:: User Documentation
+        :text-align: center
 
-    User Documentation
-    ^^^^^^^^^^^^^^^^^^
+        Find user documentation.
 
-    Find user documentation.
+        +++
 
-    +++
+        .. button-ref:: users
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: users
-            :type: ref
-            :text: Users
-            :classes: btn-block btn-secondary stretched-link
+            Users
 
-    ---
+    .. grid-item-card:: API Reference
+        :text-align: center
 
-    API Reference
-    ^^^^^^^^^^^^^
+        Understand ``skbase``'s API.
 
-    Understand ``skbase``'s API.
+        +++
 
-    +++
+        .. button-ref:: api_reference
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: api_reference
-            :type: ref
-            :text: API Reference
-            :classes: btn-block btn-secondary stretched-link
+            API Reference
 
-    ---
+    .. grid-item-card:: Get Involved
+        :text-align: center
 
-    Get Involved
-    ^^^^^^^^^^^^
+        Find out how you can contribute.
 
-    Find out how you can contribute.
+        +++
 
-    +++
+        .. button-ref:: contribute
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: contribute
-            :type: ref
-            :text: Get Involved
-            :classes: btn-block btn-secondary stretched-link
+            Get Involved
 
-    ---
+    .. grid-item-card:: About
+        :text-align: center
 
-    About
-    ^^^^^
+        Learn more about ``skbase``.
 
-    Learn more about ``skbase``.
+        +++
 
-    +++
+        .. button-ref:: about
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: about
-            :type: ref
-            :text: Learn More
-            :classes: btn-block btn-secondary stretched-link
+            Learn More
 
-    ---
+    .. grid-item-card:: Changelog
+        :text-align: center
 
-    Changelog
-    ^^^^^^^^^
+        See how the package has changed.
 
-    See how the package has changed.
+        +++
 
-    +++
+        .. button-ref:: changelog
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: changelog
-            :type: ref
-            :text: Changelog
-            :classes: btn-block btn-secondary stretched-link
+            Changelog
