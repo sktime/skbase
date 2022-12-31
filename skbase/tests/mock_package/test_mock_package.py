@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
-"""Mock package for testing the test class."""
-
+"""Mock package for testing skbase functionality."""
 from copy import deepcopy
+from typing import List
 
 from skbase.base import BaseObject
+
+__all__: List[str] = [
+    "CompositionDummy",
+    "InheritsFromBaseObject",
+    "AnotherClass",
+    "NotABaseObject",
+]
+__author__: List[str] = ["fkiraly", "RNKuhns"]
 
 
 class CompositionDummy(BaseObject):
@@ -37,3 +45,30 @@ class CompositionDummy(BaseObject):
         params1 = {"foo": 42}
         params2 = {"foo": CompositionDummy(126)}
         return [params1, params2]
+
+
+class InheritsFromBaseObject(BaseObject):
+    """A class inheriting from BaseObject."""
+
+
+class AnotherClass(BaseObject):
+    """Another class inheritting from BaseObject."""
+
+
+class NotABaseObject:
+    """A class that is not a BaseObject."""
+
+    def __init__(self, a=7):
+        self.a = a
+
+
+class _NonPublicClass(BaseObject):
+    """A nonpublic class inheritting from BaseObject."""
+
+
+MOCK_PACKAGE_OBJECTS = [
+    AnotherClass,
+    CompositionDummy,
+    InheritsFromBaseObject,
+    _NonPublicClass,
+]

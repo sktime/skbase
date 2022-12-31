@@ -74,7 +74,7 @@ class BaseFixtureGenerator:
     # ------------------------------------------------------
 
     # package to search for objects
-    package_name = "skbase.mock_package"
+    package_name = "skbase.tests.mock_package"
 
     # which object types are generated; None=all, or scitype string like "forecaster"
     object_type_filter = None
@@ -285,7 +285,7 @@ class QuickTester:
 
         Examples
         --------
-        >>> from skbase.mock_package import CompositionDummy
+        >>> from skbase.tests.mock_package.test_mock_package import CompositionDummy
         >>> from skbase.testing.test_all_objects import TestAllObjects
         >>> TestAllObjects().run_tests(
         ...     CompositionDummy,
@@ -581,10 +581,15 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             )
             assert isinstance(tags, dict), msg
             assert len(tags) > 0, f"_tags dict of class {object_class} is empty"
-            invalid_tags = [tag for tag in tags.keys() if tag not in self.valid_tags]
+            if self.valid_tags is None:
+                invalid_tags = tags
+            else:
+                invalid_tags = [
+                    tag for tag in tags.keys() if tag not in self.valid_tags
+                ]
             assert len(invalid_tags) == 0, (
                 f"_tags of {object_class} contains invalid tags: {invalid_tags}. "
-                f"For a list of valid tags, see {self.__name__}.valid_tags. "
+                f"For a list of valid tags, see {self.__class__.__name__}.valid_tags."
             )
 
         # Avoid ambiguous class attributes
