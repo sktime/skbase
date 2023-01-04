@@ -1,11 +1,12 @@
 #!/usr/bin/env python3 -u
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
-# _HeterogenousMetaEstimator re-use code developed in scikit-learn. These elements
-# are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
-# conditions see https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
+# BaseMetaEstimator re-uses code developed in scikit-learn and sktime. These elements
+# are copyrighted by the respective scikit-learn developers (BSD-3-Clause License)
+# and sktime (BSD-3-Clause) developers. For conditions see licensing.
+#  scikit-learn: https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
+# and sktime:  https://github.com/sktime/sktime/blob/main/LICENSE
 """Implements meta estimator for estimators composed of other estimators."""
-import warnings
 from inspect import isclass
 from typing import List
 
@@ -588,23 +589,3 @@ class BaseMetaEstimator(BaseEstimator):
             self.set_tags(**{mid_tag_name: mid_tag_val})
         else:
             self.set_tags(**{mid_tag_name: mid_tag_val_not})
-
-
-class _HeterogenousMetaEstimator(BaseMetaEstimator):
-    """Handles parameter management for estimators composed of named estimators.
-
-    Partly adapted from sklearn utils.metaestimator.py.
-    """
-
-    def __init__(self):
-        super().__init__()
-        warnings.warn(
-            " ".join(
-                [
-                    "_HeterogenousMetaEstimator has been depracated. Functionality is",
-                    "available as part of BaseMetaEstimator.",
-                    "_HeterogenousMetaEstimator will be removed in version 0.5.0.",
-                ]
-            ),
-            DeprecationWarning,
-        )

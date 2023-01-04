@@ -80,9 +80,7 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
     ),
 }
 SKBASE_CLASSES_BY_MODULE = SKBASE_PUBLIC_CLASSES_BY_MODULE.copy()
-SKBASE_CLASSES_BY_MODULE.update(
-    {"skbase.base._meta": ("BaseMetaEstimator", "_HeterogenousMetaEstimator")}
-)
+SKBASE_CLASSES_BY_MODULE.update({"skbase.base._meta": ("BaseMetaEstimator",)})
 SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
     "skbase.lookup": ("all_objects", "get_package_metadata"),
     "skbase.lookup._lookup": ("all_objects", "get_package_metadata"),
