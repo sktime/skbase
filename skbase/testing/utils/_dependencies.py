@@ -119,24 +119,21 @@ def _check_soft_dependencies(
                 pkg_ref = import_module(package_import_name)
         # if package cannot be imported, make the user aware of installation requirement
         except ModuleNotFoundError as e:
-            if obj is None:
-                msg = (
-                    f"{e}. '{package}' is a soft dependency and not included in the "
-                    f"base sktime installation. Please run: `pip install {package}` to "
-                    f"install the {package} package. "
-                    f"To install all soft dependencies, run: `pip install "
-                    f"sktime[all_extras]`"
+            msg = (
+                f"{e}. "
+                f"{class_name} requires package '{package}' to be present "
+                f"in the python environment, but '{package}' was not found. "
+            )
+            if obj is not None:
+                msg = msg + (
+                    f"'{package}' is a dependency of {class_name} and required "
+                    f"to construct it. "
                 )
-            else:
-                msg = (
-                    f"{class_name} requires package '{package}' to be present "
-                    f"in the python environment, but '{package}' was not found. "
-                    f"'{package}' is a soft dependency and not included in the base "
-                    f"sktime installation. Please run: `pip install {package}` to "
-                    f"install the {package} package. "
-                    f"To install all soft dependencies, run: `pip install "
-                    f"sktime[all_extras]`"
-                )
+            msg = msg + (
+                f"Please run: `pip install {package}` to "
+                f"install the {package} package. "
+            )
+
             if severity == "error":
                 raise ModuleNotFoundError(msg) from e
             elif severity == "warning":
@@ -162,8 +159,8 @@ def _check_soft_dependencies(
             )
             if obj is not None:
                 msg = msg + (
-                    f"This version requirement is not one by sktime, but specific "
-                    f"to the module, class or object with name {obj}."
+                    f"'{package}', with version {package_version_req},"
+                    f"is a dependency of {class_name} and required to construct it. "
                 )
 
             # raise error/warning or return False if version is incompatible
@@ -190,7 +187,7 @@ def _check_python_version(obj, package=None, msg=None, severity="error"):
 
     Parameters
     ----------
-    obj : sktime estimator, BaseObject descendant
+    obj : BaseObject descendant
         used to check python version
     package : str, default = None
         if given, will be used in error message as package name
