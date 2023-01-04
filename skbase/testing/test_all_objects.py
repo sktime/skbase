@@ -233,7 +233,7 @@ class QuickTester:
     def run_tests(
         self,
         obj,
-        return_exceptions=True,
+        raise_exceptions=False,
         tests_to_run=None,
         fixtures_to_run=None,
         tests_to_exclude=None,
@@ -253,10 +253,10 @@ class QuickTester:
         Parameters
         ----------
         obj : object class or object instance
-        return_exceptions : bool, optional, default=True
-            whether to return exceptions/failures, or raise them
-                if True: returns exceptions in results
-                if False: raises exceptions as they occur
+        raise_exceptions : bool, optional, default=False
+            whether to return exceptions/failures in the results dict, or raise them
+                if False: returns exceptions in returned `results` dict
+                if True: raises exceptions as they occur
         tests_to_run : str or list of str, names of tests to run. default = all tests
             sub-sets tests that are run to the tests given here.
         fixtures_to_run : str or list of str, pytest test-fixture combination codes.
@@ -277,11 +277,11 @@ class QuickTester:
             keys are test/fixture strings, identical as in pytest, e.g., test[fixture]
             entries are the string "PASSED" if the test passed,
                 or the exception raised if the test did not pass
-            returned only if all tests pass, or return_exceptions=True
+            returned only if all tests pass, or raise_exceptions=False
 
         Raises
         ------
-        if return_exception=False, raises any exception produced by the tests directly
+        if raise_exception=True, raises any exception produced by the tests directly
 
         Examples
         --------
@@ -371,8 +371,6 @@ class QuickTester:
             fixture_vars = getfullargspec(test_fun)[0][1:]
             fixture_vars = [var for var in fixture_sequence if var in fixture_vars]
 
-            raise_exceptions = not return_exceptions
-
             # this call retrieves the conditional fixtures
             #  for the test test_name, and the object
             _, fixture_prod, fixture_names = create_conditional_fixtures_and_names(
@@ -420,7 +418,7 @@ class QuickTester:
                 if fixtures_to_exclude is not None and key in fixtures_to_exclude:
                     continue
 
-                if return_exceptions:
+                if not raise_exceptions:
                     try:
                         test_fun(**deepcopy(args))
                         results[key] = "PASSED"
