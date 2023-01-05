@@ -11,12 +11,12 @@ Git and GitHub workflow
    `Slack <https://join.slack.com/t/sktime-group/shared_invite/zt-1cghagwee-sqLJ~eHWGYgzWbqUX937ig>`_.
 
 The preferred workflow for contributing to ``skbase``'s repository is to
-fork the `main repository <https://github.com//sktime/baseobject>`_ on GitHub,
+fork the `main repository <https://github.com//sktime/skbase>`_ on GitHub,
 clone your fork locally and create a development installation, and then create
 a new feature branch for your development.
 
 1.  Fork the `project
-    repository <https://github.com/sktime/baseobject>`_ by
+    repository <https://github.com/sktime/skbase>`_ by
     clicking on the 'Fork' button near the top right of the page. This
     creates a copy of the code under your GitHub user account. For more
     details on how to fork a repository see `this
@@ -30,17 +30,17 @@ a new feature branch for your development.
     .. code:: bash
 
        git remote -v
-       git remote add upstream https://github.com/sktime/baseobject.git
+       git remote add upstream https://github.com/sktime/skbase.git
 
 4.  Verify the new upstream repository you've specified for your fork:
 
     .. code:: bash
 
        git remote -v
-       > origin    https://github.com/<username>/baseobject.git (fetch)
-       > origin    https://github.com/<username>/baseobject.git (push)
-       > upstream  https://github.com/sktime/baseobject.git (fetch)
-       > upstream  https://github.com/sktime/baseobject.git (push)
+       > origin    https://github.com/<username>/skbase.git (fetch)
+       > origin    https://github.com/<username>/skbase.git (push)
+       > upstream  https://github.com/sktime/skbase.git (fetch)
+       > upstream  https://github.com/sktime/skbase.git (push)
 
 5.  `Sync
     <https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork>`_
@@ -97,7 +97,6 @@ a new feature branch for your development.
         become aware of your work and can give you feedback early on.
 
 10. To add more changes related to this feature, simply repeat steps 7 - 8.
-
 
     .. note::
 
