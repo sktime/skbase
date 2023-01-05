@@ -205,7 +205,7 @@ Documentation Build
 -------------------
 
 We use `sphinx`_ to build our documentation and `readthedocs`_ to host it.
-You can find our latest documentation `here <https://www.sktime.org/en/latest/>`_.
+You can find our latest documentation `here <https://skbase.readthedocs.io/en/latest/index.html>`_.
 
 The source files can be found
 in `docs/source/ <https://github.com/sktime/skbase/tree/main/docs/source>`_.

@@ -48,7 +48,7 @@ the following files need to be updated:
 Informative warnings or error messages for missing soft dependencies should be raised,
 in a situation where a user would need them. This is handled through our
 ``_check_soft_dependencies`` `utility
-<https://github.com/sktime/skbase/blob/main/sktime/testing/utils/_dependencies.py>`_.
+<https://github.com/sktime/skbase/blob/main/skbase/testing/utils/_dependencies.py>`_.
 
 There are specific conventions to add such warnings in ``BaseObject``-s.
 To add ``BaseObject`` with a soft dependency, ensure the following:

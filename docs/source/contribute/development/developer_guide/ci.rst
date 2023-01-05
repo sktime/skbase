@@ -80,7 +80,7 @@ integration services ``skbase`` uses.
 +---------------+-----------------------+-------------------------------------+
 | `Read the     | Build/deploy          | `.readthedocs.yaml                  |
 | Docs <h       | documentation         | <https://github.com/sktime          |
-| ttps://readth |                       | /baseobject/blob/main/              |
+| ttps://readth |                       | /skbase/blob/main/                  |
 | edocs.org>`__ |                       | .readthedocs.yaml>`_                |
 +---------------+-----------------------+-------------------------------------+
 | `Codecov      | Test coverage         | `.codecov.yml <https                |
