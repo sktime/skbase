@@ -4,9 +4,9 @@
 Welcome to skbase
 =================
 
-``skbase`` provides base classes for creating scikit-learn-like parametric
-objects, along with tools to make it easier to build your own packages
-that follow these design patterns.
+``skbase`` provides base classes for creating scikit-learn-like and sktime-like
+parametric objects, along with tools to make it easier to build your own packages
+that reuse these design patterns.
 
 .. toctree::
    :maxdepth: 1
