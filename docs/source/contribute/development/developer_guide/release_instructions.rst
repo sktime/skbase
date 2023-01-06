@@ -1,7 +1,7 @@
 .. _release:
 
 Release Management
-=====================================
+==================
 
 This section provides detailed instructions used to release a new version of ``skbase``.
 
@@ -39,13 +39,13 @@ up to each release:
    If a release will be delayed, notify project contributors on slack.
 3. All changes to the main branch of the repository are frozen 1 day prior to the
    release. At this point only the release managers (for this release) should
-   merge any Pull Requests. Remind core developers of the timing of the feature
+   merge any pull requests. Remind core developers of the timing of the feature
    freeze on slack when announcing the upcoming release date. Remind core developers
    of the feature freeze again 1 day prior to its start. Make sure to keep
    core developers in the loop if any delays or extensions to the feature freeze arise.
-4. If "must have" Pull Requests are not merged by the planned release date, the
+4. If "must have" pull requests are not merged by the planned release date, the
    release manager should coordinate with the Community Council to either delay
-   the release date and extend freeze period, or move the Pull Requests target
+   the release date and extend freeze period, or move the pull requests target
    completion to a later release.
 
 .. _release_version_prep:
@@ -63,14 +63,15 @@ The release process is as follows, on high-level:
    only by release managers.
 
 2. Create a "release" Pull Request from a branch following the naming pattern
-   ``release/v0.x.y``. This Pull Request should:
+   ``release-vm.x.y``, where "m", "x" and "y" are placeholders for the major,
+   minor, and path version numbers. This pull request should:
 
    - Update the package version numbers
      (see :ref:`version number locations <version_number_locs>`)
-   - Add copmlete release notes
+   - Add complete release notes
      (see :ref:`generating release notes <generate_release_notes>`)
    - Update the ``switcher.json`` file located at ``./docs/source/_static/``
-     relative to the proejct's root. This involves creating a new entry for the
+     relative to the project's root. This involves creating a new entry for the
      prior release (which was the "stable" doc release previously) and rename
      the stable release to reference the updated version number.
 
@@ -128,7 +129,7 @@ The release process is as follows, on high-level:
 
      After forking and cloning the repo, edit the ``meta.yml`` file by:
 
-     - incrementing the version in the line that contains ``{% set version = "0.X.Y" %}``
+     - incrementing the version in the line that contains ``{% set version = "M.X.Y" %}``
      - pasting the sha256 sum of the source archive from github in the
        ``source/sha256`` section
 
