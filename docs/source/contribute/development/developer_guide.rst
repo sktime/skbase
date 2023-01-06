@@ -16,6 +16,7 @@ Developer guide
    developer_guide/testing_framework
    developer_guide/dependencies
    developer_guide/enhancement_proposal
+   developer_guide/release_instructions
 
 .. grid:: 1 2 2 2
     :gutter: 3
@@ -131,3 +132,17 @@ Developer guide
             :expand:
 
             Proposing Enhancements
+
+    .. grid-item-card:: Release Instructions
+        :text-align: center
+
+        How to prepare a new release of ``skbase``
+
+        +++
+
+        .. button-ref:: developer_guide/release_instructions
+            :color: primary
+            :click-parent:
+            :expand:
+
+            Release a new package version

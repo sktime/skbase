@@ -55,7 +55,7 @@ checks on the files you changed whenever you make a new commit.
 
 You can find all of ``skbase``'s pre-commit configurations in
 `.pre-commit-config.yaml
-<https://github.com/sktime/baseobject/blob/main/.pre-commit-config.yaml>`_.
+<https://github.com/sktime/skbase/blob/main/.pre-commit-config.yaml>`_.
 
 .. note::
 
@@ -77,7 +77,7 @@ However, they need to be activated individually in the VS Code preferences (
 or set in your local ``settings.json`` file). If you want to easily Install all
 the linters in your environment use the hint in the
 :ref:`development installation <dev_install>` instructions and run
-:code:`pip install --editable .[dev,linters]`.
+:code:`pip install --editable .[dev,test,linters]`.
 
 In Visual Studio Code, we also recommend to add ``"editor.ruler": [79, 88]``
 to your local ``settings.json`` to display the max line length.
