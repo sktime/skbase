@@ -64,7 +64,7 @@ The release process is as follows, on high-level:
 
 2. Create a "release" Pull Request from a branch following the naming pattern
    ``release-vm.x.y``, where "m", "x" and "y" are placeholders for the major,
-   minor, and path version numbers. This pull request should:
+   minor, and patch version numbers. This pull request should:
 
    - Update the package version numbers
      (see :ref:`version number locations <version_number_locs>`)
