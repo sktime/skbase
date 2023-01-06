@@ -7,6 +7,9 @@
 along with tools to make it easier to build your own packages that follow these
 design patterns.
 
+:rocket: Version 0.3.0 is now available. Checkout our
+[release notes](https://skbase.readthedocs.io/en/latest/changelog.html).
+
 | Overview | |
 |---|---|
 | **CI/CD** | [![Tests](https://github.com/sktime/skbase/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/sktime/skbase/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/sktime/skbase/branch/main/graph/badge.svg?token=2J424NLO82)](https://codecov.io/gh/sktime/skbase) [![Documentation Status](https://readthedocs.org/projects/baseobject/badge/?version=latest)](https://baseobject.readthedocs.io/en/latest/?badge=latest) [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/sktime/skbase/main.svg)](https://results.pre-commit.ci/latest/github/sktime/skbase/main) |
