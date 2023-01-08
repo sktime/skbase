@@ -16,9 +16,9 @@ Specifically,`skbase` will provide:
 - [Tools for working with base classes](#Tools-For-Working-With-Base-Classes)
     - Object collection (retrieval)
     - Object testing
-    - Object comparison
+    - Object comparison and validation
 - An [example repository](#Example-Repository) that serves the dual purpose of
-  illustrating how developers can use `skbase` in their own proejcts and
+  illustrating how developers can use `skbase` in their own projects and
   providing test cases
 - A [template repository](#Template-Repository) that developers can clone to
   easiliy set up a a new project using `skbase`'s principles
@@ -38,7 +38,7 @@ The rest of this design document provides an outline of the proposed interfaces.
 a given use case.
 
 - `skbase.base` will include the `BaseObject` class and related base classes.
-- `skbase.lookup` will include the tools for retrieving (i.e., collectiong,
+- `skbase.lookup` will include the tools for retrieving (i.e., collecting,
   looking up) any `BaseObject`'s from a project.
 - `skbase.validate` will include tools for validating and comparing `BaseObject`'s
   and/or collections of `BaseObject`'s.
@@ -58,11 +58,11 @@ contexts. This includes:
   class level interface. Other classes are subclasses of `BaseObject`.
 - [BaseEstimator](#BaseEstimator): A subclass of `BaseObject` that adds a
   high-level interface for *fittable* estimators
-- [BaseMetaObject](#BaseMetaObject): A subclass of `BaseObject`
-  that provides a high-level interface for working with classes composed of
-  collections of `BaseObject`s.
-- [Base pipeline classes](#Base-Pipeline-Classes): Subclasses of `BaseMetaObject`
-  that provide generic functionalty for common pipeline use cases.
+- [BaseMetaObject](#BaseMetaObjectMixin): A mixin that provides a high-level interface
+  for working with classes composed of collections of `BaseObject`s.
+- [Base pipeline classes](#Base-Pipeline-Classes): `BaseObject`s that also
+  inherit from `BaseMetaObject` mixin and provide additional generic functionalty
+  for common pipeline use cases.
 
 #### BaseObject
 
@@ -77,7 +77,8 @@ BaseObjects are base classes with:
   and drawing a simple block representation in HTML)
 - Support simple composition where parameter arguments are other `BaseObject`s,
   including the ability to get and set the parameters of component `BaseObject`s
-- Provide an interface for parameter validation.
+- Interface for instance-level override of configuration context
+- Interface for parameter validation.
 
 `BaseObject`s should also follow certain design patterns and coding practices,
 including:
@@ -124,39 +125,44 @@ is left to child classes implemented outside of `skbase`.
 
 #### BaseMetaObject
 
-The `BaseObject` interface is designed to make it easy for developers to provide uniform functionality for interacting with parametric objects in their
+The `BaseObject` interface is designed to make it easy for developers to provide
+uniform functionality for interacting with parametric objects in their
 projects. This makes is particularly helpful in use cases where working with
-collections of objects is important. For example, iterativately applying computations to a dataset is common-place in statistical and data processing applications.
+collections of objects is important. For example, iterativately applying computations
+to a dataset is common-place in statistical and data processing applications.
 
 For example, `scikit-learn` and `sktime` include pipeline classes that let
 users easily iteratively apply a series of estimators to their data. Meanwhile,
-in data engineering pipelines data may undergo a series of transformations prior
-to being used or stored.s
+in data engineering pipelines, data may undergo a series of transformations prior
+to being used or stored.
 
 `skbase` supports these use cases by providing `BaseMetaObject`to provide a
-high-level interface of working with classes composed of collections of `BaseObject`s or `BaseEstimator`s. `BaseMetaObject` expands on the `BaseObject`
+high-level interface of working with classes composed of collections of
+`BaseObject`s or `BaseEstimator`s. `BaseMetaObject` expands on the `BaseObject`
 interface by expanding support for composite objects where parameter values include
 collections of `BaseObject`s. This includes built-in parameter getting/setting on
 nested `BaseObject`s when parameter values are collections of `BaseObjects`, and
 functionality for working with the tags of nested objects.
 
 ##### Base Pipeline Classes
-`skbase` intends to provide additional meta classes that expand on the `BaseMetaObject` API to include specific functionality
-for the type of common pipeline use cases found in `scikit-learn`, `sktime` and
-data processing workflows. This functionality will eventually be made available through two sub-classes of `BaseMetaObject`:
+`skbase` intends to provide additional meta classes that expand on the `BaseMetaObject`
+API to include specific functionality for the type of common pipeline use cases
+found in `scikit-learn`, `sktime` and data processing workflows. This functionality
+will eventually be made available through two base pipeline classes:
 
 - `BasePipeline` expands on the `BaseMetaObject` framework by providing
-  common functionality for (linear) stepped based pipelines like those found
+  common functionality for (linear) step based pipelines like those found
   in `scikit-learn` and `sktime`
 - `BaseDAGPipeline` expands on the `BaseMetaObject` framework by providing
   functionality for  pipelines composed of directed-acyclic graphs (DAGs)
 
 Each base pipeline class will focus on providing generic functionality for
-implementing the specific pipeline use case, while stopping short of implementing methods for fitting, transforming or otherwise updating the state of the pipeline.
+implementing the specific pipeline use case, while stopping short of implementing
+methods for fitting, transforming or otherwise updating the state of the pipeline.
 
 ### Tools For Working With Base Classes
 
-`skbase` should make it easy for developers to work with BaseObjects and create
+`skbase` should make it easy for developers to work with `BaseObject`s and create
 their own packages that follow `skbase`'s principles. To accomplish this
 `skbase` includes tools that make it easier to accomplish common workflows
 that arise.
@@ -168,15 +174,15 @@ parametric objects, including the need to collect *similar* objects for
 testing or reporting. For example, the developer of a machine learning package
 may want to gather all the objects that subclass the base class for a given
 type of learning problem so they can be tested for interface compliance (e.g.,
-collect all *regressors* or *forecasters*).
+collect all *regressors* or *forecasters* and then test their interface).
 
-`skbase` provides this through two function interfaces:
+`skbase` provides support for this through two function interfaces:
 
 - `all_objects` provides the ability to recursively walk packages (or sub-packages)
   and return the objects that meet the filters specified in the function call.
 - `get_package_metadata` provides the ability to recursively walk a package's modules
   and collect information on the items contained in the modules (including
-  objects and functions)
+  objects and functions).
 
 #### `skbase.testing`: Testing BaseObjects
 
@@ -188,7 +194,7 @@ collecting and testing classes that descend from BaseObject.
 
 This benefits users by:
 
-- Letting them incorporate these tests in their own projects, reducing the need
+- Making it easy to incorporate these tests in their own projects, reducing the need
   to spend time testing that their classes comply with the interface inheritted
   from `BaseObject`.
 - Providing an extensible framework they can use to collect and test their own
@@ -200,21 +206,21 @@ When developing packages that include parametric objects, verifying and comparin
 objects is a common worfklow.
 
 To aid this `skbase` will provide functions to:
-- Check if a BaseObject complies with the expected interface
-- Functionality to test if two BaseObjects have same parameters and parameter
-  values.
-- Check if a sequence is all BaseObjects.
-- Check if a collection contains named objects in allowable interface formats.
+- Check if a `BaseObject` complies with the expected interface
+- Test if two BaseObjects have same parameters and parameter values
+- Check if a sequence is all BaseObjects
+- Check if a collection contains named objects in allowable interface formats
 
 ### Example Repository
-This would be a simple example package that illustrates how `skbase`'s functionality
-can be used to create another package. It will also be used by `skbase` to test
-`skbase.testing`.
+`skbase`will also maintain a simple example package that illustrates how `skbase`'s
+functionality can be used to create another package. This will help illustrate
+how developers can use the package and also provide `skbase` another
+method of testing the functionality provided by `skbase.testing`.
 
 ### Template Repository
 To make it easy for others to use `skbase` in new projects, it is useful to provide
-a template repository that provides a starting point. This can be accomplished
-by creating and maintaining a
+a template repository that provides a starting point. `skbase` tends to make this
+available, potentially by creating and maintaining a
 [cookiecutter](https://cookiecutter.readthedocs.io/en/stable/README.html#features)
 template. Users, can then use the `cookiecutter` package's functionality to
 setup their own project.
