@@ -16,61 +16,61 @@ get stuck, please don't hesitate to chat with us or raise an issue.
    contribute/team
    contribute/code_of_conduct
 
-.. panels::
-    :card: + intro-card text-center
+.. grid:: 1 2 2 2
+    :gutter: 3
 
-    ---
+    .. grid-item-card:: How to Contribute
+        :text-align: center
 
-    How to contribute
-    ^^^^^^^^^^^^^^^^^
+        New to ``skbase``? Learn how you can contribute.
 
-    New to ``skbase``? Learn how you can contribute.
+        +++
 
-    +++
+        .. button-ref:: contribute/how_to_contribute
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: contribute/how_to_contribute
-            :type: ref
-            :text: Contribute
-            :classes: btn-block btn-secondary stretched-link
+            Contribute
 
-    ---
+    .. grid-item-card:: Development
+        :text-align: center
 
-    Development
-    ^^^^^^^^^^^
+        Help develop ``skbase``.
 
-    Help develop ``skbase``.
+        +++
 
-    +++
+        .. button-ref:: contribute/development
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: contribute/development
-            :type: ref
-            :text: Development
-            :classes: btn-block btn-secondary stretched-link
+            Development
 
-    ---
+    .. grid-item-card:: Development Team
+        :text-align: center
 
-    Development Team
-    ^^^^^^^^^^^^^^^^
+        Meet ``skbase``'score development team.
 
-    Meet ``skbase's`` core development team.
+        +++
 
-    +++
+        .. button-ref:: contribute/team
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: contribute/team
-            :type: ref
-            :text: Development Team
-            :classes: btn-block btn-secondary stretched-link
+            Development Team
 
-    ---
+    .. grid-item-card:: Code of Conduct
+        :text-align: center
 
-    Code of Conduct
-    ^^^^^^^^^^^^^^^
+        Understand our code of conduct.
 
-    Understand our code of conduct.
+        +++
 
-    +++
+        .. button-ref:: contribute/code_of_conduct
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: contribute/code_of_conduct
-            :type: ref
-            :text: Code of Conduct
-            :classes: btn-block btn-secondary stretched-link
+            Code of Conduct

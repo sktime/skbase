@@ -77,6 +77,24 @@ class BaseObject(_BaseEstimator):
         self._tags_dynamic = {}
         super(BaseObject, self).__init__()
 
+    def __eq__(self, other):
+        """Equality dunder. Checks equal class and parameters.
+
+        Returns True iff result of get_params(deep=False)
+        results in equal parameter sets.
+
+        Nested BaseObject descendants from get_params are compared via __eq__ as well.
+        """
+        from skbase.testing.utils.deep_equals import deep_equals
+
+        if not isinstance(other, BaseObject):
+            return False
+
+        self_params = self.get_params(deep=False)
+        other_params = other.get_params(deep=False)
+
+        return deep_equals(self_params, other_params)
+
     def reset(self):
         """Reset the object to a clean post-init state.
 
@@ -814,6 +832,11 @@ class BaseEstimator(BaseObject):
     Extends BaseObject to include basic functionality for fittable estimators.
     """
 
+    # tuple of non-BaseObject classes that count as nested objects
+    # get_fitted_params will retrieve parameters from these, too
+    # override in descendant class - common choice: BaseEstimator from sklearn
+    GET_FITTED_PARAMS_NESTING = ()
+
     def __init__(self):
         """Construct BaseEstimator."""
         self._is_fitted = False
@@ -851,3 +874,108 @@ class BaseEstimator(BaseObject):
                 f"This instance of {self.__class__.__name__} has not been fitted yet. "
                 f"Please call `fit` first."
             )
+
+    def get_fitted_params(self):
+        """Get fitted parameters.
+
+        State required:
+            Requires state to be "fitted".
+
+        Returns
+        -------
+        fitted_params : dict of fitted parameters, keys are str names of parameters
+            parameters of components are indexed as [componentname]__[paramname]
+        """
+        if not self.is_fitted:
+            raise NotFittedError(
+                f"estimator of type {type(self).__name__} has not been "
+                "fitted yet, please call fit on data before get_fitted_params"
+            )
+
+        fitted_params = {}
+
+        def sh(x):
+            """Shorthand to remove all underscores at end of a string."""
+            if x.endswith("_"):
+                return sh(x[:-1])
+            else:
+                return x
+
+        # add all nested parameters from components that are skbase BaseEstimator
+        c_dict = self._components()
+        for c, comp in c_dict.items():
+            if isinstance(comp, BaseEstimator) and comp._is_fitted:
+                c_f_params = comp.get_fitted_params()
+                c_f_params = {f"{sh(c)}__{k}": v for k, v in c_f_params.items()}
+                fitted_params.update(c_f_params)
+
+        # add non-nested fitted params of self
+        fitted_params.update(self._get_fitted_params())
+
+        # add all nested parameters from components that are sklearn estimators
+        # we do this recursively as we have to reach into nested sklearn estimators
+        any_components_left_to_process = True
+        old_new_params = fitted_params
+        # this loop recursively and iteratively processes components inside components
+        while any_components_left_to_process:
+            new_params = {}
+            for c, comp in old_new_params.items():
+                if isinstance(comp, self.GET_FITTED_PARAMS_NESTING):
+                    c_f_params = self._get_fitted_params_default(comp)
+                    c_f_params = {f"{sh(c)}__{k}": v for k, v in c_f_params.items()}
+                    new_params.update(c_f_params)
+            fitted_params.update(new_params)
+            old_new_params = new_params.copy()
+            n_new_params = len(new_params)
+            any_components_left_to_process = n_new_params > 0
+
+        return fitted_params
+
+    def _get_fitted_params_default(self, obj=None):
+        """Obtain fitted params of object, per sklearn convention.
+
+        Extracts a dict with {paramstr : paramvalue} contents,
+        where paramstr are all string names of "fitted parameters".
+
+        A "fitted attribute" of obj is one that ends in "_" but does not start with "_".
+        "fitted parameters" are names of fitted attributes, minus the "_" at the end.
+
+        Parameters
+        ----------
+        obj : any object, optional, default=self
+
+        Returns
+        -------
+        fitted_params : dict with str keys
+            fitted parameters, keyed by names of fitted parameter
+        """
+        obj = obj if obj else self
+
+        # default retrieves all self attributes ending in "_"
+        # and returns them with keys that have the "_" removed
+        #
+        # get all attributes ending in "_", exclude any that start with "_" (private)
+        fitted_params = [
+            attr for attr in dir(obj) if attr.endswith("_") and not attr.startswith("_")
+        ]
+        # remove the "_" at the end
+        fitted_param_dict = {
+            p[:-1]: getattr(obj, p) for p in fitted_params if hasattr(obj, p)
+        }
+
+        return fitted_param_dict
+
+    def _get_fitted_params(self):
+        """Get fitted parameters.
+
+        private _get_fitted_params, called from get_fitted_params
+
+        State required:
+            Requires state to be "fitted".
+
+        Returns
+        -------
+        fitted_params : dict with str keys
+            fitted parameters, keyed by names of fitted parameter
+        """
+        return self._get_fitted_params_default()

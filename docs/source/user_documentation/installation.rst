@@ -6,47 +6,58 @@ Installation
 
 ``skbase`` currently supports:
 
-* environments with python version 3.7, 3.8, 3.9 or 3.10
+* environments with python version 3.7, 3.8, 3.9, 3.10 or 3.11
 * operating systems Mac OS X, Unix-like OS, Windows 8.1 and higher
 
 Checkout the full list of pre-compiled wheels on
-`PyPI <https://pypi.org/simple/baseobject/>`_.
+`PyPI <https://pypi.org/simple/skbase/>`_.
 
 Release versions
 ================
 
 Most users will be interested in installing a released version of ``skbase``
 using one of the approaches outlined below. For common installation issues,
-see the `Release versions - troubleshooting`_ section.
+see the `troubleshooting release installations`_ section.
 
-Installing ``skbase`` from PyPI
--------------------------------
+Installing ``skbase``
+---------------------
 
-``skbase`` releases are available via PyPI and can be installed via ``pip`` using:
+``skbase`` releases are available via PyPI and can be installed via ``pip``. Users
+can choose whether to install the ``skbase`` with its standard dependencies or
+alternatively to install ``skbase`` with all its dependencies using the
+code snippets below.
 
-.. code-block:: bash
+.. tab-set::
 
-    pip install skbase
+    .. tab-item:: PyPi
 
-This will install ``skbase`` with core dependencies, excluding soft dependencies.
+        .. code-block:: bash
 
-To install ``skbase`` with maximum dependencies, including soft dependencies,
-install with the ``all_extras`` modifier:
+           pip install skbase
 
-.. code-block:: bash
+    .. tab-item:: PyPi (all dependencies)
 
-    pip install skbase[all_extras]
+        .. code-block:: bash
 
-Installing ``skbase`` from conda
-------------------------------------
+           pip install skbase[all_extras]
 
-.. note::
+    .. tab-item:: Conda
 
-    We are still working on creating releases of ``skbase`` on ``conda``.
-    If you would like to help, please open a pull request.
+        .. note::
 
-Release versions - troubleshooting
-----------------------------------
+            We are still working on creating releases of ``skbase`` on ``conda``.
+            If you would like to help, please open a pull request.
+
+    .. tab-item:: Conda (all dependencies)
+
+        .. note::
+
+            We are still working on creating releases of ``skbase`` on ``conda``.
+            If you would like to help, please open a pull request.
+
+
+Troubleshooting release installations
+-------------------------------------
 
 Missing soft fependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -66,7 +77,7 @@ of steps is as follows:
 
 
 1. Clone the ``skbase`` `Github repository`_
-2. Use ``pip`` to build ``skbase`` from source
+2. Use ``pip`` to build ``skbase`` from source and install development dependencies
 
 
 Detail instructions for each step is provided below.
@@ -85,7 +96,8 @@ To install the latest version using the ``git`` command line, use the following 
 4. Make sure you are on the main branch: :code:`git checkout main`
 5. Make sure your local version is up-to-date: :code:`git pull`
 
-See Github's `documentation <github_docs>`_ for additional details.
+See Github's `repository clone documentation`_
+for additional details.
 
 .. hint::
 
@@ -101,39 +113,57 @@ See Github's `documentation <github_docs>`_ for additional details.
 Step 2 - Build ``skbase`` from source
 -------------------------------------
 
-For a static install of ``skbase`` from source, navigate to your local
-clone's root directory run the following in your command line:
+When contributing to the project, you will want to install ``skbase`` locally, along
+with additional dependencies used when developing the package.
 
-.. code-block:: bash
+You can opt for a static install of ``skbase`` from your local source, but if you
+plan to contribute to the project you may be better served by installing ``skbase``
+in `editable mode`_ so that the the package updates each time the local source
+code is changed.
 
-    pip install .
+Either way, including the "[dev,test]" modifier, makes sure that the additional
+developer dependencies and test dependencies specified in the ``skbase``
+pyproject.toml file are also installed.
+
+To use either approach:
+
+1. Use your command line tool to navigate to the root directory of your local
+   copy of the ``skbase`` project
+2. Copy the code snippet below that corresponds to the installation approach you
+   would like to use
+3. Paste the copied code snippet in your command line tool and run it
+
+.. tab-set::
+
+    .. tab-item:: Static installation
+
+        .. code-block:: bash
+
+           pip install .[dev,test]
+
+    .. tab-item:: Install in editable mode
+
+        .. code-block:: bash
+
+           pip install --editable .[dev,test]
 
 .. hint::
 
     In either the static or editable installation, the ``.`` may be replaced
     with a full or relative path to your local clone's root directory.
 
-For a developer install that updates the package each time the
-local source code is changed, tell ``pip`` to install  ``skbase``
-in `editable mode <ed_installs>`_, via:
-
-.. code-block:: bash
-
-    pip install --editable .[dev]
-
-Including "[dev]" also makes sure that the optional *dev*
-dependencies specified in the ``skbase``'s pypyroject.toml file
-are also installed.
-
 .. hint::
 
-    By including "[dev]" above, ``pre-commit`` and other tools you'll want to use
-    when developing ``skbase`` are also installed. In most cases, you'll
-    let ``pre-commit`` manage installation environments for your linting tools.
-    However, some integrated development environments (for example, VS Code)
-    will automatically apply linters (including reformatting) on save. If you want
-    to easily Install all the linters in your environment use
-    :code:`pip install --editable .[dev,linters]`.
+    Using the "[dev]" modifier installs developer dependencies, including
+    ``pre-commit`` and other tools you'll want to use when developing ``skbase``.
+    In most cases, you'll let ``pre-commit`` manage installation environments
+    for your linting tools. However, some integrated development environments
+    (for example, VS Code) will automatically apply linters (including
+    reformatting) on save. This may require the linters to be installed
+    directly in your development environment. If you want to easily Install all
+    the linters used by ``skbase`` in your development environment use
+    :code:`pip install .[dev,test,linters]`
+    or :code:`pip install --editable .[dev,test,linters]` instead.
 
 Building binary packages and installers
 =======================================
@@ -154,5 +184,5 @@ The installation instruction are adapted from sktime's
 `installation instructions <https://www.sktime.org/en/stable/installation.html>`_.
 
 .. _Github repository: https://github.com/sktime/skbase
-.. _github_docs: https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
-.. _ed_installs: https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs
+.. _repository clone documentation: https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
+.. _editable mode: https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs

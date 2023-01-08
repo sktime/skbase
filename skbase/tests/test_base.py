@@ -64,6 +64,7 @@ __all__ = [
     "test_create_test_instance",
     "test_create_test_instances_and_names",
     "test_has_implementation_of",
+    "test_eq_dunder",
 ]
 
 import inspect
@@ -77,56 +78,15 @@ from sklearn import config_context
 # TODO: Update with import of skbase clone function once implemented
 from sklearn.base import clone
 
-from skbase.base import BaseObject
+from skbase.base import BaseEstimator, BaseObject
+from skbase.tests.conftest import Child, Parent
+from skbase.tests.mock_package.test_mock_package import CompositionDummy
+
 
 # TODO: Determine if we need to add sklearn style test of
 # test_set_params_passes_all_parameters
-
-
-# Fixture class for testing tag system
-class FixtureClassParent(BaseObject):
-    """Fixture class to test BaseObject's usage."""
-
-    _tags = {"A": "1", "B": 2, "C": 1234, 3: "D"}
-
-    def __init__(self, a="something", b=7, c=None):
-        self.a = a
-        self.b = b
-        self.c = c
-        super().__init__()
-
-    def some_method(self):
-        """To be implemented by child class."""
-        pass
-
-
-# Fixture class for testing tag system, child overrides tags
-class FixtureClassChild(FixtureClassParent):
-    """Fixture class that is child of FixtureClassParent."""
-
-    _tags = {"A": 42, 3: "E"}
-
-    def some_method(self):
-        """Child class' implementation."""
-        pass
-
-    def some_other_method(self):
-        """To be implemented in the child class."""
-        pass
-
-
-# Test composition related interface functionality
-class CompositionDummy(BaseObject):
-    """Potentially composite object, for testing."""
-
-    def __init__(self, foo, bar=84):
-        self.foo = foo
-        self.foo_ = deepcopy(foo)
-        self.bar = bar
-        super().__init__()
-
-
 class ResetTester(BaseObject):
+    """Class for testing reset functionality."""
 
     clsvar = 210
 
@@ -137,6 +97,7 @@ class ResetTester(BaseObject):
         super().__init__()
 
     def foo(self, d=126):
+        """Foo gets done."""
         self.d = deepcopy(d)
         self._d = deepcopy(d)
         self.d_ = deepcopy(d)
@@ -144,6 +105,8 @@ class ResetTester(BaseObject):
 
 
 class InvalidInitSignatureTester(BaseObject):
+    """Class for testing invalid signature."""
+
     def __init__(self, a, *args):
         super().__init__()
 
@@ -153,7 +116,16 @@ class RequiredParam(BaseObject):
 
     _required_parameters = ["a"]
 
-    def __init__self(self, a, b=7):
+    def __init__(self, a, b=7):
+        self.a = a
+        self.b = b
+        super().__init__()
+
+
+class NoParamInterface:
+    """Simple class without BaseObject's param interface for testing get_params."""
+
+    def __init__(self, a=7, b=12):
         self.a = a
         self.b = b
         super().__init__()
@@ -176,15 +148,6 @@ class ModifyParam(BaseObject):
         super().__init__()
 
 
-class NoParamInterface:
-    """Simple class without BaseObject's param interface for testing get_params."""
-
-    def __init__(self, a=7, b=12):
-        self.a = a
-        self.b = b
-        super().__init__()
-
-
 @pytest.fixture
 def fixture_object():
     """Pytest fixture of BaseObject class."""
@@ -193,33 +156,33 @@ def fixture_object():
 
 @pytest.fixture
 def fixture_class_parent():
-    """Pytest fixture for FixtureClassParent."""
-    return FixtureClassParent
+    """Pytest fixture for Parent class."""
+    return Parent
 
 
 @pytest.fixture
 def fixture_class_child():
-    """Pytest fixture for FixtureClassChild."""
-    return FixtureClassChild
+    """Pytest fixture for Child class."""
+    return Child
 
 
 @pytest.fixture
 def fixture_class_parent_instance():
-    """Pytest fixture for instance of FixtureClassParent."""
-    return FixtureClassParent()
+    """Pytest fixture for instance of Parent class."""
+    return Parent()
 
 
 @pytest.fixture
 def fixture_class_child_instance():
-    """Pytest fixture for instance of FixtureClassChild."""
-    return FixtureClassChild()
+    """Pytest fixture for instance of Child class."""
+    return Child()
 
 
 # Fixture class for testing tag system, object overrides class tags
 @pytest.fixture
 def fixture_tag_class_object():
     """Fixture class for testing tag system, object overrides class tags."""
-    fixture_class_child = FixtureClassChild()
+    fixture_class_child = Child()
     fixture_class_child._tags_dynamic = {"A": 42424241, "B": 3}
     return fixture_class_child
 
@@ -238,7 +201,7 @@ def fixture_reset_tester():
 
 @pytest.fixture
 def fixture_class_child_tags(fixture_class_child):
-    """Pytest fixture for tags of FixtureClassChild."""
+    """Pytest fixture for tags of Child."""
     return fixture_class_child.get_class_tags()
 
 
@@ -252,13 +215,13 @@ def fixture_object_instance_set_tags(fixture_tag_class_object):
 @pytest.fixture
 def fixture_object_tags():
     """Fixture object tags."""
-    return {"A": 42424241, "B": 3, "C": 1234, 3: "E"}
+    return {"A": 42424241, "B": 3, "C": 1234, "3": "E"}
 
 
 @pytest.fixture
 def fixture_object_set_tags():
     """Fixture object tags."""
-    return {"A": 42424243, "B": 3, "C": 1234, 3: "E", "E": 3}
+    return {"A": 42424243, "B": 3, "C": 1234, "3": "E", "E": 3}
 
 
 @pytest.fixture
@@ -293,7 +256,7 @@ def fixture_modify_param():
 
 @pytest.fixture
 def fixture_class_parent_expected_params():
-    """Pytest fixture class for expected params of FixtureClassParent."""
+    """Pytest fixture class for expected params of Parent."""
     return {"a": "something", "b": 7, "c": None}
 
 
@@ -535,7 +498,9 @@ def test_components(fixture_object, fixture_class_parent, fixture_composition_du
     assert isinstance(comp_comps, dict)
     assert set(comp_comps.keys()) == {"foo_"}
     assert comp_comps["foo_"] == composite.foo_
-    assert comp_comps["foo_"] != composite.foo
+    assert comp_comps["foo_"] is composite.foo_
+    assert comp_comps["foo_"] == composite.foo
+    assert comp_comps["foo_"] is not composite.foo
 
     assert comp_comps == comp_comps_baseobject_filter
     assert comp_comps_filter == {}
@@ -914,18 +879,18 @@ def test_baseobject_repr(fixture_class_parent, fixture_composition_dummy):
     # Simple test where all parameters are left at defaults
     # Should not see parameters and values in printed representation
     base_obj = fixture_class_parent()
-    assert repr(base_obj) == "FixtureClassParent()"
+    assert repr(base_obj) == "Parent()"
 
     # Check that we can alter the detail about params that is printed
     # using config_context with ``print_changed_only=False``
     with config_context(print_changed_only=False):
-        assert repr(base_obj) == "FixtureClassParent(a='something', b=7, c=None)"
+        assert repr(base_obj) == "Parent(a='something', b=7, c=None)"
 
     simple_composite = fixture_composition_dummy(foo=fixture_class_parent())
-    assert repr(simple_composite) == "CompositionDummy(foo=FixtureClassParent())"
+    assert repr(simple_composite) == "CompositionDummy(foo=Parent())"
 
     long_base_obj_repr = fixture_class_parent(a=["long_params"] * 1000)
-    assert len(repr(long_base_obj_repr)) == 675
+    assert len(repr(long_base_obj_repr)) == 535
 
 
 def test_baseobject_str(fixture_class_parent_instance):
@@ -970,7 +935,7 @@ def test_get_test_params(fixture_class_parent_instance):
 def test_get_test_params_raises_error_when_params_required(fixture_required_param):
     """Test get_test_params raises an error when parameters are required."""
     with pytest.raises(ValueError):
-        fixture_required_param().get_test_params()
+        fixture_required_param(7).get_test_params()
 
 
 def test_create_test_instance(fixture_class_parent, fixture_class_parent_instance):
@@ -1036,3 +1001,69 @@ def test_has_implementation_of(
     # If the method is defined the first time in the parent class it should not
     # return _has_implementation_of == True
     assert not fixture_class_parent_instance._has_implementation_of("some_method")
+
+
+class FittableCompositionDummy(BaseEstimator):
+    """Potentially composite object, for testing."""
+
+    def __init__(self, foo, bar=84):
+        self.foo = foo
+        self.foo_ = deepcopy(foo)
+        self.bar = bar
+
+    def fit(self):
+        if hasattr(self.foo_, "fit"):
+            self.foo_.fit()
+        self._is_fitted = True
+
+
+def test_eq_dunder():
+    """Tests equality dunder for BaseObject descendants.
+
+    Equality should be determined only by get_params results.
+
+    Raises
+    ------
+    AssertionError if logic behind __eq__ is incorrect, logic tested:
+        equality of non-composites depends only on params, not on identity
+        equality of composites depends only on params, not on identity
+        result is not affected by fitting the estimator
+    """
+    non_composite = FittableCompositionDummy(foo=42)
+    non_composite_2 = FittableCompositionDummy(foo=42)
+    non_composite_3 = FittableCompositionDummy(foo=84)
+
+    composite = FittableCompositionDummy(foo=non_composite)
+    composite_2 = FittableCompositionDummy(foo=non_composite_2)
+    composite_3 = FittableCompositionDummy(foo=non_composite_3)
+
+    # test basic equality - expected equalitiesi as per parameters
+    assert non_composite == non_composite
+    assert composite == composite
+    assert non_composite == non_composite_2
+    assert non_composite != non_composite_3
+    assert non_composite_2 != non_composite_3
+    assert composite == composite_2
+    assert composite != composite_3
+    assert composite_2 != composite_3
+
+    # test interaction with clone and copy
+    assert non_composite.clone() == non_composite
+    assert composite.clone() == composite
+    assert deepcopy(non_composite) == non_composite
+    assert deepcopy(composite) == composite
+
+    # test that equality is not be affected by fitting
+    composite.fit()
+    non_composite_2.fit()
+    # composite_2 is an unfitted version of composite
+    # composite is an unfitted version of non_composite_2
+
+    assert non_composite == non_composite
+    assert composite == composite
+    assert non_composite == non_composite_2
+    assert non_composite != non_composite_3
+    assert non_composite_2 != non_composite_3
+    assert composite == composite_2
+    assert composite != composite_3
+    assert composite_2 != composite_3

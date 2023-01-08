@@ -14,7 +14,6 @@ all_objects(object_types, filter_tags)
 # is based on the sklearn estimator retrieval utility of the same name
 # See https://github.com/scikit-learn/scikit-learn/blob/main/COPYING and
 # https://github.com/alan-turing-institute/sktime/blob/main/LICENSE
-
 import importlib
 import inspect
 import io
@@ -74,7 +73,7 @@ class ClassInfo(TypedDict):
 
 
 class FunctionInfo(TypedDict):
-    """Type definitions for information on a module's functions."""
+    """Information on a module's functions."""
 
     func: FunctionType
     name: str
@@ -110,12 +109,16 @@ def _is_non_public_module(module_name: str) -> bool:
     is_non_public : bool
         Whether the module is non-public or not.
     """
-    is_non_public: bool = "._" in module_name
+    if not isinstance(module_name, str):
+        raise ValueError(
+            f"Parameter `module_name` should be str, but found {type(module_name)}."
+        )
+    is_non_public: bool = "._" in module_name or module_name.startswith("_")
     return is_non_public
 
 
 def _is_ignored_module(
-    module_name: str, modules_to_ignore: Union[List[str], Tuple[str]] = None
+    module_name: str, modules_to_ignore: Union[str, List[str], Tuple[str]] = None
 ) -> bool:
     """Determine if module is one of the ignored modules.
 
@@ -123,13 +126,14 @@ def _is_ignored_module(
     is in the list/tuple `modules_to_ignore`.
 
     E.g., if `modules_to_ignore` contains the string `"foo"`, then `True` will be
-    returned for `module_name`-s `"bar.foo"`, `"foo"`, `"foo.bar"`, `"bar.foo.bar"`, etc
+    returned for `module_name`-s `"bar.foo"`, `"foo"`, `"foo.bar"`,
+    `"bar.foo.bar"`, etc.
 
     Paramters
     ---------
     module_name : str
         Name of the module.
-    modules_to_ignore : list[str] or tuple[str]
+    modules_to_ignore : str, list[str] or tuple[str]
         The modules that should be ignored when walking the package.
 
     Returns
@@ -137,11 +141,14 @@ def _is_ignored_module(
     is_ignored : bool
         Whether the module is an ignrored module or not.
     """
+    if isinstance(modules_to_ignore, str):
+        modules_to_ignore = (modules_to_ignore,)
     is_ignored: bool
-    if modules_to_ignore is not None:
-        is_ignored = any(part in modules_to_ignore for part in module_name.split("."))
-    else:
+    if modules_to_ignore is None:
         is_ignored = False
+    else:
+        is_ignored = any(part in modules_to_ignore for part in module_name.split("."))
+
     return is_ignored
 
 
@@ -194,28 +201,36 @@ def _filter_by_tags(
     """
     if tag_filter is None:
         return True
+
     if hasattr(klass, "get_class_tags"):
         klass_tags = klass.get_class_tags()
+
+    else:
+        # If the object doesn't have tag interface it can't have the tags in tag_filter
+        return False
     # If a string is supplied verify it is in the returned tag dict
     if isinstance(tag_filter, str):
         has_tag = tag_filter in klass_tags
     # If a iterable of strings is provided, check that all are in the returned tag_dict
-    elif isinstance(tag_filter, Iterable) and all(
-        [isinstance(t, str) for t in tag_filter]
+    elif (
+        isinstance(tag_filter, Iterable)
+        and not isinstance(tag_filter, dict)
+        and all([isinstance(t, str) for t in tag_filter])
     ):
         has_tag = all([tag in klass_tags for tag in tag_filter])
-    # If a dict is suppied verify that tag and value are acceptable
-    elif isinstance(tag_filter, dict):
+    # If a dict is supplied verify that tag and value are acceptable
+    elif isinstance(tag_filter, dict) and all(isinstance(k, str) for k in tag_filter):
+        has_tag = False  # default to tag being filtered out unless it passes below
         for tag, value in tag_filter.items():
             if not isinstance(value, Iterable):
                 value = [value]
-                if tag in klass_tags:
-                    has_tag = klass_tags[tag] in set(value)
-                else:
-                    has_tag = False
-                # We can break the loop and return has_tag as False if it is ever False
-                if not has_tag:
-                    break
+            if tag in klass_tags:
+                has_tag = klass_tags[tag] in set(value)
+            else:
+                has_tag = False
+            # We can break the loop and return has_tag as False if it is ever False
+            if not has_tag:
+                break
     else:
         raise ValueError(
             "`tag_filter` should be a string tag name, iterable of string tag names, "
@@ -233,8 +248,9 @@ def _walk(root, exclude=None, prefix=""):
 
     Parameters
     ----------
-    root : Path
-        Root path in which to look for submodules
+    root : str or path-like
+        Root path in which to look for submodules. Can be a string path,
+        pathlib.Path or other path-like object.
     exclude : tuple of str or None, optional, default = None
         List of sub-modules to ignore in the return, including sub-modules
     prefix: str, optional, default = ""
@@ -246,6 +262,8 @@ def _walk(root, exclude=None, prefix=""):
         Iterates over all sub-modules of root that do not contain any of the
         strings on the `exclude` list string is prefixed by the string `prefix`
     """
+    if not isinstance(root, str):
+        root = str(root)
     for loader, module_name, is_pkg in pkgutil.iter_modules(path=[root]):
         if not _is_ignored_module(module_name, modules_to_ignore=exclude):
             yield f"{prefix}{module_name}", is_pkg, loader
@@ -257,42 +275,44 @@ def _walk(root, exclude=None, prefix=""):
 
 
 def _import_module(
-    module_name: str,
+    module: Union[str, importlib.machinery.SourceFileLoader],
     suppress_import_stdout: bool = True,
-    loader: importlib.machinery.SourceFileLoader = None,
 ) -> ModuleType:
     """Import a module, while optionally suppressing import standard out.
 
     Parameters
     ----------
-    module_name : str
-        Name of the module to be imported.
+    module : str or importlib.machinery.SourceFileLoader
+        Name of the module to be imported or a SourceFileLoader to load a module.
     suppress_import_stdout : bool, default=True
         Whether to suppress stdout printout upon import.
-    loader : importlib.machinery.SourceFileLoader, default=None
-        If provided, this should be the loader to load the module.
 
     Returns
     -------
-    module : ModuleType
+    imported_mod : ModuleType
         The module that was imported.
     """
-    if loader is None:
+    if isinstance(module, str):
         if suppress_import_stdout:
             # setup text trap, import, then restore
             sys.stdout = io.StringIO()
-            module = importlib.import_module(module_name)
+            imported_mod = importlib.import_module(module)
             sys.stdout = sys.__stdout__
         else:
-            module = importlib.import_module(module_name)
-    else:
+            imported_mod = importlib.import_module(module)
+    elif isinstance(module, importlib.machinery.SourceFileLoader):
         if suppress_import_stdout:
             sys.stdout = io.StringIO()
-            module = loader.load_module()
+            imported_mod = module.load_module()
             sys.stdout = sys.__stdout__
         else:
-            module = loader.load_module()
-    return module
+            imported_mod = module.load_module()
+    else:
+        raise ValueError(
+            "`module` should be string module name or instance of "
+            "importlib.machinery.SourceFileLoader."
+        )
+    return imported_mod
 
 
 def _determine_module_path(
@@ -316,6 +336,11 @@ def _determine_module_path(
     path : str or absolute pathlib.Path, default=None
         If provided, this should be the path that should be used as root
         to find any modules or submodules.
+
+    Returns
+    -------
+    module, path_, loader : ModuleType, str, importlib.machinery.SourceFileLoader
+        Returns the module, a string of its path and its SourceFileLoader.
     """
     if not isinstance(package_name, str):
         raise ValueError(
@@ -341,7 +366,6 @@ def _determine_module_path(
         ):
             path_ = module.__path__[0]
         elif hasattr(module, "__file__") and module.__file__ is not None:
-            # path = Path(module.__file__).parent
             path_ = module.__file__.split(".")[0]
         else:
             raise ValueError(
@@ -357,9 +381,7 @@ def _determine_module_path(
             # if both available.
             try:
                 loader = _instantiate_loader(package_name, path_)
-                module = _import_module(
-                    package_name, suppress_import_stdout=False, loader=loader
-                )
+                module = _import_module(loader, suppress_import_stdout=False)
             except ImportError:
                 raise ValueError(
                     f"Unable to import a package named {package_name} based "
@@ -381,6 +403,7 @@ def _get_module_info(
     exclude_non_public_items: bool = True,
     class_filter: Optional[Union[type, Sequence[type]]] = None,
     tag_filter: Optional[Union[str, Sequence[str], Mapping[str, Any]]] = None,
+    classes_to_exclude: Optional[Union[type, Sequence[type]]] = None,
 ) -> ModuleInfo:
     # Make package_base_classes a tuple if it was supplied as a class
     base_classes_none = False
@@ -390,6 +413,15 @@ def _get_module_info(
         if package_base_classes is None:
             base_classes_none = True
         package_base_classes = (package_base_classes,)
+
+    exclude_classes: Optional[Sequence[type]]
+    if classes_to_exclude is None:
+        exclude_classes = classes_to_exclude
+    elif isinstance(classes_to_exclude, Sequence):
+        exclude_classes = classes_to_exclude
+    elif inspect.isclass(classes_to_exclude):
+        exclude_classes = (classes_to_exclude,)
+
     designed_imports: List[str] = getattr(module, "__all__", [])
     authors: Union[str, List[str]] = getattr(module, "__author__", [])
     if isinstance(authors, (list, tuple)):
@@ -400,6 +432,7 @@ def _get_module_info(
         # Skip a class if non-public items should be excluded and it starts with "_"
         if (
             (exclude_non_public_items and klass.__name__.startswith("_"))
+            or (exclude_classes is not None and klass in exclude_classes)
             or not _filter_by_tags(klass, tag_filter=tag_filter)
             or not _filter_by_class(klass, class_filter=class_filter)
         ):
@@ -436,7 +469,7 @@ def _get_module_info(
     for name, func in inspect.getmembers(module, inspect.isfunction):
         if func.__module__ == module.__name__ or name in designed_imports:
             # Skip a class if non-public items should be excluded and it starts with "_"
-            if exclude_non_public_items and klass.__name__.startswith("_"):
+            if exclude_non_public_items and func.__name__.startswith("_"):
                 continue
             # Otherwise, store info about the class
             module_functions[name] = {
@@ -475,11 +508,12 @@ def get_package_metadata(
     path: Optional[str] = None,
     recursive: bool = True,
     exclude_non_public_items: bool = True,
-    exclude_nonpublic_modules: bool = True,
-    modules_to_ignore: Union[List[str], Tuple[str]] = ("tests",),
+    exclude_non_public_modules: bool = True,
+    modules_to_ignore: Union[str, List[str], Tuple[str]] = ("tests",),
     package_base_classes: Union[type, Tuple[type, ...]] = (BaseObject,),
     class_filter: Optional[Union[type, Sequence[type]]] = None,
     tag_filter: Optional[Union[str, Sequence[str], Mapping[str, Any]]] = None,
+    classes_to_exclude: Optional[Union[type, Sequence[type]]] = None,
     suppress_import_stdout: bool = True,
 ) -> Mapping[str, ModuleInfo]:
     """Return a dictionary mapping all package modules to their metadata.
@@ -512,20 +546,33 @@ def get_package_metadata(
     exclude_non_public_modules : bool, default=True
         Whether to exclude nonpublic modules (modules where names start with
         a leading underscore).
-    modules_to_ignore : list[str] or tuple[str], default=()
-        The modules that should be ignored when walking the package.
-        If passed, ignores modules identical with, or submodule of a module whose name
-        is in the list/tuple `modules_to_ignore`.
-        E.g., if `modules_to_ignore` contains the string `"foo"`, then returns `True`
-        for `module_name`-s `"bar.foo"`, `"foo"`, `"foo.bar"`, `"bar.foo.bar"`, etc
-
+    modules_to_ignore : str, tuple[str] or list[str], default="tests"
+        The modules that should be ignored when searching across the modules to
+        gather objects. If passed, `all_objects` ignores modules or submodules
+        of a module whose name is in the provided string(s). E.g., if
+        `modules_to_ignore` contains the string `"foo"`, then `"bar.foo"`,
+        `"foo"`, `"foo.bar"`, `"bar.foo.bar"` are ignored.
     package_base_classes: type or Sequence[type], default = (BaseObject,)
         The base classes used to determine if any classes found in metadata descend
         from a base class.
-    class_filter : objects or iterable of objects
-        Classes that `klass` is checked against.
-    tag_filter : str, iterable of str or dict
+    class_filter : object or Sequence[object], default=None
+        Classes that `klass` is checked against. Only classes that are subclasses
+        of the supplied `class_filter` are returned in metadata.
+    tag_filter : str, Sequence[str] or dict[str, Any], default=None
         Filter used to determine if `klass` has tag or expected tag values.
+
+        - If a str or list of strings is provided, the return will be filtered
+          to keep classes that have all the tag(s) specified by the strings.
+        - If a dict is provided, the return will be filtered to keep classes
+          that have all dict keys as tags. Tag values are also checked such that:
+
+          - If a dict key maps to a single value only classes with tag values equal
+            to the value are returned.
+          - If a dict key maps to multiple values (e.g., list) only classes with
+            tag values in these values are returned.
+
+    classes_to_exclude: objects or iterable of object, default=None
+        Classes to exclude from returned metadata.
 
     Other Parameters
     ----------------
@@ -561,15 +608,17 @@ def get_package_metadata(
     # Get any metadata at the top-level of the provided package
     # This is because the pkgutil.walk_packages doesn't include __init__
     # file when walking a package
-    module_info[package_name] = _get_module_info(
-        module,
-        loader.is_package(package_name),
-        path,
-        package_base_classes,
-        exclude_non_public_items=exclude_non_public_items,
-        class_filter=class_filter,
-        tag_filter=tag_filter,
-    )
+    if not _is_ignored_module(package_name, modules_to_ignore=modules_to_ignore):
+        module_info[package_name] = _get_module_info(
+            module,
+            loader.is_package(package_name),
+            path,
+            package_base_classes,
+            exclude_non_public_items=exclude_non_public_items,
+            class_filter=class_filter,
+            tag_filter=tag_filter,
+            classes_to_exclude=classes_to_exclude,
+        )
 
     # Now walk through any submodules
     prefix = f"{package_name}."
@@ -581,7 +630,7 @@ def get_package_metadata(
         )
         for name, is_pkg, _ in _walk(path, exclude=modules_to_ignore, prefix=prefix):
             # Used to skip-over ignored modules and non-public modules
-            if exclude_nonpublic_modules and _is_non_public_module(name):
+            if exclude_non_public_modules and _is_non_public_module(name):
                 continue
 
             try:
@@ -596,24 +645,34 @@ def get_package_metadata(
                     exclude_non_public_items=exclude_non_public_items,
                     class_filter=class_filter,
                     tag_filter=tag_filter,
+                    classes_to_exclude=classes_to_exclude,
                 )
             except ImportError:
                 continue
 
             if recursive and is_pkg:
-                name_ending: str = name.split(".")[1] if "." in name else name
-                updated_path: str = "\\".join([path, name_ending])
+                if "." in name:
+                    name_ending = name[len(package_name) + 1 :]
+                else:
+                    name_ending = name
+
+                updated_path: str
+                if "." in name_ending:
+                    updated_path = "/".join([path, name_ending.replace(".", "/")])
+                else:
+                    updated_path = "/".join([path, name_ending])
                 module_info.update(
                     get_package_metadata(
                         package_name=name,
                         path=updated_path,
                         recursive=recursive,
                         exclude_non_public_items=exclude_non_public_items,
-                        exclude_nonpublic_modules=exclude_nonpublic_modules,
+                        exclude_non_public_modules=exclude_non_public_modules,
                         modules_to_ignore=modules_to_ignore,
                         package_base_classes=package_base_classes,
                         class_filter=class_filter,
                         tag_filter=tag_filter,
+                        classes_to_exclude=classes_to_exclude,
                         suppress_import_stdout=suppress_import_stdout,
                     )
                 )
@@ -624,6 +683,7 @@ def get_package_metadata(
 def all_objects(
     object_types=None,
     filter_tags=None,
+    exclude_objects=None,
     exclude_estimators=None,
     return_names=True,
     as_dataframe=False,
@@ -631,120 +691,124 @@ def all_objects(
     suppress_import_stdout=True,
     package_name="skbase",
     path: Optional[str] = None,
+    modules_to_ignore=None,
     ignore_modules=None,
     class_lookup=None,
 ):
-    """Get a list of all `skbase` objects in the package with name `package_name`.
+    """Get a list of all objects in a package with name `package_name`.
 
-    This function crawls the package/module to retreive all `skbase` objects,
-    i.e., classes that are descendents of `BaseObject`,
-
-    `all_objects` retrievs `skbase` objects based on their inheritance from
-    intermediate classes, and their tags.
+    This function crawls the package/module to retreive all classes
+    that are descendents of BaseObject. By default it does this for the `skbase`
+    package, but users can specify `package_name` or `path` to another project
+    and `all_objects` will crawl and retrieve BaseObjects found in that project.
 
     Parameters
     ----------
     object_types: class or list of classes, default=None
+
         - If class_lookup is provided, can also be str or list of str
           which kind of objects should be returned.
         - If None, no filter is applied and all estimators are returned.
         - If class or list of class, estimators are filtered to inherit from
           one of these.
-        - If str or list of str, classes ca be aliased by strings, via class_lookup.
+        - If str or list of str, classes can be aliased by strings, as long
+          as `class_lookup` parameter is passed a lookup dict.
+
     return_names: bool, default=True
+
         - If True, estimator class name is included in the all_estimators()
           return in the order: name, estimator class, optional tags, either as
           a tuple or as pandas.DataFrame columns.
-        if False, estimator class name is removed from the all_estimators()
-            return.
-    filter_tags: dict of (str or list of str), optional (default=None)
-        For a list of valid tag strings, use the registry.all_tags utility.
-        subsets the returned estimators as follows:
-            each key/value pair is statement in "and"/conjunction
-                key is tag name to sub-set on
-                value str or list of string are tag values
-                condition is "key must be equal to value, or in set(value)".
-    exclude_estimators: str or list of str, odefault=None
+        - If False, estimator class name is removed from the all_estimators()
+          return.
+
+    filter_tags: str, list[str] or dict[str, Any], default=None
+        Filter used to determine if `klass` has tag or expected tag values.
+
+        - If a str or list of strings is provided, the return will be filtered
+          to keep classes that have all the tag(s) specified by the strings.
+        - If a dict is provided, the return will be filtered to keep classes
+          that have all dict keys as tags. Tag values are also checked such that:
+
+          - If a dict key maps to a single value only classes with tag values equal
+            to the value are returned.
+          - If a dict key maps to multiple values (e.g., list) only classes with
+            tag values in these values are returned.
+
+    exclude_objects: str or list[str], default=None
         Names of estimators to exclude.
     as_dataframe: bool, default=False
+
         - If False, `all_objects` will return a list (either a list of
-            `skbase` objects or a list of tuples, see Returns).
+          `skbase` objects or a list of tuples, see Returns).
         - If True, `all_objects` will return a `pandas.DataFrame` with named
             columns for all of the attributes being returned.
             this requires soft dependency `pandas` to be installed.
+
     return_tags: str or list of str, default=None
-        Names of tags to fetch and return each `skbase` object's value of.
-        For a list of valid tag strings, use the registry.all_tags utility.
-        If str or list of str, the tag values named in return_tags will be
-        fetched for each object and will be appended as either columns or
-        tuple entries.
+        Names of tags to fetch and return each object's value of. The tag values
+        named in return_tags will be fetched for each object and will be appended
+        as either columns or tuple entries.
     package_name : str, default="skbase".
-        should be set to default to package or module name if used for search.
-        objects will be searched inside the package/module called package_name,
-        this can include sub-module dots, e.g., "package.module1.module2".
+        Should be set to default to package or module name that objects will
+        be retrieved from. Objects will be searched inside `package_name`,
+        including in sub-modules (e.g., in package_name, package_name.module1,
+        package.module2, and package.module1.module3).
     path : str, default=None
         If provided, this should be the path that should be used as root
         to find `package_name` and start the search for any submodules/packages.
-    ignore_modules : str or lits of str, optional. Default=empty list
-        The modules that should be ignored in search.
-        If passed, ignores modules identical with, or submodule of a module whose name
-        is in the list/tuple `ignore_modules`.
-        E.g., if `ignore_modules` contains the string `"foo"`, then returns `True`
-        for `module_name`-s `"bar.foo"`, `"foo"`, `"foo.bar"`, `"bar.foo.bar"`, etc
+        This can be left at the default value (None) if searching in an installed
+        package.
+    modules_to_ignore : str or list[str], default=None
+        The modules that should be ignored when searching across the modules to
+        gather objects. If passed, `all_objects` ignores modules or submodules
+        of a module whose name is in the provided string(s). E.g., if
+        `modules_to_ignore` contains the string `"foo"`, then `"bar.foo"`,
+        `"foo"`, `"foo.bar"`, `"bar.foo.bar"` are ignored.
+
     class_lookup : dict[str, class], default=None
-        Dictionary of aliases for classes used in object_types.
+        Dictionary of string aliases for classes used in object_types. If provided,
+        `object_types` can accept str values or a list of string values.
 
     Other Parameters
     ----------------
     suppress_import_stdout : bool, default=True
-        whether to suppress stdout printout upon import.
+        Whether to suppress stdout printout upon import.
 
     Returns
     -------
     all_estimators will return one of the following:
-        1. pandas.DataFrame if `as_dataframe = True`, otherwise:
-        2. list of `skbase` objects, if `return_names=False`, `return_tags=None`
-        3. list of tuples (optional: object name, class, ~optional: object
-                tags), if `return_names=True` or `return_tags` is not `None`.
 
-        - If list of `skbase` objects, entries are estimators matching the query,
-          in alphabetical order of estimator name
-        - If list of tuples list of (optional estimator name, estimator,
-          optional estimator tags) matching the query,
-          in alphabetical order of estimator name, where:
+    - a pandas.DataFrame if `as_dataframe=True`, with columns:
 
-            - ``name`` is the `skbase` object name as string, and is an optional return
-            - ``object`` is the actual `skbase` object class
-            - ``tags`` are the object's values for each tag in `return_tags`
-              and is an optional return.
+      - "names" with the returned class names if `return_name=True`
+      - "objects" with returned classes.
+      - optional columns named based on tags passed in `return_tags`
+        if `return_tags is not None`.
 
-        - If dataframe, `all_objects` will return a pandas.DataFrame.
-          Column names represent the attributes contained in each column.
-          "objects" will be the name of the column of `skbase` objects, "names"
-          will be the name of the column of class names and the string(s)
-          passed in `return_tags` will serve as column names for all columns of
-          tags that were optionally requested.
+    - a list if `as_dataframe=False`, where list elements are:
+
+      - classes (that inherit from BaseObject) in alphabetic order by class name
+        if `return_names=False` and `return_tags=None.
+      - (name, class) tuples in alphabetic order by name if `return_names=True`
+        and `return_tags=None`.
+      - (name, class, tag-value1, ..., tag-valueN) tuples in alphabetic order by name
+        if `return_names=True` and `return_tags is not None`.
+      - (class, tag-value1, ..., tag-valueN) tuples in alphabetic order by
+        class name if `return_names=False` and `return_tags is not None`.
 
     References
     ----------
-    Modified version of scikit-learn's and sktime's `all_estimators()`.
+    Modified version of scikit-learn's and sktime's `all_estimators()` to allow
+    users to find BaseObjects in `skbase` and other packages.
     """
     module, root, _ = _determine_module_path(package_name, path)
-
-    if ignore_modules is None:
+    if modules_to_ignore is None:
         modules_to_ignore = []
-    else:
-        modules_to_ignore = ignore_modules
+    if exclude_objects is None:
+        exclude_objects = []
 
     all_estimators = []
-    # root = str(pathlib.Path(__file__).parent.parent)  # sktime package root directory
-
-    # def _is_abstract(klass):
-    #     if not (hasattr(klass, "__abstractmethods__")):
-    #         return False
-    #     if not len(klass.__abstractmethods__):
-    #         return False
-    #     return True
 
     def _is_base_class(name):
         return name.startswith("_") or name.startswith("Base")
@@ -809,14 +873,12 @@ def all_objects(
         ]
 
     # Filter based on given exclude list
-    if exclude_estimators:
-        exclude_estimators = _check_list_of_str_or_error(
-            exclude_estimators, "exclude_estimators"
-        )
+    if exclude_objects:
+        exclude_objects = _check_list_of_str_or_error(exclude_objects, "exclude_object")
         all_estimators = [
             (name, estimator)
             for name, estimator in all_estimators
-            if name not in exclude_estimators
+            if name not in exclude_objects
         ]
 
     # Drop duplicates, sort for reproducibility
@@ -826,7 +888,7 @@ def all_objects(
 
     if filter_tags:
         all_estimators = [
-            (n, est) for (n, est) in all_estimators if _check_tag_cond(est, filter_tags)
+            (n, est) for (n, est) in all_estimators if _filter_by_tags(est, filter_tags)
         ]
 
     # remove names if return_names=False
@@ -837,6 +899,7 @@ def all_objects(
         columns = ["name", "object"]
 
     # add new tuple entries to all_estimators for each tag in return_tags:
+    return_tags = [] if return_tags is None else return_tags
     if return_tags:
         return_tags = _check_list_of_str_or_error(return_tags, "return_tags")
         # enrich all_estimators by adding the values for all return_tags tags:
@@ -879,43 +942,6 @@ def _get_return_tags(obj, return_tags):
     return tags
 
 
-def _check_tag_cond(estimator, filter_tags=None, as_dataframe=True):
-    """Check whether estimator satisfies filter_tags condition.
-
-    Parameters
-    ----------
-    estimator: BaseObject
-        Class inheritting from BaseOBject.
-    filter_tags: dict of (str or list of str), default=None
-        subsets the returned estimators as follows:
-            each key/value pair is statement in "and"/conjunction
-                key is tag name to sub-set on
-                value str or list of string are tag values
-                condition is "key must be equal to value, or in set(value)".
-    as_dataframe: bool, default=False
-
-        - If False, return is as described below.
-        - If True, return is converted into a pandas.DataFrame for pretty
-          display.
-
-    Returns
-    -------
-    cond_sat: bool
-        Whether estimator satisfies condition in filter_tags.
-    """
-    if not isinstance(filter_tags, dict):
-        raise TypeError("filter_tags must be a dict")
-
-    cond_sat = True
-
-    for (key, value) in filter_tags.items():
-        if not isinstance(value, list):
-            value = [value]
-        cond_sat = cond_sat and estimator.get_class_tag(key) in set(value)
-
-    return cond_sat
-
-
 def _check_object_types(object_types, class_lookup=None):
     """Return list of classes corresponding to type strings.
 
@@ -941,9 +967,9 @@ def _check_object_types(object_types, class_lookup=None):
         object_types = [object_types]  # make iterable
 
     def _get_err_msg(estimator_type):
-        if class_lookup is None:
+        if class_lookup is None or not isinstance(class_lookup, dict):
             return (
-                f"Parameter `estimator_type` must be None, a sclass, or a list of "
+                f"Parameter `estimator_type` must be None, a class, or a list of "
                 f"class, but found: {repr(estimator_type)}"
             )
         else:
@@ -955,10 +981,10 @@ def _check_object_types(object_types, class_lookup=None):
             )
 
     for i, estimator_type in enumerate(object_types):
-        if not isinstance(estimator_type, (type, str)):
-            raise ValueError(_get_err_msg(estimator_type))
         if isinstance(estimator_type, str):
-            if estimator_type not in class_lookup.keys():
+            if not isinstance(class_lookup, dict) or (
+                estimator_type not in class_lookup.keys()
+            ):
                 raise ValueError(_get_err_msg(estimator_type))
             estimator_type = class_lookup[estimator_type]
             object_types[i] = estimator_type

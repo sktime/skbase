@@ -9,7 +9,7 @@ To meet this, developers are expected to follow the project's documentation stan
 
 These include:
 
-* Documenting code using NumPy docstrings
+* Documenting code using NumPy-style docstrings
 * Following ``skbase``'s docstring convention for public code artifacts and modules
 * Adding new public functionality to the :ref:`api_ref`
   and :ref:`user guide <user_guide>`
@@ -19,13 +19,13 @@ More detailed information on ``skbase``'s documentation format is provided below
 Docstring conventions
 =====================
 
-``skbase`` uses the numpydoc_ Sphinx extension and follows
+``skbase`` uses the numpydoc_ Sphinx extension and follows the
 `NumPy docstring format <https://numpydoc.readthedocs.io/en/latest/format.html>`_.
 
 To ensure docstrings meet expectations, ``skbase`` uses a combination of
 validations built into numpydoc_, pydocstyle_ pre-commit checks
 (set to the NumPy convention) and automated testing of docstring examples to
-ensurecthe code runs without error.
+ensure the code runs without error.
 
 However, the automated docstring validation in pydocstyle_ only covers basic
 formatting. Passing these tests is necessary to meet the ``skbase``
@@ -67,12 +67,12 @@ should generally include the following NumPy docstring convention sections:
 
 .. note::
 
-    In many cases a parameter, attribute return object, or error may be described
+    In many cases a parameter, attribute, return, or error may be described
     in the docstring of more than one class. To avoid confusion, developers
     should make sure their docstrings are as similar as possible to existing
-    docstring descriptions of the the same parameter, attribute, return object
+    docstring descriptions of the the same parameter, attribute, return
     or error. As applicable, this may mean copying the same docstring
-    section for the parameter, attribute, return object or error.
+    section for the parameter, attribute, return or error.
 
 Summary and extended summary
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -125,12 +125,13 @@ The notes section can include several types of information, including:
   (using ..math or :math:`` functionality)
 - Links to alternative implementations of the code artifact that are external to
   ``skbase``
-- A discussion of state changing methods
+- A summary of the aspects of an object's state that are updated by state
+  changing methods
 
 References
 ~~~~~~~~~~
 
-Objects that implement functionality covered in a research article or
+Objects that implement functionality covered in a research article, book or
 other package, should include an applicable citation.
 
 This should be done by adding references into the references section of the docstring,
@@ -193,9 +194,9 @@ get_package_metadata_
 
 .. _numpydoc: https://numpydoc.readthedocs.io/en/latest/index.html
 .. _pydocstyle: http://www.pydocstyle.org/en/stable/
-.. _BaseObject: https://www.sktime.org/en/latest/api_reference/auto_generated/sktime.classification.dictionary_based.BOSSEnsemble.html#sktime.classification.dictionary_based.BOSSEnsemble
-.. _all_objects: https://www.sktime.org/en/latest/api_reference/auto_generated/sktime.classification.dictionary_based.ContractableBOSS.html#sktime.classification.dictionary_based.ContractableBOSS
-.. _get_package_metadata: https://www.sktime.org/en/latest/api_reference/auto_generated/sktime.performance_metrics.forecasting.MeanAbsoluteScaledError.html
+.. _BaseObject: https://skbase.readthedocs.io/en/latest/api_reference/auto_generated/skbase.base.BaseObject.html#skbase.base.BaseObject
+.. _all_objects: https://skbase.readthedocs.io/en/latest/api_reference/auto_generated/skbase.lookup.all_objects.html#skbase.lookup.all_objects
+.. _get_package_metadata: https://skbase.readthedocs.io/en/latest/api_reference/auto_generated/skbase.lookup.get_package_metadata.html#skbase.lookup.get_package_metadata
 
 .. _sphinx: https://www.sphinx-doc.org/
 .. _readthedocs: https://readthedocs.org/projects/sktime/
@@ -204,7 +205,7 @@ Documentation Build
 -------------------
 
 We use `sphinx`_ to build our documentation and `readthedocs`_ to host it.
-You can find our latest documentation `here <https://www.sktime.org/en/latest/>`_.
+You can find our latest documentation `here <https://skbase.readthedocs.io/en/latest/index.html>`_.
 
 The source files can be found
 in `docs/source/ <https://github.com/sktime/skbase/tree/main/docs/source>`_.

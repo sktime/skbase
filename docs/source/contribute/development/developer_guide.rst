@@ -16,118 +16,133 @@ Developer guide
    developer_guide/testing_framework
    developer_guide/dependencies
    developer_guide/enhancement_proposal
+   developer_guide/release_instructions
 
-.. panels::
-    :card: + intro-card text-center
+.. grid:: 1 2 2 2
+    :gutter: 3
 
-    ---
+    .. grid-item-card:: Installation
+        :text-align: center
 
-    Installation
-    ^^^^^^^^^^^^
+        Install a development version of ``skbase``.
 
-    Install a development version of ``skbase``.
+        +++
 
-    +++
+        .. button-ref:: developer_guide/dev_installation
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: developer_guide/dev_installation
-            :type: ref
-            :text: Installation
-            :classes: btn-block btn-secondary stretched-link
+            Installation
 
-    ---
+    .. grid-item-card:: Git Workflow
+        :text-align: center
 
-    Git Workflow
-    ^^^^^^^^^^^^
+        Our Git and Github workflow.
 
-    Our Git and Github workflow.
+        +++
 
-    +++
+        .. button-ref:: developer_guide/git_workflow
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: developer_guide/git_workflow
-            :type: ref
-            :text: Git and Github Workflow
-            :classes: btn-block btn-secondary stretched-link
+            Git and Github Workflow
 
-    ---
+    .. grid-item-card:: Continuous Integration
+        :text-align: center
 
-    Continuous Integration
-    ^^^^^^^^^^^^^^^^^^^^^^
+        Continuous Integration.
 
-    Continuous Integration.
+        +++
 
-    +++
+        .. button-ref:: developer_guide/ci
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: developer_guide/ci
-            :type: ref
-            :text: Continuous Integration
-            :classes: btn-block btn-secondary stretched-link
+            Continuous Integration
 
-    ---
+    .. grid-item-card:: Coding Standards
+        :text-align: center
 
-    Coding Standards
-    ^^^^^^^^^^^^^^^^
+        Our code requirements.
 
-    Our code requirements.
+        +++
 
-    +++
+        .. button-ref:: developer_guide/coding_standards
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: developer_guide/coding_standards
-            :type: ref
-            :text: Coding Standards
-            :classes: btn-block btn-secondary stretched-link
+            Coding Standards
 
-    ---
+    .. grid-item-card:: Documentation Standards
+        :text-align: center
 
-    Documentation Standards
-    ^^^^^^^^^^^^^^^^^^^^^^^
+        Our documentation requirements.
 
-    Our documentation requirements.
+        +++
 
-    +++
+        .. button-ref:: developer_guide/creating_docs
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: developer_guide/creating_docs
-            :type: ref
-            :text: Documentation Standards
-            :classes: btn-block btn-secondary stretched-link
+            Documentation Standards
 
-    ---
+    .. grid-item-card:: Testing Framework
+        :text-align: center
 
-    Testing Framework
-    ^^^^^^^^^^^^^^^^^
+        How we test ``skbase``.
 
-    How we test ``skbase``.
+        +++
 
-    +++
+        .. button-ref:: developer_guide/testing_framework
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: developer_guide/testing_framework
-            :type: ref
-            :text: Testing Framework
-            :classes: btn-block btn-secondary stretched-link
+            Testing Framework
 
-    ---
+    .. grid-item-card:: Dependency Management
+        :text-align: center
 
-    Dependency Management
-    ^^^^^^^^^^^^^^^^^^^^^
+        How we manage dependencies
 
-    How we manage dependencies
+        +++
 
-    +++
+        .. button-ref:: developer_guide/dependencies
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: developer_guide/dependencies
-            :type: ref
-            :text: Dependencies
-            :classes: btn-block btn-secondary stretched-link
+            Dependencies
 
-    ---
+    .. grid-item-card:: Proposing Enhancements
+        :text-align: center
 
-    Proposing Enhancements
-    ^^^^^^^^^^^^^^^^^^^^^^
+        How to propose a major change
 
-    How to propose a major change
+        +++
 
-    +++
+        .. button-ref:: developer_guide/enhancement_proposal
+            :color: primary
+            :click-parent:
+            :expand:
 
-    .. link-button:: developer_guide/enhancement_proposal
-            :type: ref
-            :text: Proposing Enhancements
-            :classes: btn-block btn-secondary stretched-link
+            Proposing Enhancements
+
+    .. grid-item-card:: Release Instructions
+        :text-align: center
+
+        How to prepare a new release of ``skbase``
+
+        +++
+
+        .. button-ref:: developer_guide/release_instructions
+            :color: primary
+            :click-parent:
+            :expand:
+
+            Release a new package version

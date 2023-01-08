@@ -13,7 +13,8 @@ Types of dependencies
 * "soft" dependencies that are required to import or use specific,
   non-core functionality
 * "developer" dependencies are required for developing ``skbase`` but not
-  rquired of end-users (e.g., ``pytest``)
+  required of end-users (e.g., ``pre-commit``)
+* "test" dependencies are required for running ``skbase``'s unit tests
 
 Making it easy to install and use ``skbase`` in a variety of projects is
 on of ``skbase``'s goals. Therefore, we seeks to minimizing the number of
@@ -47,7 +48,7 @@ the following files need to be updated:
 Informative warnings or error messages for missing soft dependencies should be raised,
 in a situation where a user would need them. This is handled through our
 ``_check_soft_dependencies`` `utility
-<https://github.com/sktime/skbase/blob/main/sktime/testing/utils/_dependencies.py>`_.
+<https://github.com/sktime/skbase/blob/main/skbase/testing/utils/_dependencies.py>`_.
 
 There are specific conventions to add such warnings in ``BaseObject``-s.
 To add ``BaseObject`` with a soft dependency, ensure the following:

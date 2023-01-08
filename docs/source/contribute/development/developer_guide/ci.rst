@@ -4,10 +4,10 @@
 Continuous integration
 ======================
 
-.. _gha: https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
-.. _precommit: https://pre-commit.ci/
+.. _Github Actions: https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
+.. _precommit.ci: https://pre-commit.ci/
 
-``skbase`` uses `Github Actions <gha>`_ continuous integration (CI) services
+``skbase`` uses `Github Actions`_ continuous integration (CI) services
 to ensure contributions meet the project's standards. See the sections below to
 see how the project automatically validates code quality, and builds and tests
 your changes.
@@ -15,9 +15,7 @@ your changes.
 Code quality checks
 ===================
 
-
-
-``skbase`` uses `pre-commit.ci <precommit>`_ to help maintain the project's
+``skbase`` uses `pre-commit.ci <https://pre-commit.ci/>`_ to help maintain the project's
 :ref:`coding style <code_style>`, by automating the code quality checks spelled out in
 the .pre-commit-config.yaml in the project's root directory. These checks run
 automatically when you open a Pull Request or push a new commit to an existing
@@ -38,7 +36,7 @@ to run prior committing your code locally.
     CI routine, but enables the longer unit testing portion of the CI routine
     to be cancelled whenever the code quality portion fails. A contribution
     that enables Github Action workflows to be cancelled when
-    `pre-commit.ci <precommit>`_ fails, would be greatly appreciated.
+    `pre-commit.ci <https://pre-commit.ci/>`_ fails, would be greatly appreciated.
 
 Unit testing
 ============
@@ -71,27 +69,28 @@ integration services ``skbase`` uses.
 | Platform      | Operation             | Project Configuration               |
 +===============+=======================+=====================================+
 | `GitHub       | Build/test/           | `.github/workflows/ <https://gi     |
-| Actions       | distribute            | thub.com/sktime/baseobject          |
-| <gha>`_       | on Linux, MacOS and   | /blob/main/.github/workflows/>`_    |
+| Actions`_     | distribute            | thub.com/sktime/skbase              |
+|               | on Linux, MacOS and   | /blob/main/.github/workflows/>`_    |
+|               | Windows               |                                     |
 +---------------+-----------------------+-------------------------------------+
 | `pre-commit.ci| Automate code quality | `.pre-commit-config.yml             |
-| <precommit>`_ | validation            | <https://github.com/sktime          |
-|               |                       | /baseobject/blob/main/              |
-|               |                       | .pre-commit-config.yaml>`_          |
+| <https://     | validation            | <https://github.com/sktime          |
+| pre-commit.ci |                       | /skbase/blob/main/                  |
+| />`_          |                       | .pre-commit-config.yaml>`_          |
 +---------------+-----------------------+-------------------------------------+
 | `Read the     | Build/deploy          | `.readthedocs.yaml                  |
 | Docs <h       | documentation         | <https://github.com/sktime          |
-| ttps://readth |                       | /baseobject/blob/main/              |
+| ttps://readth |                       | /skbase/blob/main/                  |
 | edocs.org>`__ |                       | .readthedocs.yaml>`_                |
 +---------------+-----------------------+-------------------------------------+
 | `Codecov      | Test coverage         | `.codecov.yml <https                |
-| <https://c    |                       | ://github.com/sktime/baseobject     |
+| <https://c    |                       | ://github.com/sktime/skbase         |
 | odecov.io>`__ |                       | /blob/main/.codecov.yml>`_,         |
 |               |                       | `.coveragerc <htt                   |
-|               |                       | ps://github.com/sktime/baseobeject  |
+|               |                       | ps://github.com/sktime/skbase       |
 |               |                       | /blob/main/.coveragerc>`_           |
 +---------------+-----------------------+-------------------------------------+
 
 Additional scripts used for code quality, building, unit testing and
 distribution can be found in
-`build_tools/ <https://github.com/sktime/baseobject/tree/main/build_tools>`_.
+`build_tools/ <https://github.com/sktime/skbase/tree/main/build_tools>`_.

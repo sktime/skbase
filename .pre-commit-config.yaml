@@ -20,7 +20,7 @@ repos:
         args: ["--django"]
 
   - repo: https://github.com/pycqa/isort
-    rev: v5.11.3
+    rev: 5.11.4
     hooks:
       - id: isort
         name: isort
@@ -55,13 +55,13 @@ repos:
           ]
 
   - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.1.1
+    rev: 6.2.0
     hooks:
       - id: pydocstyle
         additional_dependencies: ["toml"]
 
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.5.3
+    rev: 1.6.0
     hooks:
       - id: nbqa-isort
         args: [--nbqa-mutate, --nbqa-dont-skip-bad-cells]
@@ -81,7 +81,7 @@ repos:
         additional_dependencies: ["bandit[toml]"]
 
   - repo: https://github.com/PyCQA/doc8
-    rev: v1.0.0
+    rev: v1.1.1
     hooks:
       - id: doc8
         args: ["--max-line-length=88", "--config=pyproject.toml", "docs"]
