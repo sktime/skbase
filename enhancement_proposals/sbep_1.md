@@ -1,6 +1,6 @@
 # skbase Enhancement Proposal 1
 
-Contributors: @RNKuhns, @fkiraly
+Contributors: @RNKuhns, @fkiraly, @miraep8
 
 ## Overview
 
