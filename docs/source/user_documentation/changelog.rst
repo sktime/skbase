@@ -40,7 +40,7 @@ Enhancements
 
 - Reorganized package functionality into submodules focused on specific
   functionality (:pr:`78`) :user:`rnkuhns`
-- Add equality dunded to ``BaseObject`` to allow ``BaseObejct``-s to be compared based
+- Add equality dunder to ``BaseObject`` to allow ``BaseObejct``-s to be compared based
   on parameter equality (:pr:`86`) :user:`fkiraly`
 - Add ``sktime``-like interface for retrieving fitted parameters to ``BaseEstimator``
   (:pr:`87`) :user:`fkiraly`
