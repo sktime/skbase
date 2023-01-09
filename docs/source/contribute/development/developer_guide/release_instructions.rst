@@ -177,7 +177,7 @@ should follow the general pattern of previous release notes, with sections:
   Only MINOR or MAJOR releases should have core interface changes that are not
   downwards compatible.
 * enhancements, by module/area
+* bugfixes
 * documentation
 * maintenance
-* bugfixes
 * all contributor credits

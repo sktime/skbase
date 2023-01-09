@@ -9,7 +9,7 @@ in order to make it easier for others to use `scikit-learn`_ and `sktime`_
 design principles in a range of projects.
 
 The project builds on and was heavily inspired by
-`scikti-learn's <scikit-learn-about>`_ `BaseEstimator API <scikit-learn-est>`_.
+``scikti-learn``'s `BaseEstimator API`_.
 `sktime`_ built on this by developing a ``BaseObject`` that built on these
 design principles and added an `sktime`_ interface for
 general parametric objects. The ``skbase`` project is focused on continuing
@@ -24,6 +24,5 @@ If you are interested in contributing, check out our
 :ref:`Contributing <contrib_guide>` guide.
 
 .. _scikit-learn: https://scikit-learn.org/stable/index.html
-.. _scikit-learn-about: https://scikit-learn.org/stable/about.html
-.. _scikit-learn-est: https://scikit-learn.org/stable/developers/develop.html
+.. _BaseEstimator API: https://scikit-learn.org/stable/developers/develop.html
 .. _sktime: https://www.sktime.org/en/stable/index.html
