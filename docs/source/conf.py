@@ -148,7 +148,7 @@ def linkcode_resolve(domain, info):
 html_theme = "pydata_sphinx_theme"
 
 # Define the json_url for our version switcher.
-json_url = "https://baseobject.readthedocs.io/en/latest/_static/switcher.json"
+json_url = "https://skbase.readthedocs.io/en/latest/_static/switcher.json"
 
 # This uses code from the py-data-sphinx theme's own conf.py
 # Define the version we use for matching in the version switcher.
@@ -203,7 +203,7 @@ html_theme_options = {
 
 html_context = {
     "github_user": "sktime",
-    "github_repo": "baseobject",
+    "github_repo": "skbase",
     "github_version": "main",
     "doc_path": "docs/source/",
     "default_mode": "light",

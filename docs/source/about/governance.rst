@@ -16,7 +16,7 @@ how we make decisions, and how we acknowledge contributions.
 .. note::
 
     As a new project, ``skbase`` has adopted a governance structure similar
-    to ``sktime``. In the future this could change as the project grows. But for
+    to ``sktime``. We expect this to change as the project grows. But for
     the time being, any governance process not covered by this document, defaults
     to ``sktime's`` process.
 
@@ -34,7 +34,7 @@ Roles
 
 ``skbase`` distinguishes between the following key community roles:
 
-- :ref:`Contributors`
+- :ref:`Contributors <contribs>`
 - :ref:`Core developers <core-devs>`
 - :ref:`Community Council members <cc-members>`
 
@@ -45,10 +45,10 @@ Contributors
 
 Anyone can become a contributor by making a concrete contribution
 to the project. Contributions can take many forms – not only code – as detailed
-in the :ref:`contributing guide <contributing>`
+in the :ref:`contributing guide <how_to_contrib>`
 
 For more details on how we acknowledge contributions,
-see the :ref:`acknowledging-contributions` section below.
+see the :ref:`acknowledging contributions <acknowledging>` section below.
 
 All of our contributors are listed under the `contributors <contributors.md>`_
 section of our documentation.
@@ -121,10 +121,10 @@ Where we make decisions
 -----------------------
 
 Most of the project's decisions and voting takes place on the project’s `issue
-tracker <https://github.com/sktime/baseobject/issues>`__,
-`pull requests <https://github.com/sktime/baseobject/pulls>`__ or an
-:ref:`steps`. However, some sensitive discussions and all appointment votes
-occur on private chats.
+tracker <https://github.com/sktime/skbase/issues>`__,
+`pull requests <https://github.com/sktime/skbase/pulls>`__ or an
+:ref:`enhancement proposal <gov_bep>`. However, some sensitive discussions and
+all appointment votes occur on private chats.
 
 Core developers are expected to express their consensus (or veto) in the medium
 where a given decision takes place. For changes included in the Project's issues
@@ -146,9 +146,9 @@ decisions are summarized below.
    * - Documentation changes
      - :ref:`Lazy consensus <lazy>`
    * - Changes to the API design, hard dependencies, or supported versions
-     - :ref:`Lazy consensus <lazy>` based on an :ref:`BEP <gov_bep>`
+     - :ref:`Lazy consensus <lazy>` based on an :ref:`SBEP <gov_bep>`
    * - Changes to sktime's governance
-     - :ref:`Lazy consensus <lazy>` based on an :ref:`BEP <gov_bep>`
+     - :ref:`Lazy consensus <lazy>` based on an :ref:`SBEP <gov_bep>`
    * - Appointment to core developer or Community Council status
      - Anonymous voting
 
@@ -175,7 +175,7 @@ commensurate with their broader impact on the project. Any changes
 to the project's core API design, hard dependencies or supported versions
 should first be presented in a ``skbase`` enhancement proposal (BEP).
 
-See the developer guide for more information on creating a :ref:`BEP <bep>`.
+See the developer guide for more information on creating a :ref:`SBEP <bep>`.
 
 Resolving conflicts
 ^^^^^^^^^^^^^^^^^^^
@@ -205,8 +205,8 @@ specification to recognise all contributors, including those that don’t
 contribute code. Please see our list of `all contributors <contributors.md>`_.
 
 Please let us know or open a PR with the appropriate changes to
-`baseobject/.all-contributorsrc
-<https://github.com/sktime/baseobject/blob/main/.all-contributorsrc>`_
+`skbase/.all-contributorsrc
+<https://github.com/sktime/skbase/blob/main/.all-contributorsrc>`_
 if we have missed anything.
 
 .. note::
@@ -229,5 +229,5 @@ References
 Our governance model is inspired by various existing governance
 structures. In particular, we’d like to acknowledge:
 
-* `sktime’s governance model <https://www.sktime.org/en/latest/governance.html>`_
+* `sktime’s governance model <https://www.sktime.org/en/latest/get_involved/governance.htmls>`_
 * `scikit-learn’s governance model <https://scikit-learn.org/stable/governance.html>`_
