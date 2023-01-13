@@ -44,6 +44,7 @@ Please go through the checklist below. Please feel free to remove points if they
 -->
 
 ##### For all contributions
+- [ ] I've reviewed the project documentation on [contributing](https://skbase.readthedocs.io/en/latest/contribute.html)
 - [ ] I've added myself to the [list of contributors](https://github.com/sktime/skbase/blob/main/.all-contributorsrc).
 - [ ] The PR title starts with either [ENH], [CI/CD], [MNT], [DOC], or [BUG] indicating whether
   the PR topic is related to enhancement, CI/CD, maintenance, documentation, or a bug.
