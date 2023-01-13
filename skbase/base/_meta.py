@@ -1,7 +1,7 @@
 #!/usr/bin/env python3 -u
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
-# BaseMetaEstimator re-uses code developed in scikit-learn and sktime. These elements
+# BaseMetaObject re-uses code developed in scikit-learn and sktime. These elements
 # are copyrighted by the respective scikit-learn developers (BSD-3-Clause License)
 # and sktime (BSD-3-Clause) developers. For conditions see licensing.
 #  scikit-learn: https://github.com/scikit-learn/scikit-learn/blob/main/COPYING

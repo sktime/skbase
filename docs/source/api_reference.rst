@@ -27,6 +27,7 @@ Base Classes
 
     BaseObject
     BaseEstimator
+    BaseMetaObject
 
 .. _obj_retrieval:
 
