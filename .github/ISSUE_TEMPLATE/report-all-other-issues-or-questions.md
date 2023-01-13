@@ -9,5 +9,6 @@ assignees: ''
 
 **Desbribe the issue**
 <!--
-Tell us about your issue or question.
+Tell us about your issue or question. Open a more specific issue type if your
+issue is for a feature request, documentation, CI/CD, maintenance or bug issue.
 -->
