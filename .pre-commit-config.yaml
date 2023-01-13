@@ -58,7 +58,7 @@ repos:
     rev: 6.2.3
     hooks:
       - id: pydocstyle
-        additional_dependencies: ["toml"]
+        additional_dependencies: ["tomli"]
 
   - repo: https://github.com/nbQA-dev/nbQA
     rev: 1.6.1
