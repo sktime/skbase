@@ -14,7 +14,9 @@ A high-level description of what the bug is. Make sure to clearly and concisely 
 
 **To Reproduce**
 <!--
-Provide the information necessary to reproduce the bug. If the bug occurred when executing ``skbase`` related code, provide a reproducible code example. If the bug arose in another context, provide instructions for recreating the bug.
+Provide the information necessary to reproduce the bug. If the bug occurred when executing ``skbase`` related code, provide a minimially reproducible code example, including any example data needed. See [stackoverflow on minimally reproducible examples](https://stackoverflow.com/help/minimal-reproducible-example) for background.
+
+If the bug arose in another context, provide instructions for recreating the bug.
 -->
 
 
