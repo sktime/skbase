@@ -15,6 +15,11 @@ __author__: List[str] = ["fkiraly"]
 __all__: List[str] = ["deep_equals"]
 
 
+# flag variables for available soft dependencies
+pandas_available = _check_soft_dependencies("pandas", severity="none")
+numpy_available = _check_soft_dependencies("numpy", severity="none")
+
+
 def deep_equals(x, y, return_msg=False):
     """Test two objects for equality in value.
 
@@ -69,10 +74,6 @@ def deep_equals(x, y, return_msg=False):
 
     # we now know all types are the same
     # so now we compare values
-
-    # flag variables for available soft dependencies
-    pandas_available = _check_soft_dependencies("pandas", severity="none")
-    numpy_available = _check_soft_dependencies("numpy", severity="none")
 
     if numpy_available:
         import numpy as np
@@ -129,7 +130,6 @@ def _is_npndarray(x):
 
 def _is_npnan(x):
 
-    numpy_available = _check_soft_dependencies("numpy", severity="none")
     if numpy_available:
         import numpy as np
 
