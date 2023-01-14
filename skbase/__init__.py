@@ -8,7 +8,10 @@ sktime design principles in your project.
 """
 from typing import List
 
+from skbase.base import BaseEstimator, BaseMetaEstimator, BaseObject
+from skbase.lookup import all_objects
+
 __version__: str = "0.3.0"
 
 __author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
-__all__: List[str] = []
+__all__: List[str] = ["BaseEstimator", "BaseMetaEstimator", "BaseObject", "all_objects"]
