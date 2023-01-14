@@ -93,6 +93,8 @@ def deep_equals(x, y, return_msg=False):
         return ret(*_tuple_equals(x, y, return_msg=True))
     elif isinstance(x, dict):
         return ret(*_dict_equals(x, y, return_msg=True))
+    elif _is_npnan(x):
+        return ret(_is_npnan(y), f"type(x)={type(x)} != type(y)={type(y)}")
     elif isclass(x):
         return ret(x == y, f".class, x={x.__name__} != y={y.__name__}")
     elif type(x).__name__ == "ForecastingHorizon":
@@ -123,6 +125,18 @@ def _is_npndarray(x):
 
     clstr = type(x).__name__
     return clstr == "ndarray"
+
+
+def _is_npnan(x):
+
+    numpy_available = _check_soft_dependencies("numpy", severity="none")
+    if numpy_available:
+        import numpy as np
+
+        return isinstance(x, float) and np.isnan(x)
+
+    else:
+        return False
 
 
 def _coerce_list(x):
