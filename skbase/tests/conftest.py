@@ -122,6 +122,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_pandas_equals",
             "_dict_equals",
             "_is_pandas",
+            "_is_npnan",
             "_tuple_equals",
             "_fh_equals",
             "deep_equals",
