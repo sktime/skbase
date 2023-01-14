@@ -4,5 +4,7 @@
 """Tools for validating and comparing BaseObjects and collections of BaseObjects."""
 from typing import List
 
+from skbase.validate._named_objects import is_iterable_named_objects
+
 __author__: List[str] = ["RNKuhns", "fkiraly"]
-__all__: List[str] = []
+__all__: List[str] = ["is_iterable_named_objects"]
