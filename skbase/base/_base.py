@@ -230,7 +230,7 @@ class BaseObject(_BaseEstimator):
         Returns
         -------
         params : dict with str-valued keys
-            keys include:
+            keys-value pairs include:
             * always: all parameters of this object, as via `get_param_names`
               values are parameter value for that key, of this object
               values are always identical to values passed at construction
