@@ -844,9 +844,9 @@ def all_objects(
                 classes = inspect.getmembers(module, inspect.isclass)
                 # Filter classes
                 estimators = [
-                    (name, klass)
-                    for name, klass in classes
-                    if _is_estimator(name, klass)
+                    (klass.__name__, klass)
+                    for _, klass in classes
+                    if _is_estimator(klass.__name__, klass)
                 ]
                 all_estimators.extend(estimators)
             except ModuleNotFoundError as e:
