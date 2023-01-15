@@ -216,6 +216,30 @@ class BaseObject(_BaseEstimator):
         }
         return default_dict
 
+    def get_params(self, deep=True):
+        """
+        Get parameters for this estimator.
+
+        Parameters
+        ----------
+        deep : bool, default=True
+            If True, will return the parameters for this estimator and
+            contained subobjects that are estimators.
+
+        Returns
+        -------
+        params : dict
+            Parameter names mapped to their values.
+        """
+        out = dict()
+        for key in self.get_param_names():
+            value = getattr(self, key)
+            if deep and hasattr(value, "get_params"):
+                deep_items = value.get_params().items()
+                out.update((key + "__" + k, val) for k, val in deep_items)
+            out[key] = value
+        return out
+
     def set_params(self, **params):
         """Set the parameters of this object.
 
