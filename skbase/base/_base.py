@@ -240,14 +240,15 @@ class BaseObject(_BaseEstimator):
             * if `deep=True`, also contains arbitrary levels of component recursion,
               e.g., `[componentname]__[componentcomponentname]__[paramname]`, etc
         """
-        out = dict()
-        for key in self.get_param_names():
-            value = getattr(self, key)
-            if deep and hasattr(value, "get_params"):
-                deep_items = value.get_params().items()
-                out.update((key + "__" + k, val) for k, val in deep_items)
-            out[key] = value
-        return out
+        params = {key: getattr(self, key) for key in self.get_param_names()}
+
+        if deep:
+            for key, value in params:
+                if hasattr(value, "get_params"):
+                    deep_items = value.get_params().items()
+                    params.update({f"{key}__{k}": val} for k, val in deep_items)
+
+        return params
 
     def set_params(self, **params):
         """Set the parameters of this object.
