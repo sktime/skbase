@@ -244,7 +244,7 @@ class BaseObject(_BaseEstimator):
         params = {key: getattr(self, key) for key in self.get_param_names()}
 
         if deep:
-            for key, value in params:
+            for key, value in params.items():
                 if hasattr(value, "get_params"):
                     deep_items = value.get_params().items()
                     params.update({f"{key}__{k}": val} for k, val in deep_items)
