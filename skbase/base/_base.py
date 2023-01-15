@@ -74,6 +74,7 @@ class BaseObject(_BaseEstimator):
     """
 
     def __init__(self):
+        """Construct BaseObject."""
         self._tags_dynamic = {}
         super(BaseObject, self).__init__()
 
@@ -704,6 +705,7 @@ class TagAliaserMixin:
     deprecate_dict = {"old_tag": "0.12.0", "tag_to_remove": "99.99.99"}
 
     def __init__(self):
+        """Construct TagAliaserMixin."""
         super(TagAliaserMixin, self).__init__()
 
     @classmethod
