@@ -217,19 +217,28 @@ class BaseObject(_BaseEstimator):
         return default_dict
 
     def get_params(self, deep=True):
-        """
-        Get parameters for this estimator.
+        """Get a dict of parameters values for this object.
 
         Parameters
         ----------
         deep : bool, default=True
-            If True, will return the parameters for this estimator and
-            contained subobjects that are estimators.
+            If True, will return a dict of parameter name : value for this object,
+            including parameters of components (= BaseObject-valued parameters).
+            If False, will return a dict of parameter name : value for this object,
+            but not include parameters components.
 
         Returns
         -------
-        params : dict
-            Parameter names mapped to their values.
+        params : dict with str-valued keys
+            keys include:
+            * always: all parameters of this object, as via `get_param_names`
+              values are parameter value for that key, of this object
+              values are always identical to values passed at construction
+            * if `deep=True`, also contains keys/value pairs of component parameters
+              parameters of components are indexed as `[componentname]__[paramname]`
+              all parameters of `componentname` appear as `paramname` with its value
+            * if `deep=True`, also contains arbitrary levels of component recursion,
+              e.g., `[componentname]__[componentcomponentname]__[paramname]`, etc
         """
         out = dict()
         for key in self.get_param_names():
