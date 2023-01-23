@@ -819,10 +819,10 @@ class TagAliaserMixin:
                 msg = f"tag {tag_name!r} will be removed in sktime version {version}"
                 if new_tag != "":
                     msg += (
-                        f' and replaced by {new_tag!r}, please use "{new_tag}" instead'
+                        f" and replaced by {new_tag!r}, please use {new_tag!r} instead"
                     )
                 else:
-                    msg += ', please remove code that access or sets "{tag_name}"'
+                    msg += ", please remove code that access or sets {tag_name!r}"
                 warnings.warn(msg, category=DeprecationWarning)
 
 
