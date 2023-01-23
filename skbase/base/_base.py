@@ -226,12 +226,13 @@ class BaseObject(_BaseEstimator):
             If True, will return a dict of parameter name : value for this object,
             including parameters of components (= BaseObject-valued parameters).
             If False, will return a dict of parameter name : value for this object,
-            but not include parameters components.
+            but not include parameters of components.
 
         Returns
         -------
         params : dict with str-valued keys
             keys-value pairs include:
+
             * always: all parameters of this object, as via `get_param_names`
               values are parameter value for that key, of this object
               values are always identical to values passed at construction
