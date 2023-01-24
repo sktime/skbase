@@ -74,6 +74,7 @@ class BaseObject(_BaseEstimator):
     """
 
     def __init__(self):
+        """Construct BaseObject."""
         self._tags_dynamic = {}
         super(BaseObject, self).__init__()
 
@@ -215,6 +216,43 @@ class BaseObject(_BaseEstimator):
             x.name: x.default for x in parameters if x.default != inspect._empty
         }
         return default_dict
+
+    def get_params(self, deep=True):
+        """Get a dict of parameters values for this object.
+
+        Parameters
+        ----------
+        deep : bool, default=True
+            If True, will return a dict of parameter name : value for this object,
+            including parameters of components (= BaseObject-valued parameters).
+            If False, will return a dict of parameter name : value for this object,
+            but not include parameters of components.
+
+        Returns
+        -------
+        params : dict with str-valued keys
+            keys-value pairs include:
+
+            * always: all parameters of this object, as via `get_param_names`
+              values are parameter value for that key, of this object
+              values are always identical to values passed at construction
+            * if `deep=True`, also contains keys/value pairs of component parameters
+              parameters of components are indexed as `[componentname]__[paramname]`
+              all parameters of `componentname` appear as `paramname` with its value
+            * if `deep=True`, also contains arbitrary levels of component recursion,
+              e.g., `[componentname]__[componentcomponentname]__[paramname]`, etc
+        """
+        params = {key: getattr(self, key) for key in self.get_param_names()}
+
+        if deep:
+            deep_params = {}
+            for key, value in params.items():
+                if hasattr(value, "get_params"):
+                    deep_items = value.get_params().items()
+                    deep_params.update({f"{key}__{k}": val for k, val in deep_items})
+            params.update(deep_params)
+
+        return params
 
     def set_params(self, **params):
         """Set the parameters of this object.
@@ -670,6 +708,7 @@ class TagAliaserMixin:
     deprecate_dict = {"old_tag": "0.12.0", "tag_to_remove": "99.99.99"}
 
     def __init__(self):
+        """Construct TagAliaserMixin."""
         super(TagAliaserMixin, self).__init__()
 
     @classmethod
