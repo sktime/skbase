@@ -96,9 +96,9 @@ def _check_soft_dependencies(
             msg_version = (
                 f"wrong format for package requirement string, "
                 f'must be PEP 440 compatible requirement string, e.g., "pandas"'
-                f' or "pandas>1.1", but found "{package}"'
+                f' or "pandas>1.1", but found {package!r}'
             )
-            raise InvalidRequirement(msg_version)
+            raise InvalidRequirement(msg_version) from None
 
         package_name = req.name
         package_version_req = req.specifier
@@ -121,12 +121,12 @@ def _check_soft_dependencies(
         except ModuleNotFoundError as e:
             msg = (
                 f"{e}. "
-                f"{class_name} requires package '{package}' to be present "
-                f"in the python environment, but '{package}' was not found. "
+                f"{class_name} requires package {package!r} to be present "
+                f"in the python environment, but {package!r} was not found. "
             )
             if obj is not None:
                 msg = msg + (
-                    f"'{package}' is a dependency of {class_name} and required "
+                    f"{package!r} is a dependency of {class_name} and required "
                     f"to construct it. "
                 )
             msg = msg + (
@@ -145,21 +145,21 @@ def _check_soft_dependencies(
                 raise RuntimeError(
                     "Error in calling _check_soft_dependencies, severity "
                     'argument must be "error", "warning", or "none",'
-                    f'found "{severity}".'
-                )
+                    f"found {severity!r}."
+                ) from e
 
         # now we check compatibility with the version specifier if non-empty
         if package_version_req != SpecifierSet(""):
             pkg_env_version = pkg_ref.__version__
 
             msg = (
-                f"{class_name} requires package '{package}' to be present "
+                f"{class_name} requires package {package!r} to be present "
                 f"in the python environment, with version {package_version_req}, "
                 f"but incompatible version {pkg_env_version} was found. "
             )
             if obj is not None:
                 msg = msg + (
-                    f"'{package}', with version {package_version_req},"
+                    f"{package!r}, with version {package_version_req},"
                     f"is a dependency of {class_name} and required to construct it. "
                 )
 
@@ -174,7 +174,7 @@ def _check_soft_dependencies(
                 else:
                     raise RuntimeError(
                         "Error in calling _check_soft_dependencies, severity argument"
-                        f' must be "error", "warning", or "none", found "{severity}".'
+                        f' must be "error", "warning", or "none", found {severity!r}.'
                     )
 
     # if package can be imported and no version issue was caught for any string,
@@ -218,9 +218,9 @@ def _check_python_version(obj, package=None, msg=None, severity="error"):
         msg_version = (
             f"wrong format for python_version tag, "
             f'must be PEP 440 compatible specifier string, e.g., "<3.9, >= 3.6.3",'
-            f' but found "{est_specifier_tag}"'
+            f" but found {est_specifier_tag!r}"
         )
-        raise InvalidSpecifier(msg_version)
+        raise InvalidSpecifier(msg_version) from None
 
     # python sys version, e.g., "3.8.12"
     sys_version = sys.version.split(" ")[0]
@@ -249,6 +249,6 @@ def _check_python_version(obj, package=None, msg=None, severity="error"):
     else:
         raise RuntimeError(
             "Error in calling _check_python_version, severity "
-            f'argument must be "error", "warning", or "none", found "{severity}".'
+            f'argument must be "error", "warning", or "none", found {severity!r}.'
         )
     return True

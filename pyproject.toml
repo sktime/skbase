@@ -40,7 +40,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-all_extras = ["pandas"]
+all_extras = ["numpy", "pandas"]
 
 dev = [
     "pre-commit",
