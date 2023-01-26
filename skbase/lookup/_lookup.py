@@ -382,11 +382,11 @@ def _determine_module_path(
             try:
                 loader = _instantiate_loader(package_name, path_)
                 module = _import_module(loader, suppress_import_stdout=False)
-            except ImportError:
+            except ImportError as exc:
                 raise ValueError(
                     f"Unable to import a package named {package_name} based "
                     f"on provided `path`: {path_}."
-                )
+                ) from exc
         else:
             raise ValueError(
                 f"`path` must be a str path or pathlib.Path, but is type {type(path)}."
@@ -844,9 +844,9 @@ def all_objects(
                 classes = inspect.getmembers(module, inspect.isclass)
                 # Filter classes
                 estimators = [
-                    (name, klass)
-                    for name, klass in classes
-                    if _is_estimator(name, klass)
+                    (klass.__name__, klass)
+                    for _, klass in classes
+                    if _is_estimator(klass.__name__, klass)
                 ]
                 all_estimators.extend(estimators)
             except ModuleNotFoundError as e:
