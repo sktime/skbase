@@ -9,7 +9,7 @@ __all__: List[str] = []
 
 
 def _format_seq_to_str(
-    seq: Sequence, sep: str = ",", last_sep: Optional[str] = None
+    seq: Sequence, sep: str = ", ", last_sep: Optional[str] = None
 ) -> str:
     """Format a sequence to a string of comma separated elements.
 
@@ -33,6 +33,14 @@ def _format_seq_to_str(
         The sequence of inputs converted to a string. For example, if `seq`
         is (7, 9, "cart") and ``last_sep is None`` then the output is
         "7", "9", "cart".
+
+    Examples
+    --------
+    >>> seq = [1, 2, 3, 4]
+    >>> _format_seq_to_str(seq)
+    '1, 2, 3, 4'
+    >>> _format_seq_to_str(seq, last_sep="and")
+    '1, 2, 3 and 4'
     """
     if last_sep is None:
         seq_str = sep.join(str(e) for e in seq)
