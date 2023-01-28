@@ -97,9 +97,13 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
         "unflat_len",
         "unflatten",
     ),
+    "skbase.validate": (
+        "check_sequence_named_objects",
+        "is_sequence_named_objects",
+    ),
     "skbase.validate._named_objects": (
-        "check_iterable_named_objects",
-        "is_iterable_named_objects",
+        "check_sequence_named_objects",
+        "is_sequence_named_objects",
     ),
     "skbase.validate._types": ("check_sequence", "check_type"),
 }
@@ -145,8 +149,8 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "unflatten",
         ),
         "skbase.validate._named_objects": (
-            "check_iterable_named_objects",
-            "is_iterable_named_objects",
+            "check_sequence_named_objects",
+            "is_sequence_named_objects",
             "_named_baseobject_error_msg",
         ),
         "skbase.validate._types": (

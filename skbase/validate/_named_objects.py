@@ -2,20 +2,30 @@
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Validate if an input is one of the allowed named object formats."""
 import collections.abc
-from typing import Dict, Iterable, List, Optional, Tuple, Union, overload
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+    overload,
+)
 
 from skbase.base import BaseObject
 
-__all__: List[str] = ["check_iterable_named_objects", "is_iterable_named_objects"]
+__all__: List[str] = ["check_sequence_named_objects", "is_sequence_named_objects"]
 __author__: List[str] = ["RNKuhns"]
 
 
 def _named_baseobject_error_msg(
-    iterable_name: Optional[str] = None, allow_dict: bool = True
+    sequence_name: Optional[str] = None, allow_dict: bool = True
 ):
     """Create error message for non-comformance with named BaseObject api."""
-    name_str = f"{iterable_name}" if iterable_name is not None else "Input"
-    allowed_types = "an iterable of (string name, BaseObject instance) tuples"
+    name_str = f"{sequence_name}" if sequence_name is not None else "Input"
+    allowed_types = "a sequence of (string name, BaseObject instance) tuples"
 
     if allow_dict:
         allowed_types += " or dict[str, BaseObject instance]"
@@ -23,42 +33,24 @@ def _named_baseobject_error_msg(
     return msg
 
 
-@overload
-def is_iterable_named_objects(
-    iterable_to_check: Iterable[Tuple[str, BaseObject]],
-    allow_dict: bool = False,
-    require_unique_names=False,
-) -> bool:
-    ...
-
-
-@overload
-def is_iterable_named_objects(
-    iterable_to_check: Union[Iterable[Tuple[str, BaseObject]], Dict[str, BaseObject]],
+def is_sequence_named_objects(
+    seq_to_check: Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]],
     allow_dict: bool = True,
     require_unique_names=False,
 ) -> bool:
-    ...
+    """Indicate if input is a sequence of named BaseObject instances.
 
-
-def is_iterable_named_objects(
-    iterable_to_check: Union[Iterable[Tuple[str, BaseObject]], Dict[str, BaseObject]],
-    allow_dict: bool = True,
-    require_unique_names=False,
-) -> bool:
-    """Indicate if input is an iterable of named BaseObject instances.
-
-    This can be an iterable of (str, BaseObject instance) tuples or
+    This can be a sequence of (str, BaseObject instance) tuples or
     a dictionary with string names as keys and BaseObject instances as values
     (if ``allow_dict=True``).
 
     Parameters
     ----------
-    iterable_to_check : Iterable((str, BaseObject)) or Dict[str, BaseObject]
-        The iterable to check for conformance with the named object interface.
-        Conforming iterables are:
+    seq_to_check : Sequence((str, BaseObject)) or Dict[str, BaseObject]
+        The input to check for conformance with the named object interface.
+        Conforming input are:
 
-        - Iterable that contains (str, BaseObject instance) tuples
+        - Sequence that contains (str, BaseObject instance) tuples
         - Dictionary with string names as keys and BaseObject instances as values
             if ``allow_dict=True``
 
@@ -67,69 +59,78 @@ def is_iterable_named_objects(
         type.
 
         - If True, then a dictionary with string keys and BaseObject instances
-          is allowed format for providing an iterable of named objects.
-        - If False, then only iterables that contain (str, BaseObject instance)
+          is allowed format for providing a sequence of named objects.
+        - If False, then only sequences that contain (str, BaseObject instance)
           tuples are considered conforming with the named object parameter API.
 
-    iterable_name : str, default=None
-        Optional name used to refer to the input `iterable_to_check` when
-        raising any errors.
+    require_unique_names : bool, default=False
+        Whether names used in the sequence of named BaseObject instances
+        must be unique.
+
+        - If True and the names are not unique, then False is always returned.
+        - If False, then whether or not the function returns True or False
+          depends on whether `seq_to_check` follows sequence of named
+          BaseObject format.
 
     Returns
     -------
-    iterable_to_check : Iterable((str, BaseObject)) or Dict[str, BaseObject]
-        The `iterable_to_check` is returned if it is a conforming named object type.
+    is_expected_format : bool
+        Whether the input `seq_to_check` is a sequence that follows the API for
+        nameed base object instances.
 
     Raises
     ------
     ValueError
-        If `iterable_to_check` is not an iterable or ``allow_dict is False`` and
-        `iterable_to_check` is a dictionary.
+        If `seq_to_check` is not a sequence or ``allow_dict is False`` and
+        `seq_to_check` is a dictionary.
 
     Examples
     --------
     >>> from skbase.base import BaseObject
-    >>> from skbase.validate import is_iterable_named_objects
-    >>> iterable_of_named_objects = [("Step 1", BaseObject()), ("Step 2", BaseObject())]
-    >>> is_iterable_named_objects(iterable_of_named_objects)
+    >>> from skbase.validate import is_sequence_named_objects
+    >>> named_objects = [("Step 1", BaseObject()), ("Step 2", BaseObject())]
+    >>> is_sequence_named_objects(named_objects)
     True
 
     >>> dict_named_objects = {"Step 1": BaseObject(), "Step 2": BaseObject()}
-    >>> is_iterable_named_objects(dict_named_objects)
+    >>> is_sequence_named_objects(dict_named_objects)
     True
-    >>> is_iterable_named_objects(dict_named_objects, allow_dict=False)
+    >>> is_sequence_named_objects(dict_named_objects, allow_dict=False)
     False
 
     # Invalid format due to object names not being strings
-    >>> iterable_incorrectly_named_objects = [(1, BaseObject()), (2, BaseObject())]
-    >>> is_iterable_named_objects(iterable_incorrectly_named_objects)
+    >>> incorrectly_named_objects = [(1, BaseObject()), (2, BaseObject())]
+    >>> is_sequence_named_objects(incorrectly_named_objects)
     False
 
     # Invalid format due to named items not being BaseObject instances
-    >>> iterable_named_items = [("1", 7), ("2", 42)]
-    >>> is_iterable_named_objects(iterable_named_items)
+    >>> named_items = [("1", 7), ("2", 42)]
+    >>> is_sequence_named_objects(named_items)
     False
     """
-    # Want to end quickly if the input isn't iterable or is a dict and we
+    # Want to end quickly if the input isn't sequence or is a dict and we
     # aren't allowing dicts
-    if not isinstance(iterable_to_check, collections.abc.Iterable) or (
-        isinstance(iterable_to_check, dict) and not allow_dict
+    is_dict = isinstance(seq_to_check, dict)
+    if (not is_dict and not isinstance(seq_to_check, collections.abc.Sequence)) or (
+        not allow_dict and is_dict
     ):
         is_expected_format = False
         return is_expected_format
 
     all_expected_format: bool
     all_unique_names: bool
-    if isinstance(iterable_to_check, dict):
+    if is_dict:
+        if TYPE_CHECKING:  # pragma: no cover
+            assert isinstance(seq_to_check, dict)  # nosec B101
         elements_expected_format = [
             isinstance(name, str) and isinstance(obj, BaseObject)
-            for name, obj in iterable_to_check.items()
+            for name, obj in seq_to_check.items()
         ]
         all_unique_names = True
     else:
         names = []
         elements_expected_format = []
-        for it in iterable_to_check:
+        for it in seq_to_check:
             if (
                 isinstance(it, tuple)
                 and len(it) == 2
@@ -152,45 +153,55 @@ def is_iterable_named_objects(
 
 
 @overload
-def check_iterable_named_objects(
-    iterable_to_check: Iterable[Tuple[str, BaseObject]],
-    allow_dict: bool = False,
+def check_sequence_named_objects(
+    seq_to_check: Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]],
+    allow_dict: Literal[True] = True,
     require_unique_names=False,
-    iterable_name: Optional[str] = None,
-) -> Iterable[Tuple[str, BaseObject]]:
-    ...
+    sequence_name: Optional[str] = None,
+) -> Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]]:
+    ...  # pragma: no cover
 
 
 @overload
-def check_iterable_named_objects(
-    iterable_to_check: Union[Iterable[Tuple[str, BaseObject]], Dict[str, BaseObject]],
+def check_sequence_named_objects(
+    seq_to_check: Sequence[Tuple[str, BaseObject]],
+    allow_dict: Literal[False],
+    require_unique_names=False,
+    sequence_name: Optional[str] = None,
+) -> Sequence[Tuple[str, BaseObject]]:
+    ...  # pragma: no cover
+
+
+@overload
+def check_sequence_named_objects(
+    seq_to_check: Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]],
     allow_dict: bool = True,
     require_unique_names=False,
-    iterable_name: Optional[str] = None,
-) -> Union[Iterable[Tuple[str, BaseObject]], Dict[str, BaseObject]]:
-    ...
+    sequence_name: Optional[str] = None,
+) -> Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]]:
+    ...  # pragma: no cover
 
 
-def check_iterable_named_objects(
-    iterable_to_check: Union[Iterable[Tuple[str, BaseObject]], Dict[str, BaseObject]],
+def check_sequence_named_objects(
+    seq_to_check: Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]],
     allow_dict: bool = True,
     require_unique_names=False,
-    iterable_name: Optional[str] = None,
-) -> Union[Iterable[Tuple[str, BaseObject]], Dict[str, BaseObject]]:
-    """Check if input is an iterable of named BaseObject instances.
+    sequence_name: Optional[str] = None,
+) -> Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]]:
+    """Check if input is a sequence of named BaseObject instances.
 
-    `iterable_to_check` is returned unchanged when it follows the allowed named
-    BaseObject format. The allowed format includes iterable of
+    `seq_to_check` is returned unchanged when it follows the allowed named
+    BaseObject convention. The allowed format includes a sequence of
     (str, BaseObject instance) tuples. A dictionary with string names as keys
     and BaseObject instances as values is also allowed if ``allow_dict is True``.
 
     Parameters
     ----------
-    iterable_to_check : Iterable((str, BaseObject)) or Dict[str, BaseObject]
-        The iterable to check for conformance with the named object interface.
-        Conforming iterables are:
+    seq_to_check : Sequence((str, BaseObject)) or Dict[str, BaseObject]
+        The input to check for conformance with the named object interface.
+        Conforming input are:
 
-        - Iterable that contains (str, BaseObject instance) tuples
+        - Sequence that contains (str, BaseObject instance) tuples
         - Dictionary with string names as keys and BaseObject instances as values
             if ``allow_dict=True``
 
@@ -199,67 +210,70 @@ def check_iterable_named_objects(
         type.
 
         - If True, then a dictionary with string keys and BaseObject instances
-          is allowed format for providing an iterable of named objects.
-        - If False, then only iterables that contain (str, BaseObject instance)
+          is allowed format for providing a sequence of named objects.
+        - If False, then only sequences that contain (str, BaseObject instance)
           tuples are considered conforming with the named object parameter API.
 
     require_unique_names : bool, default=False
-        Whether names used in the iterable of named BaseObject instances
+        Whether names used in the sequence of named BaseObject instances
         must be unique.
 
         - If True and the names are not unique, then False is always returned.
         - If False, then whether or not the function returns True or False
-          depends on whether `iterable_to_check` follows iterable of named
+          depends on whether `seq_to_check` follows sequence of named
           BaseObject format.
 
-    iterable_name : str, default=None
-        Optional name used to refer to the input `iterable_to_check` when
+    sequence_name : str, default=None
+        Optional name used to refer to the input `seq_to_check` when
         raising any errors. Ignored ``raise_error=False``.
 
     Returns
     -------
-    iterable_to_check : Iterable((str, BaseObject)) or Dict[str, BaseObject]
-        The `iterable_to_check` is returned if it is a conforming named object type.
+    seq_to_check : Sequence((str, BaseObject)) or Dict[str, BaseObject]
+        The `seq_to_check` is returned if it is a conforming named object type.
+
+        - If ``allow_dict=True`` then return type is Sequence((str, BaseObject))
+          or Dict[str, BaseObject]
+        - If ``allow_dict=False`` then return type is Sequence((str, BaseObject))
 
     Raises
     ------
     ValueError
-        If `iterable_to_check` does not conform to the named BaseObject API.
+        If `seq_to_check` does not conform to the named BaseObject API.
 
     Examples
     --------
     >>> from skbase.base import BaseObject
-    >>> from skbase.validate import check_iterable_named_objects
-    >>> iterable_of_named_objects = [("Step 1", BaseObject()), ("Step 2", BaseObject())]
-    >>> check_iterable_named_objects(iterable_of_named_objects)
+    >>> from skbase.validate import check_sequence_named_objects
+    >>> named_objects = [("Step 1", BaseObject()), ("Step 2", BaseObject())]
+    >>> check_sequence_named_objects(named_objects)
     [('Step 1', BaseObject()), ('Step 2', BaseObject())]
 
-    >>> dict_named_objects = {"Step 1": BaseObject(), "Step 2": BaseObject()}
-    >>> check_iterable_named_objects(dict_named_objects)
+    >>> named_objects = {"Step 1": BaseObject(), "Step 2": BaseObject()}
+    >>> check_sequence_named_objects(named_objects)
     {'Step 1': BaseObject(), 'Step 2': BaseObject()}
 
     # Raises error since dictionaries are not allowed when allow_dict is False
-    >>> check_iterable_named_objects(dict_named_objects, \
-    allow_dict=False) # doctest: +SKIP
+    >>> check_sequence_named_objects(named_objects, allow_dict=False) # doctest: +SKIP
 
     # Raises error due to invalid format due to object names not being strings
     >>> incorrectly_named_objects = [(1, BaseObject()), (2, BaseObject())]
-    >>> check_iterable_named_objects(incorrectly_named_objects)  # doctest: +SKIP
+    >>> check_sequence_named_objects(incorrectly_named_objects)  # doctest: +SKIP
 
     # Raises error due to invalid format since named items are not BaseObject instances
-    >>> iterable_named_items = [("1", 7), ("2", 42)]
-    >>> check_iterable_named_objects(iterable_named_items)  # doctest: +SKIP
+    >>> named_items = [("1", 7), ("2", 42)]
+    >>> check_sequence_named_objects(named_items)  # doctest: +SKIP
     """
-    is_expected_format = is_iterable_named_objects(
-        iterable_to_check,
+    is_expected_format = is_sequence_named_objects(
+        seq_to_check,
         allow_dict=allow_dict,
         require_unique_names=require_unique_names,
     )
     # Raise error is format is not expected.
     if not is_expected_format:
         msg = _named_baseobject_error_msg(
-            iterable_name=iterable_name, allow_dict=allow_dict
+            sequence_name=sequence_name, allow_dict=allow_dict
         )
         raise ValueError(msg)
 
-    return iterable_to_check
+    return seq_to_check

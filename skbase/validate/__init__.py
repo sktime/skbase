@@ -5,9 +5,9 @@
 from typing import List
 
 from skbase.validate._named_objects import (
-    check_iterable_named_objects,
-    is_iterable_named_objects,
+    check_sequence_named_objects,
+    is_sequence_named_objects,
 )
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]
-__all__: List[str] = ["check_iterable_named_objects", "is_iterable_named_objects"]
+__all__: List[str] = ["check_sequence_named_objects", "is_sequence_named_objects"]
