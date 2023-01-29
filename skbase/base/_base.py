@@ -936,7 +936,7 @@ class BaseEstimator(BaseObject):
 
         Returns
         -------
-        params : dict with str-valued keys
+        fitted_params : dict with str-valued keys
             Dictionary of fitted parameters, paramname : paramvalue
             keys-value pairs include:
 
