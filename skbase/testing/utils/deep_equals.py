@@ -189,7 +189,7 @@ def _pandas_equals(x, y, return_msg=False):
             for c in x.columns:
                 is_equal, msg = deep_equals(x[c], y[c], return_msg=True)
                 if not is_equal:
-                    return ret(False, f'["{c}"]' + msg)
+                    return ret(False, f"[{c!r}]" + msg)
             return ret(True, "")
         else:
             return ret(x.equals(y), f".df_equals, x = {x} != y = {y}")
