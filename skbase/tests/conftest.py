@@ -99,13 +99,16 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
     ),
     "skbase.validate": (
         "check_sequence_named_objects",
+        "check_sequence",
+        "check_type",
+        "is_sequence",
         "is_sequence_named_objects",
     ),
     "skbase.validate._named_objects": (
         "check_sequence_named_objects",
         "is_sequence_named_objects",
     ),
-    "skbase.validate._types": ("check_sequence", "check_type"),
+    "skbase.validate._types": ("check_sequence", "check_type", "is_sequence"),
 }
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
 SKBASE_FUNCTIONS_BY_MODULE.update(
@@ -140,7 +143,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_coerce_list",
         ),
         "skbase.testing.utils.inspect": ("_get_args",),
-        "skbase.utils._iter": ("_format_seq_to_str",),
+        "skbase.utils._iter": ("_format_seq_to_str", "_scalar_to_seq"),
         "skbase.utils._nested_iter": (
             "_remove_single",
             "flatten",
@@ -156,9 +159,11 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
         "skbase.validate._types": (
             "check_sequence",
             "check_type",
-            "_check_iterable_of_class_or_error",
-            "_check_list_of_str",
-            "_check_list_of_str_or_error",
+            "is_sequence",
+            "_convert_scalar_seq_type_input_to_tuple",
+            # "_check_iterable_of_class_or_error",
+            # "_check_list_of_str",
+            # "_check_list_of_str_or_error",
         ),
     }
 )

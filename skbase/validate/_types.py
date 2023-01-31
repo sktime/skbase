@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tools for validating types."""
+import collections
 import inspect
-from collections.abc import Iterable, Sequence
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
-from skbase.utils._iter import _format_seq_to_str
+from skbase.utils._iter import _format_seq_to_str, _scalar_to_seq
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]
-__all__: List[str] = ["check_sequence", "check_type"]
+__all__: List[str] = ["check_sequence", "check_type", "is_sequence"]
 
 
 def check_type(
@@ -72,14 +72,41 @@ def check_type(
     return input_
 
 
-def check_sequence(
+def _convert_scalar_seq_type_input_to_tuple(
+    type_input: Optional[Union[type, Tuple[type, ...]]],
+    none_default: Optional[type] = None,
+    type_input_subclass: Optional[type] = None,
+    input_name: str = None,
+) -> Tuple[type, ...]:
+    """Convert input that is scalar or sequence of types to always be a tuple."""
+    if none_default is None:
+        none_default = collections.abc.Sequence
+
+    seq_output: Tuple[type, ...]
+    if type_input is None:
+        seq_output = (none_default,)
+    # if a sequence of types received as sequence_type, convert to tuple of types
+    elif isinstance(type_input, collections.abc.Sequence) and all(
+        isinstance(e, type) for e in type_input
+    ):
+        seq_output = tuple(type_input)
+    elif (isinstance(type_input, type) or inspect.isclass(type_input)) and (
+        type_input_subclass is None or issubclass(type_input, type_input_subclass)
+    ):
+        seq_output = (type_input,)
+    else:
+        name_str = "type_input" if input_name is None else input_name
+        raise ValueError(f"`{name_str}` should be a type or tuple of types.")
+
+    return seq_output
+
+
+def is_sequence(
     input_seq: Any,
-    sequence_type: Union[type, Tuple[type]] = Sequence,
+    sequence_type: Optional[Union[type, Tuple[type, ...]]] = None,
     element_type: Optional[Union[type, Tuple[type, ...]]] = None,
-    coerce_to_type: type = None,
-    sequence_name: str = None,
-) -> Sequence[Any]:
-    """Check whether an object is a sequence of expected type.
+) -> bool:
+    """Indicate if an object is a sequence with optional check of element types.
 
     If `element_type` is supplied all elements are also checked against provided types.
 
@@ -87,13 +114,80 @@ def check_sequence(
     ----------
     input_seq : Any
         The input sequence to be validated.
-    sequence_type : type or tuple[type], default=Sequence
+    sequence_type : type or tuple[type, ...], default=None
+        The allowed sequence type(s) that `input_seq` can be an instance of.
+
+        - If None, then collections.abc.Sequence is used (all sequence types are valid)
+        - If `sequence_type` is a type or tuple of types, then only the specified
+          types are considered valid.
+
+    element_type : type or tuple[type], default=None
+        The allowed type(s) for elements of `input_seq`.
+
+        - If None, then the elements of `input_seq` are not checked when determining
+          if `input_seq` is a valid sequence.
+        - If `element_type` is a type or tuple of types, then the elements of
+          `input_seq` are checked to make sure they are all instances of
+          the supplied `element_type`.
+
+    Returns
+    -------
+    is_valid_sequence : bool
+        Whether the input is a valid sequence based on the supplied `sequence_type`
+        and `element_type`.
+    """
+    sequence_type_ = _convert_scalar_seq_type_input_to_tuple(
+        sequence_type,
+        input_name="sequence_type",
+        type_input_subclass=collections.abc.Sequence,
+    )
+
+    is_valid_sequence = isinstance(input_seq, sequence_type_)
+
+    # Optionally verify elements have correct types
+    if element_type is not None:
+        element_type_ = _convert_scalar_seq_type_input_to_tuple(
+            element_type, input_name="element_type"
+        )
+        element_types_okay = all([isinstance(e, element_type_) for e in input_seq])
+        if not element_types_okay:
+            is_valid_sequence = False
+
+    return is_valid_sequence
+
+
+def check_sequence(
+    input_seq: Any,
+    sequence_type: Optional[Union[type, Tuple[type, ...]]] = None,
+    element_type: Optional[Union[type, Tuple[type, ...]]] = None,
+    coerce_output_type_to: type = None,
+    coerce_scalar_input: bool = False,
+    sequence_name: str = None,
+) -> Sequence[Any]:
+    """Check whether an object is a sequence with optional check of element types.
+
+    If `element_type` is supplied all elements are also checked against provided types.
+
+    Parameters
+    ----------
+    input_seq : Any
+        The input sequence to be validated.
+    sequence_type : type or tuple[type], default=None
         The allowed sequence type that `seq` can be an instance of.
     element_type : type or tuple[type], default=None
         The allowed type(s) for elements of `seq`.
-    coerce_to_type : sequence type
-        The sequence type that the output sequence should be coerced to. If None,
-        then the output sequence is the same as input sequence (including type).
+    coerce_output_type_to : sequence type
+        The sequence type that the output sequence should be coerced to.
+
+        - If None, then the output sequence is the same as input sequence.
+        - If a sequence type (e.g., list, tuple) is provided then the output sequence
+          is coerced to that type.
+
+    coerce_scalar_input : bool, default=False
+        Whether scalar input should be coerced to a sequence type prior to running
+        the check. If True, a scalar input like will be coerced to a tuple containing
+        a single scalar. To output a sequence type other than a tuple, set the
+        `coerce_output_type_to` keyword to the desired sequence type (e.g., list).
     sequence_name : str, default=None
         Name of `input_seq` to use if error messages are raised.
 
@@ -108,156 +202,45 @@ def check_sequence(
         If `seq` is not instance of `sequence_type` or ``element_type is not None`` and
         all elements are not instances of `element_type`.
     """
-    if sequence_name is None:
-        sequence_name = "input_seq"
-    else:
-        check_type(sequence_name, str, input_name="sequence_name")
-
-    if isinstance(element_type, type):
-        element_allow_none = False
-    elif isinstance(element_type, tuple) and all(
-        isinstance(e, type) for e in element_type
-    ):
-        element_allow_none = None in element_type
-        if element_allow_none:
-            element_type = tuple(e for e in element_type if e is not None)
-    else:
-        raise ValueError(
-            " ".join(
-                [
-                    "`element_type` should be type, tuple of types or None,"
-                    f"but found type {type(element_type)}."
-                ]
-            )
-        )
-    # Raise error if input is not correct sequence type
-    if not isinstance(input_seq, sequence_type):
-        invalid_seq_type_msg = " ".join(
-            [
-                f"`{sequence_name}` is not a valid. Expected sequence of type"
-                f"{sequence_type}, but found {type(input_seq)}.",
-            ]
-        )
-        raise ValueError(invalid_seq_type_msg)
-
-    # Given correct sequence type, optionall check element types
-    if element_type is None:
-        return input_seq
-    else:
-        if element_allow_none:
-            invalid_elements = [
-                e for e in input_seq if not (e is None or isinstance(e, element_type))
-            ]
+    if coerce_scalar_input:
+        if isinstance(sequence_type, tuple):
+            # If multiple sequence types allowed then use first one
+            input_seq = _scalar_to_seq(input_seq, sequence_type=sequence_type[0])
         else:
-            invalid_elements = [e for e in input_seq if not isinstance(e, element_type)]
-        if len(invalid_elements) > 0:
-            invalid_elements_str = _format_seq_to_str(invalid_elements, last_sep="and")
-            invalid_elements_msg = " ".join(
-                [
-                    f"`{sequence_name}` is not a valid. Expected all elements to be"
-                    f"type {element_type}, but found elements {invalid_elements_str}."
-                ]
+            input_seq = _scalar_to_seq(input_seq, sequence_type=sequence_type)
+
+    is_valid_seqeunce = is_sequence(
+        input_seq,
+        sequence_type=sequence_type,
+        element_type=element_type,
+    )
+    # Raise error is format is not expected.
+    if not is_valid_seqeunce:
+        name_str = "Input sequence" if sequence_name is None else f"`{sequence_name}`"
+        if sequence_type is None:
+            seq_str = "a sequence"
+        else:
+            sequence_type_ = _convert_scalar_seq_type_input_to_tuple(
+                sequence_type,
+                input_name="sequence_type",
+                type_input_subclass=collections.abc.Sequence,
             )
-            raise ValueError(invalid_elements_msg)
+            seq_str = _format_seq_to_str(
+                sequence_type_, last_sep="or", remove_type_text=True
+            )
 
-    if coerce_to_type is not None:
-        if coerce_to_type not in (list, tuple):
-            raise ValueError("`coerce_to_type` should be")
-        return coerce_to_type(input_seq)
+        msg = f"Invalid sequence: {name_str} expected to be a {seq_str}."
+
+        if element_type is not None:
+            element_type_ = _convert_scalar_seq_type_input_to_tuple(
+                element_type, input_name="element_type"
+            )
+            element_str = _format_seq_to_str(element_type_, last_sep="or")
+            msg = msg + f"Elements of {name_str} expected to have type {element_str}."
+
+        raise ValueError(msg)
+
+    if coerce_output_type_to is not None:
+        return coerce_output_type_to(input_seq)
+
     return input_seq
-
-
-def _check_list_of_str(obj, name="obj"):
-    """Check whether obj is a list of str.
-
-    Parameters
-    ----------
-    obj : any object, check whether is list of str
-    name : str, default="obj", name of obj to display in error message
-
-    Returns
-    -------
-    obj, unaltered
-
-    Raises
-    ------
-    TypeError if obj is not list of str
-    """
-    if not isinstance(obj, list) or not all(isinstance(x, str) for x in obj):
-        raise TypeError(f"{name} must be a list of str")
-    return obj
-
-
-def _check_list_of_str_or_error(arg_to_check, arg_name):
-    """Check that certain arguments are str or list of str.
-
-    Parameters
-    ----------
-    arg_to_check: any
-        Argument we are testing the type of.
-    arg_name: str,
-        name of the argument we are testing, will be added to the error if
-        ``arg_to_check`` is not a str or a list of str.
-
-    Returns
-    -------
-    arg_to_check: list of str,
-        if arg_to_check was originally a str it converts it into a list of str
-        so that it can be iterated over.
-
-    Raises
-    ------
-    TypeError if arg_to_check is not a str or list of str.
-    """
-    # check that return_tags has the right type:
-    if isinstance(arg_to_check, str):
-        arg_to_check = [arg_to_check]
-    elif not isinstance(arg_to_check, list) or not all(
-        isinstance(value, str) for value in arg_to_check
-    ):
-        raise TypeError(
-            f"Input error. Argument {arg_name} must be either\
-             a str or list of str"
-        )
-    return arg_to_check
-
-
-def _check_iterable_of_class_or_error(arg_to_check, arg_name, coerce_to_list=False):
-    """Check that certain arguments are class or list of class.
-
-    Parameters
-    ----------
-    arg_to_check: any
-        Argument we are testing the type of.
-    arg_name: str
-        name of the argument we are testing, will be added to the error if
-        ``arg_to_check`` is not a str or a list of str.
-    coerce_to_list : bool, default=False
-        Whether `arg_to_check` should be coerced to a list prior to return.
-
-    Returns
-    -------
-    arg_to_check: list of class,
-        If `arg_to_check` was originally a class it converts it into a list
-        containing the class so it can be iterated over. Otherwise,
-        `arg_to_check` is returned.
-
-    Raises
-    ------
-    TypeError:
-        If `arg_to_check` is not a class or iterable of class.
-    """
-    # check that return_tags has the right type:
-    if inspect.isclass(arg_to_check):
-        arg_to_check = [arg_to_check]
-    elif not (
-        isinstance(arg_to_check, Iterable)
-        and all(inspect.isclass(value) for value in arg_to_check)
-    ):
-        raise TypeError(
-            f"Input error. Argument {arg_name} must be either\
-             a class or an iterable of classes"
-        )
-    elif coerce_to_list:
-        arg_to_check = list(arg_to_check)
-    return arg_to_check
