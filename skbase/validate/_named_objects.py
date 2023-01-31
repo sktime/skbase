@@ -29,7 +29,7 @@ def _named_baseobject_error_msg(
 
     if allow_dict:
         allowed_types += " or dict[str, BaseObject instance]"
-    msg = f"Invalid '{name_str}', '{name_str}' should be {allowed_types}."
+    msg = f"Invalid {name_str!r}, {name_str!r} should be {allowed_types}."
     return msg
 
 
