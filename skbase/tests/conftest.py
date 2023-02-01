@@ -122,6 +122,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_pandas_equals",
             "_dict_equals",
             "_is_pandas",
+            "_is_npnan",
             "_tuple_equals",
             "_fh_equals",
             "deep_equals",
@@ -152,6 +153,7 @@ class Parent(BaseObject):
     _tags = {"A": "1", "B": 2, "C": 1234, "3": "D"}
 
     def __init__(self, a="something", b=7, c=None):
+        """Initialize the class."""
         self.a = a
         self.b = b
         self.c = c
