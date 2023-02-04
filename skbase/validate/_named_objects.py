@@ -5,11 +5,10 @@ import collections.abc
 import sys
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Tuple, Union, overload
 
-if TYPE_CHECKING:
-    if sys.version_info >= (3, 8):
-        from typing import Literal
-    else:
-        from typing_extensions import Literal
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 
 from skbase.base import BaseObject
 
