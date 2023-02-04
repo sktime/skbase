@@ -21,6 +21,10 @@ def check_type(
 ) -> Any:
     """Check the input is the expected type.
 
+    Validates that the input is the type specified in `expected_type`, while optionally
+    allowing None values as well (if ``allow_none=True``). For flexibility,
+    the check can use ``issubclass`` instead of ``isinstance`` if ``use_subclass=True``.
+
     Parameters
     ----------
     input_ : Any
@@ -40,7 +44,7 @@ def check_type(
 
     Returns
     -------
-    input_ : Any
+    Any
         The input object.
 
     Raises
@@ -49,6 +53,8 @@ def check_type(
         If input does match expected type using isinstance by default
         or using issubclass in check if ``use_subclass=True``.
 
+    Examples
+    --------
     >>> from skbase.base import BaseEstimator, BaseObject
     >>> from skbase.validate import check_type
     >>> check_type(7, expected_type=int)
@@ -57,11 +63,13 @@ def check_type(
     7.2
     >>> check_type(BaseEstimator(), BaseObject)
     BaseEstimator()
-    # An error is raised if the input is not the expected type
-    >>> check_type(7, expected_type=str) # doctest: +SKIP
-    # The use_subclass keyword lets the check use isubclass instead of isinstance
     >>> check_type(BaseEstimator, expected_type=BaseObject, use_subclass=True)
     skbase.base._base.BaseEstimator
+
+    An error is raised if the input is not the expected type
+
+    >>> check_type(7, expected_type=str) # doctest: +SKIP
+    ValueError: `input` should be type <class 'str'>, but found <class 'str'>.
     """
     # process expected_type parameter
     if not isinstance(expected_type, (type, tuple)):
@@ -149,7 +157,7 @@ def is_sequence(
 
     Returns
     -------
-    is_valid_sequence : bool
+    bool
         Whether the input is a valid sequence based on the supplied `sequence_type`
         and `element_type`.
 
@@ -163,21 +171,25 @@ def is_sequence(
     --------
     >>> from skbase.base import BaseEstimator, BaseObject
     >>> from skbase.validate import is_sequence
-
     >>> is_sequence([1, 2, 3])
     True
+    >>> is_sequence(7)
+    False
 
     Generators are not sequences
+
     >>> is_sequence((c for c in [1, 2, 3]))
     False
 
-    The check can require a certain type of sequence
+    The expected sequence type can be included in the check
+
     >>> is_sequence([1, 2, 3, 4], sequence_type=list)
     True
     >>> is_sequence([1, 2, 3, 4], sequence_type=tuple)
     False
 
-    It is also possible to check the type of sequence elements
+    The type of the elements can also be checked
+
     >>> is_sequence([1, 2, 3], element_type=int)
     True
     >>> is_sequence([1, 2, 3, 4], sequence_type=list, element_type=int)
@@ -186,8 +198,6 @@ def is_sequence(
     False
     >>> is_sequence([1, 2, 3, 4], sequence_type=list, element_type=(int, float))
     True
-
-    The check also works with BaseObjects
     >>> is_sequence((BaseObject(), BaseEstimator()), element_type=BaseObject)
     True
     """
@@ -248,8 +258,8 @@ def check_sequence(
 
     Returns
     -------
-    input_seq : Sequence
-        The input sequence.
+    Sequence
+        The input sequence if has expected type.
 
     Raises
     ------
@@ -266,20 +276,27 @@ def check_sequence(
     [1, 2, 3]
 
     Generators are not sequences so an error is raised
+
     >>> check_sequence((c for c in [1, 2, 3])) # doctest: +SKIP
 
     The check can require a certain type of sequence
+
     >>> check_sequence([1, 2, 3, 4], sequence_type=list)
     [1, 2, 3, 4]
+
+    Expected to raise and error because the input is not a tuple
+
     >>> check_sequence([1, 2, 3, 4], sequence_type=tuple) # doctest: +SKIP
 
     It is also possible to check the type of sequence elements
+
     >>> check_sequence([1, 2, 3], element_type=int)
     [1, 2, 3]
     >>> check_sequence([1, 2, 3, 4], sequence_type=list, element_type=(int, float))
     [1, 2, 3, 4]
 
     The check also works with BaseObjects
+
     >>> check_sequence((BaseObject(), BaseEstimator()), element_type=BaseObject)
     (BaseObject(), BaseEstimator())
     """

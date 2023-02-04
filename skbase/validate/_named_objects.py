@@ -70,7 +70,7 @@ def is_sequence_named_objects(
 
     Returns
     -------
-    is_expected_format : bool
+    bool
         Whether the input `seq_to_check` is a sequence that follows the API for
         nameed base object instances.
 
@@ -88,6 +88,8 @@ def is_sequence_named_objects(
     >>> is_sequence_named_objects(named_objects)
     True
 
+    Dictionaries are optionally allowed as sequences of named BaseObjects
+
     >>> dict_named_objects = {"Step 1": BaseObject(), "Step 2": BaseObject()}
     >>> is_sequence_named_objects(dict_named_objects)
     True
@@ -95,11 +97,13 @@ def is_sequence_named_objects(
     False
 
     Invalid format due to object names not being strings
+
     >>> incorrectly_named_objects = [(1, BaseObject()), (2, BaseObject())]
     >>> is_sequence_named_objects(incorrectly_named_objects)
     False
 
     Invalid format due to named items not being BaseObject instances
+
     >>> named_items = [("1", 7), ("2", 42)]
     >>> is_sequence_named_objects(named_items)
     False
@@ -224,7 +228,7 @@ def check_sequence_named_objects(
 
     Returns
     -------
-    seq_to_check : Sequence((str, BaseObject)) or Dict[str, BaseObject]
+    Sequence((str, BaseObject)) or Dict[str, BaseObject]
         The `seq_to_check` is returned if it is a conforming named object type.
 
         - If ``allow_dict=True`` then return type is Sequence((str, BaseObject))
@@ -244,18 +248,23 @@ def check_sequence_named_objects(
     >>> check_sequence_named_objects(named_objects)
     [('Step 1', BaseObject()), ('Step 2', BaseObject())]
 
+    Dictionaries are optionally allowed as sequences of named BaseObjects
+
     >>> named_objects = {"Step 1": BaseObject(), "Step 2": BaseObject()}
     >>> check_sequence_named_objects(named_objects)
     {'Step 1': BaseObject(), 'Step 2': BaseObject()}
 
     Raises error since dictionaries are not allowed when allow_dict is False
+
     >>> check_sequence_named_objects(named_objects, allow_dict=False) # doctest: +SKIP
 
     Raises error due to invalid format due to object names not being strings
+
     >>> incorrectly_named_objects = [(1, BaseObject()), (2, BaseObject())]
     >>> check_sequence_named_objects(incorrectly_named_objects)  # doctest: +SKIP
 
     Raises error due to invalid format since named items are not BaseObject instances
+
     >>> named_items = [("1", 7), ("2", 42)]
     >>> check_sequence_named_objects(named_items)  # doctest: +SKIP
     """
