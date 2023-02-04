@@ -53,6 +53,11 @@ Object Validation and Comparison
     :toctree: api_reference/auto_generated/
     :template: function.rst
 
+    check_sequence
+    check_sequence_named_objects
+    check_type
+    is_sequence
+    is_sequence_named_objects
 
 .. _obj_testing:
 
