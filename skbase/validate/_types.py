@@ -55,7 +55,7 @@ def check_type(
 
     # process input_name parameter
     if input_name is None:
-        input_name = "input_"
+        input_name = "input"
     else:
         if not isinstance(input_name, str):
             raise ValueError(
@@ -63,13 +63,14 @@ def check_type(
             )
     # Check the type of input_
     type_check = issubclass if use_subclass else isinstance
-    if (not allow_none and input_ is None) or not type_check(input_, expected_type):
+    if (allow_none and input_ is None) or type_check(input_, expected_type):
+        return input_
+    else:
         chk_msg = "subclass type" if use_subclass else "be type"
         type_msg = f"{expected_type} or None" if allow_none else f"{expected_type}"
         raise ValueError(
             f"`{input_name}` should {chk_msg} {type_msg}, but found {type(input_name)}."
         )
-    return input_
 
 
 def _convert_scalar_seq_type_input_to_tuple(
@@ -157,7 +158,7 @@ def is_sequence(
 
 
 def check_sequence(
-    input_seq: Any,
+    input_seq: Sequence[Any],
     sequence_type: Optional[Union[type, Tuple[type, ...]]] = None,
     element_type: Optional[Union[type, Tuple[type, ...]]] = None,
     coerce_output_type_to: type = None,
