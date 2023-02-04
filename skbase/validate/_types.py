@@ -42,6 +42,28 @@ def check_type(
     -------
     input_ : Any
         The input object.
+
+    Raises
+    ------
+    ValueError
+        If input does match expected type using isinstance by default
+        or using issubclass in check if ``use_subclass=True``.
+
+    >>> from skbase.base import BaseEstimator, BaseObject
+    >>> from skbase.validate import check_type
+    >>> check_type(7, expected_type=int)
+    7
+    >>> check_type(7.2, expected_type=(int, float))
+    7.2
+    >>> check_type(BaseEstimator(), BaseObject)
+    BaseEstimator()
+
+    An error is raised if the input is not the expected type
+    >>> check_type(7, expected_type=str) # doctest: +SKIP
+
+    The use_subclass keyword lets the check use isubclass instead of isinstance
+    >>> check_type(BaseEstimator, expected_type=BaseObject, use_subclass=True)
+    skbase.base._base.BaseEstimator
     """
     # process expected_type parameter
     if not isinstance(expected_type, (type, tuple)):
@@ -132,6 +154,44 @@ def is_sequence(
     is_valid_sequence : bool
         Whether the input is a valid sequence based on the supplied `sequence_type`
         and `element_type`.
+
+    Raises
+    ------
+    ValueError
+        If input is not a sequence and optionally if the elements of the sequence
+        have types that don't match the `element_type` parameter value.
+
+    Examples
+    --------
+    >>> from skbase.base import BaseEstimator, BaseObject
+    >>> from skbase.validate import is_sequence
+
+    >>> is_sequence([1, 2, 3])
+    True
+
+    Generators are not sequences
+    >>> is_sequence((c for c in [1, 2, 3]))
+    False
+
+    The check can require a certain type of sequence
+    >>> is_sequence([1, 2, 3, 4], sequence_type=list)
+    True
+    >>> is_sequence([1, 2, 3, 4], sequence_type=tuple)
+    False
+
+    It is also possible to check the type of sequence elements
+    >>> is_sequence([1, 2, 3], element_type=int)
+    True
+    >>> is_sequence([1, 2, 3, 4], sequence_type=list, element_type=int)
+    True
+    >>> is_sequence([1, 2, 3, 4], sequence_type=list, element_type=float)
+    False
+    >>> is_sequence([1, 2, 3, 4], sequence_type=list, element_type=(int, float))
+    True
+
+    The check also works with BaseObjects
+    >>> is_sequence((BaseObject(), BaseEstimator()), element_type=BaseObject)
+    True
     """
     sequence_type_ = _convert_scalar_seq_type_input_to_tuple(
         sequence_type,
@@ -198,6 +258,32 @@ def check_sequence(
     ValueError :
         If `seq` is not instance of `sequence_type` or ``element_type is not None`` and
         all elements are not instances of `element_type`.
+
+    Examples
+    --------
+    >>> from skbase.base import BaseEstimator, BaseObject
+    >>> from skbase.validate import is_sequence
+
+    >>> check_sequence([1, 2, 3])
+    [1, 2, 3]
+
+    Generators are not sequences so an error is raised
+    >>> check_sequence((c for c in [1, 2, 3])) # doctest: +SKIP
+
+    The check can require a certain type of sequence
+    >>> check_sequence([1, 2, 3, 4], sequence_type=list)
+    [1, 2, 3, 4]
+    >>> check_sequence([1, 2, 3, 4], sequence_type=tuple) # doctest: +SKIP
+
+    It is also possible to check the type of sequence elements
+    >>> check_sequence([1, 2, 3], element_type=int)
+    [1, 2, 3]
+    >>> check_sequence([1, 2, 3, 4], sequence_type=list, element_type=(int, float))
+    [1, 2, 3, 4]
+
+    The check also works with BaseObjects
+    >>> check_sequence((BaseObject(), BaseEstimator()), element_type=BaseObject)
+    (BaseObject(), BaseEstimator())
     """
     if coerce_scalar_input:
         if isinstance(sequence_type, tuple):
