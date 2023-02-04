@@ -2,17 +2,14 @@
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Validate if an input is one of the allowed named object formats."""
 import collections.abc
-from typing import (
-    TYPE_CHECKING,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-    overload,
-)
+import sys
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Tuple, Union, overload
+
+if TYPE_CHECKING:
+    if sys.version_info >= (3, 8):
+        from typing import Literal
+    else:
+        from typing_extensions import Literal
 
 from skbase.base import BaseObject
 
