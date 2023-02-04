@@ -4,16 +4,23 @@
 
 tests in this module include:
 
+- test_is_sequence_output
 - test_is_sequence_with_seq_of_class_and_instance_input
-- test_check_sequence_named_objects_output
+- test_check_sequence_output
+- test_check_sequence_scalar_input_coercion
+- test_check_sequence_with_seq_of_class_and_instance_input
+- test_convert_scalar_seq_type_input_to_tuple_raises_error
 """
+import collections
 
-__author__ = ["RNKuhns"]
 import numpy as np
 import pytest
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.validate import check_sequence, is_sequence
+from skbase.validate import check_sequence, check_type, is_sequence
+from skbase.validate._types import _convert_scalar_seq_type_input_to_tuple
+
+__author__ = ["RNKuhns"]
 
 
 @pytest.fixture
@@ -26,6 +33,33 @@ def fixture_object_instance():
 def fixture_estimator_instance():
     """Pytest fixture of BaseObject instance."""
     return BaseEstimator()
+
+
+def test_check_type_output(fixture_estimator_instance, fixture_object_instance):
+    """Test check type returns expected output."""
+    assert check_type(7, expected_type=int) == 7
+    assert check_type(7.2, expected_type=float) == 7.2
+    assert check_type(7.2, expected_type=(float, int)) == 7.2
+    assert check_type("something", expected_type=str) == "something"
+    assert check_type(["a", 7, fixture_object_instance], expected_type=list) == [
+        "a",
+        7,
+        fixture_object_instance,
+    ]
+    assert (
+        check_type(fixture_estimator_instance, expected_type=BaseObject)
+        == fixture_estimator_instance
+    )
+    assert check_type(None, expected_type=int, allow_none=True) is None
+
+
+def test_check_type_raises_error_if_expected_type_is_wrong_format():
+    """Test check_type raises an error if expected_type wrong format.
+
+    `expected_type` should be a type or tuple of types.
+    """
+    with pytest.raises(ValueError, match="^`expected_type` should be.*"):
+        check_type(7, expected_type=11)
 
 
 def test_is_sequence_output():
@@ -283,3 +317,27 @@ def test_check_sequence_with_seq_of_class_and_instance_input(
     ):
         # Verify we detect when list elements are not instances of valid types
         check_sequence([1, 2, 3], element_type=BaseObject)
+
+
+def test_convert_scalar_seq_type_input_to_tuple_raises_error():
+    """Test _convert_scalar_seq_type_input_to_tuple raises error."""
+    # Raises because 7 is not a type
+    with pytest.raises(
+        ValueError, match=r"`type_input` should be a type or tuple of types."
+    ):
+        _convert_scalar_seq_type_input_to_tuple(7)
+
+    # Test error message uses input_name
+    with pytest.raises(
+        ValueError, match=r"`some_input` should be a type or tuple of types."
+    ):
+        _convert_scalar_seq_type_input_to_tuple(7, input_name="some_input")
+
+    # Raises error because dict is a type but not a subclass of type_input_subclass
+    with pytest.raises(
+        ValueError, match=r"`type_input` should be a type or tuple of types."
+    ):
+        _convert_scalar_seq_type_input_to_tuple(
+            dict,
+            type_input_subclass=collections.abc.Sequence,
+        )
