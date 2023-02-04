@@ -53,14 +53,10 @@ def check_type(
         )
         raise ValueError(msg)
 
-    # process input_name parameter
+    # Assign default name to input_name parameter in case it is None
     if input_name is None:
         input_name = "input"
-    else:
-        if not isinstance(input_name, str):
-            raise ValueError(
-                f"`input_name` should be str, but found {type(input_name)}."
-            )
+
     # Check the type of input_
     type_check = issubclass if use_subclass else isinstance
     if (allow_none and input_ is None) or type_check(input_, expected_type):

@@ -4,6 +4,8 @@
 
 tests in this module include:
 
+- test_check_type_output
+- test_check_type_raises_error_if_expected_type_is_wrong_format
 - test_is_sequence_output
 - test_is_sequence_with_seq_of_class_and_instance_input
 - test_check_sequence_output
@@ -52,6 +54,20 @@ def test_check_type_output(fixture_estimator_instance, fixture_object_instance):
     )
     assert check_type(None, expected_type=int, allow_none=True) is None
 
+    with pytest.raises(ValueError, match=r"`input` should be type.*"):
+        check_type(7.2, expected_type=int)
+
+    with pytest.raises(ValueError, match=r"`input` should be type.*"):
+        check_type("something", expected_type=(int, float))
+
+    with pytest.raises(ValueError, match=r"`input` should be type.*"):
+        check_type(BaseEstimator, expected_type=BaseObject)
+    # Verify optional use of issubclass instead of isinstance
+    assert (
+        check_type(BaseEstimator, expected_type=BaseObject, use_subclass=True)
+        == BaseEstimator
+    )
+
 
 def test_check_type_raises_error_if_expected_type_is_wrong_format():
     """Test check_type raises an error if expected_type wrong format.
@@ -60,6 +76,9 @@ def test_check_type_raises_error_if_expected_type_is_wrong_format():
     """
     with pytest.raises(ValueError, match="^`expected_type` should be.*"):
         check_type(7, expected_type=11)
+
+    with pytest.raises(ValueError, match="^`expected_type` should be.*"):
+        check_type(7, expected_type=[int])
 
 
 def test_is_sequence_output():
