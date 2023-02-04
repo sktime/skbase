@@ -31,7 +31,7 @@ def check_type(
         Whether `input_` can be None in addition to being instance of `expected_type`.
     input_name : str, default=None
         The name to use when referring to `input_` in any raised error messages.
-        If None, then "input_" is used as `input_name`.
+        If None, then "input" is used as `input_name`.
     use_subclass : bool, default=False
         Whether to check the type using issubclass instead of isinstance.
 
@@ -57,11 +57,9 @@ def check_type(
     7.2
     >>> check_type(BaseEstimator(), BaseObject)
     BaseEstimator()
-
-    An error is raised if the input is not the expected type
+    # An error is raised if the input is not the expected type
     >>> check_type(7, expected_type=str) # doctest: +SKIP
-
-    The use_subclass keyword lets the check use isubclass instead of isinstance
+    # The use_subclass keyword lets the check use isubclass instead of isinstance
     >>> check_type(BaseEstimator, expected_type=BaseObject, use_subclass=True)
     skbase.base._base.BaseEstimator
     """
