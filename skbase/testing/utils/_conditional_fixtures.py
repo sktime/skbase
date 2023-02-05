@@ -8,7 +8,7 @@ from typing import Callable, Dict, List
 
 from skbase._exceptions import FixtureGenerationError
 from skbase.utils._nested_iter import _remove_single
-from skbase.validate._types import _check_list_of_str
+from skbase.validate import check_sequence
 
 __author__: List[str] = ["fkiraly"]
 __all__: List[str] = ["create_conditional_fixtures_and_names"]
@@ -97,12 +97,19 @@ def create_conditional_fixtures_and_names(
             return "fixture_str_pt[1]-fixture_str_pt[2]-...-fixture_str_pt[N]"
         fixture names correspond to fixtures with the same indices at picks (from lists)
     """
-    fixture_vars = _check_list_of_str(fixture_vars, name="fixture_vars")
+    fixture_vars = check_sequence(
+        fixture_vars, sequence_type=list, element_type=str, sequence_name="fixture_vars"
+    )
     fixture_vars = [var for var in fixture_vars if var in generator_dict.keys()]
 
     # order fixture_vars according to fixture_sequence if provided
     if fixture_sequence is not None:
-        fixture_sequence = _check_list_of_str(fixture_sequence, name="fixture_sequence")
+        fixture_sequence = check_sequence(
+            fixture_sequence,
+            sequence_type=list,
+            element_type=str,
+            sequence_name="fixture_sequence",
+        )
         ordered_fixture_vars = []
         for fixture_var_name in fixture_sequence:
             if fixture_var_name in fixture_vars:
