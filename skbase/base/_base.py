@@ -74,6 +74,7 @@ class BaseObject(_BaseEstimator):
     """
 
     def __init__(self):
+        """Construct BaseObject."""
         self._tags_dynamic = {}
         super(BaseObject, self).__init__()
 
@@ -215,6 +216,46 @@ class BaseObject(_BaseEstimator):
             x.name: x.default for x in parameters if x.default != inspect._empty
         }
         return default_dict
+
+    def get_params(self, deep=True):
+        """Get a dict of parameters values for this object.
+
+        Parameters
+        ----------
+        deep : bool, default=True
+            Whether to return parameters of components.
+
+            * If True, will return a dict of parameter name : value for this object,
+              including parameters of components (= BaseObject-valued parameters).
+            * If False, will return a dict of parameter name : value for this object,
+              but not include parameters of components.
+
+        Returns
+        -------
+        params : dict with str-valued keys
+            Dictionary of parameters, paramname : paramvalue
+            keys-value pairs include:
+
+            * always: all parameters of this object, as via `get_param_names`
+              values are parameter value for that key, of this object
+              values are always identical to values passed at construction
+            * if `deep=True`, also contains keys/value pairs of component parameters
+              parameters of components are indexed as `[componentname]__[paramname]`
+              all parameters of `componentname` appear as `paramname` with its value
+            * if `deep=True`, also contains arbitrary levels of component recursion,
+              e.g., `[componentname]__[componentcomponentname]__[paramname]`, etc
+        """
+        params = {key: getattr(self, key) for key in self.get_param_names()}
+
+        if deep:
+            deep_params = {}
+            for key, value in params.items():
+                if hasattr(value, "get_params"):
+                    deep_items = value.get_params().items()
+                    deep_params.update({f"{key}__{k}": val for k, val in deep_items})
+            params.update(deep_params)
+
+        return params
 
     def set_params(self, **params):
         """Set the parameters of this object.
@@ -670,6 +711,7 @@ class TagAliaserMixin:
     deprecate_dict = {"old_tag": "0.12.0", "tag_to_remove": "99.99.99"}
 
     def __init__(self):
+        """Construct TagAliaserMixin."""
         super(TagAliaserMixin, self).__init__()
 
     @classmethod
@@ -816,13 +858,13 @@ class TagAliaserMixin:
             if tag_name in cls.alias_dict.keys():
                 version = cls.deprecate_dict[tag_name]
                 new_tag = cls.alias_dict[tag_name]
-                msg = f'tag "{tag_name}" will be removed in sktime version {version}'
+                msg = f"tag {tag_name!r} will be removed in sktime version {version}"
                 if new_tag != "":
                     msg += (
-                        f' and replaced by "{new_tag}", please use "{new_tag}" instead'
+                        f" and replaced by {new_tag!r}, please use {new_tag!r} instead"
                     )
                 else:
-                    msg += ', please remove code that access or sets "{tag_name}"'
+                    msg += ", please remove code that access or sets {tag_name!r}"
                 warnings.warn(msg, category=DeprecationWarning)
 
 
@@ -875,16 +917,36 @@ class BaseEstimator(BaseObject):
                 f"Please call `fit` first."
             )
 
-    def get_fitted_params(self):
+    def get_fitted_params(self, deep=True):
         """Get fitted parameters.
 
         State required:
             Requires state to be "fitted".
 
+        Parameters
+        ----------
+        deep : bool, default=True
+            Whether to return fitted parameters of components.
+
+            * If True, will return a dict of parameter name : value for this object,
+              including fitted parameters of fittable components
+              (= BaseEstimator-valued parameters).
+            * If False, will return a dict of parameter name : value for this object,
+              but not include fitted parameters of components.
+
         Returns
         -------
-        fitted_params : dict of fitted parameters, keys are str names of parameters
-            parameters of components are indexed as [componentname]__[paramname]
+        fitted_params : dict with str-valued keys
+            Dictionary of fitted parameters, paramname : paramvalue
+            keys-value pairs include:
+
+            * always: all fitted parameters of this object, as via `get_param_names`
+              values are fitted parameter value for that key, of this object
+            * if `deep=True`, also contains keys/value pairs of component parameters
+              parameters of components are indexed as `[componentname]__[paramname]`
+              all parameters of `componentname` appear as `paramname` with its value
+            * if `deep=True`, also contains arbitrary levels of component recursion,
+              e.g., `[componentname]__[componentcomponentname]__[paramname]`, etc
         """
         if not self.is_fitted:
             raise NotFittedError(
@@ -892,7 +954,13 @@ class BaseEstimator(BaseObject):
                 "fitted yet, please call fit on data before get_fitted_params"
             )
 
-        fitted_params = {}
+        # collect non-nested fitted params of self
+        fitted_params = self._get_fitted_params()
+
+        # the rest is only for nested parameters
+        # so, if deep=False, we simply return here
+        if not deep:
+            return fitted_params
 
         def sh(x):
             """Shorthand to remove all underscores at end of a string."""
@@ -905,12 +973,9 @@ class BaseEstimator(BaseObject):
         c_dict = self._components()
         for c, comp in c_dict.items():
             if isinstance(comp, BaseEstimator) and comp._is_fitted:
-                c_f_params = comp.get_fitted_params()
+                c_f_params = comp.get_fitted_params(deep=deep)
                 c_f_params = {f"{sh(c)}__{k}": v for k, v in c_f_params.items()}
                 fitted_params.update(c_f_params)
-
-        # add non-nested fitted params of self
-        fitted_params.update(self._get_fitted_params())
 
         # add all nested parameters from components that are sklearn estimators
         # we do this recursively as we have to reach into nested sklearn estimators

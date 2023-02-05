@@ -13,7 +13,7 @@ all_objects(object_types, filter_tags)
 # all_objects is based on the sktime all_estimator retrieval utility, which
 # is based on the sklearn estimator retrieval utility of the same name
 # See https://github.com/scikit-learn/scikit-learn/blob/main/COPYING and
-# https://github.com/alan-turing-institute/sktime/blob/main/LICENSE
+# https://github.com/sktime/sktime/blob/main/LICENSE
 import importlib
 import inspect
 import io
@@ -39,7 +39,7 @@ from typing import (
 )
 
 from skbase.base import BaseObject
-from skbase.validate._types import _check_list_of_str_or_error
+from skbase.validate import check_sequence
 
 # Conditionally import TypedDict based on Python version
 if sys.version_info >= (3, 8):
@@ -382,11 +382,11 @@ def _determine_module_path(
             try:
                 loader = _instantiate_loader(package_name, path_)
                 module = _import_module(loader, suppress_import_stdout=False)
-            except ImportError:
+            except ImportError as exc:
                 raise ValueError(
                     f"Unable to import a package named {package_name} based "
                     f"on provided `path`: {path_}."
-                )
+                ) from exc
         else:
             raise ValueError(
                 f"`path` must be a str path or pathlib.Path, but is type {type(path)}."
@@ -844,9 +844,9 @@ def all_objects(
                 classes = inspect.getmembers(module, inspect.isclass)
                 # Filter classes
                 estimators = [
-                    (name, klass)
-                    for name, klass in classes
-                    if _is_estimator(name, klass)
+                    (klass.__name__, klass)
+                    for _, klass in classes
+                    if _is_estimator(klass.__name__, klass)
                 ]
                 all_estimators.extend(estimators)
             except ModuleNotFoundError as e:
@@ -874,7 +874,13 @@ def all_objects(
 
     # Filter based on given exclude list
     if exclude_objects:
-        exclude_objects = _check_list_of_str_or_error(exclude_objects, "exclude_object")
+        exclude_objects = check_sequence(
+            exclude_objects,
+            sequence_type=list,
+            element_type=str,
+            coerce_scalar_input=True,
+            sequence_name="exclude_object",
+        )
         all_estimators = [
             (name, estimator)
             for name, estimator in all_estimators
@@ -901,7 +907,13 @@ def all_objects(
     # add new tuple entries to all_estimators for each tag in return_tags:
     return_tags = [] if return_tags is None else return_tags
     if return_tags:
-        return_tags = _check_list_of_str_or_error(return_tags, "return_tags")
+        return_tags = check_sequence(
+            return_tags,
+            sequence_type=list,
+            element_type=str,
+            coerce_scalar_input=True,
+            sequence_name="return_tags",
+        )
         # enrich all_estimators by adding the values for all return_tags tags:
         if all_estimators:
             if isinstance(all_estimators[0], tuple):
