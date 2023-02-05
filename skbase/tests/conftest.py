@@ -90,13 +90,6 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
         "create_conditional_fixtures_and_names",
     ),
     "skbase.testing.utils.deep_equals": ("deep_equals",),
-    "skbase.utils": ("flatten", "is_flat", "unflat_len", "unflatten"),
-    "skbase.utils._nested_iter": (
-        "flatten",
-        "is_flat",
-        "unflat_len",
-        "unflatten",
-    ),
     "skbase.validate": (
         "check_sequence_named_objects",
         "check_sequence",
@@ -147,10 +140,10 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
         "skbase.utils._iter": ("_format_seq_to_str", "_scalar_to_seq"),
         "skbase.utils._nested_iter": (
             "_remove_single",
-            "flatten",
-            "is_flat",
-            "unflat_len",
-            "unflatten",
+            "_flatten",
+            "_is_flat",
+            "_unflat_len",
+            "_unflatten",
         ),
         "skbase.validate._named_objects": (
             "check_sequence_named_objects",
@@ -162,9 +155,6 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "check_type",
             "is_sequence",
             "_convert_scalar_seq_type_input_to_tuple",
-            # "_check_iterable_of_class_or_error",
-            # "_check_list_of_str",
-            # "_check_list_of_str_or_error",
         ),
     }
 )
