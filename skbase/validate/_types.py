@@ -64,7 +64,7 @@ def check_type(
     >>> check_type(BaseEstimator(), BaseObject)
     BaseEstimator()
     >>> check_type(BaseEstimator, expected_type=BaseObject, use_subclass=True)
-    skbase.base._base.BaseEstimator
+    <class 'skbase.base._base.BaseEstimator'>
 
     An error is raised if the input is not the expected type
 
