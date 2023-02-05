@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Functionality for working with nested sequences."""
+import collections
 from typing import List
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]
@@ -84,12 +85,26 @@ def unflatten(obj, template):
 
 def unflat_len(obj):
     """Return number of non-list/tuple elements in obj."""
-    if not isinstance(obj, (list, tuple)):
+    if not isinstance(obj, (collections.abc.Iterable, collections.abc.Sequence)):
         return 1
     else:
         return sum([unflat_len(x) for x in obj])
 
 
 def is_flat(obj):
-    """Check whether list or tuple is flat, returns true if yes, false if nested."""
-    return not any(isinstance(x, (list, tuple)) for x in obj)
+    """Check whether iterable is flat.
+
+    Parameters
+    ----------
+    obj : Any
+        The object to check to see if it is flat (does not have nested iterable).
+
+    Returns
+    -------
+    bool
+        Whether or not the input `obj` contains nested iterables.
+    """
+    elements_flat = (
+        isinstance(x, (collections.abc.Iterable, collections.abc.Sequence)) for x in obj
+    )
+    return not any(elements_flat)
