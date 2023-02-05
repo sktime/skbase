@@ -1,24 +1,38 @@
 #!/usr/bin/env python3 -u
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
-# BaseMetaObject re-uses code developed in scikit-learn and sktime. These elements
-# are copyrighted by the respective scikit-learn developers (BSD-3-Clause License)
-# and sktime (BSD-3-Clause) developers. For conditions see licensing.
-#  scikit-learn: https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
-# and sktime:  https://github.com/sktime/sktime/blob/main/LICENSE
+# BaseMetaObject and BaseMetaEstimator re-use code developed in scikit-learn and sktime.
+# These elements are copyrighted by the respective
+# scikit-learn developers (BSD-3-Clause License) and sktime (BSD-3-Clause) developers.
+# For conditions see licensing:
+# scikit-learn: https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
+# sktime:  https://github.com/sktime/sktime/blob/main/LICENSE
 """Implements functionality for meta objects composed of other objects."""
 from inspect import isclass
 from typing import Any, Dict, List
 
-from skbase.base._base import BaseEstimator
+from skbase.base._base import BaseEstimator, BaseObject
 from skbase.utils._nested_iter import flatten, is_flat, unflatten
 
 __author__: List[str] = ["mloning", "fkiraly", "RNKuhns"]
 __all__: List[str] = ["BaseMetaObject"]
 
 
-class BaseMetaObject:
+class BaseMetaObject(BaseObject):
     """Parameter and tag management for objects composed of named objects.
+
+    Allows objects to get and set nested parameters when a parameter of the the
+    class has values that follow the named object specification. For example,
+    in a pipeline class with the the "step" parameter accepting named objects,
+    this would allow `get_params` and `set_params` to retrieve and update the
+    parameters of the objects in each step.
+
+    See Also
+    --------
+    BaseMetaEstimator :
+        Expands on `BaseMetaObject` by adding functionality for getting fitted
+        parameters from a class's component estimators. `BaseEstimator` should
+        be used when you want to create a meta estimator.
 
     Notes
     -----
@@ -30,24 +44,37 @@ class BaseMetaObject:
     # _steps_attr points to the attribute of self
     # which contains the heterogeneous set of estimators
     # this must be an iterable of (name: str, estimator) pairs for the default
-    _steps_attr = "_steps"
+    _tags = {"named_object_parameters": "steps"}
 
     def get_params(self, deep: bool = True) -> Dict[str, Any]:
-        """Get parameters of estimator in `_forecasters`.
+        """Get a dict of parameters values for this object.
 
         Parameters
         ----------
-        deep : boolean, optional
-            If True, will return the parameters for this estimator and
-            contained sub-objects that are estimators.
+        deep : bool, default=True
+            Whether to return parameters of components.
+
+            - If True, will return a dict of parameter name : value for this object,
+              including parameters of components (= BaseObject-valued parameters).
+            - If False, will return a dict of parameter name : value for this object,
+              but not include parameters of components.
 
         Returns
         -------
-        params : mapping of string to any
-            Parameter names mapped to their values.
+        dict[str, Any]
+            Dictionary of parameter name and parameter value key-value pairs.
+
+            - always: all parameters of this object, as via `get_param_names`
+              values are parameter value for that key, of this object
+              values are always identical to values passed at construction
+            - if `deep=True`, also contains keys/value pairs of component parameters
+              parameters of components are indexed as `[componentname]__[paramname]`
+              all parameters of `componentname` appear as `paramname` with its value
+            - if `deep=True`, also contains arbitrary levels of component recursion,
+              e.g., `[componentname]__[componentcomponentname]__[paramname]`, etc
         """
-        steps = self._steps_attr
-        return self._get_params(steps, deep=deep)
+        steps_attr = self._steps_attr
+        return self._get_params(steps_attr, deep=deep)
 
     def set_params(self, **kwargs):
         """Set the parameters of estimator in `_forecasters`.
@@ -61,19 +88,6 @@ class BaseMetaObject:
         steps_attr = self._steps_attr
         self._set_params(steps_attr, **kwargs)
         return self
-
-    def is_composite(self):
-        """Check if the object is composite.
-
-        A composite object is an object which contains objects, as parameters.
-        Called on an instance, since this may differ by instance.
-
-        Returns
-        -------
-        composite: bool, whether self contains a parameter which is BaseObject
-        """
-        # children of this class are always composite
-        return True
 
     def _get_params(self, attr, deep=True):
         out = super().get_params(deep=deep)
