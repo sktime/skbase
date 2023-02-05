@@ -12,7 +12,7 @@ from inspect import isclass
 from typing import Any, Dict, List
 
 from skbase.base._base import BaseEstimator, BaseObject
-from skbase.utils._nested_iter import flatten, is_flat, unflatten
+from skbase.utils._nested_iter import _flatten, _is_flat, _unflatten
 
 __author__: List[str] = ["mloning", "fkiraly", "RNKuhns"]
 __all__: List[str] = ["BaseMetaObject"]
@@ -385,10 +385,10 @@ class BaseMetaObject(BaseObject):
         ##############################################################
 
         # if strlist is not flat, flatten and apply, then unflatten
-        if not is_flat(strlist):
-            flat_strlist = flatten(strlist)
+        if not _is_flat(strlist):
+            flat_strlist = _flatten(strlist)
             unique_flat_strlist = self._make_strings_unique(flat_strlist)
-            uniquestr = unflatten(unique_flat_strlist, strlist)
+            uniquestr = _unflatten(unique_flat_strlist, strlist)
             return uniquestr
 
         # now we can assume that strlist is flat
