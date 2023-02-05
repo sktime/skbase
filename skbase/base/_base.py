@@ -973,7 +973,7 @@ class BaseEstimator(BaseObject):
         c_dict = self._components()
         for c, comp in c_dict.items():
             if isinstance(comp, BaseEstimator) and comp._is_fitted:
-                c_f_params = comp.get_fitted_params()
+                c_f_params = comp.get_fitted_params(deep=deep)
                 c_f_params = {f"{sh(c)}__{k}": v for k, v in c_f_params.items()}
                 fitted_params.update(c_f_params)
 
