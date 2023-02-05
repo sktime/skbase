@@ -9,11 +9,14 @@ from typing import Any, List, Optional, Union
 from skbase.utils._nested_iter import _remove_single
 
 __author__: List[str] = ["RNKuhns"]
-__all__: List[str] = []
+__all__: List[str] = ["_scalar_to_seq", "_format_seq_to_str"]
 
 
 def _scalar_to_seq(scalar: Any, sequence_type: type = None) -> Sequence:
     """Convert a scalar input to a sequence.
+
+    If the input is already a sequence it is returned unchanged. Unlike standard
+    Python, a string is treated as a scalar instead of a sequence.
 
     Parameters
     ----------
@@ -33,7 +36,7 @@ def _scalar_to_seq(scalar: Any, sequence_type: type = None) -> Sequence:
 
     Returns
     -------
-    output_seq : Sequence
+    Sequence
         A sequence of the specified `sequence_type` that contains just the single
         scalar value.
 
@@ -69,7 +72,10 @@ def _format_seq_to_str(
     last_sep: Optional[str] = None,
     remove_type_text: bool = False,
 ) -> str:
-    """Format a sequence to a string of comma separated elements.
+    """Format a sequence to a string of delimitted elements.
+
+    This is useful to format sequences into a pretty printing format for
+    creating error messages or warnings.
 
     Parameters
     ----------
@@ -95,7 +101,7 @@ def _format_seq_to_str(
 
     Returns
     -------
-    output_str : str
+    str
         The sequence of inputs converted to a string. For example, if `seq`
         is (7, 9, "cart") and ``last_sep is None`` then the output is
         "7", "9", "cart".

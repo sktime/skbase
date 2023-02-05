@@ -84,6 +84,9 @@ def test_format_seq_to_str_raises():
 def test_scalar_to_seq_expected_output():
     """Test _scalar_to_seq returns expected output."""
     assert _scalar_to_seq(7) == (7,)
+    # Verify it works with scalar classes and objects
+    assert _scalar_to_seq(BaseObject) == (BaseObject,)
+    assert _scalar_to_seq(BaseObject()) == (BaseObject(),)
     # Verify strings treated like scalar not sequence
     assert _scalar_to_seq("some_str") == ("some_str",)
     assert _scalar_to_seq("some_str", sequence_type=list) == ["some_str"]
