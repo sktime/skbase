@@ -112,7 +112,6 @@ def deep_equals(x, y, return_msg=False):
 
 
 def _is_pandas(x):
-
     clstr = type(x).__name__
     if clstr in ["DataFrame", "Series"]:
         return True
@@ -123,13 +122,11 @@ def _is_pandas(x):
 
 
 def _is_npndarray(x):
-
     clstr = type(x).__name__
     return clstr == "ndarray"
 
 
 def _is_npnan(x):
-
     if numpy_available:
         import numpy as np
 
@@ -150,7 +147,6 @@ def _coerce_list(x):
 
 
 def _pandas_equals(x, y, return_msg=False):
-
     import pandas as pd
 
     def ret(is_equal, msg):
