@@ -6,7 +6,7 @@ import collections
 import inspect
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
-from skbase.utils._iter import _format_seq_to_str, _scalar_to_seq
+from skbase.utils._iter import _format_seq_to_str, _remove_type_text, _scalar_to_seq
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]
 __all__: List[str] = ["check_sequence", "check_type", "is_sequence"]
@@ -76,7 +76,7 @@ def check_type(
         msg = " ".join(
             [
                 "`expected_type` should be type or tuple[type, ...],"
-                f"but found {type(expected_type)}."
+                f"but found {_remove_type_text(expected_type)}."
             ]
         )
         raise TypeError(msg)
@@ -91,9 +91,14 @@ def check_type(
         return input_
     else:
         chk_msg = "subclass type" if use_subclass else "be type"
-        type_msg = f"{expected_type} or None" if allow_none else f"{expected_type}"
+        expected_type_str = _remove_type_text(expected_type)
+        input_type_str = _remove_type_text(type(input_))
+        if allow_none:
+            type_msg = f"{expected_type_str} or None"
+        else:
+            type_msg = f"{expected_type_str}"
         raise TypeError(
-            f"`{input_name}` should {chk_msg} {type_msg}, but found {type(input_name)}."
+            f"`{input_name}` should {chk_msg} {type_msg}, but found {input_type_str}."
         )
 
 
@@ -327,8 +332,10 @@ def check_sequence(
             element_type_ = _convert_scalar_seq_type_input_to_tuple(
                 element_type, input_name="element_type"
             )
-            element_str = _format_seq_to_str(element_type_, last_sep="or")
-            msg = msg + f"Elements of {name_str} expected to have type {element_str}."
+            element_str = _format_seq_to_str(
+                element_type_, last_sep="or", remove_type_text=True
+            )
+            msg = msg[:-1] + f" with elements of type {element_str}."
 
         raise TypeError(msg)
 
