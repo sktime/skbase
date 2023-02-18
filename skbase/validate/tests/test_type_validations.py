@@ -43,6 +43,7 @@ def test_check_type_output(fixture_estimator_instance, fixture_object_instance):
     assert check_type(7.2, expected_type=float) == 7.2
     assert check_type(7.2, expected_type=(float, int)) == 7.2
     assert check_type("something", expected_type=str) == "something"
+    assert check_type(None, expected_type=str, allow_none=True) is None
     assert check_type(["a", 7, fixture_object_instance], expected_type=list) == [
         "a",
         7,
@@ -79,6 +80,9 @@ def test_check_type_raises_error_if_expected_type_is_wrong_format():
 
     with pytest.raises(TypeError, match="^`expected_type` should be.*"):
         check_type(7, expected_type=[int])
+
+    with pytest.raises(TypeError, match="^`expected_type` should be.*"):
+        check_type(None, expected_type=[int])
 
 
 def test_is_sequence_output():
