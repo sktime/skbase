@@ -9,7 +9,11 @@ from typing import Any, List, Optional, Union
 from skbase.utils._nested_iter import _remove_single
 
 __author__: List[str] = ["RNKuhns"]
-__all__: List[str] = []
+__all__: List[str] = [
+    "_scalar_to_seq",
+    "_remove_type_text",
+    "_format_seq_to_str",
+]
 
 
 def _scalar_to_seq(scalar: Any, sequence_type: type = None) -> Sequence:
@@ -61,6 +65,18 @@ def _scalar_to_seq(scalar: Any, sequence_type: type = None) -> Sequence:
         raise ValueError(
             "`sequence_type` must be a subclass of collections.abc.Sequence."
         )
+
+
+def _remove_type_text(input_):
+    """Remove <class > wrapper from printed type str."""
+    if not isinstance(input_, str):
+        input_ = str(input_)
+
+    m = re.match("^<class '(.*)'>$", input_)
+    if m:
+        return m[1]
+    else:
+        return input_
 
 
 def _format_seq_to_str(
@@ -115,14 +131,11 @@ def _format_seq_to_str(
     elif isinstance(seq, (int, float, bool)):
         return str(seq)
     elif not isinstance(seq, Sequence):
-        raise ValueError("`seq` must be a sequence or scalar str, int, float or bool.")
+        raise TypeError("`seq` must be a sequence or scalar str, int, float or bool.")
 
     seq_str = [str(e) for e in seq]
     if remove_type_text:
-        for idx, s in enumerate(seq_str):
-            m = re.match("^<class '(.*)'>$", s)
-            if m:
-                seq_str[idx] = m[1]
+        seq_str = [_remove_type_text(s) for s in seq_str]
 
     if last_sep is None:
         output_str = sep.join(seq_str)

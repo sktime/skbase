@@ -71,12 +71,12 @@ def test_format_seq_to_str():
 def test_format_seq_to_str_raises():
     """Test _format_seq_to_str raises error when input is unexpected type."""
     with pytest.raises(
-        ValueError, match="`seq` must be a sequence or scalar str, int, float or bool."
+        TypeError, match="`seq` must be a sequence or scalar str, int, float or bool."
     ):
         _format_seq_to_str((c for c in [1, 2, 3]))
 
     with pytest.raises(
-        ValueError, match="`seq` must be a sequence or scalar str, int, float or bool."
+        TypeError, match="`seq` must be a sequence or scalar str, int, float or bool."
     ):
         _format_seq_to_str(object)
 
