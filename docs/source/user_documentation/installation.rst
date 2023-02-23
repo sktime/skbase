@@ -59,7 +59,7 @@ code snippets below.
 Troubleshooting release installations
 -------------------------------------
 
-Missing soft fependencies
+Missing soft dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Users may run into problems, when they install the core version of ``skbase``,
@@ -77,7 +77,8 @@ of steps is as follows:
 
 
 1. Clone the ``skbase`` `Github repository`_
-2. Use ``pip`` to build ``skbase`` from source and install development dependencies
+2. Create a new virtual environment via ``conda`` and activate it.
+3. Use ``pip`` to build ``skbase`` from source and install development dependencies
 
 
 Detail instructions for each step is provided below.
@@ -110,7 +111,21 @@ for additional details.
     You can also download a specific release version from the Github repository's
     zip archive of `releases <https://github.com/sktime/skbase/releases>`_.
 
-Step 2 - Build ``skbase`` from source
+Step 2 - Create a new virtual environment
+-----------------------------------------
+
+Setting a new virtual environment before building ``skbase`` ensures that
+no two conflicting package versions are installed in the same environment.
+You can choose your favorite env manager for this but we're showing the
+steps to create one using ``conda``:
+
+1. Use your command line tool to first confirm ``conda`` is present on your
+   system: :code:`conda --version`
+2. Create a new virtual environment named ``skbase-dev`` with python version ``3.9``:
+   :code:`conda create -n skbase-dev python=3.9`
+3. Activate this newly created environment: :code:`conda activate skbase-dev`
+
+Step 3 - Build ``skbase`` from source
 -------------------------------------
 
 When contributing to the project, you will want to install ``skbase`` locally, along
