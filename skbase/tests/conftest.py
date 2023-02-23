@@ -144,7 +144,11 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_coerce_list",
         ),
         "skbase.testing.utils.inspect": ("_get_args",),
-        "skbase.utils._iter": ("_format_seq_to_str", "_scalar_to_seq"),
+        "skbase.utils._iter": (
+            "_format_seq_to_str",
+            "_remove_type_text",
+            "_scalar_to_seq",
+        ),
         "skbase.utils._nested_iter": (
             "_remove_single",
             "flatten",

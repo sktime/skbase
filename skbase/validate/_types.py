@@ -6,7 +6,7 @@ import collections
 import inspect
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
-from skbase.utils._iter import _format_seq_to_str, _scalar_to_seq
+from skbase.utils._iter import _format_seq_to_str, _remove_type_text, _scalar_to_seq
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]
 __all__: List[str] = ["check_sequence", "check_type", "is_sequence"]
@@ -49,7 +49,7 @@ def check_type(
 
     Raises
     ------
-    ValueError
+    TypeError
         If input does match expected type using isinstance by default
         or using issubclass in check if ``use_subclass=True``.
 
@@ -69,17 +69,17 @@ def check_type(
     An error is raised if the input is not the expected type
 
     >>> check_type(7, expected_type=str) # doctest: +SKIP
-    ValueError: `input` should be type <class 'str'>, but found <class 'str'>.
+    TypeError: `input` should be type <class 'str'>, but found <class 'str'>.
     """
     # process expected_type parameter
     if not isinstance(expected_type, (type, tuple)):
         msg = " ".join(
             [
                 "`expected_type` should be type or tuple[type, ...],"
-                f"but found {type(expected_type)}."
+                f"but found {_remove_type_text(expected_type)}."
             ]
         )
-        raise ValueError(msg)
+        raise TypeError(msg)
 
     # Assign default name to input_name parameter in case it is None
     if input_name is None:
@@ -91,9 +91,14 @@ def check_type(
         return input_
     else:
         chk_msg = "subclass type" if use_subclass else "be type"
-        type_msg = f"{expected_type} or None" if allow_none else f"{expected_type}"
-        raise ValueError(
-            f"`{input_name}` should {chk_msg} {type_msg}, but found {type(input_name)}."
+        expected_type_str = _remove_type_text(expected_type)
+        input_type_str = _remove_type_text(type(input_))
+        if allow_none:
+            type_msg = f"{expected_type_str} or None"
+        else:
+            type_msg = f"{expected_type_str}"
+        raise TypeError(
+            f"`{input_name}` should {chk_msg} {type_msg}, but found {input_type_str}."
         )
 
 
@@ -121,7 +126,7 @@ def _convert_scalar_seq_type_input_to_tuple(
         seq_output = (type_input,)
     else:
         name_str = "type_input" if input_name is None else input_name
-        raise ValueError(f"`{name_str}` should be a type or tuple of types.")
+        raise TypeError(f"`{name_str}` should be a type or tuple of types.")
 
     return seq_output
 
@@ -160,12 +165,6 @@ def is_sequence(
     bool
         Whether the input is a valid sequence based on the supplied `sequence_type`
         and `element_type`.
-
-    Raises
-    ------
-    ValueError
-        If input is not a sequence and optionally if the elements of the sequence
-        have types that don't match the `element_type` parameter value.
 
     Examples
     --------
@@ -263,7 +262,7 @@ def check_sequence(
 
     Raises
     ------
-    ValueError :
+    TypeError :
         If `seq` is not instance of `sequence_type` or ``element_type is not None`` and
         all elements are not instances of `element_type`.
 
@@ -333,10 +332,12 @@ def check_sequence(
             element_type_ = _convert_scalar_seq_type_input_to_tuple(
                 element_type, input_name="element_type"
             )
-            element_str = _format_seq_to_str(element_type_, last_sep="or")
-            msg = msg + f"Elements of {name_str} expected to have type {element_str}."
+            element_str = _format_seq_to_str(
+                element_type_, last_sep="or", remove_type_text=True
+            )
+            msg = msg[:-1] + f" with elements of type {element_str}."
 
-        raise ValueError(msg)
+        raise TypeError(msg)
 
     if coerce_output_type_to is not None:
         return coerce_output_type_to(input_seq)
