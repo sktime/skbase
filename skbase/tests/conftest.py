@@ -101,6 +101,12 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
         "check_sequence_named_objects",
         "is_sequence_named_objects",
     ),
+    "skbase.utils": (
+        "flatten",
+        "is_flat",
+        "unflat_len",
+        "unflatten",
+    ),
     "skbase.utils._nested_iter": (
         "flatten",
         "is_flat",

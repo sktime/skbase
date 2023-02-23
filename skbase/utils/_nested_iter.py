@@ -64,7 +64,7 @@ def flatten(obj):
 
     Example
     -------
-    >>> from skbase.utils._nested_iter import flatten
+    >>> from skbase.utils import flatten
     >>> flatten([1, 2, [3, (4, 5)], 6])
     [1, 2, 3, 4, 5, 6]
     """
@@ -95,7 +95,7 @@ def unflatten(obj, template):
 
     Example
     -------
-    >>> from skbase.utils._nested_iter import unflatten
+    >>> from skbase.utils import unflatten
     >>> unflatten([1, 2, 3, 4, 5, 6], [6, 3, [5, (2, 4)], 1])
     [1, 2, [3, (4, 5)], 6]
     """
@@ -131,7 +131,7 @@ def unflat_len(obj):
 
     Examples
     --------
-    >>> from skbase.utils._nested_iter import unflat_len
+    >>> from skbase.utils import unflat_len
     >>> unflat_len(7)
     1
     >>> unflat_len((1, 2))
@@ -162,7 +162,7 @@ def is_flat(obj):
 
     Examples
     --------
-    >>> from skbase.utils._nested_iter import is_flat
+    >>> from skbase.utils import is_flat
     >>> is_flat([1, 2, 3, 4, 5])
     True
     >>> is_flat([1, (2, 3), 4, 5])
