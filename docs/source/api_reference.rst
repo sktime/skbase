@@ -77,3 +77,21 @@ Testing
     BaseFixtureGenerator
     QuickTester
     TestAllObjects
+
+Utils
+=====
+
+.. automodule:: skbase.utils
+    :no-members:
+    :no-inherited-members:
+
+.. currentmodule:: skbase.utils
+
+.. autosummary::
+    :toctree: api_reference/auto_generated/
+    :template: function.rst
+
+    flatten
+    is_flat
+    unflat_len
+    unflatten
