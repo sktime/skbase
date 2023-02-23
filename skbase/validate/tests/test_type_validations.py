@@ -63,6 +63,10 @@ def test_check_type_output(fixture_estimator_instance, fixture_object_instance):
 
     with pytest.raises(TypeError, match=r"`input` should be type.*"):
         check_type(BaseEstimator, expected_type=BaseObject)
+
+    with pytest.raises(TypeError, match="^`input` should be.*"):
+        check_type("something", expected_type=int, allow_none=True)
+
     # Verify optional use of issubclass instead of isinstance
     assert (
         check_type(BaseEstimator, expected_type=BaseObject, use_subclass=True)
