@@ -131,3 +131,13 @@ def test_check_sequence_named_objects_output(
     ]
     with pytest.raises(ValueError):
         check_sequence_named_objects(c for c in named_objects)
+
+    # Validate use of object_type parameter
+    with pytest.raises(ValueError):
+        check_sequence_named_objects(named_objects, object_type=BaseEstimator)
+
+    named_objects = [("Step 1", BaseEstimator()), ("Step 2", BaseEstimator())]
+    assert (
+        check_sequence_named_objects(named_objects, object_type=BaseEstimator)
+        == named_objects
+    )
