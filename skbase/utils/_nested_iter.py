@@ -62,8 +62,8 @@ def flatten(obj):
         flat iterable/sequence, containing non-list/tuple elements in obj in
         same order as in obj.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from skbase.utils import flatten
     >>> flatten([1, 2, [3, (4, 5)], 6])
     [1, 2, 3, 4, 5, 6]
@@ -93,8 +93,8 @@ def unflatten(obj, template):
         Input coerced to have elements with nested list/tuples structure exactly
         as `template` and elements in sequence exactly as `obj`.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from skbase.utils import unflatten
     >>> unflatten([1, 2, 3, 4, 5, 6], [6, 3, [5, (2, 4)], 1])
     [1, 2, [3, (4, 5)], 6]
