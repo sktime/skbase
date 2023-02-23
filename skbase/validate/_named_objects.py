@@ -33,7 +33,7 @@ def is_sequence_named_objects(
     seq_to_check: Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]],
     allow_dict: bool = True,
     require_unique_names=False,
-    object_type: Optional[type] = None,
+    object_type: Optional[Union[type, Tuple[type]]] = None,
 ) -> bool:
     """Indicate if input is a sequence of named BaseObject instances.
 
@@ -69,8 +69,8 @@ def is_sequence_named_objects(
           depends on whether `seq_to_check` follows sequence of named
           BaseObject format.
 
-    object_type : class, default=None
-        The class type that is used to ensure that all elements of named objects
+    object_type : class or tuple[class], default=None
+        The class type(s) that is used to ensure that all elements of named objects
         match the expected type.
 
     Returns
@@ -174,7 +174,7 @@ def check_sequence_named_objects(
     seq_to_check: Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]],
     allow_dict: Literal[True] = True,
     require_unique_names=False,
-    object_type: Optional[type] = None,
+    object_type: Optional[Union[type, Tuple[type]]] = None,
     sequence_name: Optional[str] = None,
 ) -> Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]]:
     ...  # pragma: no cover
@@ -185,7 +185,7 @@ def check_sequence_named_objects(
     seq_to_check: Sequence[Tuple[str, BaseObject]],
     allow_dict: Literal[False],
     require_unique_names=False,
-    object_type: Optional[type] = None,
+    object_type: Optional[Union[type, Tuple[type]]] = None,
     sequence_name: Optional[str] = None,
 ) -> Sequence[Tuple[str, BaseObject]]:
     ...  # pragma: no cover
@@ -196,7 +196,7 @@ def check_sequence_named_objects(
     seq_to_check: Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]],
     allow_dict: bool = True,
     require_unique_names=False,
-    object_type: Optional[type] = None,
+    object_type: Optional[Union[type, Tuple[type]]] = None,
     sequence_name: Optional[str] = None,
 ) -> Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]]:
     ...  # pragma: no cover
@@ -206,7 +206,7 @@ def check_sequence_named_objects(
     seq_to_check: Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]],
     allow_dict: bool = True,
     require_unique_names=False,
-    object_type: Optional[type] = None,
+    object_type: Optional[Union[type, Tuple[type]]] = None,
     sequence_name: Optional[str] = None,
 ) -> Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]]:
     """Check if input is a sequence of named BaseObject instances.
@@ -243,8 +243,8 @@ def check_sequence_named_objects(
         - If False, then whether or not the function returns True or False
           depends on whether `seq_to_check` follows sequence of named BaseObject format.
 
-    object_type : class, default=None
-        The class type that is used to ensure that all elements of named objects
+    object_type : class or tuple[class], default=None
+        The class type(s) that is used to ensure that all elements of named objects
         match the expected type.
     sequence_name : str, default=None
         Optional name used to refer to the input `seq_to_check` when
