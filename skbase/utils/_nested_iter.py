@@ -7,11 +7,11 @@ from typing import List
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]
 __all__: List[str] = [
-    "_flatten",
-    "_is_flat",
+    "flatten",
+    "is_flat",
     "_remove_single",
-    "_unflat_len",
-    "_unflatten",
+    "unflat_len",
+    "unflatten",
 ]
 
 
@@ -45,7 +45,7 @@ def _remove_single(x):
         return x
 
 
-def _flatten(obj):
+def flatten(obj):
     """Flatten nested list/tuple structure.
 
     Converts a nested iterable or sequence to a flat output iterable/sequence
@@ -64,17 +64,17 @@ def _flatten(obj):
 
     Example
     -------
-    >>> from skbase.utils._nested_iter import _flatten
-    >>> _flatten([1, 2, [3, (4, 5)], 6])
+    >>> from skbase.utils._nested_iter import flatten
+    >>> flatten([1, 2, [3, (4, 5)], 6])
     [1, 2, 3, 4, 5, 6]
     """
     if not isinstance(obj, (collections.abc.Iterable, collections.abc.Sequence)):
         return [obj]
     else:
-        return type(obj)([y for x in obj for y in _flatten(x)])
+        return type(obj)([y for x in obj for y in flatten(x)])
 
 
-def _unflatten(obj, template):
+def unflatten(obj, template):
     """Invert flattening given given template for nested list/tuple structure.
 
     Converts an input list or tuple to a nested structure as provided in `template`
@@ -95,25 +95,25 @@ def _unflatten(obj, template):
 
     Example
     -------
-    >>> from skbase.utils._nested_iter import _unflatten
-    >>> _unflatten([1, 2, 3, 4, 5, 6], [6, 3, [5, (2, 4)], 1])
+    >>> from skbase.utils._nested_iter import unflatten
+    >>> unflatten([1, 2, 3, 4, 5, 6], [6, 3, [5, (2, 4)], 1])
     [1, 2, [3, (4, 5)], 6]
     """
     if not isinstance(template, (list, tuple)):
         return obj[0]
 
     list_or_tuple = type(template)
-    ls = [_unflat_len(x) for x in template]
+    ls = [unflat_len(x) for x in template]
     for i in range(1, len(ls)):
         ls[i] += ls[i - 1]
     ls = [0] + ls
 
-    res = [_unflatten(obj[ls[i] : ls[i + 1]], template[i]) for i in range(len(ls) - 1)]
+    res = [unflatten(obj[ls[i] : ls[i + 1]], template[i]) for i in range(len(ls) - 1)]
 
     return list_or_tuple(res)
 
 
-def _unflat_len(obj):
+def unflat_len(obj):
     """Return number of elements in nested iterable or sequence structure.
 
     Determines the total number of elements in a nested iterable/sequence structure.
@@ -131,21 +131,21 @@ def _unflat_len(obj):
 
     Examples
     --------
-    >>> from skbase.utils._nested_iter import _unflat_len
-    >>> _unflat_len(7)
+    >>> from skbase.utils._nested_iter import unflat_len
+    >>> unflat_len(7)
     1
-    >>> _unflat_len((1, 2))
+    >>> unflat_len((1, 2))
     2
-    >>> _unflat_len([1, (2, 3), 4, 5])
+    >>> unflat_len([1, (2, 3), 4, 5])
     5
     """
     if not isinstance(obj, (collections.abc.Iterable, collections.abc.Sequence)):
         return 1
     else:
-        return sum([_unflat_len(x) for x in obj])
+        return sum([unflat_len(x) for x in obj])
 
 
-def _is_flat(obj):
+def is_flat(obj):
     """Check whether iterable or sequence is flat.
 
     If any elements are iterables or sequences the object is considered to not be flat.
@@ -162,10 +162,10 @@ def _is_flat(obj):
 
     Examples
     --------
-    >>> from skbase.utils._nested_iter import _is_flat
-    >>> _is_flat([1, 2, 3, 4, 5])
+    >>> from skbase.utils._nested_iter import is_flat
+    >>> is_flat([1, 2, 3, 4, 5])
     True
-    >>> _is_flat([1, (2, 3), 4, 5])
+    >>> is_flat([1, (2, 3), 4, 5])
     False
     """
     elements_flat = (

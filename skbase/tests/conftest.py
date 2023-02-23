@@ -101,6 +101,12 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
         "check_sequence_named_objects",
         "is_sequence_named_objects",
     ),
+    "skbase.utils._nested_iter": (
+        "flatten",
+        "is_flat",
+        "unflat_len",
+        "unflatten",
+    ),
     "skbase.validate._types": ("check_sequence", "check_type", "is_sequence"),
 }
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
@@ -143,11 +149,11 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_scalar_to_seq",
         ),
         "skbase.utils._nested_iter": (
-            "_flatten",
-            "_is_flat",
+            "flatten",
+            "is_flat",
             "_remove_single",
-            "_unflat_len",
-            "_unflatten",
+            "unflat_len",
+            "unflatten",
         ),
         "skbase.validate._named_objects": (
             "check_sequence_named_objects",

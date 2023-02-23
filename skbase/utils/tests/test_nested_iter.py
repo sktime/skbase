@@ -15,11 +15,11 @@ tests in this module incdlue:
 
 from skbase.base import BaseEstimator, BaseObject
 from skbase.utils._nested_iter import (
-    _flatten,
-    _is_flat,
     _remove_single,
-    _unflat_len,
-    _unflatten,
+    flatten,
+    is_flat,
+    unflat_len,
+    unflatten,
 )
 
 __author__ = ["RNKuhns"]
@@ -36,16 +36,16 @@ def test_remove_single():
 
 def test_flatten():
     """Test flatten output is as expected."""
-    assert _flatten([1, 2, [3, (4, 5)], 6]) == [1, 2, 3, 4, 5, 6]
+    assert flatten([1, 2, [3, (4, 5)], 6]) == [1, 2, 3, 4, 5, 6]
 
     # Verify functionality with classes and objects
-    assert _flatten((BaseObject, 7, (BaseObject, BaseEstimator))) == (
+    assert flatten((BaseObject, 7, (BaseObject, BaseEstimator))) == (
         BaseObject,
         7,
         BaseObject,
         BaseEstimator,
     )
-    assert _flatten((BaseObject(), 7, (BaseObject, BaseEstimator()))) == (
+    assert flatten((BaseObject(), 7, (BaseObject, BaseEstimator()))) == (
         BaseObject(),
         7,
         BaseObject,
@@ -55,7 +55,7 @@ def test_flatten():
 
 def test_unflatten():
     """Test output of unflatten."""
-    assert _unflatten([1, 2, 3, 4, 5, 6], [6, 3, [5, (2, 4)], 1]) == [
+    assert unflatten([1, 2, 3, 4, 5, 6], [6, 3, [5, (2, 4)], 1]) == [
         1,
         2,
         [3, (4, 5)],
@@ -65,20 +65,20 @@ def test_unflatten():
 
 def test_unflat_len():
     """Test output of unflat_len."""
-    assert _unflat_len(7) == 1
-    assert _unflat_len((1, 2)) == 2
-    assert _unflat_len([1, (2, 3), 4, 5]) == 5
-    assert _unflat_len([1, 2, (c for c in (2, 3, 4))]) == 5
-    assert _unflat_len((c for c in [1, 2, (c for c in (2, 3, 4))])) == 5
+    assert unflat_len(7) == 1
+    assert unflat_len((1, 2)) == 2
+    assert unflat_len([1, (2, 3), 4, 5]) == 5
+    assert unflat_len([1, 2, (c for c in (2, 3, 4))]) == 5
+    assert unflat_len((c for c in [1, 2, (c for c in (2, 3, 4))])) == 5
 
 
 def test_is_flat():
     """Test output of is_flat."""
-    assert _is_flat([1, 2, 3, 4, 5]) is True
-    assert _is_flat([1, (2, 3), 4, 5]) is False
+    assert is_flat([1, 2, 3, 4, 5]) is True
+    assert is_flat([1, (2, 3), 4, 5]) is False
     # Check with flat generator
-    assert _is_flat((c for c in [1, 2, 3])) is True
+    assert is_flat((c for c in [1, 2, 3])) is True
     # Check with nested generator
-    assert _is_flat([1, 2, (c for c in (2, 3, 4))]) is False
+    assert is_flat([1, 2, (c for c in (2, 3, 4))]) is False
     # Check with generator nested in a generator
-    assert _is_flat((c for c in [1, 2, (c for c in (2, 3, 4))])) is False
+    assert is_flat((c for c in [1, 2, (c for c in (2, 3, 4))])) is False
