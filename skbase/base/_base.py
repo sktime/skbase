@@ -865,7 +865,7 @@ class TagAliaserMixin:
                     )
                 else:
                     msg += ", please remove code that access or sets {tag_name!r}"
-                warnings.warn(msg, category=DeprecationWarning)
+                warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
 
 
 class BaseEstimator(BaseObject):
