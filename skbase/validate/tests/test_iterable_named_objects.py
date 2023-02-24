@@ -79,6 +79,20 @@ def test_is_sequence_named_objects_output(
     ]
     assert is_sequence_named_objects(c for c in named_objects) is False
 
+    # Validate use of object_type parameter
+    # Won't work because one named object is a BaseObject but not a BaseEstimator
+    assert is_sequence_named_objects(named_objects, object_type=BaseEstimator) is False
+
+    # Should work because we allow BaseObject or BaseEstimator types
+    named_objects = [("Step 1", BaseEstimator()), ("Step 2", BaseEstimator())]
+    assert (
+        is_sequence_named_objects(
+            named_objects, object_type=(BaseObject, BaseEstimator)
+        )
+        is True
+    )
+    assert is_sequence_named_objects(named_objects, object_type=BaseEstimator) is True
+
 
 def test_check_sequence_named_objects_output(
     fixture_estimator_instance, fixture_object_instance
@@ -131,3 +145,21 @@ def test_check_sequence_named_objects_output(
     ]
     with pytest.raises(ValueError):
         check_sequence_named_objects(c for c in named_objects)
+
+    # Validate use of object_type parameter
+    # Won't work because one named object is a BaseObject but not a BaseEstimator
+    with pytest.raises(ValueError):
+        check_sequence_named_objects(named_objects, object_type=BaseEstimator)
+
+    # Should work because we allow BaseObject or BaseEstimator types
+    named_objects = [("Step 1", BaseEstimator()), ("Step 2", BaseEstimator())]
+    assert (
+        check_sequence_named_objects(
+            named_objects, object_type=(BaseObject, BaseEstimator)
+        )
+        == named_objects
+    )
+    assert (
+        check_sequence_named_objects(named_objects, object_type=BaseEstimator)
+        == named_objects
+    )
