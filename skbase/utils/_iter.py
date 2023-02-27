@@ -9,11 +9,18 @@ from typing import Any, List, Optional, Union
 from skbase.utils._nested_iter import _remove_single
 
 __author__: List[str] = ["RNKuhns"]
-__all__: List[str] = []
+__all__: List[str] = [
+    "_scalar_to_seq",
+    "_remove_type_text",
+    "_format_seq_to_str",
+]
 
 
 def _scalar_to_seq(scalar: Any, sequence_type: type = None) -> Sequence:
     """Convert a scalar input to a sequence.
+
+    If the input is already a sequence it is returned unchanged. Unlike standard
+    Python, a string is treated as a scalar instead of a sequence.
 
     Parameters
     ----------
@@ -33,7 +40,7 @@ def _scalar_to_seq(scalar: Any, sequence_type: type = None) -> Sequence:
 
     Returns
     -------
-    output_seq : Sequence
+    Sequence
         A sequence of the specified `sequence_type` that contains just the single
         scalar value.
 
@@ -63,13 +70,28 @@ def _scalar_to_seq(scalar: Any, sequence_type: type = None) -> Sequence:
         )
 
 
+def _remove_type_text(input_):
+    """Remove <class > wrapper from printed type str."""
+    if not isinstance(input_, str):
+        input_ = str(input_)
+
+    m = re.match("^<class '(.*)'>$", input_)
+    if m:
+        return m[1]
+    else:
+        return input_
+
+
 def _format_seq_to_str(
     seq: Union[str, Sequence],
     sep: str = ", ",
     last_sep: Optional[str] = None,
     remove_type_text: bool = False,
 ) -> str:
-    """Format a sequence to a string of comma separated elements.
+    """Format a sequence to a string of delimitted elements.
+
+    This is useful to format sequences into a pretty printing format for
+    creating error messages or warnings.
 
     Parameters
     ----------
@@ -95,7 +117,7 @@ def _format_seq_to_str(
 
     Returns
     -------
-    output_str : str
+    str
         The sequence of inputs converted to a string. For example, if `seq`
         is (7, 9, "cart") and ``last_sep is None`` then the output is
         "7", "9", "cart".
@@ -115,14 +137,11 @@ def _format_seq_to_str(
     elif isinstance(seq, (int, float, bool)):
         return str(seq)
     elif not isinstance(seq, Sequence):
-        raise ValueError("`seq` must be a sequence or scalar str, int, float or bool.")
+        raise TypeError("`seq` must be a sequence or scalar str, int, float or bool.")
 
     seq_str = [str(e) for e in seq]
     if remove_type_text:
-        for idx, s in enumerate(seq_str):
-            m = re.match("^<class '(.*)'>$", s)
-            if m:
-                seq_str[idx] = m[1]
+        seq_str = [_remove_type_text(s) for s in seq_str]
 
     if last_sep is None:
         output_str = sep.join(seq_str)

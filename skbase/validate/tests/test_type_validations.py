@@ -43,6 +43,7 @@ def test_check_type_output(fixture_estimator_instance, fixture_object_instance):
     assert check_type(7.2, expected_type=float) == 7.2
     assert check_type(7.2, expected_type=(float, int)) == 7.2
     assert check_type("something", expected_type=str) == "something"
+    assert check_type(None, expected_type=str, allow_none=True) is None
     assert check_type(["a", 7, fixture_object_instance], expected_type=list) == [
         "a",
         7,
@@ -54,14 +55,18 @@ def test_check_type_output(fixture_estimator_instance, fixture_object_instance):
     )
     assert check_type(None, expected_type=int, allow_none=True) is None
 
-    with pytest.raises(ValueError, match=r"`input` should be type.*"):
+    with pytest.raises(TypeError, match=r"`input` should be type.*"):
         check_type(7.2, expected_type=int)
 
-    with pytest.raises(ValueError, match=r"`input` should be type.*"):
+    with pytest.raises(TypeError, match=r"`input` should be type.*"):
         check_type("something", expected_type=(int, float))
 
-    with pytest.raises(ValueError, match=r"`input` should be type.*"):
+    with pytest.raises(TypeError, match=r"`input` should be type.*"):
         check_type(BaseEstimator, expected_type=BaseObject)
+
+    with pytest.raises(TypeError, match="^`input` should be.*"):
+        check_type("something", expected_type=int, allow_none=True)
+
     # Verify optional use of issubclass instead of isinstance
     assert (
         check_type(BaseEstimator, expected_type=BaseObject, use_subclass=True)
@@ -74,11 +79,14 @@ def test_check_type_raises_error_if_expected_type_is_wrong_format():
 
     `expected_type` should be a type or tuple of types.
     """
-    with pytest.raises(ValueError, match="^`expected_type` should be.*"):
+    with pytest.raises(TypeError, match="^`expected_type` should be.*"):
         check_type(7, expected_type=11)
 
-    with pytest.raises(ValueError, match="^`expected_type` should be.*"):
+    with pytest.raises(TypeError, match="^`expected_type` should be.*"):
         check_type(7, expected_type=[int])
+
+    with pytest.raises(TypeError, match="^`expected_type` should be.*"):
+        check_type(None, expected_type=[int])
 
 
 def test_is_sequence_output():
@@ -161,7 +169,7 @@ def test_check_sequence_output():
     assert check_sequence([1, "a", 3.4, False]) == [1, "a", 3.4, False]
     # But false for generators, since they are iterable but not sequences
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: Input sequence expected to be a a sequence.",
     ):
         assert check_sequence((c for c in [1, 2, 3]))
@@ -169,12 +177,12 @@ def test_check_sequence_output():
     # Test use of sequence_type restriction
     assert check_sequence([1, 2, 3, 4], sequence_type=list) == [1, 2, 3, 4]
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: Input sequence expected to be a tuple.",
     ):
         check_sequence([1, 2, 3, 4], sequence_type=tuple)
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: Input sequence expected to be a list.",
     ):
         check_sequence((1, 2, 3, 4), sequence_type=list)
@@ -193,22 +201,22 @@ def test_check_sequence_output():
     ]
 
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: .*",
     ):
         check_sequence([1, 2, 3], element_type=float)
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: .*",
     ):
         check_sequence([1, 2, 3, 4], sequence_type=tuple, element_type=int)
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: .*",
     ):
         check_sequence([1, 2, 3, 4], sequence_type=list, element_type=float)
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: .*",
     ):
         check_sequence([1, 2, 3, 4], sequence_type=tuple, element_type=float)
@@ -221,7 +229,7 @@ def test_check_sequence_output():
     assert check_sequence("abc") == "abc"
     assert check_sequence([1, "something", 4.5]) == [1, "something", 4.5]
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: .*",
     ):
         check_sequence([1, "something", 4.5], element_type=float)
@@ -232,7 +240,7 @@ def test_check_sequence_output():
 
     # Test with 3rd party types works in default way via exact type
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: .*",
     ):
         check_sequence([1.2, 4.7], element_type=np.float_)
@@ -247,7 +255,7 @@ def test_check_sequence_output():
         7,
     ]
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: .*",
     ):
         check_sequence([np.nan, 4], element_type=int)
@@ -290,7 +298,7 @@ def test_check_sequence_scalar_input_coercion():
 
     # Still raise an error if element type is not expected
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: .*",
     ):
         check_sequence(
@@ -313,12 +321,12 @@ def test_check_sequence_with_seq_of_class_and_instance_input(
     ) == list(input_seq)
 
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: .*",
     ):
         check_sequence(list(input_seq), sequence_type=tuple, element_type=BaseObject)
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: .*",
     ):
         # Verify we detect when list elements are not instances of valid class type
@@ -331,7 +339,7 @@ def test_check_sequence_with_seq_of_class_and_instance_input(
         list(input_seq), sequence_type=list, element_type=type
     ) == list(input_seq)
     with pytest.raises(
-        ValueError,
+        TypeError,
         match="Invalid sequence: .*",
     ):
         # Verify we detect when list elements are not instances of valid types
@@ -342,19 +350,19 @@ def test_convert_scalar_seq_type_input_to_tuple_raises_error():
     """Test _convert_scalar_seq_type_input_to_tuple raises error."""
     # Raises because 7 is not a type
     with pytest.raises(
-        ValueError, match=r"`type_input` should be a type or tuple of types."
+        TypeError, match=r"`type_input` should be a type or tuple of types."
     ):
         _convert_scalar_seq_type_input_to_tuple(7)
 
     # Test error message uses input_name
     with pytest.raises(
-        ValueError, match=r"`some_input` should be a type or tuple of types."
+        TypeError, match=r"`some_input` should be a type or tuple of types."
     ):
         _convert_scalar_seq_type_input_to_tuple(7, input_name="some_input")
 
     # Raises error because dict is a type but not a subclass of type_input_subclass
     with pytest.raises(
-        ValueError, match=r"`type_input` should be a type or tuple of types."
+        TypeError, match=r"`type_input` should be a type or tuple of types."
     ):
         _convert_scalar_seq_type_input_to_tuple(
             dict,
