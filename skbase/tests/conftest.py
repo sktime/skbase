@@ -22,6 +22,7 @@ SKBASE_MODULES = (
     "skbase.base",
     "skbase.base._base",
     "skbase.base._meta",
+    "skbase.base._tagmanager",
     "skbase.lookup",
     "skbase.lookup.tests",
     "skbase.lookup.tests.test_lookup",
