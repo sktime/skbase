@@ -1028,7 +1028,7 @@ def test_set_get_config():
 
     config_start = obj.get_config()
     assert isinstance(config_start, dict)
-    assert set(config_start.keys()) == set(["foo_config", "bar"])
+    assert set(config_start.keys()) == {"foo_config", "bar"}
     assert config_start["foo_config"] == 42
     assert config_start["bar"] == "a"
 
@@ -1038,7 +1038,7 @@ def test_set_get_config():
     obj.set_config(**{"bar": "b"})
     config_end = obj.get_config()
     assert isinstance(config_end, dict)
-    assert set(config_end.keys()) == set(["foo_config", "bar", "foobar"])
+    assert set(config_end.keys()) == {"foo_config", "bar", "foobar"}
     assert config_end["foo_config"] == 42
     assert config_end["bar"] == "b"
     assert config_end["foobar"] == 126
