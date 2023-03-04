@@ -1004,7 +1004,6 @@ def test_has_implementation_of(
 
 
 class ConfigTester(BaseObject):
-
     _config = {"foo_config": 42, "bar": "a"}
 
     clsvar = 210
