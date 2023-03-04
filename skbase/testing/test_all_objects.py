@@ -518,7 +518,19 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
     """Package level tests for BaseObjects."""
 
     def test_create_test_instance(self, object_class):
-        """Check first that create_test_instance logic works."""
+        """Check create_test_instance logic and basic constructor functionality.
+
+        create_test_instance and create_test_instances_and_names are the
+        key methods used to create test instances in testing.
+        If this test does not pass, validity of the other tests cannot be guaranteed.
+
+        Also tests inheritance and super call logic in the constructor.
+
+        Tests that:
+        * create_test_instance results in an instance of estimator_class
+        * __init__ calls super.__init__
+        * _tags_dynamic attribute for tag inspection is present after construction
+        """
         object_instance = object_class.create_test_instance()
 
         # Check that init does not construct object of other class than itself
@@ -536,7 +548,14 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         assert hasattr(object_instance, "_tags_dynamic"), msg
 
     def test_create_test_instances_and_names(self, object_class):
-        """Check that create_test_instances_and_names works."""
+        """Check that create_test_instances_and_names works.
+
+        create_test_instance and create_test_instances_and_names are the
+        key methods used to create test instances in testing.
+        If this test does not pass, validity of the other tests cannot be guaranteed.
+
+        Tests expected function signature of create_test_instances_and_names.
+        """
         objects, names = object_class.create_test_instances_and_names()
 
         assert isinstance(objects, list), (
@@ -694,18 +713,42 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             assert is_equal, msg
 
     def test_clone(self, object_instance):
-        """Check we can call clone from scikit-learn."""
-        object_instance.clone()
-        # object_clone = object_instance.clone()
-        # assert deep_equals(object_clone.get_params(), object_instance.get_params())
+        """Check that clone method does not raise exceptions and results in a clone.
+
+        A clone of an object x is an object that:
+        * has same class and parameters as x
+        * is not identical with x
+        * is unfitted (even if x was fitted)
+        """
+        obj_clone = object_instance.clone()
+        assert isinstance(obj_clone, type(object_instance))
+        assert obj_clone is not object_instance
+        if hasattr(obj_clone, "is_fitted"):
+            assert not obj_clone.is_fitted
 
     def test_repr(self, object_instance):
         """Check we can call repr."""
         repr(object_instance)
 
     def test_constructor(self, object_class):
-        """Check that the constructor has correct signature and behaves correctly."""
-        assert getfullargspec(object_class.__init__).varkw is None
+        """Check that the constructor has sklearn compatible signature and behaviour.
+
+        Based on sklearn check_estimator testing of __init__ logic.
+        Uses create_test_instance to create an instance.
+        Assumes test_create_test_instance has passed and certified create_test_instance.
+
+        Tests that:
+        * constructor has no varargs
+        * tests that constructor constructs an instance of the class
+        * tests that all parameters are set in init to an attribute of the same name
+        * tests that parameter values are always copied to the attribute and not changed
+        * tests that default parameters are one of the following:
+            None, str, int, float, bool, tuple, function, joblib memory, numpy primitive
+            (other type parameters should be None, default handling should be by writing
+            the default to attribute of a different name, e.g., my_param_ not my_param)
+        """
+        msg = f"constructor __init__ of {object_class} should have no varargs"
+        assert getfullargspec(object_class.__init__).varkw is None, msg
 
         obj = object_class.create_test_instance()
         assert isinstance(obj, object_class)
