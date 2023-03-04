@@ -76,7 +76,7 @@ class BaseObject(_FlagManager, _BaseEstimator):
 
     def __init__(self):
         """Construct BaseObject."""
-        self._tags_dynamic = {}
+        self._init_flags(flag_attr_name="_tags")
         super(BaseObject, self).__init__()
 
     def __eq__(self, other):
