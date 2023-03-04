@@ -77,6 +77,7 @@ class BaseObject(_FlagManager, _BaseEstimator):
     def __init__(self):
         """Construct BaseObject."""
         self._init_flags(flag_attr_name="_tags")
+        self._init_flags(flag_attr_name="_config")
         super(BaseObject, self).__init__()
 
     def __eq__(self, other):
@@ -432,6 +433,38 @@ class BaseObject(_FlagManager, _BaseEstimator):
         self._clone_flags(
             estimator=estimator, flag_names=tag_names, flag_attr_name="_tags"
         )
+
+        return self
+
+    def get_config(self):
+        """Get config flags for self.
+
+        Returns
+        -------
+        config_dict : dict
+            Dictionary of config name : config value pairs. Collected from _config
+            class attribute via nested inheritance and then any overrides
+            and new tags from _onfig_dynamic object attribute.
+        """
+        return self._get_flags(flag_attr_name="_config")
+
+    def set_config(self, **config_dict):
+        """Set config flags to given values.
+
+        Parameters
+        ----------
+        config_dict : dict
+            Dictionary of config name : config value pairs.
+
+        Returns
+        -------
+        self : reference to self.
+
+        Notes
+        -----
+        Changes object state, copies configs in config_dict to self._config_dynamic.
+        """
+        self._set_flags(flag_attr_name="_config", **config_dict)
 
         return self
 
