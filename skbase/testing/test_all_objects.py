@@ -169,7 +169,7 @@ class BaseFixtureGenerator:
     def is_excluded(self, test_name, est):
         """Shorthand to check whether test test_name is excluded for object est."""
         if self.excluded_tests is None:
-            return []
+            return False
         else:
             return test_name in self.excluded_tests.get(est.__name__, [])
 
