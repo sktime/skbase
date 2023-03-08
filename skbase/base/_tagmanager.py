@@ -19,8 +19,8 @@ class _FlagManager:
 
         Parameters
         ----------
-        flag_attr_name : str, optional, default = "_flags"
-            name of the flag attribute that is read
+        flag_attr_name : str, default = "_flags"
+            Name of the flag attribute that is read.
 
         Returns
         -------
@@ -55,8 +55,8 @@ class _FlagManager:
             Name of flag value.
         flag_value_default : any type
             Default/fallback value if flag is not found.
-        flag_attr_name : str, optional, default = "_flags"
-            name of the flag attribute that is read
+        flag_attr_name : str, default = "_flags"
+            Name of the flag attribute that is read.
 
         Returns
         -------
@@ -75,8 +75,8 @@ class _FlagManager:
 
         Parameters
         ----------
-        flag_attr_name : str, optional, default = "_flags"
-            name of the flag attribute that is read
+        flag_attr_name : str, default = "_flags"
+            Name of the flag attribute that is read.
 
         Returns
         -------
@@ -90,8 +90,8 @@ class _FlagManager:
 
         Parameters
         ----------
-        flag_attr_name : str, optional, default = "_flags"
-            name of the flag attribute that is read
+        flag_attr_name : str, default = "_flags"
+            Name of the flag attribute that is read.
 
         Returns
         -------
@@ -119,13 +119,13 @@ class _FlagManager:
         Parameters
         ----------
         flag_name : str
-            Name of flag to be retrieved
-        flag_value_default : any type, optional; default=None
+            Name of flag to be retrieved.
+        flag_value_default : any type, default=None
             Default/fallback value if flag is not found
         raise_error : bool
-            whether a ValueError is raised when the flag is not found
-        flag_attr_name : str, optional, default = "_flags"
-            name of the flag attribute that is read
+            Whether a `ValueError` is raised when the flag is not found.
+        flag_attr_name : str, default = "_flags"
+            Name of the flag attribute that is read.
 
         Returns
         -------
@@ -154,12 +154,12 @@ class _FlagManager:
         ----------
         flag_dict : dict
             Dictionary of flag name : flag value pairs.
-        flag_attr_name : str, optional, default = "_flags"
-            name of the flag attribute that is read
+        flag_attr_name : str, default = "_flags"
+            Name of the flag attribute that is read.
 
         Returns
         -------
-        Self : Reference to self.
+        self : Reference to self.
 
         Notes
         -----
@@ -184,12 +184,12 @@ class _FlagManager:
         flag_names : str or list of str, default = None
             Names of flags to clone. If None then all flags in estimator are used
             as `flag_names`.
-        flag_attr_name : str, optional, default = "_flags"
-            name of the flag attribute that is read
+        flag_attr_name : str, default = "_flags"
+            Name of the flag attribute that is read.
 
         Returns
         -------
-        Self :
+        self :
             Reference to self.
 
         Notes
