@@ -66,19 +66,15 @@ def test_format_seq_to_str():
     # Verify that keywords don't affect output
     assert _format_seq_to_str(7, sep=";") == "7"
     assert _format_seq_to_str(7, last_sep="or") == "7"
+    # Verify with types
+    assert _format_seq_to_str(object) == "object"
+    assert _format_seq_to_str(int) == "int"
 
 
 def test_format_seq_to_str_raises():
     """Test _format_seq_to_str raises error when input is unexpected type."""
-    with pytest.raises(
-        TypeError, match="`seq` must be a sequence or scalar str, int, float or bool."
-    ):
+    with pytest.raises(TypeError, match="`seq` must be a sequence or scalar.*"):
         _format_seq_to_str((c for c in [1, 2, 3]))
-
-    with pytest.raises(
-        TypeError, match="`seq` must be a sequence or scalar str, int, float or bool."
-    ):
-        _format_seq_to_str(object)
 
 
 def test_scalar_to_seq_expected_output():

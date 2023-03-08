@@ -49,10 +49,10 @@ def subset_dict_keys(
     >>> from skbase.utils import subset_dict_keys
     >>> some_dict = {"some_param__a": 1, "some_param__b": 2, "some_param__c": 3}
 
-    >>> subset_dict_keys(test_dict, "some_param__a")
+    >>> subset_dict_keys(some_dict, "some_param__a")
     {'some_param__a': 1}
 
-    >>> subset_dict_keys(test_dict, ("some_param__a", "some_param__b"))
+    >>> subset_dict_keys(some_dict, ("some_param__a", "some_param__b"))
     {'some_param__a': 1, 'some_param__b': 2}
 
     >>> subset_dict_keys(some_dict, ("a", "b"), prefix="some_param")
@@ -63,7 +63,7 @@ def subset_dict_keys(
     {'some_param__a': 1, 'some_param__b': 2}
 
     >>> subset_dict_keys(some_dict, \
-    (c for c in ("some_param__a", "some_param__b"))
+    (c for c in ("some_param__a", "some_param__b")))
     {'some_param__a': 1, 'some_param__b': 2}
     """
 

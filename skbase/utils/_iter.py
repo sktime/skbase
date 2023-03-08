@@ -134,7 +134,7 @@ def _format_seq_to_str(
     >>> _format_seq_to_str(seq, last_sep="and")
     '1, 2, 3 and 4'
     >>> _format_seq_to_str((BaseObject, BaseEstimator))
-    'skbase.base._base.BaseObject', 'skbase.base._base.BaseEstimator'
+    'skbase.base._base.BaseObject, skbase.base._base.BaseEstimator'
     """
     if isinstance(seq, str):
         return seq
@@ -142,7 +142,9 @@ def _format_seq_to_str(
     elif isinstance(seq, (int, float, bool, type)):
         return _remove_type_text(seq)
     elif not isinstance(seq, Sequence):
-        raise TypeError("`seq` must be a sequence or scalar str, int, float or bool.")
+        raise TypeError(
+            "`seq` must be a sequence or scalar str, int, float, bool or class."
+        )
 
     seq_str = [str(e) for e in seq]
     if remove_type_text:
@@ -203,7 +205,6 @@ def make_strings_unique(
     >>> make_strings_unique(some_strs)
     ['abc_1_1', 'abc_2', 'bcd', 'abc_1_2']
     """
-    str_list = ["abc", "abc", "bcd", "abc_1"]
     # if strlist is not flat, flatten and apply method, then unflatten
     if not is_flat(str_list):
         flat_str_list = flatten(str_list)
