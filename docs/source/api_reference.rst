@@ -94,5 +94,7 @@ Utils
 
     flatten
     is_flat
+    make_strings_unique
+    subset_dict_keys
     unflat_len
     unflatten
