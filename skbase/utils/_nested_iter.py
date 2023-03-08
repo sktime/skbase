@@ -169,6 +169,8 @@ def is_flat(obj):
     False
     """
     elements_flat = (
-        isinstance(x, (collections.abc.Iterable, collections.abc.Sequence)) for x in obj
+        isinstance(x, (collections.abc.Iterable, collections.abc.Sequence))
+        and not isinstance(x, str)
+        for x in obj
     )
     return not any(elements_flat)
