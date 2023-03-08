@@ -73,14 +73,19 @@ def subset_dict_keys(
         prefix__ = f"{prefix}__"
         if x.startswith(prefix__):
             return x[len(prefix__) :]
+        # The way this is used below, this else shouldn't really execute
+        # But its here for completeness in case something goes wrong
         else:
-            return x
+            return x  # pragma: no cover
 
     # Handle passage of certain scalar values
     if isinstance(keys, (str, float, int, bool, type)):
         keys = [keys]
 
-    keys = [f"{prefix}__{key}" if prefix else key for key in keys]
+    if prefix is not None:
+        keys = [f"{prefix}__{key}" for key in keys]
+    else:
+        keys = list(keys)
     subsetted_dict = {rem_prefix(k): v for k, v in input_dict.items() if k in keys}
 
     return subsetted_dict
