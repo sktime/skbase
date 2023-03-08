@@ -212,13 +212,13 @@ class _MetaObjectMixin:
 
     @overload
     def _check_names(self, names: List[str], make_unique: bool = True) -> List[str]:
-        ...
+        ...  # pragma: no cover
 
     @overload
     def _check_names(
         self, names: Tuple[str, ...], make_unique: bool = True
     ) -> Tuple[str, ...]:
-        ...
+        ...  # pragma: no cover
 
     def _check_names(
         self, names: Union[List[str], Tuple[str, ...]], make_unique: bool = True
