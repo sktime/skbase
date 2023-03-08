@@ -527,9 +527,10 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         Also tests inheritance and super call logic in the constructor.
 
         Tests that:
+
         * create_test_instance results in an instance of estimator_class
-        * __init__ calls super.__init__
-        * _tags_dynamic attribute for tag inspection is present after construction
+        * `__init__` calls `super.__init__`
+        * `_tags_dynamic` attribute for tag inspection is present after construction
         """
         object_instance = object_class.create_test_instance()
 
@@ -716,6 +717,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         """Check that clone method does not raise exceptions and results in a clone.
 
         A clone of an object x is an object that:
+
         * has same class and parameters as x
         * is not identical with x
         * is unfitted (even if x was fitted)
@@ -738,6 +740,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         Assumes test_create_test_instance has passed and certified create_test_instance.
 
         Tests that:
+
         * constructor has no varargs
         * tests that constructor constructs an instance of the class
         * tests that all parameters are set in init to an attribute of the same name
