@@ -74,21 +74,27 @@ class BaseFixtureGenerator:
     # ------------------------------------------------------
 
     # package to search for objects
+    # expected type: str, package/module name, relative to python environment root
     package_name = "skbase.tests.mock_package"
 
     # which object types are generated; None=all, or scitype string like "forecaster"
     object_type_filter = None
 
     # list of object types (class names) to exclude
+    # expected type: list of str, str are class names
     exclude_objects = None
 
     # list of tests to exclude
+    # expected type: dict of lists, key:str, value: List[str]
+    # keys are class names of estimators, values are lists of test names to exclude
     excluded_tests = None
 
     # list of valid tags
+    # expected type: list of str, str are tag names
     valid_tags = None
 
     # list of valid base type names
+    # expected type: list of str, str are base type (class) names
     valid_base_types = None
 
     # which sequence the conditional fixtures are generated in
@@ -169,7 +175,7 @@ class BaseFixtureGenerator:
     def is_excluded(self, test_name, est):
         """Shorthand to check whether test test_name is excluded for object est."""
         if self.excluded_tests is None:
-            return []
+            return False
         else:
             return test_name in self.excluded_tests.get(est.__name__, [])
 
