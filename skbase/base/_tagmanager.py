@@ -60,7 +60,7 @@ class _FlagManager:
 
         Returns
         -------
-        flag_value :
+        flag_value
             Value of `flag_name` flag in self. If not found, `flag_value_default`.
         """
         collected_flags = cls._get_class_flags(flag_attr_name=flag_attr_name)
@@ -135,8 +135,9 @@ class _FlagManager:
 
         Raises
         ------
-        ValueError if raise_error is True i.e. if flag_name is not in self.get_flags(
-        ).keys()
+        ValueError
+            if `raise_error` is `True`, i.e.,
+            if `flag_name` is not in `self.get_flags().keys()`
         """
         collected_flags = self._get_flags(flag_attr_name=flag_attr_name)
 
@@ -159,7 +160,8 @@ class _FlagManager:
 
         Returns
         -------
-        self : Reference to self.
+        self
+            Reference to self.
 
         Notes
         -----
@@ -189,7 +191,7 @@ class _FlagManager:
 
         Returns
         -------
-        self :
+        self
             Reference to self.
 
         Notes
