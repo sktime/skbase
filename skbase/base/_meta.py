@@ -548,10 +548,13 @@ class _MetaObjectMixin:
         """
         if isinstance(objs, dict):
             named_objects = [(k, v) for k, v in objs.items()]
-        # Otherwise get named object format
-        if TYPE_CHECKING:
-            assert not isinstance(objs, dict)  # nosec: B1010
-        named_objects = [self._coerce_object_tuple(obj, clone=clone) for obj in objs]
+        else:
+            # Otherwise get named object format
+            if TYPE_CHECKING:
+                assert not isinstance(objs, dict)  # nosec: B1010
+            named_objects = [
+                self._coerce_object_tuple(obj, clone=clone) for obj in objs
+            ]
         if make_unique:
             # Unpack names and objects while making names unique
             names, objs = self._get_names_and_objects(
