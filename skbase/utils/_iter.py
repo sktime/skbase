@@ -215,7 +215,7 @@ def make_strings_unique(
     # if strlist is a tuple, convert to list, apply this function, then convert back
     if isinstance(str_list, tuple):
         unique_strs = make_strings_unique(list(str_list))
-        unique_strs = tuple(str_list)
+        unique_strs = tuple(unique_strs)
         return unique_strs
 
     # now we can assume that strlist is a flat list
