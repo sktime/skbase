@@ -22,6 +22,7 @@ SKBASE_MODULES = (
     "skbase.base",
     "skbase.base._base",
     "skbase.base._meta",
+    "skbase.base._tagmanager",
     "skbase.lookup",
     "skbase.lookup.tests",
     "skbase.lookup.tests.test_lookup",
@@ -89,7 +90,14 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
 }
 SKBASE_CLASSES_BY_MODULE = SKBASE_PUBLIC_CLASSES_BY_MODULE.copy()
 SKBASE_CLASSES_BY_MODULE.update(
-    {"skbase.base._meta": ("BaseMetaObject", "BaseMetaEstimator", "_MetaObjectMixin")}
+    {
+        "skbase.base._meta": (
+            "BaseMetaObject",
+            "BaseMetaEstimator",
+            "_MetaObjectMixin",
+        ),
+        "skbase.base._tagmanager": ("_FlagManager",),
+    }
 )
 SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
     "skbase.lookup": ("all_objects", "get_package_metadata"),
