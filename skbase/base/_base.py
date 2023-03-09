@@ -62,12 +62,13 @@ from sklearn import clone
 from sklearn.base import BaseEstimator as _BaseEstimator
 
 from skbase._exceptions import NotFittedError
+from skbase.base._tagmanager import _FlagManager
 
 __author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
 __all__: List[str] = ["BaseEstimator", "BaseObject"]
 
 
-class BaseObject(_BaseEstimator):
+class BaseObject(_FlagManager, _BaseEstimator):
     """Base class for parametric objects with sktime style tag interface.
 
     Extends scikit-learn's BaseEstimator to include sktime style interface for tags.
@@ -75,7 +76,7 @@ class BaseObject(_BaseEstimator):
 
     def __init__(self):
         """Construct BaseObject."""
-        self._tags_dynamic = {}
+        self._init_flags(flag_attr_name="_tags")
         super(BaseObject, self).__init__()
 
     def __eq__(self, other):
@@ -317,19 +318,7 @@ class BaseObject(_BaseEstimator):
             Dictionary of class tag name: tag value pairs. Collected from _tags
             class attribute via nested inheritance.
         """
-        collected_tags = {}
-
-        # We exclude the last two parent classes: sklearn.base.BaseEstimator and
-        # the basic Python object.
-        for parent_class in reversed(inspect.getmro(cls)[:-2]):
-            if hasattr(parent_class, "_tags"):
-                # Need the if here because mixins might not have _more_tags
-                # but might do redundant work in estimators
-                # (i.e. calling more tags on BaseEstimator multiple times)
-                more_tags = parent_class._tags
-                collected_tags.update(more_tags)
-
-        return deepcopy(collected_tags)
+        return cls._get_class_flags(flag_attr_name="_tags")
 
     @classmethod
     def get_class_tag(cls, tag_name, tag_value_default=None):
@@ -351,9 +340,11 @@ class BaseObject(_BaseEstimator):
             Value of the `tag_name` tag in self. If not found, returns
             `tag_value_default`.
         """
-        collected_tags = cls.get_class_tags()
-
-        return collected_tags.get(tag_name, tag_value_default)
+        return cls._get_class_flag(
+            flag_name=tag_name,
+            flag_value_default=tag_value_default,
+            flag_attr_name="_tags",
+        )
 
     def get_tags(self):
         """Get tags from estimator class and dynamic tag overrides.
@@ -365,12 +356,7 @@ class BaseObject(_BaseEstimator):
             class attribute via nested inheritance and then any overrides
             and new tags from _tags_dynamic object attribute.
         """
-        collected_tags = self.get_class_tags()
-
-        if hasattr(self, "_tags_dynamic"):
-            collected_tags.update(self._tags_dynamic)
-
-        return deepcopy(collected_tags)
+        return self._get_flags(flag_attr_name="_tags")
 
     def get_tag(self, tag_name, tag_value_default=None, raise_error=True):
         """Get tag value from estimator class and dynamic tag overrides.
@@ -395,14 +381,12 @@ class BaseObject(_BaseEstimator):
         ValueError if raise_error is True i.e. if `tag_name` is not in
         self.get_tags().keys()
         """
-        collected_tags = self.get_tags()
-
-        tag_value = collected_tags.get(tag_name, tag_value_default)
-
-        if raise_error and tag_name not in collected_tags.keys():
-            raise ValueError(f"Tag with name {tag_name} could not be found.")
-
-        return tag_value
+        return self._get_flag(
+            flag_name=tag_name,
+            flag_value_default=tag_value_default,
+            raise_error=raise_error,
+            flag_attr_name="_tags",
+        )
 
     def set_tags(self, **tag_dict):
         """Set dynamic tags to given values.
@@ -421,11 +405,7 @@ class BaseObject(_BaseEstimator):
         -----
         Changes object state by settting tag values in tag_dict as dynamic tags in self.
         """
-        tag_update = deepcopy(tag_dict)
-        if hasattr(self, "_tags_dynamic"):
-            self._tags_dynamic.update(tag_update)
-        else:
-            self._tags_dynamic = tag_update
+        self._set_flags(flag_attr_name="_tags", **tag_dict)
 
         return self
 
@@ -449,20 +429,9 @@ class BaseObject(_BaseEstimator):
         Changes object state by setting tag values in tag_set from estimator as
         dynamic tags in self.
         """
-        tags_est = deepcopy(estimator.get_tags())
-
-        # if tag_set is not passed, default is all tags in estimator
-        if tag_names is None:
-            tag_names = tags_est.keys()
-        else:
-            # if tag_set is passed, intersect keys with tags in estimator
-            if not isinstance(tag_names, list):
-                tag_names = [tag_names]
-            tag_names = [key for key in tag_names if key in tags_est.keys()]
-
-        update_dict = {key: tags_est[key] for key in tag_names}
-
-        self.set_tags(**update_dict)
+        self._clone_flags(
+            estimator=estimator, flag_names=tag_names, flag_attr_name="_tags"
+        )
 
         return self
 
