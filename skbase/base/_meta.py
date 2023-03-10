@@ -459,53 +459,6 @@ class _MetaObjectMixin:
             names = make_strings_unique(names)
         return list(names), list(objs)
 
-    def _get_object_names(
-        self,
-        named_objects: Union[
-            Sequence[Union[BaseObject, Tuple[str, BaseObject]]], Dict[str, BaseObject]
-        ],
-        make_unique: bool = False,
-    ) -> List[str]:
-        """Return names for the estimators, optionally made unique.
-
-        Parameters
-        ----------
-        named_objects : list[tuple[str, object], ...], list[object], dict[str, object]
-            The objects whose names should be returned.
-        make_unique : bool, default=False
-            Whether names should be made unique.
-
-        Returns
-        -------
-        list[str]
-            List of the string names from named objects. If ``make_unique=True``
-            then strings are coerced to be unique.
-        """
-        names, _ = self._get_names_and_objects(named_objects, make_unique=make_unique)
-        return names
-
-    def _get_objects(
-        self,
-        named_objects: Union[
-            Sequence[Union[BaseObject, Tuple[str, BaseObject]]], Dict[str, BaseObject]
-        ],
-    ) -> List[BaseObject]:
-        """Return objects from named objects.
-
-        Parameters
-        ----------
-        named_objects : list[tuple[str, object], ...], list[object], dict[str, object]
-            The named objects whose names should be returned.
-
-        Returns
-        -------
-        list[BaseObject]
-            List of the string names from named objects. If ``make_unique=True``
-            then strings are coerced to be unique.
-        """
-        _, objs = self._get_names_and_objects(named_objects)
-        return objs
-
     def _coerce_to_named_object_tuples(
         self,
         objs: Union[
