@@ -8,26 +8,58 @@ tests in this module:
 """
 
 __author__ = ["RNKuhns"]
-# import pytest
+import pytest
 
-from skbase.base import BaseObject
-from skbase.base._meta import BaseMetaObject
+from skbase.base import BaseEstimator, BaseObject
+from skbase.base._meta import BaseMetaEstimator, BaseMetaObject
 
 
 class SomeClass(BaseObject):
     """Some class for testing."""
 
-    def __init__(self, z=None):
+    def __init__(self, z=12):
         self.z = z
 
 
-class MetaObjectTester(BaseMetaObject, BaseObject):
+class SomeEstimator(BaseEstimator):
+    """Some class for testing."""
+
+    def __init__(self, y=32):
+        self.y = y
+
+
+class MetaObjectTester(BaseMetaObject):
     """Class to test meta object functionality."""
 
-    _steps_attr = "some_step_attr"
-
-    def __init__(self, a=7, b="something", c=None, some_step_attr=None):
+    def __init__(self, a=7, b="something", c=None, steps=None):
         self.a = a
         self.b = b
         self.c = c
-        self.some_step_attr = some_step_attr
+        self.steps = steps
+
+
+class MetaEstimatorTester(BaseMetaEstimator):
+    """Class to test meta estimator functionality."""
+
+    def __init__(self, a=7, b="something", c=None, steps=None):
+        self.a = a
+        self.b = b
+        self.c = c
+        self.steps = steps
+
+
+@pytest.fixture
+def fixture_meta_object():
+    return MetaObjectTester()
+
+
+@pytest.fixture
+def fixture_meta_estimator():
+    return MetaEstimatorTester()
+
+
+def test_is_composit_returns_true(fixture_meta_object, fixture_meta_estimator):
+    """Test that `is_composite` method returns True."""
+    msg = "`is_composite` should always be True for subclasses of "
+    assert fixture_meta_object.is_composite() is True, msg + "`BaseMetaObject`."
+    assert fixture_meta_estimator.is_composite() is True, msg + "`BaseMetaEstimator`."
