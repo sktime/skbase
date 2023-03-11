@@ -179,7 +179,7 @@ html_theme_options = {
         },
         {
             "name": "Slack",
-            "url": "https://join.slack.com/t/sktime-group/shared_invite/zt-1cghagwee-sqLJ~eHWGYgzWbqUX937ig",  # noqa: E501
+            "url": "https://join.slack.com/t/skbase/shared_invite/zt-1qke3vzl2-fADjZBZadBlXsLUym5NlhA",  # noqa: E501
             "icon": "fab fa-slack",
         },
         {
