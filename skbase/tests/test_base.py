@@ -1133,7 +1133,6 @@ def test_local_config_without_use_of_extension_interface():
     # make use of dynamic BaseObject.set_config() to update a config that is also
     # part of global config
     obj = ConfigTester(4242)
-    obj_config = obj.get_config()
     current_global_config = get_config().copy()
     expected_global_config = set(current_global_config.keys())
 

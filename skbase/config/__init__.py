@@ -35,10 +35,10 @@ class GlobalConfigParamSetting:
     name: str
     os_environ_name: str
     expected_type: Union[type, Tuple[type]]
-    allowed_values: Optional[Tuple[Any, ...]]
+    allowed_values: Optional[Union[Tuple[Any, ...], List[Any]]]
     default_value: Any
 
-    def get_allowed_values(self):
+    def get_allowed_values(self) -> List[Any]:
         """Get `allowed_values` or empty tuple if `allowed_values` is None.
 
         Returns
@@ -47,15 +47,15 @@ class GlobalConfigParamSetting:
             Allowable values if any.
         """
         if self.allowed_values is None:
-            return ()
-        elif isinstance(self.allowed_values, tuple):
+            return []
+        elif isinstance(self.allowed_values, list):
             return self.allowed_values
         elif isinstance(
             self.allowed_values, collections.abc.Iterable
         ) and not isinstance(self.allowed_values, str):
-            return tuple(self.allowed_values)
+            return list(self.allowed_values)
         else:
-            return (self.allowed_values,)
+            return [self.allowed_values]
 
     def is_valid_param_value(self, value):
         """Validate that a global configuration value is valid.
@@ -79,22 +79,36 @@ class GlobalConfigParamSetting:
             valid_param = True
         return valid_param
 
-    def get_valid_param_or_default(self, value):
-        """Validate `value` and return default if it is not valid."""
+    def get_valid_param_or_default(self, value, default_value=None, msg=None):
+        """Validate `value` and return default if it is not valid.
+
+        Parameters
+        ----------
+        value : Any
+            The configuration parameter value to set.
+        default_value : Any, default=None
+            An optional default value to use to set the configuration parameter
+            if `value` is not valid based on defined expected type and allowed
+            values. If None, and `value` is invalid then the classes `default_value`
+            parameter is used.
+        msg : str, default=None
+            An optional message to be used as start of the UserWarning message.
+        """
         if self.is_valid_param_value(value):
             return value
         else:
-            msg = "Attempting to set an invalid value for a global configuration.\n"
-            msg += "Using default configuration value of parameter as a result.\n"
+            if msg is None:
+                msg = ""
             msg + f"When setting global config values for `{self.name}`, the values "
-            msg += f"should be of type {self.expected_type}."
+            msg += f"should be of type {self.expected_type}.\n"
             if self.allowed_values is not None:
                 values_str = _format_seq_to_str(
                     self.get_allowed_values(), last_sep="or", remove_type_text=True
                 )
-                msg += f"Allowed values are be one of {values_str}."
+                msg += f"Allowed values are be one of {values_str}. "
+            msg += f"But found {value}."
             warnings.warn(msg, UserWarning, stacklevel=2)
-            return self.default_value
+            return default_value if default_value is not None else self.default_value
 
 
 _CONFIG_REGISTRY: Dict[str, GlobalConfigParamSetting] = {
@@ -251,14 +265,22 @@ def set_config(
     """
     local_config = _get_threadlocal_config()
 
+    msg = "Attempting to set an invalid value for a global configuration.\n"
+    msg += "Using current configuration value of parameter as a result.\n"
     if print_changed_only is not None:
         local_config["print_changed_only"] = _CONFIG_REGISTRY[
             "print_changed_only"
-        ].get_valid_param_or_default(print_changed_only)
+        ].get_valid_param_or_default(
+            print_changed_only,
+            default_value=local_config["print_changed_only"],
+            msg=msg,
+        )
     if display is not None:
         local_config["display"] = _CONFIG_REGISTRY[
             "display"
-        ].get_valid_param_or_default(display)
+        ].get_valid_param_or_default(
+            display, default_value=local_config["display"], msg=msg
+        )
 
     if not local_threadsafe:
         global_config.update(local_config)
