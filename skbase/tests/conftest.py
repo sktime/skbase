@@ -22,6 +22,9 @@ SKBASE_MODULES = (
     "skbase.base",
     "skbase.base._base",
     "skbase.base._meta",
+    "skbase.base._pretty_printing",
+    "skbase.base._pretty_printing._object_html_repr",
+    "skbase.base._pretty_printing._pprint",
     "skbase.base._tagmanager",
     "skbase.config",
     "skbase.config._config",
@@ -78,6 +81,7 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
     "skbase.base": ("BaseEstimator", "BaseMetaEstimator", "BaseObject"),
     "skbase.base._base": ("BaseEstimator", "BaseObject"),
     "skbase.base._meta": ("BaseMetaEstimator",),
+    "skbase.base._pretty_printing._pprint": ("KeyValTuple", "KeyValTupleParam"),
     "skbase.config": ("GlobalConfigParamSetting",),
     "skbase.config._config": ("GlobalConfigParamSetting",),
     "skbase.lookup._lookup": ("ClassInfo", "FunctionInfo", "ModuleInfo"),
@@ -91,6 +95,12 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
 SKBASE_CLASSES_BY_MODULE = SKBASE_PUBLIC_CLASSES_BY_MODULE.copy()
 SKBASE_CLASSES_BY_MODULE.update(
     {
+        "skbase.base._pretty_printing._object_html_repr": ("_VisualBlock",),
+        "skbase.base._pretty_printing._pprint": (
+            "KeyValTuple",
+            "KeyValTupleParam",
+            "_BaseObjectPrettyPrinter",
+        ),
         "skbase.base._tagmanager": ("_FlagManager",),
     }
 )
@@ -143,6 +153,13 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
 SKBASE_FUNCTIONS_BY_MODULE.update(
     {
+        "skbase.base._pretty_printing._object_html_repr": (
+            "_get_visual_block",
+            "_object_html_repr",
+            "_write_base_object_html",
+            "_write_label_html",
+        ),
+        "skbase.base._pretty_printing._pprint": ("_changed_params", "_safe_repr"),
         "skbase.config._config": (
             "_get_threadlocal_config",
             "get_config",
