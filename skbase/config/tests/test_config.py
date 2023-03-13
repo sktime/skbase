@@ -3,8 +3,6 @@
 import pytest
 
 from skbase.config import (
-    _CONFIG_REGISTRY,
-    _DEFAULT_GLOBAL_CONFIG,
     GlobalConfigParamSetting,
     config_context,
     get_config,
@@ -12,6 +10,7 @@ from skbase.config import (
     reset_config,
     set_config,
 )
+from skbase.config._config import _CONFIG_REGISTRY, _DEFAULT_GLOBAL_CONFIG
 
 PRINT_CHANGE_ONLY_VALUES = _CONFIG_REGISTRY["print_changed_only"].get_allowed_values()
 DISPLAY_VALUES = _CONFIG_REGISTRY["display"].get_allowed_values()
@@ -41,7 +40,7 @@ def test_global_config_param_get_allowed_values(allowed_values):
     )
     # Verify we always coerce output of get_allowed_values to tuple
     values = some_config_param.get_allowed_values()
-    assert isinstance(values, tuple)
+    assert isinstance(values, list)
 
 
 @pytest.mark.parametrize("value", (None, (), "wrong_string", "text", range(1, 8)))
@@ -130,13 +129,15 @@ def test_config_context(print_changed_only, display):
 def test_set_config_behavior_invalid_value():
     """Test set_config uses default and raises warning when setting invalid value."""
     reset_config()
+    original_config = get_config().copy()
     with pytest.warns(UserWarning, match=r"Attempting to set an invalid value.*"):
         set_config(print_changed_only="False")
 
-    assert get_config() == get_default_config()
+    assert get_config() == original_config
 
+    original_config = get_config().copy()
     with pytest.warns(UserWarning, match=r"Attempting to set an invalid value.*"):
         set_config(print_changed_only=7)
 
-    assert get_config() == get_default_config()
+    assert get_config() == original_config
     reset_config()

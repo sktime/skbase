@@ -66,6 +66,7 @@ from skbase._exceptions import NotFittedError
 from skbase.base._pretty_printing._object_html_repr import _object_html_repr
 from skbase.base._tagmanager import _FlagManager
 from skbase.config import get_config
+from skbase.config._config import _CONFIG_REGISTRY
 
 __author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
 __all__: List[str] = ["BaseEstimator", "BaseObject"]
@@ -467,7 +468,18 @@ class BaseObject(_FlagManager, _BaseEstimator):
             msg += "overrides of the global configuration must return a dictionary.\n"
             msg += f"But a {type(skbase_get_config_extension_dict)} was found."
             warnings.warn(msg, UserWarning, stacklevel=2)
-        local_config = self._get_flags(flag_attr_name="_config")
+        local_config = self._get_flags(flag_attr_name="_config").copy()
+        # IF the local config is one of
+        for config_param, config_value in local_config.items():
+            if config_param in _CONFIG_REGISTRY:
+                msg = "Invalid value encountered for global configuration parameter "
+                msg += f"{config_param}. Using global parameter configuration value.\n"
+                config_value = _CONFIG_REGISTRY[
+                    config_param
+                ].get_valid_param_or_default(
+                    config_value, default_value=config[config_param]
+                )
+                local_config[config_param] = config_value
         config.update(local_config)
 
         return config
