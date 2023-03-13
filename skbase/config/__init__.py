@@ -6,7 +6,7 @@
 # that is similar to scikit-learn. These elements are copyrighted by the
 # scikit-learn developers, BSD-3-Clause License. For conditions see
 # https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
-
+import collections
 import sys
 import threading
 import warnings
@@ -19,6 +19,8 @@ if sys.version_info >= (3, 8):
 else:
     from typing_extensions import Literal  # type: ignore
 
+from skbase.utils._iter import _format_seq_to_str
+
 __author__: List[str] = ["RNKuhns"]
 
 
@@ -26,6 +28,7 @@ __author__: List[str] = ["RNKuhns"]
 class GlobalConfigParamSetting:
     """Define types of the setting information for a given config parameter."""
 
+    name: str
     os_environ_name: str
     expected_type: Union[type, Tuple[type]]
     allowed_values: Optional[Tuple[Any, ...]]
@@ -41,8 +44,14 @@ class GlobalConfigParamSetting:
         """
         if self.allowed_values is None:
             return ()
-        else:
+        elif isinstance(self.allowed_values, tuple):
             return self.allowed_values
+        elif isinstance(
+            self.allowed_values, collections.abc.Iterable
+        ) and not isinstance(self.allowed_values, str):
+            return tuple(self.allowed_values)
+        else:
+            return (self.allowed_values,)
 
     def is_valid_param_value(self, value):
         """Validate that a global configuration value is valid.
@@ -55,13 +64,7 @@ class GlobalConfigParamSetting:
         bool
             Whether a parameter value is valid.
         """
-        if (
-            isinstance(self.allowed_values, (list, tuple))
-            or self.allowed_values is None
-        ):
-            allowed_values = self.allowed_values
-        else:
-            allowed_values = (self.allowed_values,)
+        allowed_values = self.get_allowed_values()
 
         valid_param: bool
         if not isinstance(value, self.expected_type):
@@ -77,21 +80,29 @@ class GlobalConfigParamSetting:
         if self.is_valid_param_value(value):
             return value
         else:
-            msg = f"{self.os_environ_name} should be one of "
-            msg += f"{', '.join(map(repr, self.allowed_values))}."
-            msg += "Using default value for this configuration as a result."
+            msg = "Attempting to set an invalid value for a global configuration.\n"
+            msg += "Using default configuration value of parameter as a result.\n"
+            msg + f"When setting global config values for `{self.name}`, the values "
+            msg += f"should be of type {self.expected_type}."
+            if self.allowed_values is not None:
+                values_str = _format_seq_to_str(
+                    self.get_allowed_values(), last_sep="or", remove_type_text=True
+                )
+                msg += f"Allowed values are be one of {values_str}."
             warnings.warn(msg, UserWarning, stacklevel=2)
             return self.default_value
 
 
 _CONFIG_REGISTRY: Dict[str, GlobalConfigParamSetting] = {
     "print_changed_only": GlobalConfigParamSetting(
+        name="print_changed_only",
         os_environ_name="SKBASE_PRINT_CHANGED_ONLY",
         expected_type=bool,
         allowed_values=(True, False),
         default_value=True,
     ),
     "display": GlobalConfigParamSetting(
+        name="display",
         os_environ_name="SKBASE_OBJECT_DISPLAY",
         expected_type=str,
         allowed_values=("text", "diagram"),

@@ -5,6 +5,7 @@ import pytest
 from skbase.config import (
     _CONFIG_REGISTRY,
     _DEFAULT_GLOBAL_CONFIG,
+    GlobalConfigParamSetting,
     config_context,
     get_config,
     get_config_os_env_names,
@@ -27,6 +28,39 @@ def config_registry():
 def global_config_default():
     """Config registry fixture."""
     return _DEFAULT_GLOBAL_CONFIG
+
+
+@pytest.mark.parametrize("allowed_values", (None, (), "something", range(1, 8)))
+def test_global_config_param_get_allowed_values(allowed_values):
+    """Test GlobalConfigParamSetting behavior works as expected."""
+    some_config_param = GlobalConfigParamSetting(
+        name="some_param",
+        os_environ_name="SKBASE_OBJECT_DISPLAY",
+        expected_type=str,
+        allowed_values=allowed_values,
+        default_value="text",
+    )
+    # Verify we always coerce output of get_allowed_values to tuple
+    values = some_config_param.get_allowed_values()
+    assert isinstance(values, tuple)
+
+
+@pytest.mark.parametrize("value", (None, (), "wrong_string", "text", range(1, 8)))
+def test_global_config_param_is_valid_param_value(value):
+    """Test GlobalConfigParamSetting behavior works as expected."""
+    some_config_param = GlobalConfigParamSetting(
+        name="some_param",
+        os_environ_name="SKBASE_OBJECT_DISPLAY",
+        expected_type=str,
+        allowed_values=("text", "diagram"),
+        default_value="text",
+    )
+    # Verify we correctly identify invalid parameters
+    if value in ("text", "diagram"):
+        expected_valid = True
+    else:
+        expected_valid = False
+    assert some_config_param.is_valid_param_value(value) == expected_valid
 
 
 def test_get_config_os_env_names(config_registry):
@@ -74,6 +108,7 @@ def test_reset_config_resets_the_config(print_changed_only, display):
     msg += "`After reset_config is run, get_config` should return defaults.\n"
     msg += f"Expected {default_config}, but returned {retrieved_config}."
     assert retrieved_config == default_config, msg
+    reset_config()
 
 
 @pytest.mark.parametrize("print_changed_only", PRINT_CHANGE_ONLY_VALUES)
@@ -101,3 +136,19 @@ def test_config_context(print_changed_only, display):
     msg += "`config_context` should not affect configuration outside its context.\n"
     msg += f"Expected {config_post_config_context}, but returned {retrieved_config}."
     assert retrieved_config == config_post_config_context, msg
+    reset_config()
+
+
+def test_set_config_behavior_invalid_value():
+    """Test set_config uses default and raises warning when setting invalid value."""
+    reset_config()
+    with pytest.warns(UserWarning, match=r"Attempting to set an invalid value.*"):
+        set_config(print_changed_only="False")
+
+    assert get_config() == get_default_config()
+
+    with pytest.warns(UserWarning, match=r"Attempting to set an invalid value.*"):
+        set_config(print_changed_only=7)
+
+    assert get_config() == get_default_config()
+    reset_config()
