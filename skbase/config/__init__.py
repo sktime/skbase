@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-""":mod:`skbase.config` provides tools for global configuration of ``skbase``."""
+""":mod:`skbase.config` provides tools for the global configuration of ``skbase``.
+
+For more information on configuration usage patterns see the
+:ref:`user guide <user_guide_global_config>`.
+"""
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 # Includes functionality like get_config, set_config, and config_context
@@ -134,38 +138,8 @@ def _get_threadlocal_config() -> Dict[str, Any]:
     return _THREAD_LOCAL_DATA.global_config
 
 
-def get_config_os_env_names() -> List[str]:
-    """Retrieve the os environment names for configurable settings.
-
-    Returns
-    -------
-    env_names : list
-        The os environment names that can be used to set configurable settings.
-
-    See Also
-    --------
-    config_context :
-        Configuration context manager.
-    get_default_config :
-        Retrieve ``skbase``'s default configuration.
-    get_config :
-        Retrieve current global configuration values.
-    set_config :
-        Set global configuration.
-    reset_config :
-        Reset configuration to ``skbase`` default.
-
-    Examples
-    --------
-    >>> from skbase.config import get_config_os_env_names
-    >>> get_config_os_env_names()
-    ['SKBASE_PRINT_CHANGED_ONLY', 'SKBASE_OBJECT_DISPLAY']
-    """
-    return [config_info.os_environ_name for config_info in _CONFIG_REGISTRY.values()]
-
-
 def get_default_config() -> Dict[str, Any]:
-    """Retrive the default global configuration.
+    """Retrieve the default global configuration.
 
     This will always return the default ``skbase`` global configuration.
 
@@ -180,8 +154,6 @@ def get_default_config() -> Dict[str, Any]:
         Configuration context manager.
     get_config :
         Retrieve current global configuration values.
-    get_config_os_env_names :
-        Retrieve os environment names that can be used to set configuration.
     set_config :
         Set global configuration.
     reset_config :
@@ -199,7 +171,7 @@ def get_default_config() -> Dict[str, Any]:
 def get_config() -> Dict[str, Any]:
     """Retrieve current values for configuration set by :meth:`set_config`.
 
-    Willr return the default configuration if know updated configuration has
+    Will return the default configuration if know updated configuration has
     been set by :meth:`set_config`.
 
     Returns
@@ -213,8 +185,6 @@ def get_config() -> Dict[str, Any]:
         Configuration context manager.
     get_default_config :
         Retrieve ``skbase``'s default configuration.
-    get_config_os_env_names :
-        Retrieve os environment names that can be used to set configuration.
     set_config :
         Set global configuration.
     reset_config :
@@ -267,8 +237,6 @@ def set_config(
         Retrieve ``skbase``'s default configuration.
     get_config :
         Retrieve current global configuration values.
-    get_config_os_env_names :
-        Retrieve os environment names that can be used to set configuration.
     reset_config :
         Reset configuration to default.
 
@@ -317,8 +285,6 @@ def reset_config() -> None:
         Retrieve ``skbase``'s default configuration.
     get_config :
         Retrieve current global configuration values.
-    get_config_os_env_names :
-        Retrieve os environment names that can be used to set configuration.
     set_config :
         Set global configuration.
 
@@ -347,6 +313,9 @@ def config_context(
 ) -> Iterator[None]:
     """Context manager for global configuration.
 
+    Provides the ability to run code using different configuration without
+    having to update the global config.
+
     Parameters
     ----------
     print_changed_only : bool, default=None
@@ -373,8 +342,6 @@ def config_context(
         Retrieve ``skbase``'s default configuration.
     get_config :
         Retrieve current values of the global configuration.
-    get_config_os_env_names :
-        Retrieve os environment names that can be used to set configuration.
     set_config :
         Set global configuration.
     reset_config :

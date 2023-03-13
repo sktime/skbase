@@ -28,6 +28,27 @@ Base Classes
     BaseObject
     BaseEstimator
 
+.. _global_config:
+
+Configure ``skbase``
+====================
+
+.. automodule:: skbase.config
+    :no-members:
+    :no-inherited-members:
+
+.. currentmodule:: skbase.config
+
+.. autosummary::
+    :toctree: api_reference/auto_generated/
+    :template: function.rst
+
+    get_config
+    get_default_config
+    set_config
+    reset_config
+    config_context
+
 .. _obj_retrieval:
 
 Object Retrieval

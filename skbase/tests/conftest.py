@@ -93,14 +93,6 @@ SKBASE_CLASSES_BY_MODULE.update(
     }
 )
 SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
-    "skbase.config": (
-        "config_context",
-        "get_config",
-        "get_default_config",
-        "get_config_os_env_names",
-        "reset_config",
-        "set_config",
-    ),
     "skbase.lookup": ("all_objects", "get_package_metadata"),
     "skbase.lookup._lookup": ("all_objects", "get_package_metadata"),
     "skbase.testing.utils._conditional_fixtures": (
@@ -135,15 +127,6 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
 SKBASE_FUNCTIONS_BY_MODULE.update(
     {
-        "skbase.config": (
-            "_get_threadlocal_config",
-            "config_context",
-            "get_config",
-            "get_default_config",
-            "get_config_os_env_names",
-            "reset_config",
-            "set_config",
-        ),
         "skbase.lookup._lookup": (
             "_determine_module_path",
             "_get_return_tags",
