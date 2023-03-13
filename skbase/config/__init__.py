@@ -134,36 +134,6 @@ def _get_threadlocal_config() -> Dict[str, Any]:
     return _THREAD_LOCAL_DATA.global_config
 
 
-def get_config_os_env_names() -> List[str]:
-    """Retrieve the os environment names for configurable settings.
-
-    Returns
-    -------
-    env_names : list
-        The os environment names that can be used to set configurable settings.
-
-    See Also
-    --------
-    config_context :
-        Configuration context manager.
-    get_default_config :
-        Retrieve ``skbase``'s default configuration.
-    get_config :
-        Retrieve current global configuration values.
-    set_config :
-        Set global configuration.
-    reset_config :
-        Reset configuration to ``skbase`` default.
-
-    Examples
-    --------
-    >>> from skbase.config import get_config_os_env_names
-    >>> get_config_os_env_names()
-    ['SKBASE_PRINT_CHANGED_ONLY', 'SKBASE_OBJECT_DISPLAY']
-    """
-    return [config_info.os_environ_name for config_info in _CONFIG_REGISTRY.values()]
-
-
 def get_default_config() -> Dict[str, Any]:
     """Retrive the default global configuration.
 
@@ -180,8 +150,6 @@ def get_default_config() -> Dict[str, Any]:
         Configuration context manager.
     get_config :
         Retrieve current global configuration values.
-    get_config_os_env_names :
-        Retrieve os environment names that can be used to set configuration.
     set_config :
         Set global configuration.
     reset_config :
@@ -213,8 +181,6 @@ def get_config() -> Dict[str, Any]:
         Configuration context manager.
     get_default_config :
         Retrieve ``skbase``'s default configuration.
-    get_config_os_env_names :
-        Retrieve os environment names that can be used to set configuration.
     set_config :
         Set global configuration.
     reset_config :
@@ -267,8 +233,6 @@ def set_config(
         Retrieve ``skbase``'s default configuration.
     get_config :
         Retrieve current global configuration values.
-    get_config_os_env_names :
-        Retrieve os environment names that can be used to set configuration.
     reset_config :
         Reset configuration to default.
 
@@ -317,8 +281,6 @@ def reset_config() -> None:
         Retrieve ``skbase``'s default configuration.
     get_config :
         Retrieve current global configuration values.
-    get_config_os_env_names :
-        Retrieve os environment names that can be used to set configuration.
     set_config :
         Set global configuration.
 
@@ -373,8 +335,6 @@ def config_context(
         Retrieve ``skbase``'s default configuration.
     get_config :
         Retrieve current values of the global configuration.
-    get_config_os_env_names :
-        Retrieve os environment names that can be used to set configuration.
     set_config :
         Set global configuration.
     reset_config :

@@ -8,7 +8,6 @@ from skbase.config import (
     GlobalConfigParamSetting,
     config_context,
     get_config,
-    get_config_os_env_names,
     get_default_config,
     reset_config,
     set_config,
@@ -63,23 +62,11 @@ def test_global_config_param_is_valid_param_value(value):
     assert some_config_param.is_valid_param_value(value) == expected_valid
 
 
-def test_get_config_os_env_names(config_registry):
-    """Verify that get_config_os_env_names returns expected values."""
-    os_env_names = get_config_os_env_names()
-    expected_os_env_names = [
-        config_info.os_environ_name for config_info in config_registry.values()
-    ]
-    msg = "`get_config_os_env_names` does not return expected value.\n"
-    msg += f"Expected {expected_os_env_names}, but returned {os_env_names}."
-    assert os_env_names == expected_os_env_names, msg
-
-
 def test_get_default_config(global_config_default):
-    """Verify that get_default_config returns default global config values."""
-    retrieved_default = get_default_config()
-    msg = "`get_default_config` does not return expected values.\n"
-    msg += f"Expected {global_config_default}, but returned {retrieved_default}."
-    assert retrieved_default == global_config_default, msg
+    """Test get_default_config alwasy returns the default config."""
+    assert get_default_config() == global_config_default
+    set_config(print_changed_only=False)
+    assert get_default_config() == global_config_default
 
 
 @pytest.mark.parametrize("print_changed_only", PRINT_CHANGE_ONLY_VALUES)
@@ -97,17 +84,18 @@ def test_set_config_then_get_config_returns_expected_value(print_changed_only, d
 
 @pytest.mark.parametrize("print_changed_only", PRINT_CHANGE_ONLY_VALUES)
 @pytest.mark.parametrize("display", DISPLAY_VALUES)
-def test_reset_config_resets_the_config(print_changed_only, display):
+def test_reset_config_resets_the_config(
+    print_changed_only, display, global_config_default
+):
     """Verify that get_config returns default config if reset_config run."""
-    default_config = get_default_config()
     set_config(print_changed_only=print_changed_only, display=display)
     reset_config()
     retrieved_config = get_config()
 
     msg = "`get_config` does not return expected values after `reset_config`.\n"
     msg += "`After reset_config is run, get_config` should return defaults.\n"
-    msg += f"Expected {default_config}, but returned {retrieved_config}."
-    assert retrieved_config == default_config, msg
+    msg += f"Expected {global_config_default}, but returned {retrieved_config}."
+    assert retrieved_config == global_config_default, msg
     reset_config()
 
 
