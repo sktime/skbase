@@ -1111,7 +1111,6 @@ def test_local_config_without_use_of_extension_interface():
     # Case 3: local configs are not part of global config param names and we also
     # make use of dynamic BaseObject.set_config()
     obj = ConfigTester(4242)
-    obj_config = obj.get_config()
     current_global_config = get_config().copy()
     expected_global_config = set(current_global_config.keys())
 
