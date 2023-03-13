@@ -70,7 +70,7 @@ def _write_label_html(
     checked=False,
 ):
     """Write labeled html with or without a dropdown with named details."""
-    out.write(f'<div class="{outer_class}"><div class="{inner_class} sk-toggleable">')
+    out.write(f'<div class={outer_class!r}><div class="{inner_class} sk-toggleable">')
     name = html.escape(name)
 
     if name_details is not None:
@@ -81,8 +81,8 @@ def _write_label_html(
         est_id = uuid.uuid4()
         out.write(
             '<input class="sk-toggleable__control sk-hidden--visually" '
-            f'id="{est_id}" type="checkbox" {checked_str}>'
-            f'<label for="{est_id}" class="{label_class}">{name}</label>'
+            f'id={est_id!r} type="checkbox" {checked_str}>'
+            f"<label for={est_id!r} class={label_class!r}>{name}</label>"
             f'<div class="sk-toggleable__content"><pre>{name_details}'
             "</pre></div>"
         )
@@ -379,7 +379,7 @@ def _object_html_repr(base_object):
         )
         out.write(
             f"<style>{style_with_id}</style>"
-            f'<div id="{container_id}" class="sk-top-container">'
+            f'<div id={container_id!r} class="sk-top-container">'
             '<div class="sk-text-repr-fallback">'
             f"<pre>{html.escape(base_object_str)}</pre><b>{fallback_msg}</b>"
             "</div>"
