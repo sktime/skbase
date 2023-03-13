@@ -29,6 +29,7 @@ that ``skbase`` provides, see the :ref:`api_ref`.
    user_guide/lookup
    user_guide/validate
    user_guide/testing
+   user_guide/configuration
 
 
 .. grid:: 1 2 2 2
@@ -103,3 +104,17 @@ that ``skbase`` provides, see the :ref:`api_ref`.
             :expand:
 
             Testing
+
+    .. grid-item-card:: Configuration
+        :text-align: center
+
+        Configure ``skbase``.
+
+        +++
+
+        .. button-ref:: user_guide/testing
+            :color: primary
+            :click-parent:
+            :expand:
+
+            Configuration

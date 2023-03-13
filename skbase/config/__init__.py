@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-""":mod:`skbase.config` provides tools for global configuration of ``skbase``."""
+""":mod:`skbase.config` provides tools for the global configuration of ``skbase``.
+
+For more information on configuration usage patterns see the
+:ref:`user guide <user_guide_global_config>`.
+"""
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 # Includes functionality like get_config, set_config, and config_context
@@ -167,7 +171,7 @@ def get_default_config() -> Dict[str, Any]:
 def get_config() -> Dict[str, Any]:
     """Retrieve current values for configuration set by :meth:`set_config`.
 
-    Willr return the default configuration if know updated configuration has
+    Will return the default configuration if know updated configuration has
     been set by :meth:`set_config`.
 
     Returns
@@ -308,6 +312,9 @@ def config_context(
     local_threadsafe: bool = False,
 ) -> Iterator[None]:
     """Context manager for global configuration.
+
+    Provides the ability to run code using different configuration without
+    having to update the global config.
 
     Parameters
     ----------
