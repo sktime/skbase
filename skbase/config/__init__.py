@@ -139,7 +139,7 @@ def _get_threadlocal_config() -> Dict[str, Any]:
 
 
 def get_default_config() -> Dict[str, Any]:
-    """Retrive the default global configuration.
+    """Retrieve the default global configuration.
 
     This will always return the default ``skbase`` global configuration.
 
