@@ -63,6 +63,7 @@ from sklearn.base import BaseEstimator as _BaseEstimator
 
 from skbase._exceptions import NotFittedError
 from skbase.base._tagmanager import _FlagManager
+from skbase.config import get_config
 
 __author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
 __all__: List[str] = ["BaseEstimator", "BaseObject"]
@@ -446,7 +447,28 @@ class BaseObject(_FlagManager, _BaseEstimator):
             class attribute via nested inheritance and then any overrides
             and new tags from _onfig_dynamic object attribute.
         """
-        return self._get_flags(flag_attr_name="_config")
+        config = get_config().copy()
+
+        # Get any extension configuration interface defined in the class
+        # for example if downstream package wants to extend skbase to retrieve
+        # their own config
+        if hasattr(self, "__skbase_get_config__") and callable(
+            self.__skbase_get_config__
+        ):
+            skbase_get_config_extension_dict = self.__skbase_get_config__()
+        else:
+            skbase_get_config_extension_dict = {}
+        if isinstance(skbase_get_config_extension_dict, dict):
+            config.update(skbase_get_config_extension_dict)
+        else:
+            msg = "Use of `__skbase_get_config__` to extend the interface for local "
+            msg += "overrides of the global configuration must return a dictionary.\n"
+            msg += f"But a {type(skbase_get_config_extension_dict)} was found."
+            warnings.warn(msg, UserWarning, stacklevel=2)
+        local_config = self._get_flags(flag_attr_name="_config")
+        config.update(local_config)
+
+        return config
 
     def set_config(self, **config_dict):
         """Set config flags to given values.
