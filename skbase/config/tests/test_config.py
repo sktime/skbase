@@ -3,8 +3,6 @@
 import pytest
 
 from skbase.config import (
-    _CONFIG_REGISTRY,
-    _DEFAULT_GLOBAL_CONFIG,
     GlobalConfigParamSetting,
     config_context,
     get_config,
@@ -12,6 +10,7 @@ from skbase.config import (
     reset_config,
     set_config,
 )
+from skbase.config._config import _CONFIG_REGISTRY, _DEFAULT_GLOBAL_CONFIG
 
 PRINT_CHANGE_ONLY_VALUES = _CONFIG_REGISTRY["print_changed_only"].get_allowed_values()
 DISPLAY_VALUES = _CONFIG_REGISTRY["display"].get_allowed_values()

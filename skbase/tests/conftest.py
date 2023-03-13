@@ -24,6 +24,7 @@ SKBASE_MODULES = (
     "skbase.base._meta",
     "skbase.base._tagmanager",
     "skbase.config",
+    "skbase.config._config",
     "skbase.lookup",
     "skbase.lookup.tests",
     "skbase.lookup.tests.test_lookup",
@@ -77,6 +78,7 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
     "skbase.base._base": ("BaseEstimator", "BaseObject"),
     "skbase.base._meta": ("BaseMetaEstimator",),
     "skbase.config": ("GlobalConfigParamSetting",),
+    "skbase.config._config": ("GlobalConfigParamSetting",),
     "skbase.lookup._lookup": ("ClassInfo", "FunctionInfo", "ModuleInfo"),
     "skbase.testing": ("BaseFixtureGenerator", "QuickTester", "TestAllObjects"),
     "skbase.testing.test_all_objects": (
@@ -93,6 +95,13 @@ SKBASE_CLASSES_BY_MODULE.update(
 )
 SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
     "skbase.config": (
+        "get_config",
+        "get_default_config",
+        "set_config",
+        "reset_config",
+        "config_context",
+    ),
+    "skbase.config._config": (
         "get_config",
         "get_default_config",
         "set_config",
@@ -133,7 +142,7 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
 SKBASE_FUNCTIONS_BY_MODULE.update(
     {
-        "skbase.config": (
+        "skbase.config._config": (
             "_get_threadlocal_config",
             "get_config",
             "get_default_config",

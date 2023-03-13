@@ -63,7 +63,8 @@ from sklearn.base import BaseEstimator as _BaseEstimator
 
 from skbase._exceptions import NotFittedError
 from skbase.base._tagmanager import _FlagManager
-from skbase.config import _CONFIG_REGISTRY, get_config
+from skbase.config import get_config
+from skbase.config._config import _CONFIG_REGISTRY
 
 __author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
 __all__: List[str] = ["BaseEstimator", "BaseObject"]
