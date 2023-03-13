@@ -739,7 +739,7 @@ class BaseObject(_FlagManager, _BaseEstimator):
             indent=1,
             indent_at_name=True,
             n_max_elements_to_show=n_max_elements_to_show,
-            changed_only=get_config()["print_changed_only"],
+            changed_only=self.get_config()["print_changed_only"],
         )
 
         repr_ = pp.pformat(self)
@@ -787,7 +787,7 @@ class BaseObject(_FlagManager, _BaseEstimator):
         should be favorted in the long term, `_repr_html_` is only
         implemented for consumers who do not interpret `_repr_mimbundle_`.
         """
-        if get_config()["display"] != "diagram":
+        if self.get_config()["display"] != "diagram":
             raise AttributeError(
                 "_repr_html_ is only defined when the "
                 "`display` configuration option is set to 'diagram'."
@@ -799,14 +799,14 @@ class BaseObject(_FlagManager, _BaseEstimator):
 
         This function is returned by the @property `_repr_html_` to make
         `hasattr(BaseObject, "_repr_html_") return `True` or `False` depending
-        on `get_config()["display"]`.
+        on `self.get_config()["display"]`.
         """
         return _object_html_repr(self)
 
     def _repr_mimebundle_(self, **kwargs):
         """Mime bundle used by jupyter kernels to display instances of BaseObject."""
         output = {"text/plain": repr(self)}
-        if get_config()["display"] == "diagram":
+        if self.get_config()["display"] == "diagram":
             output["text/html"] = _object_html_repr(self)
         return output
 

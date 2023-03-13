@@ -128,6 +128,8 @@ def _write_base_object_html(
     if first_call:
         est_block = _get_visual_block(base_object)
     else:
+        # So it is easier to read, always use print_changed_only==True
+        # regardless of configuration
         with config_context(print_changed_only=True):
             est_block = _get_visual_block(base_object)
 
