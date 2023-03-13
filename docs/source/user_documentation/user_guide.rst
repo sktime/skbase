@@ -112,7 +112,7 @@ that ``skbase`` provides, see the :ref:`api_ref`.
 
         +++
 
-        .. button-ref:: user_guide/testing
+        .. button-ref:: user_guide/configuration
             :color: primary
             :click-parent:
             :expand:
