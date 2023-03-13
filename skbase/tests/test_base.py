@@ -73,12 +73,12 @@ from copy import deepcopy
 import numpy as np
 import pytest
 import scipy.sparse as sp
-from sklearn import config_context
 
 # TODO: Update with import of skbase clone function once implemented
 from sklearn.base import clone
 
 from skbase.base import BaseEstimator, BaseObject
+from skbase.config import config_context  # type: ignore
 from skbase.tests.conftest import Child, Parent
 from skbase.tests.mock_package.test_mock_package import CompositionDummy
 
@@ -878,12 +878,13 @@ def test_baseobject_repr(fixture_class_parent, fixture_composition_dummy):
     """Test BaseObject repr works as expected."""
     # Simple test where all parameters are left at defaults
     # Should not see parameters and values in printed representation
+
     base_obj = fixture_class_parent()
     assert repr(base_obj) == "Parent()"
 
     # Check that we can alter the detail about params that is printed
     # using config_context with ``print_changed_only=False``
-    with config_context(print_changed_only=False):
+    with config_context(print_changed_only=False, display="text"):
         assert repr(base_obj) == "Parent(a='something', b=7, c=None)"
 
     simple_composite = fixture_composition_dummy(foo=fixture_class_parent())
