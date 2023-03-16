@@ -439,35 +439,56 @@ class BaseObject(_FlagManager, _BaseEstimator):
         return self
 
     def get_config(self):
-        """Get config flags for self.
+        """Get configuration parameters impacting the object.
+
+        The configuration is retrieved in the following order:
+
+        - ``skbase`` global configuration,
+        - downstream package configurations, and
+        - local configuration set via the object's _config class variable
+          or the object's `set_config` parameter.
 
         Returns
         -------
         config_dict : dict
-            Dictionary of config name : config value pairs. Collected from _config
-            class attribute via nested inheritance and then any overrides
-            and new tags from _onfig_dynamic object attribute.
+            Dictionary of config name : config value pairs.
         """
+        # Configuration is collected in a specific order from the farthest to
+        # most local. skbase global config -> downstream package (optional) -> local
+        # Start by collecting skbase's global config
         config = get_config().copy()
 
-        # Get any extension configuration interface defined in the class
-        # for example if downstream package wants to extend skbase to retrieve
-        # their own config
+        # Use the object config extension interface to optionally retrieve the
+        # configuration of any downstream package that is subclassing BaseObject
         if hasattr(self, "__skbase_get_config__") and callable(
             self.__skbase_get_config__
         ):
             skbase_get_config_extension_dict = self.__skbase_get_config__()
         else:
             skbase_get_config_extension_dict = {}
+
+        # If the config extension dunder returned a dict, use it to update
+        # the dict of configs that have been retrieved so far
         if isinstance(skbase_get_config_extension_dict, dict):
             config.update(skbase_get_config_extension_dict)
+        # Otherwise warn the user that a dict wasn't returned (extension not
+        # done properly) and ignore the returned result
         else:
             msg = "Use of `__skbase_get_config__` to extend the interface for local "
             msg += "overrides of the global configuration must return a dictionary.\n"
             msg += f"But a {type(skbase_get_config_extension_dict)} was found."
+            msg += "Ignoring result returned from `__skbase_get_config__`."
             warnings.warn(msg, UserWarning, stacklevel=2)
+
+        # Finally get the local config in case any optional instance config
+        # overrides were made)
         local_config = self._get_flags(flag_attr_name="_config").copy()
-        # IF the local config is one of
+
+        # If the local config param name is one of the skbase global config
+        # options (as opposed to config of downstream package) then we want
+        # to make sure we don't return an invalid value. In this case, we'll
+        # fallback to the default value if an invalid value was set as the local
+        # override of the global config
         for config_param, config_value in local_config.items():
             if config_param in _CONFIG_REGISTRY:
                 msg = "Invalid value encountered for global configuration parameter "
