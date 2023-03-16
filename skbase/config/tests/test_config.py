@@ -3,29 +3,23 @@
 import pytest
 
 from skbase.config import (
-    GlobalConfigParamSetting,
     config_context,
     get_config,
     get_default_config,
     reset_config,
     set_config,
 )
-from skbase.config._config import _CONFIG_REGISTRY, _DEFAULT_GLOBAL_CONFIG
+from skbase.config._config import _CONFIG_REGISTRY, _GLOBAL_CONFIG_DEFAULT
+from skbase.config._config_param_setting import GlobalConfigParamSetting
 
 PRINT_CHANGE_ONLY_VALUES = _CONFIG_REGISTRY["print_changed_only"].get_allowed_values()
 DISPLAY_VALUES = _CONFIG_REGISTRY["display"].get_allowed_values()
 
 
 @pytest.fixture
-def config_registry():
-    """Config registry fixture."""
-    return _CONFIG_REGISTRY
-
-
-@pytest.fixture
 def global_config_default():
     """Config registry fixture."""
-    return _DEFAULT_GLOBAL_CONFIG
+    return _GLOBAL_CONFIG_DEFAULT
 
 
 @pytest.mark.parametrize("allowed_values", (None, (), "something", range(1, 8)))
@@ -33,7 +27,6 @@ def test_global_config_param_get_allowed_values(allowed_values):
     """Test GlobalConfigParamSetting behavior works as expected."""
     some_config_param = GlobalConfigParamSetting(
         name="some_param",
-        os_environ_name="SKBASE_OBJECT_DISPLAY",
         expected_type=str,
         allowed_values=allowed_values,
         default_value="text",
@@ -48,7 +41,6 @@ def test_global_config_param_is_valid_param_value(value):
     """Test GlobalConfigParamSetting behavior works as expected."""
     some_config_param = GlobalConfigParamSetting(
         name="some_param",
-        os_environ_name="SKBASE_OBJECT_DISPLAY",
         expected_type=str,
         allowed_values=("text", "diagram"),
         default_value="text",
@@ -61,10 +53,36 @@ def test_global_config_param_is_valid_param_value(value):
     assert some_config_param.is_valid_param_value(value) == expected_valid
 
 
-def test_get_default_config(global_config_default):
-    """Test get_default_config alwasy returns the default config."""
+def test_global_config_get_valid_or_default():
+    """Test GlobalConfigParamSetting.get_valid_param_or_default works as expected."""
+    some_config_param = GlobalConfigParamSetting(
+        name="some_param",
+        expected_type=str,
+        allowed_values=("text", "diagram"),
+        default_value="text",
+    )
+
+    # When calling the method with invalid value it should raise user warning
+    with pytest.warns(UserWarning, match=r"When setting global.*"):
+        returned_value = some_config_param.get_valid_param_or_default(7, msg=None)
+
+    # And it should return the default value instead of the passed value
+    assert returned_value == some_config_param.default_value
+
+    # When calling the method with invalid value it should raise user warning
+    # And the warning should start with `msg` if it is passed
+    with pytest.warns(UserWarning, match=r"some message.*"):
+        returned_value = some_config_param.get_valid_param_or_default(
+            7, msg="some message"
+        )
+
+
+def test_get_default_config_always_returns_default(global_config_default):
+    """Test get_default_config always returns the default config."""
     assert get_default_config() == global_config_default
-    set_config(print_changed_only=False)
+    # set config to non-default value to make sure it didn't change
+    # what is returned by get_default_config
+    set_config(print_changed_only=not get_default_config()["print_changed_only"])
     assert get_default_config() == global_config_default
 
 

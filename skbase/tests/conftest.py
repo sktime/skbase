@@ -25,6 +25,7 @@ SKBASE_MODULES = (
     "skbase.base._tagmanager",
     "skbase.config",
     "skbase.config._config",
+    "skbase.config._config_param_setting",
     "skbase.lookup",
     "skbase.lookup.tests",
     "skbase.lookup.tests.test_lookup",
@@ -78,7 +79,7 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
     "skbase.base._base": ("BaseEstimator", "BaseObject"),
     "skbase.base._meta": ("BaseMetaEstimator",),
     "skbase.config": ("GlobalConfigParamSetting",),
-    "skbase.config._config": ("GlobalConfigParamSetting",),
+    "skbase.config._config_param_setting": ("GlobalConfigParamSetting",),
     "skbase.lookup._lookup": ("ClassInfo", "FunctionInfo", "ModuleInfo"),
     "skbase.testing": ("BaseFixtureGenerator", "QuickTester", "TestAllObjects"),
     "skbase.testing.test_all_objects": (
@@ -203,9 +204,6 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "check_type",
             "is_sequence",
             "_convert_scalar_seq_type_input_to_tuple",
-            # "_check_iterable_of_class_or_error",
-            # "_check_list_of_str",
-            # "_check_list_of_str_or_error",
         ),
     }
 )

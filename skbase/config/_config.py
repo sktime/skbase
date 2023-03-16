@@ -6,24 +6,20 @@
 # that is similar to scikit-learn. These elements are copyrighted by the
 # scikit-learn developers, BSD-3-Clause License. For conditions see
 # https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
-import collections
 import sys
 import threading
-import warnings
 from contextlib import contextmanager
-from dataclasses import dataclass
-from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterator, List, Optional
 
 if sys.version_info >= (3, 8):
     from typing import Literal
 else:
     from typing_extensions import Literal  # type: ignore
 
-from skbase.utils._iter import _format_seq_to_str
+from skbase.config._config_param_setting import GlobalConfigParamSetting
 
 __author__: List[str] = ["RNKuhns"]
 __all__: List[str] = [
-    "GlobalConfigParamSetting",
     "get_default_config",
     "get_config",
     "set_config",
@@ -32,112 +28,28 @@ __all__: List[str] = [
 ]
 
 
-@dataclass
-class GlobalConfigParamSetting:
-    """Define types of the setting information for a given config parameter."""
-
-    name: str
-    os_environ_name: str
-    expected_type: Union[type, Tuple[type]]
-    allowed_values: Optional[Union[Tuple[Any, ...], List[Any]]]
-    default_value: Any
-
-    def get_allowed_values(self) -> List[Any]:
-        """Get `allowed_values` or empty tuple if `allowed_values` is None.
-
-        Returns
-        -------
-        tuple
-            Allowable values if any.
-        """
-        if self.allowed_values is None:
-            return []
-        elif isinstance(self.allowed_values, list):
-            return self.allowed_values
-        elif isinstance(
-            self.allowed_values, collections.abc.Iterable
-        ) and not isinstance(self.allowed_values, str):
-            return list(self.allowed_values)
-        else:
-            return [self.allowed_values]
-
-    def is_valid_param_value(self, value):
-        """Validate that a global configuration value is valid.
-
-        Verifies that the value set for a global configuration parameter is valid
-        based on the its configuration settings.
-
-        Returns
-        -------
-        bool
-            Whether a parameter value is valid.
-        """
-        allowed_values = self.get_allowed_values()
-
-        valid_param: bool
-        if not isinstance(value, self.expected_type):
-            valid_param = False
-        elif allowed_values is not None and value not in allowed_values:
-            valid_param = False
-        else:
-            valid_param = True
-        return valid_param
-
-    def get_valid_param_or_default(self, value, default_value=None, msg=None):
-        """Validate `value` and return default if it is not valid.
-
-        Parameters
-        ----------
-        value : Any
-            The configuration parameter value to set.
-        default_value : Any, default=None
-            An optional default value to use to set the configuration parameter
-            if `value` is not valid based on defined expected type and allowed
-            values. If None, and `value` is invalid then the classes `default_value`
-            parameter is used.
-        msg : str, default=None
-            An optional message to be used as start of the UserWarning message.
-        """
-        if self.is_valid_param_value(value):
-            return value
-        else:
-            if msg is None:
-                msg = ""
-            msg + f"When setting global config values for `{self.name}`, the values "
-            msg += f"should be of type {self.expected_type}.\n"
-            if self.allowed_values is not None:
-                values_str = _format_seq_to_str(
-                    self.get_allowed_values(), last_sep="or", remove_type_text=True
-                )
-                msg += f"Allowed values are be one of {values_str}. "
-            msg += f"But found {value}."
-            warnings.warn(msg, UserWarning, stacklevel=2)
-            return default_value if default_value is not None else self.default_value
-
-
 _CONFIG_REGISTRY: Dict[str, GlobalConfigParamSetting] = {
     "print_changed_only": GlobalConfigParamSetting(
         name="print_changed_only",
-        os_environ_name="SKBASE_PRINT_CHANGED_ONLY",
         expected_type=bool,
         allowed_values=(True, False),
         default_value=True,
     ),
     "display": GlobalConfigParamSetting(
         name="display",
-        os_environ_name="SKBASE_OBJECT_DISPLAY",
         expected_type=str,
         allowed_values=("text", "diagram"),
         default_value="text",
     ),
 }
 
-_DEFAULT_GLOBAL_CONFIG: Dict[str, Any] = {
-    config_name: config_info.default_value
-    for config_name, config_info in _CONFIG_REGISTRY.items()
+_GLOBAL_CONFIG_DEFAULT: Dict[str, Any] = {
+    config_settings.name: config_settings.default_value
+    for config_name, config_settings in _CONFIG_REGISTRY.items()
 }
 
-global_config = _DEFAULT_GLOBAL_CONFIG.copy()
+global_config = _GLOBAL_CONFIG_DEFAULT.copy()
+
 _THREAD_LOCAL_DATA = threading.local()
 
 
@@ -183,7 +95,7 @@ def get_default_config() -> Dict[str, Any]:
     >>> get_default_config()
     {'print_changed_only': True, 'display': 'text'}
     """
-    return _DEFAULT_GLOBAL_CONFIG.copy()
+    return _GLOBAL_CONFIG_DEFAULT.copy()
 
 
 def get_config() -> Dict[str, Any]:
@@ -268,7 +180,6 @@ def set_config(
     {'print_changed_only': True, 'display': 'diagram'}
     """
     local_config = _get_threadlocal_config()
-
     msg = "Attempting to set an invalid value for a global configuration.\n"
     msg += "Using current configuration value of parameter as a result.\n"
     if print_changed_only is not None:
