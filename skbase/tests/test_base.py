@@ -914,16 +914,58 @@ def test_baseobject_repr(
     with config_context(print_changed_only=False, display="text"):
         assert repr(base_obj) == "Parent(a='something', b=7, c=None)"
 
+    # Check that local config works as expected
+    base_obj.set_config(print_changed_only=False)
+    assert repr(base_obj) == "Parent(a='something', b=7, c=None)"
+
+    # Test with dict parameter (note that dict is sorted by keys when printed)
+    # not printed in order it was created
+    base_obj = fixture_class_parent(c={"c": 1, "a": 2})
+    assert repr(base_obj) == "Parent(c={'a': 2, 'c': 1})"
+
+    # Now test when one params values are named object tuples
+    named_objs = [
+        ("step 1", fixture_class_parent()),
+        ("step 2", fixture_class_parent()),
+    ]
+    base_obj = fixture_class_parent(c=named_objs)
+    assert repr(base_obj) == "Parent(c=[('step 1', Parent()), ('step 2', Parent())])"
+
+    # Or when they are just lists of tuples or just tuples as param
+    base_obj = fixture_class_parent(c=[("one", 1), ("two", 2)])
+    assert repr(base_obj) == "Parent(c=[('one', 1), ('two', 2)])"
+
+    base_obj = fixture_class_parent(c=(1, 2, 3))
+    assert repr(base_obj) == "Parent(c=(1, 2, 3))"
+
     simple_composite = fixture_composition_dummy(foo=fixture_class_parent())
     assert repr(simple_composite) == "CompositionDummy(foo=Parent())"
 
     long_base_obj_repr = fixture_class_parent(a=["long_params"] * 1000)
     assert len(repr(long_base_obj_repr)) == 535
 
+    named_objs = [(f"Step {i+1}", Child()) for i in range(25)]
+    base_comp = CompositionDummy(foo=Parent(c=Child(c=named_objs)))
+    assert len(repr(base_comp)) == 1362
+    with config_context(print_changed_only=False):
+        assert "..." in repr(base_comp)
+
 
 def test_baseobject_str(fixture_class_parent_instance: Parent):
     """Test BaseObject string representation works."""
-    str(fixture_class_parent_instance)
+    assert (
+        str(fixture_class_parent_instance) == "Parent()"
+    ), "String representation of instance not working."
+    # Check that we can alter the detail about params that is printed
+    # using config_context with ``print_changed_only=False``
+    with config_context(print_changed_only=False, display="text"):
+        assert (
+            str(fixture_class_parent_instance) == "Parent(a='something', b=7, c=None)"
+        )
+
+    # Check that local config works as expected
+    fixture_class_parent_instance.set_config(print_changed_only=False)
+    assert str(fixture_class_parent_instance) == "Parent(a='something', b=7, c=None)"
 
 
 def test_baseobject_repr_mimebundle_(fixture_class_parent_instance: Parent):
