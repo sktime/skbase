@@ -110,11 +110,13 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
         "check_sequence_named_objects",
         "check_sequence",
         "check_type",
+        "is_named_object_tuple",
         "is_sequence",
         "is_sequence_named_objects",
     ),
     "skbase.validate._named_objects": (
         "check_sequence_named_objects",
+        "is_named_object_tuple",
         "is_sequence_named_objects",
     ),
     "skbase.utils": (
@@ -185,6 +187,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
         "skbase.utils._utils": ("subset_dict_keys",),
         "skbase.validate._named_objects": (
             "check_sequence_named_objects",
+            "is_named_object_tuple",
             "is_sequence_named_objects",
             "_named_baseobject_error_msg",
         ),

@@ -9,24 +9,14 @@
 # sktime:  https://github.com/sktime/sktime/blob/main/LICENSE
 """Implements functionality for meta objects composed of other objects."""
 from inspect import isclass
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-    overload,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Sequence, Tuple, Union, overload
 
 from skbase.base._base import BaseEstimator, BaseObject
 from skbase.utils._iter import _format_seq_to_str, make_strings_unique
+from skbase.validate import is_named_object_tuple
 
 __author__: List[str] = ["mloning", "fkiraly", "RNKuhns"]
 __all__: List[str] = ["BaseMetaEstimator", "BaseMetaObject"]
-_format_seq_to_str((BaseObject, BaseEstimator))
 
 
 class _MetaObjectMixin:
@@ -161,9 +151,9 @@ class _MetaObjectMixin:
         out = super().get_params(deep=deep)  # type: ignore
         if not deep:
             return out
-        objects = getattr(self, attr)
-        out.update(objects)
-        for name, obj in objects:
+        named_object = getattr(self, attr)
+        out.update(named_object)
+        for name, obj in named_object:
             if hasattr(obj, "get_params"):
                 for key, value in obj.get_params(deep=True).items():
                     out["%s__%s" % (name, key)] = value
@@ -296,32 +286,6 @@ class _MetaObjectMixin:
             _obj = _obj.clone()
         return (name, _obj)
 
-    @staticmethod
-    def _is_name_and_object(
-        obj: Any, cls_type: Optional[Union[type, Tuple[type, ...]]] = None
-    ) -> bool:
-        """Check whether obj is a tuple of type (str, cls_type).
-
-        Parameters
-        ----------
-        obj : Any
-            The object to be checked to see if it is a (str, cls_type) tuple.
-        cls_type : class or tuple of class, default=BaseEstimator
-            Class(es) that all objects are checked to be an instance of.
-
-        Returns
-        -------
-        bool
-            True if obj is (str, cls_type) tuple, False otherise
-        """
-        if cls_type is None:
-            cls_type = BaseEstimator
-        if not isinstance(obj, tuple) or len(obj) != 2:
-            return False
-        if not isinstance(obj[0], str) or not isinstance(obj[1], cls_type):
-            return False
-        return True
-
     def _check_objects(
         self,
         objs: Any,
@@ -397,7 +361,7 @@ class _MetaObjectMixin:
         def is_obj_is_tuple(obj):
             """Check whether obj is estimator of right type, or (str, est) tuple."""
             is_est = isinstance(obj, cls_type)
-            is_tuple = self._is_name_and_object(obj, cls_type)
+            is_tuple = is_named_object_tuple(obj, object_type=cls_type)
 
             return is_est, is_tuple
 
@@ -607,7 +571,7 @@ class _MetaObjectMixin:
         elif isinstance(other, base_class):
             other_names = [type(other).__name__]
             other_objs = [other]
-        elif self._is_name_and_object(other, cls_type=base_class):
+        elif is_named_object_tuple(other, object_type=base_class):
             other_names = [other[0]]
             other_objs = [other[1]]
         else:
@@ -648,11 +612,6 @@ class BaseMetaObject(_MetaObjectMixin, BaseObject):
         Expands on `BaseMetaObject` by adding functionality for getting fitted
         parameters from a class's component estimators. `BaseEstimator` should
         be used when you want to create a meta estimator.
-
-    Notes
-    -----
-    Partly adapted from sklearn utils.metaestimator.py and sktime's
-    _HeterogenousMetaEstimator.
     """
 
 
@@ -668,12 +627,7 @@ class BaseMetaEstimator(_MetaObjectMixin, BaseEstimator):
     See Also
     --------
     BaseMetaObject :
-        Provides similar functionality to  `BaseMetaEstimator` for getting fitted
+        Provides similar functionality to  `BaseMetaEstimator` for getting
         parameters from a class's component objects, but does not have the
-        fitted param interface.
-
-    Notes
-    -----
-    Partly adapted from sklearn utils.metaestimator.py and sktime's
-    _HeterogenousMetaEstimator.
+        estimator interface.
     """

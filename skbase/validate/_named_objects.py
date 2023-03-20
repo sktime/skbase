@@ -3,7 +3,17 @@
 """Validate if an input is one of the allowed named object formats."""
 import collections.abc
 import sys
-from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Tuple, Union, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+    overload,
+)
 
 if sys.version_info >= (3, 8):
     from typing import Literal
@@ -12,7 +22,11 @@ else:
 
 from skbase.base import BaseObject
 
-__all__: List[str] = ["check_sequence_named_objects", "is_sequence_named_objects"]
+__all__: List[str] = [
+    "check_sequence_named_objects",
+    "is_named_object_tuple",
+    "is_sequence_named_objects",
+]
 __author__: List[str] = ["RNKuhns"]
 
 
@@ -27,6 +41,72 @@ def _named_baseobject_error_msg(
         allowed_types += " or dict[str, BaseObject instance]"
     msg = f"Invalid {name_str!r}, {name_str!r} should be {allowed_types}."
     return msg
+
+
+def is_named_object_tuple(
+    obj: Any, object_type: Optional[Union[type, Tuple[type, ...]]] = None
+) -> bool:
+    """Indicate if input is a a tuple of format (str, `object_type`).
+
+    Used to validate that input follows named object tuple API format.
+
+    Parameters
+    ----------
+    obj : Any
+        The object to be checked to see if it is a (str, `object_type`) tuple.
+    object_type : class or tuple of class, default=BaseObject
+        Class(es) that all objects are checked to be an instance of. If None,
+        then :class:``skbase.base.BaseObject`` is used as default.
+
+    Returns
+    -------
+    bool
+        True if obj is (str, `object_type`) tuple, otherwise False.
+
+    See Also
+    --------
+    is_sequence_named_objects :
+        Indicate (True/False) if an input sequence follows the named object API.
+    check_sequence_named_objects :
+        Validate input to see if it follows sequence of named objects API. An error
+        is raised for input that does not conform to the API format.
+
+    Examples
+    --------
+    >>> from skbase.base import BaseObject, BaseEstimator
+    >>> from skbase.validate import is_named_object_tuple
+
+    Default checks for object to be an instance of BaseOBject
+
+    >>> is_named_object_tuple(("Step 1", BaseObject()))
+    True
+
+    >>> is_named_object_tuple(("Step 2", BaseEstimator()))
+    True
+
+    If a different `object_type` is provided then it is used in the isinstance check
+
+    >>> is_named_object_tuple(("Step 1", BaseObject()), object_type=BaseEstimator)
+    False
+
+    >>> is_named_object_tuple(("Step 1", BaseEstimator()), object_type=BaseEstimator)
+    True
+
+    If the input is does not follow named object tuple format then False is returned
+
+    >>> is_named_object_tuple({"Step 1": BaseEstimator()})
+    False
+
+    >>> is_named_object_tuple((1, BaseObject()))
+    False
+    """
+    if object_type is None:
+        object_type = BaseObject
+    if not isinstance(obj, tuple) or len(obj) != 2:
+        return False
+    if not isinstance(obj[0], str) or not isinstance(obj[1], object_type):
+        return False
+    return True
 
 
 def is_sequence_named_objects(
@@ -85,6 +165,15 @@ def is_sequence_named_objects(
         If `seq_to_check` is not a sequence or ``allow_dict is False`` and
         `seq_to_check` is a dictionary.
 
+    See Also
+    --------
+    is_named_object_tuple :
+        Indicate (True/False) if input follows the named object API format for
+        a single named object (e.g., tupe[str, expected class type]).
+    check_sequence_named_objects :
+        Validate input to see if it follows sequence of named objects API. An error
+        is raised for input that does not conform to the API format.
+
     Examples
     --------
     >>> from skbase.base import BaseObject, BaseEstimator
@@ -131,8 +220,7 @@ def is_sequence_named_objects(
     if (not is_dict and not isinstance(seq_to_check, collections.abc.Sequence)) or (
         not allow_dict and is_dict
     ):
-        is_expected_format = False
-        return is_expected_format
+        return False
 
     all_expected_format: bool
     all_unique_names: bool
@@ -148,11 +236,7 @@ def is_sequence_named_objects(
         names = []
         elements_expected_format = []
         for it in seq_to_check:
-            if (
-                isinstance(it, tuple)
-                and len(it) == 2
-                and (isinstance(it[0], str) and isinstance(it[1], object_type))
-            ):
+            if is_named_object_tuple(it, object_type=object_type):
                 elements_expected_format.append(True)
                 names.append(it[0])
             else:
@@ -263,6 +347,14 @@ def check_sequence_named_objects(
     ------
     ValueError
         If `seq_to_check` does not conform to the named BaseObject API.
+
+    See Also
+    --------
+    is_named_object_tuple :
+        Indicate (True/False) if input follows the named object API format for
+        a single named object (e.g., tupe[str, expected class type]).
+    is_sequence_named_objects :
+        Indicate (True/False) if an input sequence follows the named object API.
 
     Examples
     --------
