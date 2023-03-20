@@ -11,6 +11,8 @@
 from inspect import isclass
 from typing import TYPE_CHECKING, Any, Dict, List, Sequence, Tuple, Union, overload
 
+from sklearn.utils._estimator_html_repr import _VisualBlock
+
 from skbase.base._base import BaseEstimator, BaseObject
 from skbase.utils._iter import _format_seq_to_str, make_strings_unique
 from skbase.validate import is_named_object_tuple
@@ -123,7 +125,36 @@ class _MetaObjectMixin:
         named_object_attr = self.get_tag("named_object_parameters")  # type: ignore
         return self._set_params(named_object_attr, **kwargs)
 
-    def _get_params(self, attr: str, deep: bool = True) -> Dict[str, Any]:
+    def _get_fitted_params(self):
+        """Get fitted parameters.
+
+        Method implements logic to retrieve fitted parameters. It is called from
+        get_fitted_params.
+
+        Returns
+        -------
+        dict[str, Any]
+            Fitted parameters where keys represent the parameters name (with
+            trailing "_" removed) and the corresponding value is the value of
+            the parameter learned during fit.
+        """
+        fitted_params = self._get_fitted_params_default()
+
+        fitted_named_object_attr = self.get_tag(
+            "fitted_named_object_parameters"
+        )  # type: ignore
+
+        named_objects_fitted_params = self._get_params(
+            fitted_named_object_attr, fitted=True
+        )
+
+        fitted_params.update(named_objects_fitted_params)
+
+        return fitted_params
+
+    def _get_params(
+        self, attr: str, deep: bool = True, fitted: bool = False
+    ) -> Dict[str, Any]:
         """Logic for getting parameters on meta objects/estimators.
 
         Separates out logic for parameter getting on meta objects from public API point.
@@ -140,6 +171,14 @@ class _MetaObjectMixin:
             - If False, will return a dict of parameter name : value for this object,
               but not include parameters of components.
 
+        fitted : bool, default=False
+            Whether to retrieve the fitted params learned when `fit` is called on
+            ``estimator`` instead of the instances parameters.
+
+            - If False, then retrieve instance parameters like typical.
+            - If True, the retrieves the parameters learned during "fitting" and
+              stored in attributes ending in "_" (private attributes excluded).
+
         Returns
         -------
         dict[str, Any]
@@ -148,15 +187,30 @@ class _MetaObjectMixin:
             the named object API (either sequence of str, BaseObject tuples or
             dict[str, BaseObject]).
         """
-        out = super().get_params(deep=deep)  # type: ignore
-        if not deep:
-            return out
-        named_object = getattr(self, attr)
-        out.update(named_object)
-        for name, obj in named_object:
-            if hasattr(obj, "get_params"):
-                for key, value in obj.get_params(deep=True).items():
-                    out["%s__%s" % (name, key)] = value
+        # Set variables that let us use same code for retrieving params or fitted params
+        if fitted:
+            method = "_get_fitted_params"
+            deepkw = {}
+        else:
+            method = "get_params"
+            deepkw = {"deep": deep}
+
+        # Get the direct params/fitted params
+        out = getattr(super(), method)(**deepkw)
+
+        if deep and hasattr(self, attr):
+            named_objects = getattr(self, attr)
+            named_objects_ = [
+                (x[0], x[1])
+                for x in self._coerce_to_named_object_tuples(
+                    named_objects, make_unique=False
+                )
+            ]
+            out.update(named_objects_)
+            for name, obj in named_objects_:
+                if hasattr(obj, method):
+                    for key, value in getattr(obj, method)(**deepkw).items():
+                        out["%s__%s" % (name, key)] = value
         return out
 
     def _set_params(self, attr: str, **params):
@@ -255,6 +309,8 @@ class _MetaObjectMixin:
     ) -> Tuple[str, BaseObject]:
         """Coerce object or (str, BaseObject) tuple to (str, BaseObject) tuple.
 
+        Used to make sure input will work with expected named object tuple API format.
+
         Parameters
         ----------
         objs : BaseObject or (str, BaseObject) tuple
@@ -339,7 +395,8 @@ class _MetaObjectMixin:
         )
 
         if cls_type is None:
-            cls_type, _class_name = BaseObject, "BaseObject"
+            cls_type = BaseObject
+            _class_name = "BaseObject"
         elif isclass(cls_type):
             _class_name = cls_type.__name__  # type: ignore
         elif isinstance(cls_type, tuple) and all([isclass(c) for c in cls_type]):
@@ -395,7 +452,10 @@ class _MetaObjectMixin:
         ],
         make_unique: bool = False,
     ) -> Tuple[List[str], List[BaseObject]]:
-        """Coerce input to list of (name, BaseObject) tuples.
+        """Return lists of names and object from input that follows named object API.
+
+        Handles input that is dictionary mapping str names of object instances or
+        input that is a list of (str, object) tuples.
 
         Parameters
         ----------
@@ -595,6 +655,29 @@ class _MetaObjectMixin:
         # construct the composite with both step and additional params
         composite_params.update(step_param)
         return composite_class(**composite_params)
+
+    def _sk_visual_block_(self):
+        """Logic to help render meta estimator as visual HTML block."""
+        # Use tag interface that will be available when mixin is used
+        named_object_attr = self.get_tag("named_object_parameters")  # type: ignore
+        named_objects = getattr(self, named_object_attr)
+        _, objs = self._get_names_and_objects(named_objects)
+
+        def _get_name(name, obj):
+            if obj is None or obj == "passthrough":
+                return f"{name}: passthrough"
+            # Is an estimator
+            return f"{name}: {obj.__class__.__name__}"
+
+        names = [_get_name(name, est) for name, est in self.steps]
+        name_details = [str(obj) for obj in objs]
+        return _VisualBlock(
+            "serial",
+            objs,
+            names=names,
+            name_details=name_details,
+            dash_wrapped=False,
+        )
 
 
 class BaseMetaObject(_MetaObjectMixin, BaseObject):
