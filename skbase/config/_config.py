@@ -130,6 +130,7 @@ def get_config() -> Dict[str, Any]:
 
 
 def set_config(
+    *,
     print_changed_only: Optional[bool] = None,
     display: Literal["text", "diagram"] = None,
     local_threadsafe: bool = False,
@@ -244,6 +245,7 @@ def reset_config() -> None:
 
 @contextmanager
 def config_context(
+    *,
     print_changed_only: Optional[bool] = None,
     display: Literal["text", "diagram"] = None,
     local_threadsafe: bool = False,
