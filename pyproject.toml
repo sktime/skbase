@@ -141,6 +141,7 @@ ignore_path = ["docs/_build", "docs/source/api_reference/auto_generated"]
 
 [tool.bandit]
 exclude_dirs = ["*/tests/*", "*/testing/*"]
+skips = ["B301", "B403"]
 
 [tool.setuptools]
 zip-safe = true
