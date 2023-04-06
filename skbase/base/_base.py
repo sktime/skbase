@@ -682,6 +682,92 @@ class BaseObject(_FlagManager, _BaseEstimator):
 
         return comp_dict
 
+    def save(self, path=None):
+        """Save serialized self to bytes-like object or to (.zip) file.
+
+        Behaviour:
+        if `path` is None, returns an in-memory serialized self
+        if `path` is a file location, stores self at that location as a zip file
+
+        saved files are zip files with following contents:
+        _metadata - contains class of self, i.e., type(self)
+        _obj - serialized self. This class uses the default serialization (pickle).
+
+        Parameters
+        ----------
+        path : None or file location (str or Path)
+            if None, self is saved to an in-memory object
+            if file location, self is saved to that file location. If:
+                path="estimator" then a zip file `estimator.zip` will be made at cwd.
+                path="/home/stored/estimator" then a zip file `estimator.zip` will be
+                stored in `/home/stored/`.
+
+        Returns
+        -------
+        if `path` is None - in-memory serialized self
+        if `path` is file location - ZipFile with reference to the file
+        """
+        import pickle
+        import shutil
+        from pathlib import Path
+        from zipfile import ZipFile
+
+        if path is None:
+            return (type(self), pickle.dumps(self))
+        if not isinstance(path, (str, Path)):
+            raise TypeError(
+                "`path` is expected to either be a string or a Path object "
+                f"but found of type:{type(path)}."
+            )
+
+        path = Path(path) if isinstance(path, str) else path
+        path.mkdir()
+
+        mfile_ = open(path / "_metadata", "wb")
+        ofile_ = open(path / "_obj", "wb")
+        pickle.dump(type(self), mfile_)
+        pickle.dump(self, ofile_)
+        mfile_.close()
+        ofile_.close()
+
+        shutil.make_archive(base_name=path, format="zip", root_dir=path)
+        shutil.rmtree(path)
+        return ZipFile(path.with_name(f"{path.stem}.zip"))
+
+    @classmethod
+    def load_from_serial(cls, serial):
+        """Load object from serialized memory container.
+
+        Parameters
+        ----------
+        serial : 1st element of output of `cls.save(None)`
+
+        Returns
+        -------
+        deserialized self resulting in output `serial`, of `cls.save(None)`
+        """
+        import pickle
+
+        return pickle.loads(serial)
+
+    @classmethod
+    def load_from_path(cls, serial):
+        """Load object from file location.
+
+        Parameters
+        ----------
+        serial : result of ZipFile(path).open("object)
+
+        Returns
+        -------
+        deserialized self resulting in output at `path`, of `cls.save(path)`
+        """
+        import pickle
+        from zipfile import ZipFile
+
+        with ZipFile(serial, "r") as file:
+            return pickle.loads(file.open("_obj").read())
+
 
 class TagAliaserMixin:
     """Mixin class for tag aliasing and deprecation of old tags.
