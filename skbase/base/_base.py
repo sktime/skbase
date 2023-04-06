@@ -723,8 +723,12 @@ class BaseObject(_FlagManager, _BaseEstimator):
         path = Path(path) if isinstance(path, str) else path
         path.mkdir()
 
-        pickle.dump(type(self), open(path / "_metadata", "wb"))
-        pickle.dump(self, open(path / "_obj", "wb"))
+        mfile_ = open(path / "_metadata", "wb")
+        ofile_ = open(path / "_obj", "wb")
+        pickle.dump(type(self), mfile_)
+        pickle.dump(self, ofile_)
+        mfile_.close()
+        ofile_.close()
 
         shutil.make_archive(base_name=path, format="zip", root_dir=path)
         shutil.rmtree(path)

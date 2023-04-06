@@ -22,6 +22,7 @@ SKBASE_MODULES = (
     "skbase.base",
     "skbase.base._base",
     "skbase.base._meta",
+    "skbase.base._serialize",
     "skbase.base._tagmanager",
     "skbase.lookup",
     "skbase.lookup.tests",
@@ -90,6 +91,7 @@ SKBASE_CLASSES_BY_MODULE.update(
     }
 )
 SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
+    "skbase.base._serialize": ("load",),
     "skbase.lookup": ("all_objects", "get_package_metadata"),
     "skbase.lookup._lookup": ("all_objects", "get_package_metadata"),
     "skbase.testing.utils._conditional_fixtures": (
