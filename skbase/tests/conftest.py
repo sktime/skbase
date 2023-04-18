@@ -26,8 +26,6 @@ SKBASE_MODULES = (
     "skbase.base._pretty_printing._object_html_repr",
     "skbase.base._pretty_printing._pprint",
     "skbase.base._tagmanager",
-    "skbase.config",
-    "skbase.config._config",
     "skbase.lookup",
     "skbase.lookup.tests",
     "skbase.lookup.tests.test_lookup",
@@ -57,7 +55,6 @@ SKBASE_MODULES = (
 SKBASE_PUBLIC_MODULES = (
     "skbase",
     "skbase.base",
-    "skbase.config",
     "skbase.lookup",
     "skbase.lookup.tests",
     "skbase.lookup.tests.test_lookup",
@@ -82,8 +79,6 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
     "skbase.base._base": ("BaseEstimator", "BaseObject"),
     "skbase.base._meta": ("BaseMetaEstimator",),
     "skbase.base._pretty_printing._pprint": ("KeyValTuple", "KeyValTupleParam"),
-    "skbase.config": ("GlobalConfigParamSetting",),
-    "skbase.config._config": ("GlobalConfigParamSetting",),
     "skbase.lookup._lookup": ("ClassInfo", "FunctionInfo", "ModuleInfo"),
     "skbase.testing": ("BaseFixtureGenerator", "QuickTester", "TestAllObjects"),
     "skbase.testing.test_all_objects": (
@@ -105,20 +100,6 @@ SKBASE_CLASSES_BY_MODULE.update(
     }
 )
 SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
-    "skbase.config": (
-        "get_config",
-        "get_default_config",
-        "set_config",
-        "reset_config",
-        "config_context",
-    ),
-    "skbase.config._config": (
-        "get_config",
-        "get_default_config",
-        "set_config",
-        "reset_config",
-        "config_context",
-    ),
     "skbase.lookup": ("all_objects", "get_package_metadata"),
     "skbase.lookup._lookup": ("all_objects", "get_package_metadata"),
     "skbase.testing.utils._conditional_fixtures": (
@@ -160,14 +141,6 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_write_label_html",
         ),
         "skbase.base._pretty_printing._pprint": ("_changed_params", "_safe_repr"),
-        "skbase.config._config": (
-            "_get_threadlocal_config",
-            "get_config",
-            "get_default_config",
-            "set_config",
-            "reset_config",
-            "config_context",
-        ),
         "skbase.lookup._lookup": (
             "_determine_module_path",
             "_get_return_tags",
