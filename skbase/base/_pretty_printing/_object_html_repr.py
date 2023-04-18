@@ -11,8 +11,6 @@ from contextlib import closing, suppress
 from io import StringIO
 from string import Template
 
-from skbase.config import config_context  # type: ignore
-
 __author__ = ["RNKuhns"]
 
 
@@ -125,13 +123,7 @@ def _write_base_object_html(
     out, base_object, base_object_label, base_object_label_details, first_call=False
 ):
     """Write BaseObject to html in serial, parallel, or by itself (single)."""
-    if first_call:
-        est_block = _get_visual_block(base_object)
-    else:
-        # So it is easier to read, always use print_changed_only==True
-        # regardless of configuration
-        with config_context(print_changed_only=True):
-            est_block = _get_visual_block(base_object)
+    est_block = _get_visual_block(base_object)
 
     if est_block.kind in ("serial", "parallel"):
         dashed_wrapped = first_call or est_block.dash_wrapped
