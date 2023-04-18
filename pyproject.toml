@@ -3,9 +3,9 @@ name = "skbase"
 version = "0.3.0"
 description = "Base classes for sklearn-like parametric objects"
 authors = [
-    {name = "Franz Király", email = "f.kiraly@ucl.ac.uk"},
+    {name = "Franz Király"},
     {name = "Markus Löning"},
-    {name = "Ryan Kuhns", email = "rk.skbase@gmail.com"},
+    {name = "Ryan Kuhns"},
 ]
 maintainers = [
     {name = "Franz Kiraly", email = "f.kiraly@ucl.ac.uk"},
