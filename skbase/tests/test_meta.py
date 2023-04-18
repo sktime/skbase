@@ -14,7 +14,12 @@ import pytest
 
 from skbase._exceptions import NotFittedError
 from skbase.base import BaseEstimator, BaseObject
-from skbase.base._meta import BaseMetaEstimator, BaseMetaObject, _MetaObjectMixin
+from skbase.base._meta import (
+    BaseMetaEstimator,
+    BaseMetaObject,
+    _MetaObjectMixin,
+    _MetaTagLogicMixin,
+)
 
 
 class MetaObjectTester(BaseMetaObject):
@@ -76,6 +81,7 @@ def test_basemetaestimator_inheritance(fixture_metaestimator_instance):
     assert BaseMetaEstimator.__mro__[:-3] == (
         BaseMetaEstimator,
         _MetaObjectMixin,
+        _MetaTagLogicMixin,
         BaseEstimator,
         BaseObject,
     ), "`BaseMetaEstimator` has incorrect mro."
