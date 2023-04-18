@@ -448,39 +448,7 @@ class BaseObject(_FlagManager, _BaseEstimator):
             class attribute via nested inheritance and then any overrides
             and new tags from _onfig_dynamic object attribute.
         """
-        config = get_config().copy()
-
-        # Get any extension configuration interface defined in the class
-        # for example if downstream package wants to extend skbase to retrieve
-        # their own config
-        if hasattr(self, "__skbase_get_config__") and callable(
-            self.__skbase_get_config__
-        ):
-            skbase_get_config_extension_dict = self.__skbase_get_config__()
-        else:
-            skbase_get_config_extension_dict = {}
-        if isinstance(skbase_get_config_extension_dict, dict):
-            config.update(skbase_get_config_extension_dict)
-        else:
-            msg = "Use of `__skbase_get_config__` to extend the interface for local "
-            msg += "overrides of the global configuration must return a dictionary.\n"
-            msg += f"But a {type(skbase_get_config_extension_dict)} was found."
-            warnings.warn(msg, UserWarning, stacklevel=2)
-        local_config = self._get_flags(flag_attr_name="_config").copy()
-        # IF the local config is one of
-        for config_param, config_value in local_config.items():
-            if config_param in _CONFIG_REGISTRY:
-                msg = "Invalid value encountered for global configuration parameter "
-                msg += f"{config_param}. Using global parameter configuration value.\n"
-                config_value = _CONFIG_REGISTRY[
-                    config_param
-                ].get_valid_param_or_default(
-                    config_value, default_value=config[config_param]
-                )
-                local_config[config_param] = config_value
-        config.update(local_config)
-
-        return config
+        return self._get_flags(flag_attr_name="_config")
 
     def set_config(self, **config_dict):
         """Set config flags to given values.
