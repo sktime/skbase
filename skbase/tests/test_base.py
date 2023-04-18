@@ -79,7 +79,6 @@ import scipy.sparse as sp
 from sklearn.base import clone
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.config import config_context, get_config
 from skbase.tests.conftest import Child, Parent
 from skbase.tests.mock_package.test_mock_package import CompositionDummy
 
@@ -909,11 +908,6 @@ def test_baseobject_repr(
     base_obj = fixture_class_parent()
     assert repr(base_obj) == "Parent()"
 
-    # Check that we can alter the detail about params that is printed
-    # using config_context with ``print_changed_only=False``
-    with config_context(print_changed_only=False, display="text"):
-        assert repr(base_obj) == "Parent(a='something', b=7, c=None)"
-
     # Check that local config works as expected
     base_obj.set_config(print_changed_only=False)
     assert repr(base_obj) == "Parent(a='something', b=7, c=None)"
@@ -947,8 +941,6 @@ def test_baseobject_repr(
     named_objs = [(f"Step {i+1}", Child()) for i in range(25)]
     base_comp = CompositionDummy(foo=Parent(c=Child(c=named_objs)))
     assert len(repr(base_comp)) == 1362
-    with config_context(print_changed_only=False):
-        assert "..." in repr(base_comp)
 
 
 def test_baseobject_str(fixture_class_parent_instance: Parent):
@@ -956,12 +948,6 @@ def test_baseobject_str(fixture_class_parent_instance: Parent):
     assert (
         str(fixture_class_parent_instance) == "Parent()"
     ), "String representation of instance not working."
-    # Check that we can alter the detail about params that is printed
-    # using config_context with ``print_changed_only=False``
-    with config_context(print_changed_only=False, display="text"):
-        assert (
-            str(fixture_class_parent_instance) == "Parent(a='something', b=7, c=None)"
-        )
 
     # Check that local config works as expected
     fixture_class_parent_instance.set_config(print_changed_only=False)
@@ -971,27 +957,27 @@ def test_baseobject_str(fixture_class_parent_instance: Parent):
 def test_baseobject_repr_mimebundle_(fixture_class_parent_instance: Parent):
     """Test display configuration controls output."""
     # Checks the display configuration flag controls the json output
-    with config_context(display="diagram"):
-        output = fixture_class_parent_instance._repr_mimebundle_()
-        assert "text/plain" in output
-        assert "text/html" in output
+    fixture_class_parent_instance.set_config(display="diagram")
+    output = fixture_class_parent_instance._repr_mimebundle_()
+    assert "text/plain" in output
+    assert "text/html" in output
 
-    with config_context(display="text"):
-        output = fixture_class_parent_instance._repr_mimebundle_()
-        assert "text/plain" in output
-        assert "text/html" not in output
+    fixture_class_parent_instance.set_config(display="text")
+    output = fixture_class_parent_instance._repr_mimebundle_()
+    assert "text/plain" in output
+    assert "text/html" not in output
 
 
 def test_repr_html_wraps(fixture_class_parent_instance: Parent):
     """Test display configuration flag controls the html output."""
-    with config_context(display="diagram"):
-        output = fixture_class_parent_instance._repr_html_()
-        assert "<style>" in output
+    fixture_class_parent_instance.set_config(display="diagram")
+    output = fixture_class_parent_instance._repr_html_()
+    assert "<style>" in output
 
-    with config_context(display="text"):
-        msg = "_repr_html_ is only defined when"
-        with pytest.raises(AttributeError, match=msg):
-            fixture_class_parent_instance._repr_html_()
+    fixture_class_parent_instance.set_config(display="text")
+    msg = "_repr_html_ is only defined when"
+    with pytest.raises(AttributeError, match=msg):
+        fixture_class_parent_instance._repr_html_()
 
 
 # Test BaseObject's ability to generate test instances
@@ -1045,13 +1031,13 @@ def test_create_test_instances_and_names(fixture_class_parent_instance: Parent):
     )
 
     assert all(
-        [isinstance(est, fixture_class_parent_instance.__class__) for est in base_objs]
+        isinstance(est, fixture_class_parent_instance.__class__) for est in base_objs
     ), (
         "List elements of first return returned by create_test_instances_and_names "
         "all must be an instance of the class"
     )
 
-    assert all([isinstance(name, str) for name in names]), (
+    assert all(isinstance(name, str) for name in names), (
         "List elements of second return returned by create_test_instances_and_names"
         " all must be strings."
     )
@@ -1097,173 +1083,6 @@ class AnotherConfigTester(BaseObject):
         self.a = a
         self.b = b
         self.c = 84
-
-
-class ConfigExtensionInterfaceTester(BaseObject):
-    _config = {"print_changed_only": False, "bar": "a"}
-
-    clsvar = 210
-
-    def __init__(self, a, b=42):
-        self.a = a
-        self.b = b
-        self.c = 84
-
-    def __skbase_get_config__(self):
-        """Return get_config extension."""
-        return {"print_changed_only": True, "some_other_config": 70}
-
-
-def test_local_config_without_use_of_extension_interface():
-    """Test ``BaseObject().get_config`` and ``BaseObject().set_config``.
-
-    ``BaseObject.get_config()`` should return the global dict updated with any local
-    configs defined in ``BaseObject._config`` or set on the instance with
-    ``BaseObject().set_config()``.
-    """
-    # Initially test that We can retrieve the local config with local configs
-    # as defined in BaseObject._config
-
-    # Case 1: local configs are not part of global config param names
-    obj = ConfigTester(4242)
-    obj_config = obj.get_config()
-    current_global_config = get_config().copy()
-    expected_global_config = set(current_global_config.keys())
-    assert isinstance(obj_config, dict)
-    assert set(obj_config.keys()) == expected_global_config | {"foo_config", "bar"}
-    assert obj_config["foo_config"] == 42
-    assert obj_config["bar"] == "a"
-    for param_name in current_global_config:
-        assert obj_config[param_name] == current_global_config[param_name]
-
-    # Case 2: local configs overlap with (will override) global params
-    obj = AnotherConfigTester(4242)
-    obj_config = obj.get_config()
-    current_global_config = get_config().copy()
-    expected_global_config = set(current_global_config.keys())
-    assert isinstance(obj_config, dict)
-    assert set(obj_config.keys()) == expected_global_config | {"bar"}
-    assert obj_config["bar"] == "a"
-    # Should have overrided global config value which is set to True
-    assert obj_config["print_changed_only"] is False
-    for param_name in current_global_config:
-        if param_name != "print_changed_only":
-            assert obj_config[param_name] == current_global_config[param_name]
-
-    # Case 3: local configs are not part of global config param names and we also
-    # make use of dynamic BaseObject.set_config()
-    obj = ConfigTester(4242)
-    current_global_config = get_config().copy()
-    expected_global_config = set(current_global_config.keys())
-
-    # Verify set config returns the original object
-    setconfig_return = obj.set_config(foobar=126)
-    assert obj is setconfig_return
-
-    obj.set_config(**{"bar": "b"})
-    updated_obj_config = obj.get_config()
-    assert isinstance(updated_obj_config, dict)
-    assert set(updated_obj_config.keys()) == (
-        expected_global_config | {"foo_config", "bar", "foobar"}
-    )
-    assert updated_obj_config["foo_config"] == 42
-    assert updated_obj_config["bar"] == "b"
-    assert updated_obj_config["foobar"] == 126
-
-    # Case 4: local configs are not part of global config param names and we also
-    # make use of dynamic BaseObject.set_config() to update a config that is also
-    # part of global config
-    obj = ConfigTester(4242)
-    current_global_config = get_config().copy()
-    expected_global_config = set(current_global_config.keys())
-
-    # Verify set config returns the original object
-    setconfig_return = obj.set_config(print_changed_only=False)
-    assert obj is setconfig_return
-
-    updated_obj_config = obj.get_config()
-    assert isinstance(updated_obj_config, dict)
-    assert set(updated_obj_config.keys()) == (
-        expected_global_config | {"foo_config", "bar"}
-    )
-    assert updated_obj_config["foo_config"] == 42
-    assert updated_obj_config["bar"] == "a"
-    assert updated_obj_config["print_changed_only"] is False
-    for param_name in current_global_config:
-        if param_name != "print_changed_only":
-            assert updated_obj_config[param_name] == current_global_config[param_name]
-
-    # Case 5: local configs overlap with (will override) global params
-    # Then the local config defined in AnotherConfigTester._config is overrode again
-    # by calling AnotherConfigTester().set_config()
-    obj = AnotherConfigTester(4242)
-    obj.set_config(print_changed_only=True)
-    obj_config = obj.get_config()
-    current_global_config = get_config().copy()
-    expected_global_config = set(current_global_config.keys())
-    assert isinstance(obj_config, dict)
-    assert set(obj_config.keys()) == expected_global_config | {"bar"}
-    assert obj_config["bar"] == "a"
-    # Should have overrided global config value which is set to True
-    assert obj_config["print_changed_only"] is True
-    for param_name in current_global_config:
-        if param_name != "print_changed_only":
-            assert obj_config[param_name] == current_global_config[param_name]
-
-
-def test_local_config_with_use_of_extension_interface():
-    """Test BaseObject local config interface when ``__skbase_get_config__`` defined.
-
-    BaseObject.get_config() should return the global dict updated in the following
-    order:
-
-        - Any config returned by ``BaseObject.__skbase_get_config__``.
-        - Any configs defined in ``BaseObject._config`` or set on the instance with
-          ``BaseObject().set_config()``.
-    """
-    current_global_config = get_config().copy()
-    obj = ConfigExtensionInterfaceTester(4242)
-    obj_config = obj.get_config()
-    assert "some_other_config" in obj_config
-    assert obj_config["print_changed_only"] is False
-
-    expected_global_config = set(current_global_config.keys())
-    assert isinstance(obj_config, dict)
-    assert set(obj_config.keys()) == expected_global_config | {
-        "some_other_config",
-        "bar",
-    }
-    assert obj_config["bar"] == "a"
-    # Should have overrided global config value which is set to True
-
-    for param_name in current_global_config:
-        if param_name != "print_changed_only":
-            assert obj_config[param_name] == current_global_config[param_name]
-
-    # Now lets verify we can override the config items only returned by
-    # __skbase_get_config__ extension interface
-    obj.set_config(some_other_config=22)
-    obj_config_updated = obj.get_config()
-    assert obj_config_updated["some_other_config"] == 22
-    for param_name in obj_config:
-        if param_name != "some_other_config":
-            assert obj_config_updated[param_name] == obj_config[param_name]
-
-
-def local_config_interface_does_not_affect_global_config_interface():
-    """Test that calls to instance config interface doesn't impact global config."""
-    from skbase.config import get_default_config, global_config
-
-    obj = AnotherConfigTester(4242)
-    _global_config_before = global_config.copy()
-    _default_config_before = get_default_config()
-    global_config_before = get_config().copy()
-    obj.set_config(print_changed_only=False, some_other_param=7)
-    global_config_after = get_config().copy()
-    assert global_config_before == global_config_after
-    assert "some_other_param" not in global_config_after
-    assert _global_config_before == global_config
-    assert _default_config_before == get_default_config()
 
 
 class FittableCompositionDummy(BaseEstimator):
