@@ -399,7 +399,7 @@ class _MetaObjectMixin:
             _class_name = "BaseObject"
         elif isclass(cls_type):
             _class_name = cls_type.__name__  # type: ignore
-        elif isinstance(cls_type, tuple) and all([isclass(c) for c in cls_type]):
+        elif isinstance(cls_type, tuple) and all(isclass(c) for c in cls_type):
             _class_name = _format_seq_to_str(
                 [c.__name__ for c in cls_type], last_sep="or"
             )
@@ -425,10 +425,8 @@ class _MetaObjectMixin:
         # We've already guarded against objs being dict when allow_dict is False
         # So here we can just check dictionary elements
         if isinstance(objs, dict) and not all(
-            [
-                isinstance(name, str) and isinstance(obj, cls_type)
-                for name, obj in objs.items()
-            ]
+            isinstance(name, str) and isinstance(obj, cls_type)
+            for name, obj in objs.items()
         ):
             raise TypeError(msg)
 
