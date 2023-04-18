@@ -76,6 +76,11 @@ class BaseObject(_FlagManager, _BaseEstimator):
     Extends scikit-learn's BaseEstimator to include sktime style interface for tags.
     """
 
+    _config = {
+        "display": "diagram",
+        "print_changed_only": True,
+    }
+
     def __init__(self):
         """Construct BaseObject."""
         self._init_flags(flag_attr_name="_tags")
