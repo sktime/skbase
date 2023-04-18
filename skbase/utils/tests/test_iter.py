@@ -12,11 +12,12 @@ tests in this module incdlue:
   output.
 - test_scalar_to_seq_raises: verify that _scalar_to_seq raises error when an
   invalid value is provided for sequence_type parameter.
+- test_make_strings_unique_output: verify make_strings_unique output is expected.
 """
 import pytest
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.utils._iter import _format_seq_to_str, _scalar_to_seq
+from skbase.utils._iter import _format_seq_to_str, _scalar_to_seq, make_strings_unique
 
 __author__ = ["RNKuhns"]
 
@@ -66,19 +67,15 @@ def test_format_seq_to_str():
     # Verify that keywords don't affect output
     assert _format_seq_to_str(7, sep=";") == "7"
     assert _format_seq_to_str(7, last_sep="or") == "7"
+    # Verify with types
+    assert _format_seq_to_str(object) == "object"
+    assert _format_seq_to_str(int) == "int"
 
 
 def test_format_seq_to_str_raises():
     """Test _format_seq_to_str raises error when input is unexpected type."""
-    with pytest.raises(
-        TypeError, match="`seq` must be a sequence or scalar str, int, float or bool."
-    ):
+    with pytest.raises(TypeError, match="`seq` must be a sequence or scalar.*"):
         _format_seq_to_str((c for c in [1, 2, 3]))
-
-    with pytest.raises(
-        TypeError, match="`seq` must be a sequence or scalar str, int, float or bool."
-    ):
-        _format_seq_to_str(object)
 
 
 def test_scalar_to_seq_expected_output():
@@ -108,3 +105,23 @@ def test_scalar_to_seq_raises():
         match="`sequence_type` must be a subclass of collections.abc.Sequence.",
     ):
         _scalar_to_seq(7, sequence_type=dict)
+
+
+def test_make_strings_unique_output():
+    """Test make_strings_unique outputs expected unique strings."""
+    # case with already unique string list
+    some_strs = ["abc", "bcd"]
+    assert make_strings_unique(some_strs) == ["abc", "bcd"]
+    # Case where some strings repeated
+    some_strs = ["abc", "abc", "bcd"]
+    assert make_strings_unique(some_strs) == ["abc_1", "abc_2", "bcd"]
+    # Case when input is tuple
+    assert make_strings_unique(tuple(some_strs)) == ("abc_1", "abc_2", "bcd")
+
+    # Case where more than one level of making things unique is needed
+    some_strs = ["abc", "abc", "bcd", "abc_1"]
+    assert make_strings_unique(some_strs) == ["abc_1_1", "abc_2", "bcd", "abc_1_2"]
+
+    # Case when input is not flat
+    some_strs = ["abc_1", ("abc_2", "bcd")]
+    assert make_strings_unique(some_strs) == ["abc_1", ("abc_2", "bcd")]

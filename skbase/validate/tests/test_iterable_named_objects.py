@@ -4,6 +4,7 @@
 
 tests in this module include:
 
+- test_is_named_object_tuple_output
 - test_is_sequence_named_objects_output
 - test_check_sequence_named_objects_output
 """
@@ -12,7 +13,11 @@ __author__ = ["RNKuhns"]
 import pytest
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.validate import check_sequence_named_objects, is_sequence_named_objects
+from skbase.validate import (
+    check_sequence_named_objects,
+    is_named_object_tuple,
+    is_sequence_named_objects,
+)
 
 
 @pytest.fixture
@@ -25,6 +30,36 @@ def fixture_object_instance():
 def fixture_estimator_instance():
     """Pytest fixture of BaseEstimator instance."""
     return BaseEstimator()
+
+
+def test_is_named_object_tuple_output(
+    fixture_estimator_instance, fixture_object_instance
+):
+    """Test is_named_object_tuple returns expected value."""
+    # Default checks for object to be an instance of BaseOBject
+    assert is_named_object_tuple(("Step 1", fixture_object_instance)) is True
+    assert is_named_object_tuple(("Step 2", fixture_estimator_instance)) is True
+
+    # If a different `object_type` is provided then it is used in the isinstance check
+
+    assert (
+        is_named_object_tuple(
+            ("Step 1", fixture_object_instance), object_type=BaseEstimator
+        )
+        is False
+    )
+    assert (
+        is_named_object_tuple(
+            ("Step 1", fixture_estimator_instance), object_type=BaseEstimator
+        )
+        is True
+    )
+
+    # If the input is does not follow named object tuple format then False is returned
+    # This checks for named object tuples, so dictionary input is not allowed
+    assert is_named_object_tuple({"Step 1": fixture_estimator_instance}) is False
+    # First element of tuple must be string
+    assert is_named_object_tuple((1, fixture_object_instance)) is False
 
 
 def test_is_sequence_named_objects_output(

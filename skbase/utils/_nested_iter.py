@@ -68,7 +68,9 @@ def flatten(obj):
     >>> flatten([1, 2, [3, (4, 5)], 6])
     [1, 2, 3, 4, 5, 6]
     """
-    if not isinstance(obj, (collections.abc.Iterable, collections.abc.Sequence)):
+    if not isinstance(
+        obj, (collections.abc.Iterable, collections.abc.Sequence)
+    ) or isinstance(obj, str):
         return [obj]
     else:
         return type(obj)([y for x in obj for y in flatten(x)])
@@ -139,7 +141,9 @@ def unflat_len(obj):
     >>> unflat_len([1, (2, 3), 4, 5])
     5
     """
-    if not isinstance(obj, (collections.abc.Iterable, collections.abc.Sequence)):
+    if not isinstance(
+        obj, (collections.abc.Iterable, collections.abc.Sequence)
+    ) or isinstance(obj, str):
         return 1
     else:
         return sum([unflat_len(x) for x in obj])
@@ -169,6 +173,8 @@ def is_flat(obj):
     False
     """
     elements_flat = (
-        isinstance(x, (collections.abc.Iterable, collections.abc.Sequence)) for x in obj
+        isinstance(x, (collections.abc.Iterable, collections.abc.Sequence))
+        and not isinstance(x, str)
+        for x in obj
     )
     return not any(elements_flat)
