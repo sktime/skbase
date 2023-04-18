@@ -1,62 +1,233 @@
 #!/usr/bin/env python3 -u
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
-# BaseMetaEstimator re-uses code developed in scikit-learn and sktime. These elements
-# are copyrighted by the respective scikit-learn developers (BSD-3-Clause License)
-# and sktime (BSD-3-Clause) developers. For conditions see licensing.
-#  scikit-learn: https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
-# and sktime:  https://github.com/sktime/sktime/blob/main/LICENSE
-"""Implements meta estimator for estimators composed of other estimators."""
+# BaseMetaObject and BaseMetaEstimator re-use code developed in scikit-learn and sktime.
+# These elements are copyrighted by the respective
+# scikit-learn developers (BSD-3-Clause License) and sktime (BSD-3-Clause) developers.
+# For conditions see licensing:
+# scikit-learn: https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
+# sktime:  https://github.com/sktime/sktime/blob/main/LICENSE
+"""Implements functionality for meta objects composed of other objects."""
 from inspect import isclass
-from typing import List
+from typing import TYPE_CHECKING, Any, Dict, List, Sequence, Tuple, Union, overload
 
-from skbase.base._base import BaseEstimator
-from skbase.utils._nested_iter import flatten, is_flat, unflatten
+from sklearn.utils._estimator_html_repr import _VisualBlock
 
-__author__: List[str] = ["mloning", "fkiraly"]
-__all__: List[str] = ["BaseMetaEstimator"]
+from skbase.base._base import BaseEstimator, BaseObject
+from skbase.utils._iter import _format_seq_to_str, make_strings_unique
+from skbase.validate import is_named_object_tuple
+
+__author__: List[str] = ["mloning", "fkiraly", "RNKuhns"]
+__all__: List[str] = ["BaseMetaEstimator", "BaseMetaObject"]
 
 
-class BaseMetaEstimator(BaseEstimator):
-    """Handles parameter management for estimators composed of named estimators.
+class _MetaObjectMixin:
+    """Parameter and tag management for objects composed of named objects.
 
-    Partly adapted from sklearn utils.metaestimator.py.
+    Allows objects to get and set nested parameters when a parameter of the the
+    class has values that follow the named object specification. For example,
+    in a pipeline class with the the "step" parameter accepting named objects,
+    this would allow `get_params` and `set_params` to retrieve and update the
+    parameters of the objects in each step.
+
+    Notes
+    -----
+    Partly adapted from sklearn utils.metaestimator.py and sktime's
+    _HeterogenousMetaEstimator.
     """
 
-    def get_params(self, deep=True):
-        """Return estimator parameters."""
-        raise NotImplementedError("abstract method")
+    # for default get_params/set_params from _HeterogenousMetaEstimator
+    # _steps_attr points to the attribute of self
+    # which contains the heterogeneous set of estimators
+    # this must be an iterable of (name: str, estimator) pairs for the default
+    _tags = {"named_object_parameters": "steps"}
 
-    def set_params(self, **params):
-        """Set estimator parameters."""
-        raise NotImplementedError("abstract method")
-
-    def is_composite(self):
+    def is_composite(self) -> bool:
         """Check if the object is composite.
 
-        A composite object is an object which contains objects, as parameters.
-        Called on an instance, since this may differ by instance.
+        A composite object is an object which contains objects as parameter values.
 
         Returns
         -------
-        composite: bool, whether self contains a parameter which is BaseObject
+        bool
+            Whether self contains a parameter whose value is a BaseObject,
+            list of (str, BaseObject) tuples or dict[str, BaseObject].
         """
         # children of this class are always composite
         return True
 
-    def _get_params(self, attr, deep=True):
-        out = super().get_params(deep=deep)
-        if not deep:
-            return out
-        estimators = getattr(self, attr)
-        out.update(estimators)
-        for name, estimator in estimators:
-            if hasattr(estimator, "get_params"):
-                for key, value in estimator.get_params(deep=True).items():
-                    out["%s__%s" % (name, key)] = value
+    def get_params(self, deep: bool = True) -> Dict[str, Any]:
+        """Get a dict of parameters values for this object.
+
+        This expands on `get_params` of standard `BaseObject` by also retrieving
+        components parameters when ``deep=True`` a component's follows the named
+        object API (either sequence of str, BaseObject tuples or dict[str, BaseObject]).
+
+        Parameters
+        ----------
+        deep : bool, default=True
+            Whether to return parameters of components.
+
+            - If True, will return a dict of parameter name : value for this object,
+              including parameters of components.
+            - If False, will return a dict of parameter name : value for this object,
+              but not include parameters of components.
+
+        Returns
+        -------
+        dict[str, Any]
+            Dictionary of parameter name and value pairs. Includes direct parameters
+            and indirect parameters whose values implement `get_params` or follow
+            the named object API (either sequence of str, BaseObject tuples or
+            dict[str, BaseObject]).
+
+            - If ``deep=False`` the name-value pairs for this object's direct
+              parameters (you can see these via `get_param_names`) are returned.
+            - If ``deep=True`` then the parameter name-value pairs are returned
+              for direct and component (indirect) parameters.
+
+              - When a BaseObject's direct parameter value implements `get_params`
+                the component parameters are returned as
+                `[direct_param_name]__[component_param_name]` for 1st level components.
+                Arbitrary levels of component recursion are supported (if the
+                component has parameter's whose values are objects that implement
+                `get_params`). In this case, return parameters follow
+                `[direct_param_name]__[component_param_name]__[param_name]` format.
+              - When a BaseObject's direct parameter value is a sequence of
+                (name, BaseObject) tuples or dict[str, BaseObject] the parameters name
+                and value pairs of all component objects are returned. The
+                parameter naming follows ``scikit-learn`` convention of treating
+                named component objects like they are direct parameters; therefore,
+                the names are assigned as `[component_param_name]__[param_name]`.
+        """
+        # Use tag interface that will be available when mixin is used
+        named_object_attr = self.get_tag("named_object_parameters")  # type: ignore
+        return self._get_params(named_object_attr, deep=deep)
+
+    def set_params(self, **kwargs):
+        """Set the object's direct parameters and the parameters of components.
+
+        Valid parameter keys can be listed with ``get_params()``.
+
+        Like `BaseObject` implementation it allows values of indirect parameters
+        of a component to be set when a parameter's value is an object that
+        implements `set_params`. This also also expands the functionality to
+        allow parameter to allow the indirect parameters of components to be set
+        when a parameter's values follow the named object API (either sequence
+        of str, BaseObject tuples or dict[str, BaseObject]).
+
+        Returns
+        -------
+        Self
+            Instance of self.
+        """
+        # Use tag interface that will be available when mixin is used
+        named_object_attr = self.get_tag("named_object_parameters")  # type: ignore
+        return self._set_params(named_object_attr, **kwargs)
+
+    def _get_fitted_params(self):
+        """Get fitted parameters.
+
+        Method implements logic to retrieve fitted parameters. It is called from
+        get_fitted_params.
+
+        Returns
+        -------
+        dict[str, Any]
+            Fitted parameters where keys represent the parameters name (with
+            trailing "_" removed) and the corresponding value is the value of
+            the parameter learned during fit.
+        """
+        fitted_params = self._get_fitted_params_default()
+
+        fitted_named_object_attr = self.get_tag(
+            "fitted_named_object_parameters"
+        )  # type: ignore
+
+        named_objects_fitted_params = self._get_params(
+            fitted_named_object_attr, fitted=True
+        )
+
+        fitted_params.update(named_objects_fitted_params)
+
+        return fitted_params
+
+    def _get_params(
+        self, attr: str, deep: bool = True, fitted: bool = False
+    ) -> Dict[str, Any]:
+        """Logic for getting parameters on meta objects/estimators.
+
+        Separates out logic for parameter getting on meta objects from public API point.
+
+        Parameters
+        ----------
+        attr : str
+            Name of parameter whose values should contain named objects.
+        deep : bool, default=True
+            Whether to return parameters of components.
+
+            - If True, will return a dict of parameter name : value for this object,
+              including parameters of components.
+            - If False, will return a dict of parameter name : value for this object,
+              but not include parameters of components.
+
+        fitted : bool, default=False
+            Whether to retrieve the fitted params learned when `fit` is called on
+            ``estimator`` instead of the instances parameters.
+
+            - If False, then retrieve instance parameters like typical.
+            - If True, the retrieves the parameters learned during "fitting" and
+              stored in attributes ending in "_" (private attributes excluded).
+
+        Returns
+        -------
+        dict[str, Any]
+            Dictionary of parameter name and value pairs. Includes direct parameters
+            and indirect parameters whose values implement `get_params` or follow
+            the named object API (either sequence of str, BaseObject tuples or
+            dict[str, BaseObject]).
+        """
+        # Set variables that let us use same code for retrieving params or fitted params
+        if fitted:
+            method = "_get_fitted_params"
+            deepkw = {}
+        else:
+            method = "get_params"
+            deepkw = {"deep": deep}
+
+        # Get the direct params/fitted params
+        out = getattr(super(), method)(**deepkw)
+
+        if deep and hasattr(self, attr):
+            named_objects = getattr(self, attr)
+            named_objects_ = [
+                (x[0], x[1])
+                for x in self._coerce_to_named_object_tuples(
+                    named_objects, make_unique=False
+                )
+            ]
+            out.update(named_objects_)
+            for name, obj in named_objects_:
+                if hasattr(obj, method):
+                    for key, value in getattr(obj, method)(**deepkw).items():
+                        out["%s__%s" % (name, key)] = value
         return out
 
-    def _set_params(self, attr, **params):
+    def _set_params(self, attr: str, **params):
+        """Logic for setting parameters on meta objects/estimators.
+
+        Separates out logic for parameter setting on meta objects from public API point.
+
+        Parameters
+        ----------
+        attr : str
+            Name of parameter whose values should contain named objects.
+
+        Returns
+        -------
+        Self
+            Instance of self.
+        """
         # Ensure strict ordering of parameter setting:
         # 1. All steps
         if attr in params:
@@ -68,340 +239,378 @@ class BaseMetaEstimator(BaseEstimator):
             names, _ = zip(*items)
         for name in list(params.keys()):
             if "__" not in name and name in names:
-                self._replace_estimator(attr, name, params.pop(name))
+                self._replace_object(attr, name, params.pop(name))
         # 3. Step parameters and other initialisation arguments
-        super().set_params(**params)
+        super().set_params(**params)  # type: ignore
         return self
 
-    def _replace_estimator(self, attr, name, new_val):
-        # assumes `name` is a valid estimator name
-        new_estimators = list(getattr(self, attr))
-        for i, (estimator_name, _) in enumerate(new_estimators):
-            if estimator_name == name:
-                new_estimators[i] = (name, new_val)
+    def _replace_object(self, attr: str, name: str, new_val: Any) -> None:
+        """Replace an object in attribute that contains named objects."""
+        # assumes `name` is a valid object name
+        new_objects = list(getattr(self, attr))
+        for i, (object_name, _) in enumerate(new_objects):
+            if object_name == name:
+                new_objects[i] = (name, new_val)
                 break
-        setattr(self, attr, new_estimators)
+        setattr(self, attr, new_objects)
 
-    def _check_names(self, names):
+    @overload
+    def _check_names(self, names: List[str], make_unique: bool = True) -> List[str]:
+        ...  # pragma: no cover
+
+    @overload
+    def _check_names(
+        self, names: Tuple[str, ...], make_unique: bool = True
+    ) -> Tuple[str, ...]:
+        ...  # pragma: no cover
+
+    def _check_names(
+        self, names: Union[List[str], Tuple[str, ...]], make_unique: bool = True
+    ) -> Union[List[str], Tuple[str, ...]]:
+        """Validate that names of named objects follow API rules.
+
+        The names for named objects should:
+
+        - Be unique,
+        - Not be the name of one of the object's direct parameters,
+        - Not contain "__" (which is reserved to denote components in get/set params).
+
+        Parameters
+        ----------
+        names : list[str] | tuple[str]
+            The sequence of names from named objects.
+        make_unique : bool, default=True
+            Whether to coerce names to unique strings if they are not.
+
+        Returns
+        -------
+        list[str] | tuple[str]
+            A sequence of unique string names that follow named object API rules.
+        """
         if len(set(names)) != len(names):
             raise ValueError("Names provided are not unique: {0!r}".format(list(names)))
+        # Get names that match direct parameter
         invalid_names = set(names).intersection(self.get_params(deep=False))
+        invalid_names = invalid_names.union({name for name in names if "__" in name})
         if invalid_names:
             raise ValueError(
-                "Estimator names conflict with constructor "
-                "arguments: {0!r}".format(sorted(invalid_names))
+                "Object names conflict with constructor argument or "
+                "contain '__': {0!r}".format(sorted(invalid_names))
             )
-        invalid_names = [name for name in names if "__" in name]
-        if invalid_names:
-            raise ValueError(
-                "Estimator names must not contain __: got "
-                "{0!r}".format(invalid_names)
-            )
+        if make_unique:
+            names = make_strings_unique(names)
 
-    def _subset_dict_keys(self, dict_to_subset, keys):
-        """Subset dictionary d to keys in keys."""
-        keys_in_both = set(keys).intersection(dict_to_subset.keys())
-        subsetted_dict = {(k, dict_to_subset[k]) for k in keys_in_both}
-        return subsetted_dict
+        return names
 
-    @staticmethod
-    def _is_name_and_est(obj, cls_type=None):
-        """Check whether obj is a tuple of type (str, cls_type).
-
-        Parameters
-        ----------
-        cls_type : class or tuple of class, optional. Default = BaseEstimator.
-            class(es) that all estimators are checked to be an instance of
-
-        Returns
-        -------
-        bool : True if obj is (str, cls_type) tuple, False otherise
-        """
-        if cls_type is None:
-            cls_type = BaseEstimator
-        if not isinstance(obj, tuple) or len(obj) != 2:
-            return False
-        if not isinstance(obj[0], str) or not isinstance(obj[1], cls_type):
-            return False
-        return True
-
-    def _check_estimators(
+    def _coerce_object_tuple(
         self,
-        estimators,
-        attr_name="steps",
-        cls_type=None,
-        allow_mix=True,
-        clone_ests=True,
-    ):
-        """Check that estimators is a list of estimators or list of str/est tuples.
+        obj: Union[BaseObject, Tuple[str, BaseObject]],
+        clone: bool = False,
+    ) -> Tuple[str, BaseObject]:
+        """Coerce object or (str, BaseObject) tuple to (str, BaseObject) tuple.
+
+        Used to make sure input will work with expected named object tuple API format.
 
         Parameters
         ----------
-        estimators : any object
-            should be list of estimators or list of (str, estimator) tuples
-            estimators should inherit from cls_type class
-        attr_name : str, optional. Default = "steps"
-            Name of checked attribute in error messages
-        cls_type : class or tuple of class, optional. Default = BaseEstimator.
-            class(es) that all estimators are checked to be an instance of
-        allow_mix : boolean, optional. Default = True.
-            whether mix of estimator and (str, estimator) is allowed in `estimators`
-        clone_ests : boolean, optional. Default = True.
-            whether estimators in return are cloned (True) or references (False).
-
-        Returns
-        -------
-        est_tuples : list of (str, estimator) tuples
-            if estimators was a list of (str, estimator) tuples, then identical/cloned
-            if was a list of estimators, then str are generated via _get_estimator_names
-
-        Raises
-        ------
-        TypeError, if estimators is not a list of estimators or (str, estimator) tuples
-        TypeError, if estimators in the list are not instances of cls_type
-        """
-        msg = (
-            f"Invalid {attr_name!r} attribute, {attr_name!r} should be a list"
-            " of estimators, or a list of (string, estimator) tuples. "
-        )
-        if cls_type is None:
-            msg += f"All estimators in {attr_name!r} must be of type BaseEstimator."
-            cls_type = BaseEstimator
-        elif isclass(cls_type) or isinstance(cls_type, tuple):
-            msg += (
-                f"All estimators in {attr_name!r} must be of type "
-                f"{cls_type.__name__}."
-            )
-        else:
-            raise TypeError("cls_type must be a class or tuple of classes")
-
-        if (
-            estimators is None
-            or len(estimators) == 0
-            or not isinstance(estimators, list)
-        ):
-            raise TypeError(msg)
-
-        def is_est_is_tuple(obj):
-            """Check whether obj is estimator of right type, or (str, est) tuple."""
-            is_est = isinstance(obj, cls_type)
-            is_tuple = self._is_name_and_est(obj, cls_type)
-
-            return is_est, is_tuple
-
-        if not all(any(is_est_is_tuple(x)) for x in estimators):
-            raise TypeError(msg)
-
-        msg_no_mix = (
-            f"elements of {attr_name} must either all be estimators, "
-            f"or all (str, estimator) tuples, mix of the two is not allowed"
-        )
-
-        if not allow_mix and not all(is_est_is_tuple(x)[0] for x in estimators):
-            if not all(is_est_is_tuple(x)[1] for x in estimators):
-                raise TypeError(msg_no_mix)
-
-        return self._get_estimator_tuples(estimators, clone_ests=clone_ests)
-
-    def _coerce_estimator_tuple(self, obj, clone_est=False):
-        """Coerce estimator or (str, estimator) tuple to (str, estimator) tuple.
-
-        Parameters
-        ----------
-        obj : estimator or (str, estimator) tuple
-            assumes that this has been checked, no checks are performed
-        clone_est : boolean, optional. Default = False.
+        objs : BaseObject or (str, BaseObject) tuple
+            Assumes that this has been checked, no checks are performed.
+        clone : bool, default = False.
             Whether to return clone of estimator in obj (True) or a reference (False).
 
         Returns
         -------
-        est_tuple : (str, stimator tuple)
-            obj if obj was (str, estimator) tuple
-            (obj class name, obj) if obj was estimator
+        tuple[str, BaseObject]
+            Named object tuple.
+
+            - If `obj` was an object then returns (obj.__class__.__name__, obj).
+            - If `obj` was aleady a (name, object) tuple it is returned (a copy
+              is returned if ``clone=True``).
         """
-        if isinstance(obj, tuple):
-            est = obj[1]
+        if isinstance(obj, tuple) and len(obj) >= 2:
+            _obj = obj[1]
             name = obj[0]
-        else:
-            est = obj
-            name = type(obj).__name__
 
-        if clone_est:
-            return (name, est.clone())
         else:
-            return (name, est)
+            if isinstance(obj, tuple) and len(obj) == 1:
+                _obj = obj[0]
+            else:
+                _obj = obj
+            name = type(_obj).__name__
 
-    def _get_estimator_list(self, estimators):
-        """Return list of estimators, from a list or tuple.
+        if clone:
+            _obj = _obj.clone()
+        return (name, _obj)
+
+    def _check_objects(
+        self,
+        objs: Any,
+        attr_name: str = "steps",
+        cls_type: Union[type, Tuple[type, ...]] = None,
+        allow_dict: bool = False,
+        allow_mix: bool = True,
+        clone: bool = True,
+    ) -> List[Tuple[str, BaseObject]]:
+        """Check that objects is a list of objects or sequence of named objects.
 
         Parameters
         ----------
-        estimators : list of estimators, or list of (str, estimator tuples)
+        objs : Any
+            Should be list of objects, a list of (str, object) tuples or a
+            dict[str, objects]. Any objects should `cls_type` class.
+        attr_name : str, default="steps"
+            Name of checked attribute in error messages.
+        cls_type : class or tuple of classes, default=BaseEstimator.
+            class(es) that all objects are checked to be an instance of.
+        allow_mix : bool, default=True
+            Whether mix of objects and (str, objects) is allowed in `objs.`
+        clone : bool, default=True
+            Whether objects or named objects in `objs` are returned as clones
+            (True) or references (False).
 
         Returns
         -------
-        list of estimators - identical with estimators if list of estimators
-            if list of (str, estimator) tuples, the str get removed
-        """
-        return [self._coerce_estimator_tuple(x)[1] for x in estimators]
+        list[tuple[str, BaseObject]]
+            List of tuples following named object API.
 
-    def _get_estimator_names(self, estimators, make_unique=False):
-        """Return names for the estimators, optionally made unique.
+            - If `objs` was already a list of (str, object) tuples then either the
+              same named objects (as with other cases cloned versions are
+              returned if ``clone=True``).
+            - If `objs` was a dict[str, object] then the named objects are unpacked
+              into a list of (str, object) tuples.
+            - If `objs` was a list of objects then string names were generated based
+               on the object's class names (with coercion to unique strings if
+               necessary).
+
+        Raises
+        ------
+        TypeError
+            If `objs` is not a list of (str, object) tuples or a dict[str, objects].
+            Also raised if objects in `objs` are not instances of `cls_type`
+            or `cls_type is not None, a class or tuple of classes.
+        """
+        msg = (
+            f"Invalid {attr_name!r} attribute, {attr_name!r} should be a list "
+            "of objects, or a list of (string, object) tuples. "
+        )
+
+        if cls_type is None:
+            cls_type = BaseObject
+            _class_name = "BaseObject"
+        elif isclass(cls_type):
+            _class_name = cls_type.__name__  # type: ignore
+        elif isinstance(cls_type, tuple) and all([isclass(c) for c in cls_type]):
+            _class_name = _format_seq_to_str(
+                [c.__name__ for c in cls_type], last_sep="or"
+            )
+        else:
+            raise TypeError("`cls_type` must be a class or tuple of classes.")
+
+        msg += f"All objects in {attr_name!r} must be of type {_class_name}"
+
+        if (
+            objs is None
+            or len(objs) == 0
+            or not (isinstance(objs, list) or (allow_dict and isinstance(objs, dict)))
+        ):
+            raise TypeError(msg)
+
+        def is_obj_is_tuple(obj):
+            """Check whether obj is estimator of right type, or (str, est) tuple."""
+            is_est = isinstance(obj, cls_type)
+            is_tuple = is_named_object_tuple(obj, object_type=cls_type)
+
+            return is_est, is_tuple
+
+        # We've already guarded against objs being dict when allow_dict is False
+        # So here we can just check dictionary elements
+        if isinstance(objs, dict) and not all(
+            [
+                isinstance(name, str) and isinstance(obj, cls_type)
+                for name, obj in objs.items()
+            ]
+        ):
+            raise TypeError(msg)
+
+        elif not all(any(is_obj_is_tuple(x)) for x in objs):
+            raise TypeError(msg)
+
+        msg_no_mix = (
+            f"Elements of {attr_name} must either all be objects, "
+            f"or all (str, objects) tuples. A mix of the two is not allowed."
+        )
+        if not allow_mix and not all(is_obj_is_tuple(x)[0] for x in objs):
+            if not all(is_obj_is_tuple(x)[1] for x in objs):
+                raise TypeError(msg_no_mix)
+
+        return self._coerce_to_named_object_tuples(objs, clone=clone, make_unique=True)
+
+    def _get_names_and_objects(
+        self,
+        named_objects: Union[
+            Sequence[Union[BaseObject, Tuple[str, BaseObject]]], Dict[str, BaseObject]
+        ],
+        make_unique: bool = False,
+    ) -> Tuple[List[str], List[BaseObject]]:
+        """Return lists of names and object from input that follows named object API.
+
+        Handles input that is dictionary mapping str names of object instances or
+        input that is a list of (str, object) tuples.
 
         Parameters
         ----------
-        estimators : list of estimators, or list of (str, estimator tuples)
-        make_unique : bool, optional, default=False
-            whether names should be made unique in the return
+        named_objects : list[tuple[str, object], ...], list[object], dict[str, object]
+            The objects whose names should be returned.
+        make_unique : bool, default=False
+            Whether names should be made unique.
 
         Returns
         -------
-        names : list of str, unique entries, of equal length as estimators
-            names for estimators in estimators
-            if make_unique=True, made unique using _make_strings_unique
+        names : list[str]
+            Lists of the names and objects that were input.
+        objs : list[BaseObject]
+            The
         """
-        names = [self._coerce_estimator_tuple(x)[0] for x in estimators]
+        names: Tuple[str, ...]
+        objs: Tuple[BaseObject, ...]
+        if isinstance(named_objects, dict):
+            names, objs = zip(*named_objects.items())
+        else:
+            names, objs = zip(*[self._coerce_object_tuple(x) for x in named_objects])
+
+        # Optionally make names unique
         if make_unique:
-            names = self._make_strings_unique(names)
-        return names
+            names = make_strings_unique(names)
+        return list(names), list(objs)
 
-    def _get_estimator_tuples(self, estimators, clone_ests=False):
-        """Return list of estimator tuples, from a list or tuple.
+    def _coerce_to_named_object_tuples(
+        self,
+        objs: Union[
+            Sequence[Union[BaseObject, Tuple[str, BaseObject]]], Dict[str, BaseObject]
+        ],
+        clone: bool = False,
+        make_unique: bool = True,
+    ) -> List[Tuple[str, BaseObject]]:
+        """Coerce sequence of objects or named objects to list of (str, obj) tuples.
 
-        Parameters
-        ----------
-        estimators : list of estimators, or list of (str, estimator tuples)
-        clone_ests : bool, optional, default=False.
-            whether estimators of the return are cloned (True) or references (False)
-
-        Returns
-        -------
-        est_tuples : list of (str, estimator) tuples
-            if estimators was a list of (str, estimator) tuples, then identical/cloned
-            if was a list of estimators, then str are generated via _get_estimator_names
-        """
-        ests = self._get_estimator_list(estimators)
-        if clone_ests:
-            ests = [e.clone() for e in ests]
-        unique_names = self._get_estimator_names(estimators, make_unique=True)
-        est_tuples = list(zip(unique_names, ests))
-        return est_tuples
-
-    def _make_strings_unique(self, strlist):
-        """Make a list or tuple of strings unique by appending _int of occurrence.
+        Input that is sequence of objects, list of (str, obj) tuples or
+        dict[str, object] will be coerced to list of (str, obj) tuples on return.
 
         Parameters
         ----------
-        strlist : nested list/tuple structure with string elements
+        objs : list of objects, list of (str, object tuples) or dict[str, object]
+            The input should be coerced to list of (str, object) tuples. Should
+            be a sequence of objects, or follow named object API.
+        clone : bool, default=False.
+            Whether objects in the returned list of (str, object) tuples are
+            cloned (True) or references (False).
+        make_unique : bool, default=True
+            Whether the str names in the returned list of (str, object) tuples
+            should be coerced to unique str values (if str names in input
+            are already unique they will not be changed).
 
         Returns
         -------
-        uniquestr : nested list/tuple structure with string elements
-            has same bracketing as `strlist`
-            string elements, if not unique, are replaced by unique strings
-                if any duplicates, _integer of occurrence is appended to non-uniques
-                e.g., "abc", "abc", "bcd" becomes "abc_1", "abc_2", "bcd"
-                in case of clashes, process is repeated until it terminates
-                e.g., "abc", "abc", "abc_1" becomes "abc_0", "abc_1_0", "abc_1_1"
+        list[tuple[str, BaseObject]]
+            List of tuples following named object API.
+
+            - If `objs` was already a list of (str, object) tuples then either the
+              same named objects (as with other cases cloned versions are
+              returned if ``clone=True``).
+            - If `objs` was a dict[str, object] then the named objects are unpacked
+              into a list of (str, object) tuples.
+            - If `objs` was a list of objects then string names were generated based
+               on the object's class names (with coercion to unique strings if
+               necessary).
         """
-        # recursions to guarantee that strlist is flat list of strings
-        ##############################################################
-
-        # if strlist is not flat, flatten and apply, then unflatten
-        if not is_flat(strlist):
-            flat_strlist = flatten(strlist)
-            unique_flat_strlist = self._make_strings_unique(flat_strlist)
-            uniquestr = unflatten(unique_flat_strlist, strlist)
-            return uniquestr
-
-        # now we can assume that strlist is flat
-
-        # if strlist is a tuple, convert to list, apply this function, then convert back
-        if isinstance(strlist, tuple):
-            uniquestr = self._make_strings_unique(list(strlist))
-            uniquestr = tuple(strlist)
-            return uniquestr
-
-        # end of recursions
-        ###################
-        # now we can assume that strlist is a flat list
-
-        # if already unique, just return
-        if len(set(strlist)) == len(strlist):
-            return strlist
-
-        from collections import Counter
-
-        strcount = Counter(strlist)
-
-        # if any duplicates, we append _integer of occurrence to non-uniques
-        nowcount = Counter()
-        uniquestr = strlist
-        for i, x in enumerate(uniquestr):
-            if strcount[x] > 1:
-                nowcount.update([x])
-                uniquestr[i] = x + "_" + str(nowcount[x])
-
-        # repeat until all are unique
-        #   the algorithm recurses, but will always terminate
-        #   because potential clashes are lexicographically increasing
-        return self._make_strings_unique(uniquestr)
+        if isinstance(objs, dict):
+            named_objects = [(k, v) for k, v in objs.items()]
+        else:
+            # Otherwise get named object format
+            if TYPE_CHECKING:
+                assert not isinstance(objs, dict)  # nosec: B1010
+            named_objects = [
+                self._coerce_object_tuple(obj, clone=clone) for obj in objs
+            ]
+        if make_unique:
+            # Unpack names and objects while making names unique
+            names, objs = self._get_names_and_objects(
+                named_objects, make_unique=make_unique
+            )
+            # Repack the objects
+            named_objects = list(zip(names, objs))
+        return named_objects
 
     def _dunder_concat(
-        self, other, base_class, composite_class, attr_name="steps", concat_order="left"
+        self,
+        other,
+        base_class,
+        composite_class,
+        attr_name="steps",
+        concat_order="left",
+        composite_params=None,
     ):
-        """Concatenate pipelines for dunder parsing, helper function.
+        """Logic to concatenate pipelines for dunder parsing.
 
-        This is used in concrete heterogeneous meta-estimators that implement
+        This is useful in concrete heterogeneous meta-objects that implement
         dunders for easy concatenation of pipeline-like composites.
-        Examples: TransformerPipeline, MultiplexForecaster, FeatureUnion
 
         Parameters
         ----------
-        self : `skbase` estimator, instance of composite_class (when invoked)
-        other : `skbase` estimator, should inherit from composite_class \
-            or base_class otherwise, `NotImplemented` is returned
-        base_class : estimator base class assumed as base class for self, other,
+        other : BaseObject subclass
+            An object inheritting from `composite_class` or `base_class`, otherwise
+            `NotImplemented` is returned.
+        base_class : BaseObject subclass
+            Class assumed as base class for self and `other`. ,
             and estimator components of composite_class, in case of concatenation
-        composite_class : estimator class that has attr_name attribute in instances
-            attr_name attribute should contain list of base_class estimators,
-            list of (str, base_class) tuples, or a mixture thereof
-        attr_name : str, optional, default="steps"
-            name of the attribute that contains estimator or (str, estimator) list
-            concatenation is done for this attribute, see below
-        concat_order : str, one of "left" and "right", optional, default="left"
-            if "left", result attr_name will be like self.attr_name + other.attr_name
-            if "right", result attr_name will be like other.attr_name + self.attr_name
+        composite_class : BaseMetaObject or BaseMetaEstimator subclass
+            Class that has parameter `attr_name` stored in attribute of same name
+            that contains list of base_class objects, list of (str, base_class)
+            tuples, or a mixture thereof.
+        attr_name : str, default="steps"
+            Name of the attribute that contains base_class objects,
+            list of (str, base_class) tuples. Concatenation is done for this attribute.
+        concat_order : {"left", "right"}, default="left"
+            Specifies ordering for concatenation.
+
+            - If "left", resulting attr_name will be like
+              self.attr_name + other.attr_name.
+            - If "right", resulting attr_name will be like
+              other.attr_name + self.attr_name.
+
+        composite_params : dict, default=None
+            Parameters of the composite are always set accordingly
+            i.e., contains key-value pairs, and composite_class has key set to value.
 
         Returns
         -------
-        instance of composite_class, where attr_name is a concatenation of
-        self.attr_name and other.attr_name, if other was of composite_class
-        if other is of base_class, then composite_class(attr_name=other) is used
-        in place of other, for the concatenation
-        concat_order determines which list is first, see above
-        "concatenation" means: resulting instance's attr_name contains
-        list of (str, est), a direct result of concat self.attr_name and other.attr_name
-        if str are all the class names of est, list of est only is used instead
+        BaseMetaObject or BaseMetaEstimator
+            Instance of `composite_class`, where `attr_name` is set so that self and
+            other are "concatenated".
+
+            - If other is instance of `composite_class` then instance of
+              `composite_class`, where `attr_name` is a concatenation of
+              ``self.attr_name`` and ``other.attr_name``.
+            - If `other` is instance of `base_class`, then instance of `composite_class`
+              is returned where `attr_name` is set so that so that
+              composite_class(attr_name=other) is returned.
+            - If str are all the class names of est, list of est only is used instead
         """
-        # input checks
-        if not isinstance(concat_order, str):
-            raise TypeError(f"concat_order must be str, but found {type(concat_order)}")
+        # Validate input
         if concat_order not in ["left", "right"]:
             raise ValueError(
-                f'concat_order must be one of "left", "right", but found '
-                f"{concat_order!r}"
+                f"`concat_order` must be 'left' or 'right', but found {concat_order!r}."
             )
         if not isinstance(attr_name, str):
-            raise TypeError(f"attr_name must be str, but found {type(attr_name)}")
+            raise TypeError(f"`attr_name` must be str, but found {type(attr_name)}.")
         if not isclass(composite_class):
-            raise TypeError("composite_class must be a class")
+            raise TypeError("`composite_class` must be a class.")
         if not isclass(base_class):
-            raise TypeError("base_class must be a class")
+            raise TypeError("`base_class` must be a class.")
         if not issubclass(composite_class, base_class):
-            raise ValueError("composite_class must be a subclass of base_class")
+            raise ValueError("`composite_class` must be a subclass of base_class.")
         if not isinstance(self, composite_class):
-            raise TypeError("self must be an instance of composite_class")
+            raise TypeError("self must be an instance of `composite_class`.")
 
         def concat(x, y):
             if concat_order == "left":
@@ -410,182 +619,98 @@ class BaseMetaEstimator(BaseEstimator):
                 return y + x
 
         # get attr_name from self and other
-        # can be list of ests, list of (str, est) tuples, or list of miture
+        # can be list of ests, list of (str, est) tuples, or list of mixture of these
         self_attr = getattr(self, attr_name)
 
         # from that, obtain ests, and original names (may be non-unique)
         # we avoid _make_strings_unique call too early to avoid blow-up of string
-        ests_s = tuple(self._get_estimator_list(self_attr))
-        names_s = tuple(self._get_estimator_names(self_attr))
+        self_names, self_objs = self._get_names_and_objects(self_attr)
         if isinstance(other, composite_class):
             other_attr = getattr(other, attr_name)
-            ests_o = tuple(other._get_estimator_list(other_attr))
-            names_o = tuple(other._get_estimator_names(other_attr))
-            new_names = concat(names_s, names_o)
-            new_ests = concat(ests_s, ests_o)
+            other_names, other_objs = other._get_names_and_objects(other_attr)
         elif isinstance(other, base_class):
-            new_names = concat(names_s, (type(other).__name__,))
-            new_ests = concat(ests_s, (other,))
-        elif self._is_name_and_est(other, base_class):
-            other_name = other[0]
-            other_est = other[1]
-            new_names = concat(names_s, (other_name,))
-            new_ests = concat(ests_s, (other_est,))
+            other_names = [type(other).__name__]
+            other_objs = [other]
+        elif is_named_object_tuple(other, object_type=base_class):
+            other_names = [other[0]]
+            other_objs = [other[1]]
         else:
             return NotImplemented
 
+        new_names = concat(self_names, other_names)
+        new_objs = concat(self_objs, other_objs)
+        # create the "steps" param for the composite
         # if all the names are equal to class names, we eat them away
-        if all(type(x[1]).__name__ == x[0] for x in zip(new_names, new_ests)):
-            return composite_class(**{attr_name: list(new_ests)})
+        if all(type(x[1]).__name__ == x[0] for x in zip(new_names, new_objs)):
+            step_param = {attr_name: list(new_objs)}
         else:
-            return composite_class(**{attr_name: list(zip(new_names, new_ests))})
+            step_param = {attr_name: list(zip(new_names, new_objs))}
 
-    def _anytagis(self, tag_name, value, estimators):
-        """Return whether any estimator in list has tag `tag_name` of value `value`.
-
-        Parameters
-        ----------
-        tag_name : str, name of the tag to check
-        value : value of the tag to check for
-        estimators : list of (str, estimator) pairs to query for the tag/value
-
-        Return
-        ------
-        bool : True iff at least one estimator in the list has value in tag tag_name
-        """
-        tagis = [est.get_tag(tag_name, value) == value for _, est in estimators]
-        return any(tagis)
-
-    def _anytagis_then_set(self, tag_name, value, value_if_not, estimators):
-        """Set self's `tag_name` tag to `value` if any estimator on the list has it.
-
-        Writes to self:
-        sets the tag `tag_name` to `value` if `_anytagis(tag_name, value)` is True
-            otherwise sets the tag `tag_name` to `value_if_not`
-
-        Parameters
-        ----------
-        tag_name : str, name of the tag
-        value : value to check and to set tag to if one of the tag values is `value`
-        value_if_not : value to set in self if none of the tag values is `value`
-        estimators : list of (str, estimator) pairs to query for the tag/value
-        """
-        if self._anytagis(tag_name=tag_name, value=value, estimators=estimators):
-            self.set_tags(**{tag_name: value})
+        # retrieve other parameters, from composite_params attribute
+        if composite_params is None:
+            composite_params = {}
         else:
-            self.set_tags(**{tag_name: value_if_not})
+            composite_params = composite_params.copy()
 
-    def _anytag_notnone_val(self, tag_name, estimators):
-        """Return first non-'None' value of tag `tag_name` in estimator list.
+        # construct the composite with both step and additional params
+        composite_params.update(step_param)
+        return composite_class(**composite_params)
 
-        Parameters
-        ----------
-        tag_name : str, name of the tag
-        estimators : list of (str, estimator) pairs to query for the tag/value
+    def _sk_visual_block_(self):
+        """Logic to help render meta estimator as visual HTML block."""
+        # Use tag interface that will be available when mixin is used
+        named_object_attr = self.get_tag("named_object_parameters")  # type: ignore
+        named_objects = getattr(self, named_object_attr)
+        _, objs = self._get_names_and_objects(named_objects)
 
-        Return
-        ------
-        tag_val : first non-'None' value of tag `tag_name` in estimator list.
-        """
-        for _, est in estimators:
-            tag_val = est.get_tag(tag_name)
-            if tag_val != "None":
-                return tag_val
-        return tag_val
+        def _get_name(name, obj):
+            if obj is None or obj == "passthrough":
+                return f"{name}: passthrough"
+            # Is an estimator
+            return f"{name}: {obj.__class__.__name__}"
 
-    def _anytag_notnone_set(self, tag_name, estimators):
-        """Set self's `tag_name` tag to first non-'None' value in estimator list.
-
-        Writes to self:
-        tag with name tag_name, sets to _anytag_notnone_val(tag_name, estimators)
-
-        Parameters
-        ----------
-        tag_name : str, name of the tag
-        estimators : list of (str, estimator) pairs to query for the tag/value
-        """
-        tag_val = self._anytag_notnone_val(tag_name=tag_name, estimators=estimators)
-        if tag_val != "None":
-            self.set_tags(**{tag_name: tag_val})
-
-    def _tagchain_is_linked(
-        self,
-        left_tag_name,
-        mid_tag_name,
-        estimators,
-        left_tag_val=True,
-        mid_tag_val=True,
-    ):
-        """Check whether all tags left of the first mid_tag/val are left_tag/val.
-
-        Useful to check, for instance, whether all instances of estimators
-            left of the first missing value imputer can deal with missing values.
-
-        Parameters
-        ----------
-        left_tag_name : str, name of the left tag
-        mid_tag_name : str, name of the middle tag
-        estimators : list of (str, estimator) pairs to query for the tag/value
-        left_tag_val : value of the left tag, optional, default=True
-        mid_tag_val : value of the middle tag, optional, default=True
-
-        Returns
-        -------
-        chain_is_linked : bool,
-            True iff all "left" tag instances `left_tag_name` have value `left_tag_val`
-            a "left" tag instance is an instance in estimators which is earlier
-            than the first occurrence of `mid_tag_name` with value `mid_tag_val`
-        chain_is_complete : bool,
-            True iff chain_is_linked is True, and
-                there is an occurrence of `mid_tag_name` with value `mid_tag_val`
-        """
-        for _, est in estimators:
-            if est.get_tag(mid_tag_name) == mid_tag_val:
-                return True, True
-            if not est.get_tag(left_tag_name) == left_tag_val:
-                return False, False
-        return True, False
-
-    def _tagchain_is_linked_set(
-        self,
-        left_tag_name,
-        mid_tag_name,
-        estimators,
-        left_tag_val=True,
-        mid_tag_val=True,
-        left_tag_val_not=False,
-        mid_tag_val_not=False,
-    ):
-        """Check if _tagchain_is_linked, then set self left_tag_name and mid_tag_name.
-
-        Writes to self:
-        tag with name left_tag_name, sets to left_tag_val if _tag_chain_is_linked[0]
-            otherwise sets to left_tag_val_not
-        tag with name mid_tag_name, sets to mid_tag_val if _tag_chain_is_linked[1]
-            otherwise sets to mid_tag_val_not
-
-        Parameters
-        ----------
-        left_tag_name : str, name of the left tag
-        mid_tag_name : str, name of the middle tag
-        estimators : list of (str, estimator) pairs to query for the tag/value
-        left_tag_val : value of the left tag, optional, default=True
-        mid_tag_val : value of the middle tag, optional, default=True
-        left_tag_val_not : value to set if not linked, optional, default=False
-        mid_tag_val_not : value to set if not linked, optional, default=False
-        """
-        linked, complete = self._tagchain_is_linked(
-            left_tag_name=left_tag_name,
-            mid_tag_name=mid_tag_name,
-            estimators=estimators,
-            left_tag_val=left_tag_val,
-            mid_tag_val=mid_tag_val,
+        names = [_get_name(name, est) for name, est in self.steps]
+        name_details = [str(obj) for obj in objs]
+        return _VisualBlock(
+            "serial",
+            objs,
+            names=names,
+            name_details=name_details,
+            dash_wrapped=False,
         )
-        if linked:
-            self.set_tags(**{left_tag_name: left_tag_val})
-        else:
-            self.set_tags(**{left_tag_name: left_tag_val_not})
-        if complete:
-            self.set_tags(**{mid_tag_name: mid_tag_val})
-        else:
-            self.set_tags(**{mid_tag_name: mid_tag_val_not})
+
+
+class BaseMetaObject(_MetaObjectMixin, BaseObject):
+    """Parameter and tag management for objects composed of named objects.
+
+    Allows objects to get and set nested parameters when a parameter of the the
+    class has values that follow the named object specification. For example,
+    in a pipeline class with the the "step" parameter accepting named objects,
+    this would allow `get_params` and `set_params` to retrieve and update the
+    parameters of the objects in each step.
+
+    See Also
+    --------
+    BaseMetaEstimator :
+        Expands on `BaseMetaObject` by adding functionality for getting fitted
+        parameters from a class's component estimators. `BaseEstimator` should
+        be used when you want to create a meta estimator.
+    """
+
+
+class BaseMetaEstimator(_MetaObjectMixin, BaseEstimator):
+    """Parameter and tag management for estimators composed of named objects.
+
+    Allows estimators to get and set nested parameters when a parameter of the the
+    class has values that follow the named object specification. For example,
+    in a pipeline class with the the "step" parameter accepting named objects,
+    this would allow `get_params` and `set_params` to retrieve and update the
+    parameters of the objects in each step.
+
+    See Also
+    --------
+    BaseMetaObject :
+        Provides similar functionality to  `BaseMetaEstimator` for getting
+        parameters from a class's component objects, but does not have the
+        estimator interface.
+    """

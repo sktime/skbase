@@ -44,6 +44,7 @@ SKBASE_MODULES = (
     "skbase.utils",
     "skbase.utils._iter",
     "skbase.utils._nested_iter",
+    "skbase.utils._utils",
     "skbase.validate",
     "skbase.validate._named_objects",
     "skbase.validate._types",
@@ -71,9 +72,14 @@ SKBASE_PUBLIC_MODULES = (
 )
 SKBASE_PUBLIC_CLASSES_BY_MODULE = {
     "skbase._exceptions": ("FixtureGenerationError", "NotFittedError"),
-    "skbase.base": ("BaseEstimator", "BaseMetaEstimator", "BaseObject"),
+    "skbase.base": (
+        "BaseEstimator",
+        "BaseMetaEstimator",
+        "BaseMetaObject",
+        "BaseObject",
+    ),
     "skbase.base._base": ("BaseEstimator", "BaseObject"),
-    "skbase.base._meta": ("BaseMetaEstimator",),
+    "skbase.base._meta": ("BaseMetaObject", "BaseMetaEstimator"),
     "skbase.lookup._lookup": ("ClassInfo", "FunctionInfo", "ModuleInfo"),
     "skbase.testing": ("BaseFixtureGenerator", "QuickTester", "TestAllObjects"),
     "skbase.testing.test_all_objects": (
@@ -85,7 +91,11 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
 SKBASE_CLASSES_BY_MODULE = SKBASE_PUBLIC_CLASSES_BY_MODULE.copy()
 SKBASE_CLASSES_BY_MODULE.update(
     {
-        "skbase.base._meta": ("BaseMetaEstimator",),
+        "skbase.base._meta": (
+            "BaseMetaObject",
+            "BaseMetaEstimator",
+            "_MetaObjectMixin",
+        ),
         "skbase.base._tagmanager": ("_FlagManager",),
     }
 )
@@ -100,25 +110,31 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
         "check_sequence_named_objects",
         "check_sequence",
         "check_type",
+        "is_named_object_tuple",
         "is_sequence",
         "is_sequence_named_objects",
     ),
     "skbase.validate._named_objects": (
         "check_sequence_named_objects",
+        "is_named_object_tuple",
         "is_sequence_named_objects",
     ),
     "skbase.utils": (
         "flatten",
         "is_flat",
+        "make_strings_unique",
+        "subset_dict_keys",
         "unflat_len",
         "unflatten",
     ),
+    "skbase.utils._iter": ("make_strings_unique",),
     "skbase.utils._nested_iter": (
         "flatten",
         "is_flat",
         "unflat_len",
         "unflatten",
     ),
+    "skbase.utils._utils": ("subset_dict_keys",),
     "skbase.validate._types": ("check_sequence", "check_type", "is_sequence"),
 }
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
@@ -159,6 +175,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_format_seq_to_str",
             "_remove_type_text",
             "_scalar_to_seq",
+            "make_strings_unique",
         ),
         "skbase.utils._nested_iter": (
             "flatten",
@@ -167,8 +184,10 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "unflat_len",
             "unflatten",
         ),
+        "skbase.utils._utils": ("subset_dict_keys",),
         "skbase.validate._named_objects": (
             "check_sequence_named_objects",
+            "is_named_object_tuple",
             "is_sequence_named_objects",
             "_named_baseobject_error_msg",
         ),
@@ -177,9 +196,6 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "check_type",
             "is_sequence",
             "_convert_scalar_seq_type_input_to_tuple",
-            # "_check_iterable_of_class_or_error",
-            # "_check_list_of_str",
-            # "_check_list_of_str_or_error",
         ),
     }
 )

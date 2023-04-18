@@ -2,17 +2,19 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Functionality for working with sequences."""
+import collections
 import re
 from collections.abc import Sequence
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional, Tuple, Union, overload
 
-from skbase.utils._nested_iter import _remove_single
+from skbase.utils._nested_iter import _remove_single, flatten, is_flat, unflatten
 
 __author__: List[str] = ["RNKuhns"]
 __all__: List[str] = [
     "_scalar_to_seq",
     "_remove_type_text",
     "_format_seq_to_str",
+    "make_strings_unique",
 ]
 
 
@@ -86,7 +88,7 @@ def _format_seq_to_str(
     seq: Union[str, Sequence],
     sep: str = ", ",
     last_sep: Optional[str] = None,
-    remove_type_text: bool = False,
+    remove_type_text: bool = True,
 ) -> str:
     """Format a sequence to a string of delimitted elements.
 
@@ -107,7 +109,7 @@ def _format_seq_to_str(
         - If last_sep is a str, then it is used prior to last element. So
           (7, 9, 11) would be "7", "9" and "11" if ``last_sep="and"``.
 
-    remove_type_text : bool, default=False
+    remove_type_text : bool, default=True
         Whether to remove the <class > text wrapping the class type name, when
         formatting types.
 
@@ -124,20 +126,25 @@ def _format_seq_to_str(
 
     Examples
     --------
+    >>> from skbase.base import BaseEstimator, BaseObject
     >>> from skbase.utils._iter import _format_seq_to_str
     >>> seq = [1, 2, 3, 4]
     >>> _format_seq_to_str(seq)
     '1, 2, 3, 4'
     >>> _format_seq_to_str(seq, last_sep="and")
     '1, 2, 3 and 4'
+    >>> _format_seq_to_str((BaseObject, BaseEstimator))
+    'skbase.base._base.BaseObject, skbase.base._base.BaseEstimator'
     """
     if isinstance(seq, str):
         return seq
     # Allow casting of scalars to strings
-    elif isinstance(seq, (int, float, bool)):
-        return str(seq)
+    elif isinstance(seq, (int, float, bool, type)):
+        return _remove_type_text(seq)
     elif not isinstance(seq, Sequence):
-        raise TypeError("`seq` must be a sequence or scalar str, int, float or bool.")
+        raise TypeError(
+            "`seq` must be a sequence or scalar str, int, float, bool or class."
+        )
 
     seq_str = [str(e) for e in seq]
     if remove_type_text:
@@ -153,3 +160,79 @@ def _format_seq_to_str(
             output_str = output_str + f" {last_sep} " + seq_str[-1]
 
     return output_str
+
+
+@overload
+def make_strings_unique(str_list: Tuple[str, ...]) -> Tuple[str, ...]:
+    ...  # pragma: no cover
+
+
+@overload
+def make_strings_unique(str_list: List[str]) -> List[str]:
+    ...  # pragma: no cover
+
+
+def make_strings_unique(
+    str_list: Union[List[str], Tuple[str, ...]]
+) -> Union[List[str], Tuple[str, ...]]:
+    """Make a list or tuple of strings unique by appending number of occurrence.
+
+    Supports making string elements unique for nested list/tuple input.
+
+    Parameters
+    ----------
+    str_list : nested list/tuple structure with string elements
+        The list or tuple with string elements that should be made unique.
+
+    Returns
+    -------
+    list[str] | tuple[str]
+        The input strings coerced to have unique names.
+
+        - If no duplicates then the output list/tuple is same as input.
+        - Otherwise, the integer number of occurrence is appended onto duplicate
+          strings. If this results in duplicates (b/c another string in input had
+          the name of a string and integer of occurrence) this is repeated until
+          no duplicates exist.
+
+    Examples
+    --------
+    >>> from skbase.utils import make_strings_unique
+    >>> some_strs = ["abc", "abc", "bcd"]
+    >>> make_strings_unique(some_strs)
+    ['abc_1', 'abc_2', 'bcd']
+    >>> some_strs = ["abc", "abc", "bcd", "abc_1"]
+    >>> make_strings_unique(some_strs)
+    ['abc_1_1', 'abc_2', 'bcd', 'abc_1_2']
+    """
+    # if strlist is not flat, flatten and apply method, then unflatten
+    if not is_flat(str_list):
+        flat_str_list = flatten(str_list)
+        unique_flat_str_list = make_strings_unique(flat_str_list)
+        unique_strs = unflatten(unique_flat_str_list, str_list)
+        return unique_strs
+
+    # if strlist is a tuple, convert to list, apply this function, then convert back
+    if isinstance(str_list, tuple):
+        unique_strs = make_strings_unique(list(str_list))
+        unique_strs = tuple(unique_strs)
+        return unique_strs
+
+    # now we can assume that strlist is a flat list
+    # if already unique, just return
+    if len(set(str_list)) == len(str_list):
+        return str_list
+
+    str_count = collections.Counter(str_list)
+    # if any duplicates, we append _integer of occurrence to non-uniques
+    now_count: collections.Counter = collections.Counter()
+    unique_strs = str_list
+    for i, x in enumerate(unique_strs):
+        if str_count[x] > 1:
+            now_count.update([x])
+            unique_strs[i] = x + "_" + str(now_count[x])
+
+    # repeat until all are unique
+    #   the algorithm recurses, but will always terminate
+    #   because potential clashes are lexicographically increasing
+    return make_strings_unique(unique_strs)
