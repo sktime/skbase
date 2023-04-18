@@ -95,6 +95,7 @@ SKBASE_CLASSES_BY_MODULE.update(
             "BaseMetaObject",
             "BaseMetaEstimator",
             "_MetaObjectMixin",
+            "_MetaTagLogicMixin",
         ),
         "skbase.base._tagmanager": ("_FlagManager",),
     }
