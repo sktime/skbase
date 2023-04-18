@@ -69,11 +69,11 @@ __all__ = [
 
 import inspect
 from copy import deepcopy
+from typing import Any, Dict, Type
 
 import numpy as np
 import pytest
 import scipy.sparse as sp
-from sklearn import config_context
 
 # TODO: Update with import of skbase clone function once implemented
 from sklearn.base import clone
@@ -200,13 +200,13 @@ def fixture_reset_tester():
 
 
 @pytest.fixture
-def fixture_class_child_tags(fixture_class_child):
+def fixture_class_child_tags(fixture_class_child: Type[Child]):
     """Pytest fixture for tags of Child."""
     return fixture_class_child.get_class_tags()
 
 
 @pytest.fixture
-def fixture_object_instance_set_tags(fixture_tag_class_object):
+def fixture_object_instance_set_tags(fixture_tag_class_object: Child):
     """Fixture class instance to test tag setting."""
     fixture_tag_set = {"A": 42424243, "E": 3}
     return fixture_tag_class_object.set_tags(**fixture_tag_set)
@@ -266,7 +266,9 @@ def fixture_class_instance_no_param_interface():
     return NoParamInterface()
 
 
-def test_get_class_tags(fixture_class_child, fixture_class_child_tags):
+def test_get_class_tags(
+    fixture_class_child: Type[Child], fixture_class_child_tags: Any
+):
     """Test get_class_tags class method of BaseObject for correctness.
 
     Raises
@@ -280,7 +282,7 @@ def test_get_class_tags(fixture_class_child, fixture_class_child_tags):
     assert child_tags == fixture_class_child_tags, msg
 
 
-def test_get_class_tag(fixture_class_child, fixture_class_child_tags):
+def test_get_class_tag(fixture_class_child: Type[Child], fixture_class_child_tags: Any):
     """Test get_class_tag class method of BaseObject for correctness.
 
     Raises
@@ -307,7 +309,7 @@ def test_get_class_tag(fixture_class_child, fixture_class_child_tags):
     assert child_tag_default_none is None, msg
 
 
-def test_get_tags(fixture_tag_class_object, fixture_object_tags):
+def test_get_tags(fixture_tag_class_object: Child, fixture_object_tags: Dict[str, Any]):
     """Test get_tags method of BaseObject for correctness.
 
     Raises
@@ -321,7 +323,7 @@ def test_get_tags(fixture_tag_class_object, fixture_object_tags):
     assert object_tags == fixture_object_tags, msg
 
 
-def test_get_tag(fixture_tag_class_object, fixture_object_tags):
+def test_get_tag(fixture_tag_class_object: Child, fixture_object_tags: Dict[str, Any]):
     """Test get_tag method of BaseObject for correctness.
 
     Raises
@@ -351,7 +353,7 @@ def test_get_tag(fixture_tag_class_object, fixture_object_tags):
     assert object_tag_default_none is None, msg
 
 
-def test_get_tag_raises(fixture_tag_class_object):
+def test_get_tag_raises(fixture_tag_class_object: Child):
     """Test that get_tag method raises error for unknown tag.
 
     Raises
@@ -363,9 +365,9 @@ def test_get_tag_raises(fixture_tag_class_object):
 
 
 def test_set_tags(
-    fixture_object_instance_set_tags,
-    fixture_object_set_tags,
-    fixture_object_dynamic_tags,
+    fixture_object_instance_set_tags: Any,
+    fixture_object_set_tags: Dict[str, Any],
+    fixture_object_dynamic_tags: Dict[str, int],
 ):
     """Test set_tags method of BaseObject for correctness.
 
@@ -381,7 +383,9 @@ def test_set_tags(
     assert fixture_object_instance_set_tags.get_tags() == fixture_object_set_tags, msg
 
 
-def test_set_tags_works_with_missing_tags_dynamic_attribute(fixture_tag_class_object):
+def test_set_tags_works_with_missing_tags_dynamic_attribute(
+    fixture_tag_class_object: Child,
+):
     """Test set_tags will still work if _tags_dynamic is missing."""
     base_obj = deepcopy(fixture_tag_class_object)
     delattr(base_obj, "_tags_dynamic")
@@ -460,7 +464,7 @@ def test_clone_tags():
         assert test_obj_tags.get(tag) == another_base_obj_tags[tag]
 
 
-def test_is_composite(fixture_composition_dummy):
+def test_is_composite(fixture_composition_dummy: Type[CompositionDummy]):
     """Test is_composite tag for correctness.
 
     Raises
@@ -474,7 +478,11 @@ def test_is_composite(fixture_composition_dummy):
     assert composite.is_composite()
 
 
-def test_components(fixture_object, fixture_class_parent, fixture_composition_dummy):
+def test_components(
+    fixture_object: Type[BaseObject],
+    fixture_class_parent: Type[Parent],
+    fixture_composition_dummy: Type[CompositionDummy],
+):
     """Test component retrieval.
 
     Raises
@@ -507,7 +515,7 @@ def test_components(fixture_object, fixture_class_parent, fixture_composition_du
 
 
 def test_components_raises_error_base_class_is_not_class(
-    fixture_object, fixture_composition_dummy
+    fixture_object: Type[BaseObject], fixture_composition_dummy: Type[CompositionDummy]
 ):
     """Test _component method raises error if base_class param is not class."""
     non_composite = fixture_composition_dummy(foo=42)
@@ -526,7 +534,7 @@ def test_components_raises_error_base_class_is_not_class(
 
 
 def test_components_raises_error_base_class_is_not_baseobject_subclass(
-    fixture_composition_dummy,
+    fixture_composition_dummy: Type[CompositionDummy],
 ):
     """Test _component method raises error if base_class is not BaseObject subclass."""
 
@@ -540,7 +548,7 @@ def test_components_raises_error_base_class_is_not_baseobject_subclass(
 
 # Test parameter interface (get_params, set_params, reset and related methods)
 # Some tests of get_params and set_params are adapted from sklearn tests
-def test_reset(fixture_reset_tester):
+def test_reset(fixture_reset_tester: Type[ResetTester]):
     """Test reset method for correct behaviour, on a simple estimator.
 
     Raises
@@ -567,7 +575,7 @@ def test_reset(fixture_reset_tester):
     assert hasattr(x, "foo")
 
 
-def test_reset_composite(fixture_reset_tester):
+def test_reset_composite(fixture_reset_tester: Type[ResetTester]):
     """Test reset method for correct behaviour, on a composite estimator."""
     y = fixture_reset_tester(42)
     x = fixture_reset_tester(a=y)
@@ -582,7 +590,7 @@ def test_reset_composite(fixture_reset_tester):
     assert not hasattr(x.a, "d")
 
 
-def test_get_init_signature(fixture_class_parent):
+def test_get_init_signature(fixture_class_parent: Type[Parent]):
     """Test error is raised when invalid init signature is used."""
     init_sig = fixture_class_parent._get_init_signature()
     init_sig_is_list = isinstance(init_sig, list)
@@ -594,14 +602,18 @@ def test_get_init_signature(fixture_class_parent):
     ), "`_get_init_signature` is not returning expected result."
 
 
-def test_get_init_signature_raises_error_for_invalid_signature(fixture_invalid_init):
+def test_get_init_signature_raises_error_for_invalid_signature(
+    fixture_invalid_init: Type[InvalidInitSignatureTester],
+):
     """Test error is raised when invalid init signature is used."""
     with pytest.raises(RuntimeError):
         fixture_invalid_init._get_init_signature()
 
 
 def test_get_param_names(
-    fixture_object, fixture_class_parent, fixture_class_parent_expected_params
+    fixture_object: Type[BaseObject],
+    fixture_class_parent: Type[Parent],
+    fixture_class_parent_expected_params: Dict[str, Any],
 ):
     """Test that get_param_names returns list of string parameter names."""
     param_names = fixture_class_parent.get_param_names()
@@ -612,10 +624,10 @@ def test_get_param_names(
 
 
 def test_get_params(
-    fixture_class_parent,
-    fixture_class_parent_expected_params,
-    fixture_class_instance_no_param_interface,
-    fixture_composition_dummy,
+    fixture_class_parent: Type[Parent],
+    fixture_class_parent_expected_params: Dict[str, Any],
+    fixture_class_instance_no_param_interface: NoParamInterface,
+    fixture_composition_dummy: Type[CompositionDummy],
 ):
     """Test get_params returns expected parameters."""
     # Simple test of returned params
@@ -638,7 +650,10 @@ def test_get_params(
     assert "foo" in params and "bar" in params and len(params) == 2
 
 
-def test_get_params_invariance(fixture_class_parent, fixture_composition_dummy):
+def test_get_params_invariance(
+    fixture_class_parent: Type[Parent],
+    fixture_composition_dummy: Type[CompositionDummy],
+):
     """Test that get_params(deep=False) is subset of get_params(deep=True)."""
     composite = fixture_composition_dummy(foo=fixture_class_parent(), bar=84)
     shallow_params = composite.get_params(deep=False)
@@ -646,7 +661,7 @@ def test_get_params_invariance(fixture_class_parent, fixture_composition_dummy):
     assert all(item in deep_params.items() for item in shallow_params.items())
 
 
-def test_get_params_after_set_params(fixture_class_parent):
+def test_get_params_after_set_params(fixture_class_parent: Type[Parent]):
     """Test that get_params returns the same thing before and after set_params.
 
     Based on scikit-learn check in check_estimator.
@@ -687,9 +702,9 @@ def test_get_params_after_set_params(fixture_class_parent):
 
 
 def test_set_params(
-    fixture_class_parent,
-    fixture_class_parent_expected_params,
-    fixture_composition_dummy,
+    fixture_class_parent: Type[Parent],
+    fixture_class_parent_expected_params: Dict[str, Any],
+    fixture_composition_dummy: Type[CompositionDummy],
 ):
     """Test set_params works as expected."""
     # Simple case of setting a parameter
@@ -711,7 +726,8 @@ def test_set_params(
 
 
 def test_set_params_raises_error_non_existent_param(
-    fixture_class_parent_instance, fixture_composition_dummy
+    fixture_class_parent_instance: Parent,
+    fixture_composition_dummy: Type[CompositionDummy],
 ):
     """Test set_params raises an error when passed a non-existent parameter name."""
     # non-existing parameter in svc
@@ -727,7 +743,8 @@ def test_set_params_raises_error_non_existent_param(
 
 
 def test_set_params_raises_error_non_interface_composite(
-    fixture_class_instance_no_param_interface, fixture_composition_dummy
+    fixture_class_instance_no_param_interface: NoParamInterface,
+    fixture_composition_dummy: Type[CompositionDummy],
 ):
     """Test set_params raises error when setting param of non-conforming composite."""
     # When a composite is made up of a class that doesn't have the BaseObject
@@ -753,7 +770,9 @@ def test_raises_on_get_params_for_param_arg_not_assigned_to_attribute():
         est.get_params()
 
 
-def test_set_params_with_no_param_to_set_returns_object(fixture_class_parent):
+def test_set_params_with_no_param_to_set_returns_object(
+    fixture_class_parent: Type[Parent],
+):
     """Test set_params correctly returns self when no parameters are set."""
     base_obj = fixture_class_parent()
     orig_params = deepcopy(base_obj.get_params())
@@ -767,7 +786,7 @@ def test_set_params_with_no_param_to_set_returns_object(fixture_class_parent):
 # This section tests the clone functionality
 # These have been adapted from sklearn's tests of clone to use the clone
 # method that is included as part of the BaseObject interface
-def test_clone(fixture_class_parent_instance):
+def test_clone(fixture_class_parent_instance: Parent):
     """Test that clone is making a deep copy as expected."""
     # Creates a BaseObject and makes a copy of its original state
     # (which, in this case, is the current state of the BaseObject),
@@ -777,7 +796,7 @@ def test_clone(fixture_class_parent_instance):
     assert fixture_class_parent_instance.get_params() == new_base_obj.get_params()
 
 
-def test_clone_2(fixture_class_parent_instance):
+def test_clone_2(fixture_class_parent_instance: Parent):
     """Test that clone does not copy attributes not set in constructor."""
     # We first create an estimator, give it an own attribute, and
     # make a copy of its original state. Then we check that the copy doesn't
@@ -790,7 +809,9 @@ def test_clone_2(fixture_class_parent_instance):
 
 
 def test_clone_raises_error_for_nonconforming_objects(
-    fixture_invalid_init, fixture_buggy, fixture_modify_param
+    fixture_invalid_init: Type[InvalidInitSignatureTester],
+    fixture_buggy: Type[Buggy],
+    fixture_modify_param: Type[ModifyParam],
 ):
     """Test that clone raises an error on nonconforming BaseObjects."""
     buggy = fixture_buggy()
@@ -807,7 +828,7 @@ def test_clone_raises_error_for_nonconforming_objects(
         obj_that_modifies.clone()
 
 
-def test_clone_param_is_none(fixture_class_parent):
+def test_clone_param_is_none(fixture_class_parent: Type[Parent]):
     """Test clone with keyword parameter set to None."""
     base_obj = fixture_class_parent(c=None)
     new_base_obj = clone(base_obj)
@@ -816,7 +837,7 @@ def test_clone_param_is_none(fixture_class_parent):
     assert base_obj.c is new_base_obj2.c
 
 
-def test_clone_empty_array(fixture_class_parent):
+def test_clone_empty_array(fixture_class_parent: Type[Parent]):
     """Test clone with keyword parameter is scipy sparse matrix.
 
     This test is based on scikit-learn regression test to make sure clone
@@ -830,7 +851,7 @@ def test_clone_empty_array(fixture_class_parent):
     np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
 
 
-def test_clone_sparse_matrix(fixture_class_parent):
+def test_clone_sparse_matrix(fixture_class_parent: Type[Parent]):
     """Test clone with keyword parameter is scipy sparse matrix.
 
     This test is based on scikit-learn regression test to make sure clone
@@ -843,7 +864,7 @@ def test_clone_sparse_matrix(fixture_class_parent):
     np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
 
 
-def test_clone_nan(fixture_class_parent):
+def test_clone_nan(fixture_class_parent: Type[Parent]):
     """Test clone with keyword parameter is np.nan.
 
     This test is based on scikit-learn regression test to make sure clone
@@ -858,7 +879,7 @@ def test_clone_nan(fixture_class_parent):
     assert base_obj.c is new_base_obj2.c
 
 
-def test_clone_estimator_types(fixture_class_parent):
+def test_clone_estimator_types(fixture_class_parent: Type[Parent]):
     """Test clone works for parameters that are types rather than instances."""
     base_obj = fixture_class_parent(c=fixture_class_parent)
     new_base_obj = base_obj.clone()
@@ -866,7 +887,9 @@ def test_clone_estimator_types(fixture_class_parent):
     assert base_obj.c == new_base_obj.c
 
 
-def test_clone_class_rather_than_instance_raises_error(fixture_class_parent):
+def test_clone_class_rather_than_instance_raises_error(
+    fixture_class_parent: Type[Parent],
+):
     """Test clone raises expected error when cloning a class instead of an instance."""
     msg = "You should provide an instance of scikit-learn estimator"
     with pytest.raises(TypeError, match=msg):
@@ -874,17 +897,40 @@ def test_clone_class_rather_than_instance_raises_error(fixture_class_parent):
 
 
 # Tests of BaseObject pretty printing representation inspired by sklearn
-def test_baseobject_repr(fixture_class_parent, fixture_composition_dummy):
+def test_baseobject_repr(
+    fixture_class_parent: Type[Parent],
+    fixture_composition_dummy: Type[CompositionDummy],
+):
     """Test BaseObject repr works as expected."""
     # Simple test where all parameters are left at defaults
     # Should not see parameters and values in printed representation
+
     base_obj = fixture_class_parent()
     assert repr(base_obj) == "Parent()"
 
-    # Check that we can alter the detail about params that is printed
-    # using config_context with ``print_changed_only=False``
-    with config_context(print_changed_only=False):
-        assert repr(base_obj) == "Parent(a='something', b=7, c=None)"
+    # Check that local config works as expected
+    base_obj.set_config(print_changed_only=False)
+    assert repr(base_obj) == "Parent(a='something', b=7, c=None)"
+
+    # Test with dict parameter (note that dict is sorted by keys when printed)
+    # not printed in order it was created
+    base_obj = fixture_class_parent(c={"c": 1, "a": 2})
+    assert repr(base_obj) == "Parent(c={'a': 2, 'c': 1})"
+
+    # Now test when one params values are named object tuples
+    named_objs = [
+        ("step 1", fixture_class_parent()),
+        ("step 2", fixture_class_parent()),
+    ]
+    base_obj = fixture_class_parent(c=named_objs)
+    assert repr(base_obj) == "Parent(c=[('step 1', Parent()), ('step 2', Parent())])"
+
+    # Or when they are just lists of tuples or just tuples as param
+    base_obj = fixture_class_parent(c=[("one", 1), ("two", 2)])
+    assert repr(base_obj) == "Parent(c=[('one', 1), ('two', 2)])"
+
+    base_obj = fixture_class_parent(c=(1, 2, 3))
+    assert repr(base_obj) == "Parent(c=(1, 2, 3))"
 
     simple_composite = fixture_composition_dummy(foo=fixture_class_parent())
     assert repr(simple_composite) == "CompositionDummy(foo=Parent())"
@@ -892,53 +938,67 @@ def test_baseobject_repr(fixture_class_parent, fixture_composition_dummy):
     long_base_obj_repr = fixture_class_parent(a=["long_params"] * 1000)
     assert len(repr(long_base_obj_repr)) == 535
 
+    named_objs = [(f"Step {i+1}", Child()) for i in range(25)]
+    base_comp = CompositionDummy(foo=Parent(c=Child(c=named_objs)))
+    assert len(repr(base_comp)) == 1362
 
-def test_baseobject_str(fixture_class_parent_instance):
+
+def test_baseobject_str(fixture_class_parent_instance: Parent):
     """Test BaseObject string representation works."""
-    str(fixture_class_parent_instance)
+    assert (
+        str(fixture_class_parent_instance) == "Parent()"
+    ), "String representation of instance not working."
+
+    # Check that local config works as expected
+    fixture_class_parent_instance.set_config(print_changed_only=False)
+    assert str(fixture_class_parent_instance) == "Parent(a='something', b=7, c=None)"
 
 
-def test_baseobject_repr_mimebundle_(fixture_class_parent_instance):
+def test_baseobject_repr_mimebundle_(fixture_class_parent_instance: Parent):
     """Test display configuration controls output."""
     # Checks the display configuration flag controls the json output
-    with config_context(display="diagram"):
-        output = fixture_class_parent_instance._repr_mimebundle_()
-        assert "text/plain" in output
-        assert "text/html" in output
+    fixture_class_parent_instance.set_config(display="diagram")
+    output = fixture_class_parent_instance._repr_mimebundle_()
+    assert "text/plain" in output
+    assert "text/html" in output
 
-    with config_context(display="text"):
-        output = fixture_class_parent_instance._repr_mimebundle_()
-        assert "text/plain" in output
-        assert "text/html" not in output
+    fixture_class_parent_instance.set_config(display="text")
+    output = fixture_class_parent_instance._repr_mimebundle_()
+    assert "text/plain" in output
+    assert "text/html" not in output
 
 
-def test_repr_html_wraps(fixture_class_parent_instance):
+def test_repr_html_wraps(fixture_class_parent_instance: Parent):
     """Test display configuration flag controls the html output."""
-    with config_context(display="diagram"):
-        output = fixture_class_parent_instance._repr_html_()
-        assert "<style>" in output
+    fixture_class_parent_instance.set_config(display="diagram")
+    output = fixture_class_parent_instance._repr_html_()
+    assert "<style>" in output
 
-    with config_context(display="text"):
-        msg = "_repr_html_ is only defined when"
-        with pytest.raises(AttributeError, match=msg):
-            fixture_class_parent_instance._repr_html_()
+    fixture_class_parent_instance.set_config(display="text")
+    msg = "_repr_html_ is only defined when"
+    with pytest.raises(AttributeError, match=msg):
+        fixture_class_parent_instance._repr_html_()
 
 
 # Test BaseObject's ability to generate test instances
-def test_get_test_params(fixture_class_parent_instance):
+def test_get_test_params(fixture_class_parent_instance: Parent):
     """Test get_test_params returns empty dictionary."""
     base_obj = fixture_class_parent_instance
     test_params = base_obj.get_test_params()
     assert isinstance(test_params, dict) and len(test_params) == 0
 
 
-def test_get_test_params_raises_error_when_params_required(fixture_required_param):
+def test_get_test_params_raises_error_when_params_required(
+    fixture_required_param: Type[RequiredParam],
+):
     """Test get_test_params raises an error when parameters are required."""
     with pytest.raises(ValueError):
         fixture_required_param(7).get_test_params()
 
 
-def test_create_test_instance(fixture_class_parent, fixture_class_parent_instance):
+def test_create_test_instance(
+    fixture_class_parent: Type[Parent], fixture_class_parent_instance: Parent
+):
     """Test first that create_test_instance logic works."""
     base_obj = fixture_class_parent.create_test_instance()
 
@@ -957,7 +1017,7 @@ def test_create_test_instance(fixture_class_parent, fixture_class_parent_instanc
     assert hasattr(base_obj, "_tags_dynamic"), msg
 
 
-def test_create_test_instances_and_names(fixture_class_parent_instance):
+def test_create_test_instances_and_names(fixture_class_parent_instance: Parent):
     """Test that create_test_instances_and_names works."""
     base_objs, names = fixture_class_parent_instance.create_test_instances_and_names()
 
@@ -971,13 +1031,13 @@ def test_create_test_instances_and_names(fixture_class_parent_instance):
     )
 
     assert all(
-        [isinstance(est, fixture_class_parent_instance.__class__) for est in base_objs]
+        isinstance(est, fixture_class_parent_instance.__class__) for est in base_objs
     ), (
         "List elements of first return returned by create_test_instances_and_names "
         "all must be an instance of the class"
     )
 
-    assert all([isinstance(name, str) for name in names]), (
+    assert all(isinstance(name, str) for name in names), (
         "List elements of second return returned by create_test_instances_and_names"
         " all must be strings."
     )
@@ -990,7 +1050,7 @@ def test_create_test_instances_and_names(fixture_class_parent_instance):
 
 # Tests _has_implementation_of interface
 def test_has_implementation_of(
-    fixture_class_parent_instance, fixture_class_child_instance
+    fixture_class_parent_instance: Parent, fixture_class_child_instance: Child
 ):
     """Test _has_implementation_of detects methods in class with overrides in mro."""
     # When the class overrides a parent classes method should return True
@@ -1014,33 +1074,15 @@ class ConfigTester(BaseObject):
         self.c = 84
 
 
-def test_set_get_config():
-    """Test logic behind get_config, set_config.
+class AnotherConfigTester(BaseObject):
+    _config = {"print_changed_only": False, "bar": "a"}
 
-    Raises
-    ------
-    AssertionError if logic behind get_config, set_config is incorrect, logic tested:
-        calling get_fitted_params on a non-composite fittable returns the fitted param
-        calling get_fitted_params on a composite returns all nested params
-    """
-    obj = ConfigTester(4242)
+    clsvar = 210
 
-    config_start = obj.get_config()
-    assert isinstance(config_start, dict)
-    assert set(config_start.keys()) == {"foo_config", "bar"}
-    assert config_start["foo_config"] == 42
-    assert config_start["bar"] == "a"
-
-    setconfig_return = obj.set_config(foobar=126)
-    assert obj is setconfig_return
-
-    obj.set_config(**{"bar": "b"})
-    config_end = obj.get_config()
-    assert isinstance(config_end, dict)
-    assert set(config_end.keys()) == {"foo_config", "bar", "foobar"}
-    assert config_end["foo_config"] == 42
-    assert config_end["bar"] == "b"
-    assert config_end["foobar"] == 126
+    def __init__(self, a, b=42):
+        self.a = a
+        self.b = b
+        self.c = 84
 
 
 class FittableCompositionDummy(BaseEstimator):

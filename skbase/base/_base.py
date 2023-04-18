@@ -53,6 +53,7 @@ State:
     fitted state check      - check_is_fitted (raises error if not is_fitted)
 """
 import inspect
+import re
 import warnings
 from collections import defaultdict
 from copy import deepcopy
@@ -62,6 +63,7 @@ from sklearn import clone
 from sklearn.base import BaseEstimator as _BaseEstimator
 
 from skbase._exceptions import NotFittedError
+from skbase.base._pretty_printing._object_html_repr import _object_html_repr
 from skbase.base._tagmanager import _FlagManager
 
 __author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
@@ -73,6 +75,11 @@ class BaseObject(_FlagManager, _BaseEstimator):
 
     Extends scikit-learn's BaseEstimator to include sktime style interface for tags.
     """
+
+    _config = {
+        "display": "diagram",
+        "print_changed_only": True,
+    }
 
     def __init__(self):
         """Construct BaseObject."""
@@ -681,6 +688,98 @@ class BaseObject(_FlagManager, _BaseEstimator):
         comp_dict = {x: y for (x, y) in comp_dict.items() if isinstance(y, base_class)}
 
         return comp_dict
+
+    def __repr__(self, n_char_max: int = 700):
+        """Represent class as string.
+
+        This follows the scikit-learn implementation for the string representation
+        of parameterized objects.
+
+        Parameters
+        ----------
+        n_char_max : int
+            Maximum (approximate) number of non-blank characters to render. This
+            can be useful in testing.
+        """
+        from skbase.base._pretty_printing._pprint import _BaseObjectPrettyPrinter
+
+        n_max_elements_to_show = 30  # number of elements to show in sequences
+        # use ellipsis for sequences with a lot of elements
+        pp = _BaseObjectPrettyPrinter(
+            compact=True,
+            indent=1,
+            indent_at_name=True,
+            n_max_elements_to_show=n_max_elements_to_show,
+            changed_only=self.get_config()["print_changed_only"],
+        )
+
+        repr_ = pp.pformat(self)
+
+        # Use bruteforce ellipsis when there are a lot of non-blank characters
+        n_nonblank = len("".join(repr_.split()))
+        if n_nonblank > n_char_max:
+            lim = n_char_max // 2  # apprx number of chars to keep on both ends
+            regex = r"^(\s*\S){%d}" % lim
+            # The regex '^(\s*\S){%d}' matches from the start of the string
+            # until the nth non-blank character:
+            # - ^ matches the start of string
+            # - (pattern){n} matches n repetitions of pattern
+            # - \s*\S matches a non-blank char following zero or more blanks
+            left_match = re.match(regex, repr_)
+            right_match = re.match(regex, repr_[::-1])
+            left_lim = left_match.end() if left_match is not None else 0
+            right_lim = right_match.end() if right_match is not None else 0
+
+            if "\n" in repr_[left_lim:-right_lim]:
+                # The left side and right side aren't on the same line.
+                # To avoid weird cuts, e.g.:
+                # categoric...ore',
+                # we need to start the right side with an appropriate newline
+                # character so that it renders properly as:
+                # categoric...
+                # handle_unknown='ignore',
+                # so we add [^\n]*\n which matches until the next \n
+                regex += r"[^\n]*\n"
+                right_match = re.match(regex, repr_[::-1])
+                right_lim = right_match.end() if right_match is not None else 0
+
+            ellipsis = "..."
+            if left_lim + len(ellipsis) < len(repr_) - right_lim:
+                # Only add ellipsis if it results in a shorter repr
+                repr_ = repr_[:left_lim] + "..." + repr_[-right_lim:]
+
+        return repr_
+
+    @property
+    def _repr_html_(self):
+        """HTML representation of BaseObject.
+
+        This is redundant with the logic of `_repr_mimebundle_`. The latter
+        should be favorted in the long term, `_repr_html_` is only
+        implemented for consumers who do not interpret `_repr_mimbundle_`.
+        """
+        if self.get_config()["display"] != "diagram":
+            raise AttributeError(
+                "_repr_html_ is only defined when the "
+                "`display` configuration option is set to 'diagram'."
+            )
+        return self._repr_html_inner
+
+    def _repr_html_inner(self):
+        """Return HTML representation of class.
+
+        This function is returned by the @property `_repr_html_` to make
+        `hasattr(BaseObject, "_repr_html_") return `True` or `False` depending
+        on `self.get_config()["display"]`.
+        """
+        return _object_html_repr(self)
+
+    def _repr_mimebundle_(self, **kwargs):
+        """Mime bundle used by jupyter kernels to display instances of BaseObject."""
+        output = {"text/plain": repr(self)}
+        if self.get_config()["display"] == "diagram":
+            output["text/html"] = _object_html_repr(self)
+        return output
 
 
 class TagAliaserMixin:

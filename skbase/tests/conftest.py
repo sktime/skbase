@@ -22,6 +22,9 @@ SKBASE_MODULES = (
     "skbase.base",
     "skbase.base._base",
     "skbase.base._meta",
+    "skbase.base._pretty_printing",
+    "skbase.base._pretty_printing._object_html_repr",
+    "skbase.base._pretty_printing._pprint",
     "skbase.base._tagmanager",
     "skbase.lookup",
     "skbase.lookup.tests",
@@ -42,6 +45,7 @@ SKBASE_MODULES = (
     "skbase.tests.test_baseestimator",
     "skbase.tests.mock_package.test_mock_package",
     "skbase.utils",
+    "skbase.utils._check",
     "skbase.utils._iter",
     "skbase.utils._nested_iter",
     "skbase.utils._utils",
@@ -80,6 +84,7 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
     ),
     "skbase.base._base": ("BaseEstimator", "BaseObject"),
     "skbase.base._meta": ("BaseMetaObject", "BaseMetaEstimator"),
+    "skbase.base._pretty_printing._pprint": ("KeyValTuple", "KeyValTupleParam"),
     "skbase.lookup._lookup": ("ClassInfo", "FunctionInfo", "ModuleInfo"),
     "skbase.testing": ("BaseFixtureGenerator", "QuickTester", "TestAllObjects"),
     "skbase.testing.test_all_objects": (
@@ -96,6 +101,12 @@ SKBASE_CLASSES_BY_MODULE.update(
             "BaseMetaEstimator",
             "_MetaObjectMixin",
             "_MetaTagLogicMixin",
+        ),
+        "skbase.base._pretty_printing._object_html_repr": ("_VisualBlock",),
+        "skbase.base._pretty_printing._pprint": (
+            "KeyValTuple",
+            "KeyValTupleParam",
+            "_BaseObjectPrettyPrinter",
         ),
         "skbase.base._tagmanager": ("_FlagManager",),
     }
@@ -141,6 +152,13 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
 SKBASE_FUNCTIONS_BY_MODULE.update(
     {
+        "skbase.base._pretty_printing._object_html_repr": (
+            "_get_visual_block",
+            "_object_html_repr",
+            "_write_base_object_html",
+            "_write_label_html",
+        ),
+        "skbase.base._pretty_printing._pprint": ("_changed_params", "_safe_repr"),
         "skbase.lookup._lookup": (
             "_determine_module_path",
             "_get_return_tags",
@@ -172,6 +190,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_coerce_list",
         ),
         "skbase.testing.utils.inspect": ("_get_args",),
+        "skbase.utils._check": ("_is_scalar_nan",),
         "skbase.utils._iter": (
             "_format_seq_to_str",
             "_remove_type_text",
