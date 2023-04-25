@@ -7,7 +7,7 @@
 along with tools to make it easier to build your own packages that follow these
 design patterns.
 
-:rocket: Version 0.3.0 is now available. Checkout our
+:rocket: Version 0.4.0 is now available. Checkout our
 [release notes](https://skbase.readthedocs.io/en/latest/changelog.html).
 
 | Overview | |
@@ -41,11 +41,11 @@ and can be installed using pip. Checkout the full list of pre-compiled [wheels o
 To install the core package use:
 
 ```bash
-pip install skbase
+pip install scikit-base
 ```
 
 or, if you want to install with the maximum set of dependencies, use:
 
 ```bash
-pip install skbase[all_extras]
+pip install scikit-base[all_extras]
 ```
