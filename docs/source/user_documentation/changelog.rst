@@ -14,6 +14,73 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.4.0] - 2023-04-25
+====================
+
+Highlights
+----------
+
+- classes for heterogeneous collections aka meta-objects: ``BaseMetaObject`` and
+  ``BaseMetaEstimator``, based on ``sklearn`` and ``sktime`` (:pr:`107`, :pr:`155`)
+- ``skbase`` native ``get_params`` and ``get_fitted_params`` interface, both with
+  ``deep`` argument (:pr:`115`, :pr:`117`) :user:`fkiraly`
+- tag and config manager for objects, with ``get_tag``, ``set_tag``, ``get_config``,
+  ``set_config``, etc (:pr:`138`, :pr:`140`, :pr:`155`) :user:`fkiraly`
+- ``sklearn`` style pretty printing, configurable via
+  tags (:pr:`156`) :user:`fkiraly`, :user:`RNKuhns`
+
+Enhancements
+------------
+
+* [ENH] Update meta classes and add unit tests (:pr:`107`) :user:`RNKuhns`
+* [ENH] ``skbase`` native ``get_params`` (:pr:`115`) :user:`fkiraly`
+* [ENH] ensure that ``all_objects`` always
+  returns (class name/class) pairs (:pr:`115`) :user:`fkiraly`
+* [ENH] Initial type and named object validator code (:pr:`122`) :user:`RNKuhns`
+* [ENH] ``deep`` argument for ``get_fitted_params`` (:pr:`117`) :user:`fkiraly`
+* [ENH] Improve ``skbase.utils`` module structure (:pr:`126`) :user:`RNKuhns`
+* [ENH] Add ``object_type`` param to named object check (:pr:`136`) :user:`RNKuhns`
+* [ENH] tag manager mixin (:pr:`138`) :user:`fkiraly`
+* [ENH] sync ``TestAllObjects`` with ``sktime`` (:pr:`139`) :user:`fkiraly`
+* [ENH] object config interface (:pr:`140`) :user:`fkiraly`
+* [ENH] tag logic mixin for meta-estimators (:pr:`155`) :user:`fkiraly`
+* [ENH] ``sklearn`` style pretty printing (:pr:`156`) :user:`fkiraly`, :user:`RNKuhns`
+
+Fixes
+-----
+
+* [BUG] fix faulty ``BaseObject.__eq__`` and ``deep_equals`` if an attribute
+  or nested structure contains ``np.nan`` (:pr:`111`) :user:`fkiraly`
+* [BUG] Fix type error bug (:pr:`130`) :user:`RNKuhns`
+* [BUG] fix unreported return type bug
+  of ``BaseFixtureGenerator.is_excluded`` (:pr:`142`) :user:`fkiraly`
+
+Documentation
+-------------
+
+* [DOC] Update installation guide to build ``skbase`` in
+  a virtual env (:pr:`157`) :user:`achieveordie`
+* [DOC] fix odd author formatting on pypi (:pr:`157`) :user:`fkiraly`
+
+Maintenance
+-----------
+
+* [MNT] Create Issue and PR Templates (:pr:`157`) :user:`RNKuhns`
+* [MNT] Update pydocstyle in pre-commit config (:pr:`108`) :user:`RNKuhns`
+* [MNT] Handle updates to pre-commit linters (:pr:`120`) :user:`RNKuhns`
+* [MNT] numpy as a soft dependency (:pr:`121`) :user:`RNKuhns`
+* [MNT] Add stacklevel to ``warnings.warn`` calls (:pr:`137`) :user:`RNKuhns`
+* [MNT] Add vs code settings and auto generated api area
+  to ``.gitignore`` (:pr:`143`) :user:`RNKuhns`
+* [MNT] Update slack to point to ``skbase`` workspace (:pr:`148`) :user:`RNKuhns`
+
+Contributors
+------------
+:user:`achieveordie`,
+:user:`fkiraly`,
+:user:`rnkuhns`
+
+
 [0.3.0] - 2023-01-08
 ====================
 
@@ -40,7 +107,7 @@ Enhancements
 
 - Reorganized package functionality into submodules focused on specific
   functionality (:pr:`78`) :user:`rnkuhns`
-- Add equality dunder to ``BaseObject`` to allow ``BaseObejct``-s to be compared based
+- Add equality dunder to ``BaseObject`` to allow ``BaseObject``-s to be compared based
   on parameter equality (:pr:`86`) :user:`fkiraly`
 - Add ``sktime``-like interface for retrieving fitted parameters to ``BaseEstimator``
   (:pr:`87`) :user:`fkiraly`

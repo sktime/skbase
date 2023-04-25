@@ -27,13 +27,13 @@ code snippets below.
 
         .. code-block:: bash
 
-           pip install skbase
+           pip install scikit-base
 
     .. tab-item:: PyPi (all dependencies)
 
         .. code-block:: bash
 
-           pip install skbase[all_extras]
+           pip install scikit-base[all_extras]
 
     .. tab-item:: Conda
 
@@ -86,4 +86,4 @@ functionality. For more detailed information see the :ref:`tutorials`,
 :ref:`user_documentation`.
 
 .. _scikit-learn: https://scikit-learn.org/stable/index.html
-.. _sktime: https://www.sktime.org/en/stable/index.html
+.. _sktime: https://www.sktime.net/en/stable/index.html

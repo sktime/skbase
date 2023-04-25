@@ -57,7 +57,7 @@ def _changed_params(base_object):
 
 
 class _BaseObjectPrettyPrinter(pprint.PrettyPrinter):
-    """Pretty Printer class for  BaseObjects.
+    """Pretty Printer class for BaseObjects.
 
     This extends the pprint.PrettyPrinter class similar to scikit-learn's
     implementation, so that:
