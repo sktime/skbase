@@ -174,7 +174,6 @@ def _filter_by_class(
     else:
         if isinstance(class_filter, Iterable) and not isinstance(class_filter, tuple):
             class_filter = tuple(class_filter)
-        raise ValueError(f"{klass}, {class_filter}")
         return issubclass(klass, class_filter)
 
 
