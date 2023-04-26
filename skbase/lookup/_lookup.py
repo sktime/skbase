@@ -170,75 +170,61 @@ def _filter_by_class(
         Whether the input class is a subclass of the `class_filter`.
     """
     if class_filter is None:
-        is_subclass = True
+        return True
     else:
         if isinstance(class_filter, Iterable) and not isinstance(class_filter, tuple):
             class_filter = tuple(class_filter)
-        if issubclass(klass, class_filter):
-            is_subclass = True
-        else:
-            is_subclass = False
-    return is_subclass
+        return issubclass(klass, class_filter):
 
 
-def _filter_by_tags(
-    klass: type,
-    tag_filter: Optional[Union[str, Sequence[str], Mapping[str, Any]]] = None,
-) -> bool:
-    """Determine if a class has a tag or has certain values for a tag.
+def _filter_by_tags(obj, filter_tags=None, as_dataframe=True):
+    """Check whether estimator satisfies filter_tags condition.
 
     Parameters
     ----------
-    klass : object
-        Class to check.
-    tag_filter : str, iterable of str or dict
-        Filter used to determine if `klass` has tag or expected tag values.
+    obj : BaseObject, an sktime estimator
+    filter_tags : dict of (str or list of str), default=None
+        subsets the returned estimators as follows:
+        each key/value pair is statement in "and"/conjunction
+
+        * key is tag name to sub-set on
+        * value str or list of string are tag values
+        * condition is "key must be equal to value, or in set(value)"
 
     Returns
     -------
-    has_tag : bool
-        Whether the input class has tags defined by the `tag_filter`.
+    cond_sat: bool, whether estimator satisfies condition in filter_tags
     """
-    if tag_filter is None:
-        return True
+    if not isinstance(filter_tags, dict):
+        raise TypeError("filter_tags must be a dict")
 
-    if hasattr(klass, "get_class_tags"):
-        klass_tags = klass.get_class_tags()
-
-    else:
-        # If the object doesn't have tag interface it can't have the tags in tag_filter
+    if not hasattr(obj, "get_class_tag"):
         return False
-    # If a string is supplied verify it is in the returned tag dict
-    if isinstance(tag_filter, str):
-        has_tag = tag_filter in klass_tags
+
+    klass_tags = obj.get_class_tags().keys()
+
+    # case: filter_tags is string
+    if isinstance(filter_tags, str):
+        return filter_tags in klass_tags
+
+    # case: filter_tags is iterable of str but not dict
     # If a iterable of strings is provided, check that all are in the returned tag_dict
     elif (
-        isinstance(tag_filter, Iterable)
-        and not isinstance(tag_filter, dict)
-        and all([isinstance(t, str) for t in tag_filter])
+        isinstance(filter_tags, Iterable)
+        and not isinstance(filter_tags, dict)
+        and all([isinstance(t, str) for t in filter_tags])
     ):
-        has_tag = all([tag in klass_tags for tag in tag_filter])
-    # If a dict is supplied verify that tag and value are acceptable
-    elif isinstance(tag_filter, dict) and all(isinstance(k, str) for k in tag_filter):
-        has_tag = False  # default to tag being filtered out unless it passes below
-        for tag, value in tag_filter.items():
-            if not isinstance(value, Iterable):
-                value = [value]
-            if tag in klass_tags:
-                has_tag = klass_tags[tag] in set(value)
-            else:
-                has_tag = False
-            # We can break the loop and return has_tag as False if it is ever False
-            if not has_tag:
-                break
-    else:
-        raise ValueError(
-            "`tag_filter` should be a string tag name, iterable of string tag names, "
-            "or a dictionary mapping tag names to allowable values. "
-            f"But `tag_filter` has type {type(tag_filter)}."
-        )
+        return all([tag in klass_tags for tag in filter_tags])
 
-    return has_tag
+    # case: filter_tags is dict
+    cond_sat = True
+
+    for (key, value) in filter_tags.items():
+        if not isinstance(value, list):
+            value = [value]
+        cond_sat = cond_sat and obj.get_class_tag(key) in set(value)
+
+    return cond_sat
 
 
 def _walk(root, exclude=None, prefix=""):
@@ -860,6 +846,8 @@ def all_objects(
 
     # Filter based on given estimator types
     def _is_in_object_types(estimator, object_types):
+        print(estimator)
+        print(object_types)
         return any(
             inspect.isclass(x) and issubclass(estimator, x) for x in object_types
         )
