@@ -151,7 +151,7 @@ def _check_package_metadata_result(results):
         if not isinstance(mod_metadata, dict):
             return False
         # Verify expected metadata keys are in the module's metadata dict
-        if not all([k in mod_metadata for k in MODULE_METADATA_EXPECTED_KEYS]):
+        if not all(k in mod_metadata for k in MODULE_METADATA_EXPECTED_KEYS):
             return False
         # Verify keys with string values have string values
         if not all(
