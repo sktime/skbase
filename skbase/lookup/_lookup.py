@@ -168,13 +168,14 @@ def _filter_by_class(
     -------
     is_subclass : bool
         Whether the input class is a subclass of the `class_filter`.
+        If `class_filter` was `None`, returns `True`.
     """
     if class_filter is None:
         return True
-    else:
-        if isinstance(class_filter, Iterable) and not isinstance(class_filter, tuple):
-            class_filter = tuple(class_filter)
-        return issubclass(klass, class_filter)
+
+    if isinstance(class_filter, Iterable) and not isinstance(class_filter, tuple):
+        class_filter = tuple(class_filter)
+    return issubclass(klass, class_filter)
 
 
 def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
@@ -193,8 +194,12 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
 
     Returns
     -------
-    cond_sat: bool, whether estimator satisfies condition in tag_filter
+    cond_sat: bool, whether estimator satisfies condition in `tag_filter`
+        if `tag_filter` was None, returns `True`
     """
+    if tag_filter is None:
+        return True
+
     if not isinstance(tag_filter, (str, Iterable, dict)):
         raise TypeError(
             "tag_filter argument of _filter_by_tags must be "
