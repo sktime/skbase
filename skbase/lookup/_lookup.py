@@ -203,7 +203,7 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
     if not isinstance(tag_filter, (str, Iterable, dict)):
         raise TypeError(
             "tag_filter argument of _filter_by_tags must be "
-            f"a dict, str, or iterable of str, but found {type(tag_filter)}"
+            f"a dict, str, or iterable of str, but found type {type(tag_filter)}"
         )
 
     if not hasattr(obj, "get_class_tag"):
@@ -217,11 +217,12 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
 
     # case: tag_filter is iterable of str but not dict
     # If a iterable of strings is provided, check that all are in the returned tag_dict
-    elif (
-        isinstance(tag_filter, Iterable)
-        and not isinstance(tag_filter, dict)
-        and all(isinstance(t, str) for t in tag_filter)
-    ):
+    if isinstance(tag_filter, Iterable) and not isinstance(tag_filter, dict):
+        if not all(isinstance(t, str) for t in tag_filter):
+            raise ValueError(
+                "tag_filter argument of _filter_by_tags must be "
+                f"a dict, str, or iterable of str, but found {tag_filter}"
+            )
         return all(tag in klass_tags for tag in tag_filter)
 
     # case: tag_filter is dict
