@@ -151,7 +151,7 @@ def _check_package_metadata_result(results):
         if not isinstance(mod_metadata, dict):
             return False
         # Verify expected metadata keys are in the module's metadata dict
-        if not all([k in mod_metadata for k in MODULE_METADATA_EXPECTED_KEYS]):
+        if not all(k in mod_metadata for k in MODULE_METADATA_EXPECTED_KEYS):
             return False
         # Verify keys with string values have string values
         if not all(
@@ -395,15 +395,15 @@ def test_filter_by_tags():
     assert _filter_by_tags(Parent, {"E": 1, "B": 2}) is False
 
     # Iterable tags should be all strings
-    with pytest.raises(ValueError, match=r"`tag_filter` should be.*"):
+    with pytest.raises(ValueError, match=r"tag_filter"):
         assert _filter_by_tags(Parent, ("A", "B", 3))
 
     # Tags that aren't iterable have to be strings
-    with pytest.raises(ValueError, match=r"`tag_filter` should be.*"):
+    with pytest.raises(TypeError, match=r"tag_filter"):
         assert _filter_by_tags(Parent, 7.0)
 
     # Dictionary tags should have string keys
-    with pytest.raises(ValueError, match=r"`tag_filter` should be.*"):
+    with pytest.raises(ValueError, match=r"tag_filter"):
         assert _filter_by_tags(Parent, {7: 11})
 
 
