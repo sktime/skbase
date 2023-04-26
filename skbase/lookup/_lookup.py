@@ -177,13 +177,13 @@ def _filter_by_class(
         return issubclass(klass, class_filter)
 
 
-def _filter_by_tags(obj, filter_tags=None, as_dataframe=True):
-    """Check whether estimator satisfies filter_tags condition.
+def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
+    """Check whether estimator satisfies tag_filter condition.
 
     Parameters
     ----------
     obj : BaseObject, an sktime estimator
-    filter_tags : dict of (str or list of str), default=None
+    tag_filter : dict of (str or list of str), default=None
         subsets the returned estimators as follows:
         each key/value pair is statement in "and"/conjunction
 
@@ -193,33 +193,36 @@ def _filter_by_tags(obj, filter_tags=None, as_dataframe=True):
 
     Returns
     -------
-    cond_sat: bool, whether estimator satisfies condition in filter_tags
+    cond_sat: bool, whether estimator satisfies condition in tag_filter
     """
-    if not isinstance(filter_tags, dict):
-        raise TypeError("filter_tags must be a dict")
+    if not isinstance(tag_filter, (str, Iterable, dict)):
+        raise TypeError(
+            "tag_filter argument of _filter_by_tags must be "
+            f"a dict, str, or iterable of str, but found {type(tag_filter)}"
+        )
 
     if not hasattr(obj, "get_class_tag"):
         return False
 
     klass_tags = obj.get_class_tags().keys()
 
-    # case: filter_tags is string
-    if isinstance(filter_tags, str):
-        return filter_tags in klass_tags
+    # case: tag_filter is string
+    if isinstance(tag_filter, str):
+        return tag_filter in klass_tags
 
-    # case: filter_tags is iterable of str but not dict
+    # case: tag_filter is iterable of str but not dict
     # If a iterable of strings is provided, check that all are in the returned tag_dict
     elif (
-        isinstance(filter_tags, Iterable)
-        and not isinstance(filter_tags, dict)
-        and all(isinstance(t, str) for t in filter_tags)
+        isinstance(tag_filter, Iterable)
+        and not isinstance(tag_filter, dict)
+        and all(isinstance(t, str) for t in tag_filter)
     ):
-        return all(tag in klass_tags for tag in filter_tags)
+        return all(tag in klass_tags for tag in tag_filter)
 
-    # case: filter_tags is dict
+    # case: tag_filter is dict
     cond_sat = True
 
-    for key, value in filter_tags.items():
+    for key, value in tag_filter.items():
         if not isinstance(value, list):
             value = [value]
         cond_sat = cond_sat and obj.get_class_tag(key) in set(value)
