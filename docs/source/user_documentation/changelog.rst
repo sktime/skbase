@@ -14,6 +14,19 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+
+[0.4.1] - 2023-04-26
+====================
+
+Small bugfix patch for pydata 2023 Seattle notebooks.
+
+Fixes
+-----
+
+* [BUG] fix html display for meta-objects (:pr:`160`) :user:`fkiraly`
+* [BUG] Fix `all_objects` lookup, broken tag filter (:pr:`161`) :user:`fkiraly`
+
+
 [0.4.0] - 2023-04-25
 ====================
 
