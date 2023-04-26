@@ -227,7 +227,7 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
         return all(tag in klass_tags for tag in tag_filter)
 
     # case: tag_filter is dict
-    if not not all(isinstance(t, str) for t in tag_filter.keys()):
+    if not all(isinstance(t, str) for t in tag_filter.keys()):
         raise ValueError(
             "tag_filter argument of _filter_by_tags must be "
             f"a dict with str keys, str, or iterable of str, but found {tag_filter}"
