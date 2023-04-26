@@ -11,9 +11,8 @@
 from inspect import isclass
 from typing import TYPE_CHECKING, Any, Dict, List, Sequence, Tuple, Union, overload
 
-from sklearn.utils._estimator_html_repr import _VisualBlock
-
 from skbase.base._base import BaseEstimator, BaseObject
+from skbase.base._pretty_printing._object_html_repr import _VisualBlock
 from skbase.utils._iter import _format_seq_to_str, make_strings_unique
 from skbase.validate import is_named_object_tuple
 
@@ -657,8 +656,9 @@ class _MetaObjectMixin:
     def _sk_visual_block_(self):
         """Logic to help render meta estimator as visual HTML block."""
         # Use tag interface that will be available when mixin is used
-        named_object_attr = self.get_tag("named_object_parameters")  # type: ignore
-        named_objects = getattr(self, named_object_attr)
+        named_object_attr_name = self.get_tag("named_object_parameters")  # type: ignore
+        named_object_attr = getattr(self, named_object_attr_name)
+        named_objects = self._coerce_to_named_object_tuples(named_object_attr)
         _, objs = self._get_names_and_objects(named_objects)
 
         def _get_name(name, obj):
@@ -667,7 +667,7 @@ class _MetaObjectMixin:
             # Is an estimator
             return f"{name}: {obj.__class__.__name__}"
 
-        names = [_get_name(name, est) for name, est in self.steps]
+        names = [_get_name(name, est) for name, est in named_objects]
         name_details = [str(obj) for obj in objs]
         return _VisualBlock(
             "serial",
