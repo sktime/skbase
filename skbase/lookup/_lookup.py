@@ -219,7 +219,7 @@ def _filter_by_tags(obj, filter_tags=None, as_dataframe=True):
     # case: filter_tags is dict
     cond_sat = True
 
-    for (key, value) in filter_tags.items():
+    for key, value in filter_tags.items():
         if not isinstance(value, list):
             value = [value]
         cond_sat = cond_sat and obj.get_class_tag(key) in set(value)
