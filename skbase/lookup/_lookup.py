@@ -174,6 +174,7 @@ def _filter_by_class(
     else:
         if isinstance(class_filter, Iterable) and not isinstance(class_filter, tuple):
             class_filter = tuple(class_filter)
+        raise ValueError(f"{klass}, {class_filter}")
         return issubclass(klass, class_filter)
 
 
@@ -845,19 +846,10 @@ def all_objects(
     all_estimators = set(all_estimators)
 
     # Filter based on given estimator types
-    def _is_in_object_types(estimator, object_types):
-        print(estimator)
-        print(object_types)
-        return any(
-            inspect.isclass(x) and issubclass(estimator, x) for x in object_types
-        )
-
     if object_types:
-        object_types = _check_object_types(object_types, class_lookup)
+        obj_types = _check_object_types(object_types, class_lookup)
         all_estimators = [
-            (name, estimator)
-            for name, estimator in all_estimators
-            if _is_in_object_types(estimator, object_types)
+            (n, est) for (n, est) in all_estimators if _filter_by_class(est, obj_types)
         ]
 
     # Filter based on given exclude list
