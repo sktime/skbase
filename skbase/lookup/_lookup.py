@@ -212,9 +212,9 @@ def _filter_by_tags(obj, filter_tags=None, as_dataframe=True):
     elif (
         isinstance(filter_tags, Iterable)
         and not isinstance(filter_tags, dict)
-        and all([isinstance(t, str) for t in filter_tags])
+        and all(isinstance(t, str) for t in filter_tags)
     ):
-        return all([tag in klass_tags for tag in filter_tags])
+        return all(tag in klass_tags for tag in filter_tags)
 
     # case: filter_tags is dict
     cond_sat = True
