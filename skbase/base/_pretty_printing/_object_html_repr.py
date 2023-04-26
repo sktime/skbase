@@ -7,7 +7,7 @@
 
 import html
 import uuid
-from contextlib import closing, suppress
+from contextlib import closing
 from io import StringIO
 from string import Template
 
@@ -91,7 +91,7 @@ def _write_label_html(
 
 def _get_visual_block(base_object):
     """Generate information about how to display a BaseObject."""
-    with suppress(AttributeError):
+    if hasattr(base_object, "_sk_visual_block_"):
         return base_object._sk_visual_block_()
 
     if isinstance(base_object, str):
