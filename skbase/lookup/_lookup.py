@@ -174,7 +174,7 @@ def _filter_by_class(
     else:
         if isinstance(class_filter, Iterable) and not isinstance(class_filter, tuple):
             class_filter = tuple(class_filter)
-        return issubclass(klass, class_filter):
+        return issubclass(klass, class_filter)
 
 
 def _filter_by_tags(obj, filter_tags=None, as_dataframe=True):
