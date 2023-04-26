@@ -11,12 +11,12 @@
   },
   {
     "name": "0.4.0",
-    "version": "v0.4.0",
-    "url": "https://skbase.readthedocs.io/en/stable/"
+    "version": "stable",
+    "url": "https://skbase.readthedocs.io/en/v0.4.0/"
   },
   {
     "name": "0.3.0",
-    "version": "v0.3.0",
+    "version": "stable",
     "url": "https://skbase.readthedocs.io/en/v0.3.0/"
   },
   {
