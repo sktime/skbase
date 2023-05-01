@@ -803,7 +803,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             if param.name not in required_params and param.name not in test_params
         ]
 
-        ALLOWED_PARAM_TYPES = [
+        allowed_param_types = [
             str,
             int,
             float,
@@ -816,7 +816,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         if _check_soft_dependencies("joblib", severity="none"):
             from joblib import Memory
 
-            ALLOWED_PARAM_TYPES += [Memory]
+            allowed_param_types += [Memory]
 
         for param in init_params:
             assert param.default != param.empty, (
@@ -827,7 +827,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             if type(param.default) is type:
                 assert param.default in [np.float64, np.int64]
             else:
-                assert type(param.default) in ALLOWED_PARAM_TYPES
+                assert type(param.default) in allowed_param_types
 
             param_value = params[param.name]
             if isinstance(param_value, np.ndarray):
