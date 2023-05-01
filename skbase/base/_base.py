@@ -101,7 +101,7 @@ class BaseObject(_FlagManager):
         self_params = self.get_params(deep=False)
         other_params = other.get_params(deep=False)
 
-        return deep_equals(self_params, other_params)
+        return deep_equals(self_params, other_params, return_msg=True)
 
     def reset(self):
         """Reset the object to a clean post-init state.
