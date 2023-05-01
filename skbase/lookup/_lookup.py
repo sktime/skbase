@@ -25,7 +25,7 @@ import warnings
 from collections.abc import Iterable
 from copy import deepcopy
 from operator import itemgetter
-from types import FunctionType, ModuleType
+from types import ModuleType
 from typing import (
     Any,
     List,
@@ -34,18 +34,11 @@ from typing import (
     Optional,
     Sequence,
     Tuple,
-    Type,
     Union,
 )
 
 from skbase.base import BaseObject
 from skbase.validate import check_sequence
-
-# Conditionally import TypedDict based on Python version
-if sys.version_info >= (3, 8):
-    from typing import TypedDict
-else:
-    from typing_extensions import TypedDict
 
 __all__: List[str] = ["all_objects", "get_package_metadata"]
 __author__: List[str] = [
@@ -57,43 +50,45 @@ __author__: List[str] = [
     "rnkuhns",
 ]
 
+# the below is commented out to avoid a dependency on typing_extensions
+# but still left in place as it is informative regarding expected return type
 
-class ClassInfo(TypedDict):
-    """Type definitions for information on a module's classes."""
+# class ClassInfo(TypedDict):
+#     """Type definitions for information on a module's classes."""
 
-    klass: Type
-    name: str
-    description: str
-    tags: MutableMapping[str, Any]
-    is_concrete_implementation: bool
-    is_base_class: bool
-    is_base_object: bool
-    authors: Optional[Union[List[str], str]]
-    module_name: str
-
-
-class FunctionInfo(TypedDict):
-    """Information on a module's functions."""
-
-    func: FunctionType
-    name: str
-    description: str
-    module_name: str
+#     klass: Type
+#     name: str
+#     description: str
+#     tags: MutableMapping[str, Any]
+#     is_concrete_implementation: bool
+#     is_base_class: bool
+#     is_base_object: bool
+#     authors: Optional[Union[List[str], str]]
+#     module_name: str
 
 
-class ModuleInfo(TypedDict):
-    """Module information type definitions."""
+# class FunctionInfo(TypedDict):
+#     """Information on a module's functions."""
 
-    path: str
-    name: str
-    classes: MutableMapping[str, ClassInfo]
-    functions: MutableMapping[str, FunctionInfo]
-    __all__: List[str]
-    authors: str
-    is_package: bool
-    contains_concrete_class_implementations: bool
-    contains_base_classes: bool
-    contains_base_objects: bool
+#     func: FunctionType
+#     name: str
+#     description: str
+#     module_name: str
+
+
+# class ModuleInfo(TypedDict):
+#     """Module information type definitions."""
+
+#     path: str
+#     name: str
+#     classes: MutableMapping[str, ClassInfo]
+#     functions: MutableMapping[str, FunctionInfo]
+#     __all__: List[str]
+#     authors: str
+#     is_package: bool
+#     contains_concrete_class_implementations: bool
+#     contains_base_classes: bool
+#     contains_base_objects: bool
 
 
 def _is_non_public_module(module_name: str) -> bool:
@@ -406,7 +401,7 @@ def _get_module_info(
     class_filter: Optional[Union[type, Sequence[type]]] = None,
     tag_filter: Optional[Union[str, Sequence[str], Mapping[str, Any]]] = None,
     classes_to_exclude: Optional[Union[type, Sequence[type]]] = None,
-) -> ModuleInfo:
+) -> dict:  # of ModuleInfo type
     # Make package_base_classes a tuple if it was supplied as a class
     base_classes_none = False
     if isinstance(package_base_classes, Iterable):
@@ -429,7 +424,7 @@ def _get_module_info(
     if isinstance(authors, (list, tuple)):
         authors = ", ".join(authors)
     # Compile information on classes in the module
-    module_classes: MutableMapping[str, ClassInfo] = {}
+    module_classes: MutableMapping = {}  # of ClassInfo type
     for name, klass in inspect.getmembers(module, inspect.isclass):
         # Skip a class if non-public items should be excluded and it starts with "_"
         if (
@@ -467,7 +462,7 @@ def _get_module_info(
                 "module_name": module.__name__,
             }
 
-    module_functions: MutableMapping[str, FunctionInfo] = {}
+    module_functions: MutableMapping = {}  # of FunctionInfo type
     for name, func in inspect.getmembers(module, inspect.isfunction):
         if func.__module__ == module.__name__ or name in designed_imports:
             # Skip a class if non-public items should be excluded and it starts with "_"
@@ -484,7 +479,7 @@ def _get_module_info(
             }
 
     # Combine all the information on the module together
-    module_info: ModuleInfo = {
+    module_info = {  # of ModuleInfo type
         "path": path,
         "name": module.__name__,
         "classes": module_classes,
@@ -517,7 +512,7 @@ def get_package_metadata(
     tag_filter: Optional[Union[str, Sequence[str], Mapping[str, Any]]] = None,
     classes_to_exclude: Optional[Union[type, Sequence[type]]] = None,
     suppress_import_stdout: bool = True,
-) -> Mapping[str, ModuleInfo]:
+) -> Mapping:  # of ModuleInfo type
     """Return a dictionary mapping all package modules to their metadata.
 
     Parameters
@@ -606,7 +601,7 @@ def get_package_metadata(
           inherit from ``BaseObject``.
     """
     module, path, loader = _determine_module_path(package_name, path)
-    module_info: MutableMapping[str, ModuleInfo] = {}
+    module_info: MutableMapping = {}  # of ModuleInfo type
     # Get any metadata at the top-level of the provided package
     # This is because the pkgutil.walk_packages doesn't include __init__
     # file when walking a package

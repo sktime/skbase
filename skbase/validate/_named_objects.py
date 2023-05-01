@@ -2,7 +2,6 @@
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Validate if an input is one of the allowed named object formats."""
 import collections.abc
-import sys
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -14,11 +13,6 @@ from typing import (
     Union,
     overload,
 )
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 from skbase.base import BaseObject
 
@@ -256,7 +250,7 @@ def is_sequence_named_objects(
 @overload
 def check_sequence_named_objects(
     seq_to_check: Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]],
-    allow_dict: Literal[True] = True,
+    allow_dict: bool = True,
     require_unique_names=False,
     object_type: Optional[Union[type, Tuple[type]]] = None,
     sequence_name: Optional[str] = None,
@@ -267,7 +261,7 @@ def check_sequence_named_objects(
 @overload
 def check_sequence_named_objects(
     seq_to_check: Sequence[Tuple[str, BaseObject]],
-    allow_dict: Literal[False],
+    allow_dict: bool,
     require_unique_names=False,
     object_type: Optional[Union[type, Tuple[type]]] = None,
     sequence_name: Optional[str] = None,
