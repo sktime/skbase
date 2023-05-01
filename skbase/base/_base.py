@@ -158,7 +158,7 @@ class BaseObject(_FlagManager):
         self_clone = type(self)(**self_params)
 
         # if checking the clone is turned off, return now
-        if not self.get_config("check_clone"):
+        if not self.get_config()["check_clone"]:
             return self_clone
 
         from skbase.testing.utils.deep_equals import deep_equals
