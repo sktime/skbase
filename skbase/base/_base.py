@@ -101,7 +101,7 @@ class BaseObject(_FlagManager):
         self_params = self.get_params(deep=False)
         other_params = other.get_params(deep=False)
 
-        return deep_equals(self_params, other_params, return_msg=True)
+        return deep_equals(self_params, other_params)
 
     def reset(self):
         """Reset the object to a clean post-init state.
@@ -175,7 +175,7 @@ class BaseObject(_FlagManager):
         clone_attrs = {attr: getattr(self_clone, attr) for attr in self_params.keys()}
 
         # check equality of parameters post-clone and pre-clone
-        clone_attrs_valid, msg = deep_equals(self_params, clone_attrs)
+        clone_attrs_valid, msg = deep_equals(self_params, clone_attrs, return_msg=True)
         if not clone_attrs_valid:
             raise RuntimeError(
                 f"error in {self}.clone, __init__ must write all arguments "
