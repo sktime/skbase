@@ -85,7 +85,7 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
     "skbase.base._base": ("BaseEstimator", "BaseObject"),
     "skbase.base._meta": ("BaseMetaObject", "BaseMetaEstimator"),
     "skbase.base._pretty_printing._pprint": ("KeyValTuple", "KeyValTupleParam"),
-    "skbase.lookup._lookup": ("ClassInfo", "FunctionInfo", "ModuleInfo"),
+    "skbase.lookup._lookup": (),
     "skbase.testing": ("BaseFixtureGenerator", "QuickTester", "TestAllObjects"),
     "skbase.testing.test_all_objects": (
         "BaseFixtureGenerator",
