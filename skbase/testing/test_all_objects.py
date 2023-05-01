@@ -10,7 +10,6 @@ from copy import deepcopy
 from inspect import getfullargspec, isclass, signature
 from typing import List
 
-import joblib
 import numpy as np
 import pytest
 
@@ -804,6 +803,21 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             if param.name not in required_params and param.name not in test_params
         ]
 
+        ALLOWED_PARAM_TYPES = [
+            str,
+            int,
+            float,
+            bool,
+            tuple,
+            type(None),
+            np.float64,
+            types.FunctionType,
+        ]
+        if _check_soft_dependencies("joblib", severity="none"):
+            from joblib import Memory
+
+            ALLOWED_PARAM_TYPES += [Memory]
+
         for param in init_params:
             assert param.default != param.empty, (
                 "parameter `%s` for %s has no default value and is not "
@@ -813,17 +827,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             if type(param.default) is type:
                 assert param.default in [np.float64, np.int64]
             else:
-                assert type(param.default) in [
-                    str,
-                    int,
-                    float,
-                    bool,
-                    tuple,
-                    type(None),
-                    np.float64,
-                    types.FunctionType,
-                    joblib.Memory,
-                ]
+                assert type(param.default) in ALLOWED_PARAM_TYPES
 
             param_value = params[param.name]
             if isinstance(param_value, np.ndarray):
