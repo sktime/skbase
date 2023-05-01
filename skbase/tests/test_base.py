@@ -142,6 +142,7 @@ class ModifyParam(BaseObject):
     """A non-conforming BaseObject that modifies parameters in init."""
 
     def __init__(self, a=7):
+        self.a = a
         if isinstance(a, list):
             a += [42]
         super().__init__()
