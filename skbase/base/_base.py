@@ -59,9 +59,6 @@ from collections import defaultdict
 from copy import deepcopy
 from typing import List
 
-from sklearn import clone
-from sklearn.base import BaseEstimator as _BaseEstimator
-
 from skbase._exceptions import NotFittedError
 from skbase.base._pretty_printing._object_html_repr import _object_html_repr
 from skbase.base._tagmanager import _FlagManager
@@ -70,7 +67,7 @@ __author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
 __all__: List[str] = ["BaseEstimator", "BaseObject"]
 
 
-class BaseObject(_FlagManager, _BaseEstimator):
+class BaseObject(_FlagManager):
     """Base class for parametric objects with sktime style tag interface.
 
     Extends scikit-learn's BaseEstimator to include sktime style interface for tags.
@@ -147,12 +144,8 @@ class BaseObject(_FlagManager, _BaseEstimator):
 
         A clone is a different object without shared references, in post-init state.
         This function is equivalent to returning sklearn.clone of self.
-
-        Notes
-        -----
-        Also equal in value to `type(self)(**self.get_params(deep=False))`.
         """
-        return clone(self)
+        return type(self)(**self.get_params(deep=False))
 
     @classmethod
     def _get_init_signature(cls):

@@ -13,15 +13,13 @@ from typing import List
 import joblib
 import numpy as np
 import pytest
-from sklearn.utils.estimator_checks import (
-    check_get_params_invariance as _check_get_params_invariance,
-)
 
 from skbase.base import BaseObject
 from skbase.lookup import all_objects
 from skbase.testing.utils._conditional_fixtures import (
     create_conditional_fixtures_and_names,
 )
+from skbase.testing.utils._dependencies import _check_soft_dependencies
 from skbase.testing.utils.deep_equals import deep_equals
 from skbase.testing.utils.inspect import _get_args
 
@@ -662,8 +660,16 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         assert not hasattr(object_instance, "test__attr")
         object_instance.test__attr = 42
 
+    @pytest.mark.skipif(
+        not _check_soft_dependencies("sklearn", severity="none"),
+        reason="skip test if sklearn is not available",
+    )  # sklearn is part of the dev dependency set, test should be executed with that
     def test_get_params(self, object_instance):
-        """Check that get_params works correctly."""
+        """Check that get_params works correctly, against sklearn interface."""
+        from sklearn.utils.estimator_checks import (
+            check_get_params_invariance as _check_get_params_invariance,
+        )
+
         params = object_instance.get_params()
         assert isinstance(params, dict)
         _check_get_params_invariance(
