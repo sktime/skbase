@@ -139,7 +139,7 @@ class Buggy(BaseObject):
 
 
 class ModifyParam(BaseObject):
-    """A non-conforming BaseObject that modifyies parameters in init."""
+    """A non-conforming BaseObject that modifies parameters in init."""
 
     def __init__(self, a=7):
         self.a = deepcopy(a)
