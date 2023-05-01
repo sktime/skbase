@@ -26,16 +26,7 @@ from collections.abc import Iterable
 from copy import deepcopy
 from operator import itemgetter
 from types import ModuleType
-from typing import (
-    Any,
-    List,
-    Mapping,
-    MutableMapping,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-)
+from typing import Any, List, Mapping, MutableMapping, Optional, Sequence, Tuple, Union
 
 from skbase.base import BaseObject
 from skbase.validate import check_sequence
