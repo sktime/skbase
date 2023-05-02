@@ -10,18 +10,15 @@ from copy import deepcopy
 from inspect import getfullargspec, isclass, signature
 from typing import List
 
-import joblib
 import numpy as np
 import pytest
-from sklearn.utils.estimator_checks import (
-    check_get_params_invariance as _check_get_params_invariance,
-)
 
 from skbase.base import BaseObject
 from skbase.lookup import all_objects
 from skbase.testing.utils._conditional_fixtures import (
     create_conditional_fixtures_and_names,
 )
+from skbase.testing.utils._dependencies import _check_soft_dependencies
 from skbase.testing.utils.deep_equals import deep_equals
 from skbase.testing.utils.inspect import _get_args
 
@@ -662,8 +659,16 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         assert not hasattr(object_instance, "test__attr")
         object_instance.test__attr = 42
 
+    @pytest.mark.skipif(
+        not _check_soft_dependencies("sklearn", severity="none"),
+        reason="skip test if sklearn is not available",
+    )  # sklearn is part of the dev dependency set, test should be executed with that
     def test_get_params(self, object_instance):
-        """Check that get_params works correctly."""
+        """Check that get_params works correctly, against sklearn interface."""
+        from sklearn.utils.estimator_checks import (
+            check_get_params_invariance as _check_get_params_invariance,
+        )
+
         params = object_instance.get_params()
         assert isinstance(params, dict)
         _check_get_params_invariance(
@@ -798,6 +803,21 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             if param.name not in required_params and param.name not in test_params
         ]
 
+        allowed_param_types = [
+            str,
+            int,
+            float,
+            bool,
+            tuple,
+            type(None),
+            np.float64,
+            types.FunctionType,
+        ]
+        if _check_soft_dependencies("joblib", severity="none"):
+            from joblib import Memory
+
+            allowed_param_types += [Memory]
+
         for param in init_params:
             assert param.default != param.empty, (
                 "parameter `%s` for %s has no default value and is not "
@@ -807,17 +827,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             if type(param.default) is type:
                 assert param.default in [np.float64, np.int64]
             else:
-                assert type(param.default) in [
-                    str,
-                    int,
-                    float,
-                    bool,
-                    tuple,
-                    type(None),
-                    np.float64,
-                    types.FunctionType,
-                    joblib.Memory,
-                ]
+                assert type(param.default) in allowed_param_types
 
             param_value = params[param.name]
             if isinstance(param_value, np.ndarray):
