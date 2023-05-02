@@ -5,7 +5,12 @@
     "url": "https://skbase.readthedocs.io/en/latest/"
   },
   {
-    "name": "0.4.1 (stable)",
+    "name": "0.4.2 (stable)",
+    "version": "stable",
+    "url": "https://skbase.readthedocs.io/en/stable/"
+  },
+  {
+    "name": "0.4.1",
     "version": "stable",
     "url": "https://skbase.readthedocs.io/en/stable/"
   },

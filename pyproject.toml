@@ -1,6 +1,6 @@
 [project]
 name = "skbase"
-version = "0.4.1"
+version = "0.4.2"
 description = "Base classes for sklearn-like parametric objects"
 authors = [
     {name = "Franz Király"},
