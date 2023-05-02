@@ -28,11 +28,13 @@ therefore this removal is not accompanied by deprecation.
 Dependency changes
 ------------------
 
-* ``scikit-learn``, ``typing-extensions``, and ``pytest`` are no longer core dependencies.
+* ``scikit-learn``, ``typing-extensions``, and ``pytest`` are no longer
+  core dependencies.
   ``pytest`` remains a dependency in ``dev`` and ``test`` dependency sets.
 * ``scikit-learn`` is now part of the ``dev`` and ``test`` depency sets,
   as it is required to test compatibility with ``scikit-learn``
-* a dependency conflict has been resolved in the ``docs`` dependency set for the docs build,
+* a dependency conflict has been resolved in the ``docs`` dependency set for
+  the docs build,
   by pinning versions
 
 Maintenance
@@ -43,7 +45,8 @@ Maintenance
 * [MNT] remove dependency on ``scikit-learn`` (:pr:`171`) :user:`fkiraly`
 * [MNT] add ``scikit-learn`` to ``test`` dependency set (:pr:`172`) :user:`fkiraly`
 * [MNT] remove ``fail-fast`` flag in CI (:pr:`169`) :user:`fkiraly`
-* [MNT] resolve dependency conflict in ``docs`` dependency set (:pr:`173`) :user:`fkiraly`
+* [MNT] resolve dependency conflict in ``docs`` dependency
+  set (:pr:`173`) :user:`fkiraly`
 
 
 [0.4.1] - 2023-04-26
