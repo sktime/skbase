@@ -78,7 +78,7 @@ def test_basemetaestimator_inheritance(fixture_metaestimator_instance):
     ), "`BaseMetaEstimator` not correctly subclassing `BaseEstimator` and `BaseObject`."
 
     # Verify expected MRO inherittence order
-    assert BaseMetaEstimator.__mro__[:-3] == (
+    assert BaseMetaEstimator.__mro__[:-2] == (
         BaseMetaEstimator,
         _MetaObjectMixin,
         _MetaTagLogicMixin,

@@ -75,10 +75,8 @@ import numpy as np
 import pytest
 import scipy.sparse as sp
 
-# TODO: Update with import of skbase clone function once implemented
-from sklearn.base import clone
-
 from skbase.base import BaseEstimator, BaseObject
+from skbase.testing.utils._dependencies import _check_soft_dependencies
 from skbase.tests.conftest import Child, Parent
 from skbase.tests.mock_package.test_mock_package import CompositionDummy
 
@@ -141,7 +139,7 @@ class Buggy(BaseObject):
 
 
 class ModifyParam(BaseObject):
-    """A non-conforming BaseObject that modifyies parameters in init."""
+    """A non-conforming BaseObject that modifies parameters in init."""
 
     def __init__(self, a=7):
         self.a = deepcopy(a)
@@ -823,13 +821,23 @@ def test_clone_raises_error_for_nonconforming_objects(
     with pytest.raises(RuntimeError):
         varg_obj.clone()
 
-    obj_that_modifies = fixture_modify_param(a=[0])
-    with pytest.raises(RuntimeError):
-        obj_that_modifies.clone()
+    # fkiraly note: I don't think this class violates the contract,
+    # as equality is defined as via deepcopy
+    # leaving the code here for reference and potential discussion
+    #
+    # obj_that_modifies = fixture_modify_param(a=[0])
+    # with pytest.raises(RuntimeError):
+    #     obj_that_modifies.clone()
 
 
+@pytest.mark.skipif(
+    not _check_soft_dependencies("sklearn", severity="none"),
+    reason="skip test if sklearn is not available",
+)  # sklearn is part of the dev dependency set, test should be executed with that
 def test_clone_param_is_none(fixture_class_parent: Type[Parent]):
     """Test clone with keyword parameter set to None."""
+    from sklearn.base import clone
+
     base_obj = fixture_class_parent(c=None)
     new_base_obj = clone(base_obj)
     new_base_obj2 = base_obj.clone()
@@ -837,12 +845,18 @@ def test_clone_param_is_none(fixture_class_parent: Type[Parent]):
     assert base_obj.c is new_base_obj2.c
 
 
+@pytest.mark.skipif(
+    not _check_soft_dependencies("sklearn", severity="none"),
+    reason="skip test if sklearn is not available",
+)  # sklearn is part of the dev dependency set, test should be executed with that
 def test_clone_empty_array(fixture_class_parent: Type[Parent]):
     """Test clone with keyword parameter is scipy sparse matrix.
 
     This test is based on scikit-learn regression test to make sure clone
     works with default parameter set to scipy sparse matrix.
     """
+    from sklearn.base import clone
+
     # Regression test for cloning estimators with empty arrays
     base_obj = fixture_class_parent(c=np.array([]))
     new_base_obj = clone(base_obj)
@@ -851,12 +865,18 @@ def test_clone_empty_array(fixture_class_parent: Type[Parent]):
     np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
 
 
+@pytest.mark.skipif(
+    not _check_soft_dependencies("sklearn", severity="none"),
+    reason="skip test if sklearn is not available",
+)  # sklearn is part of the dev dependency set, test should be executed with that
 def test_clone_sparse_matrix(fixture_class_parent: Type[Parent]):
     """Test clone with keyword parameter is scipy sparse matrix.
 
     This test is based on scikit-learn regression test to make sure clone
     works with default parameter set to scipy sparse matrix.
     """
+    from sklearn.base import clone
+
     base_obj = fixture_class_parent(c=sp.csr_matrix(np.array([[0]])))
     new_base_obj = clone(base_obj)
     new_base_obj2 = base_obj.clone()
@@ -864,12 +884,18 @@ def test_clone_sparse_matrix(fixture_class_parent: Type[Parent]):
     np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
 
 
+@pytest.mark.skipif(
+    not _check_soft_dependencies("sklearn", severity="none"),
+    reason="skip test if sklearn is not available",
+)  # sklearn is part of the dev dependency set, test should be executed with that
 def test_clone_nan(fixture_class_parent: Type[Parent]):
     """Test clone with keyword parameter is np.nan.
 
     This test is based on scikit-learn regression test to make sure clone
     works with default parameter set to np.nan.
     """
+    from sklearn.base import clone
+
     # Regression test for cloning estimators with default parameter as np.nan
     base_obj = fixture_class_parent(c=np.nan)
     new_base_obj = clone(base_obj)
@@ -887,10 +913,16 @@ def test_clone_estimator_types(fixture_class_parent: Type[Parent]):
     assert base_obj.c == new_base_obj.c
 
 
+@pytest.mark.skipif(
+    not _check_soft_dependencies("sklearn", severity="none"),
+    reason="skip test if sklearn is not available",
+)  # sklearn is part of the dev dependency set, test should be executed with that
 def test_clone_class_rather_than_instance_raises_error(
     fixture_class_parent: Type[Parent],
 ):
     """Test clone raises expected error when cloning a class instead of an instance."""
+    from sklearn.base import clone
+
     msg = "You should provide an instance of scikit-learn estimator"
     with pytest.raises(TypeError, match=msg):
         clone(fixture_class_parent)

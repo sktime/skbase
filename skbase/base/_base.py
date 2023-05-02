@@ -59,9 +59,6 @@ from collections import defaultdict
 from copy import deepcopy
 from typing import List
 
-from sklearn import clone
-from sklearn.base import BaseEstimator as _BaseEstimator
-
 from skbase._exceptions import NotFittedError
 from skbase.base._pretty_printing._object_html_repr import _object_html_repr
 from skbase.base._tagmanager import _FlagManager
@@ -70,7 +67,7 @@ __author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
 __all__: List[str] = ["BaseEstimator", "BaseObject"]
 
 
-class BaseObject(_FlagManager, _BaseEstimator):
+class BaseObject(_FlagManager):
     """Base class for parametric objects with sktime style tag interface.
 
     Extends scikit-learn's BaseEstimator to include sktime style interface for tags.
@@ -79,6 +76,7 @@ class BaseObject(_FlagManager, _BaseEstimator):
     _config = {
         "display": "diagram",
         "print_changed_only": True,
+        "check_clone": True,  # whether to execute validity checks in clone
     }
 
     def __init__(self):
@@ -148,11 +146,44 @@ class BaseObject(_FlagManager, _BaseEstimator):
         A clone is a different object without shared references, in post-init state.
         This function is equivalent to returning sklearn.clone of self.
 
+        Raises
+        ------
+        RuntimeError if the clone is non-conforming, due to faulty ``__init__``.
+
         Notes
         -----
-        Also equal in value to `type(self)(**self.get_params(deep=False))`.
+        If successful, equal in value to ``type(self)(**self.get_params(deep=False))``.
         """
-        return clone(self)
+        self_params = self.get_params(deep=False)
+        self_clone = type(self)(**self_params)
+
+        # if checking the clone is turned off, return now
+        if not self.get_config()["check_clone"]:
+            return self_clone
+
+        from skbase.testing.utils.deep_equals import deep_equals
+
+        # check that all attributes are written to the clone
+        for attrname in self_params.keys():
+            if not hasattr(self_clone, attrname):
+                raise RuntimeError(
+                    f"error in {self}.clone, __init__ must write all arguments "
+                    f"to self and not mutate them, but {attrname} was not found. "
+                    f"Please check __init__ of {self}."
+                )
+
+        clone_attrs = {attr: getattr(self_clone, attr) for attr in self_params.keys()}
+
+        # check equality of parameters post-clone and pre-clone
+        clone_attrs_valid, msg = deep_equals(self_params, clone_attrs, return_msg=True)
+        if not clone_attrs_valid:
+            raise RuntimeError(
+                f"error in {self}.clone, __init__ must write all arguments "
+                f"to self and not mutate them, but this is not the case. "
+                f"Error on equality check of arguments (x) vs parameters (y): {msg}"
+            )
+
+        return self_clone
 
     @classmethod
     def _get_init_signature(cls):
