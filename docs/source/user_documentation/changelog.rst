@@ -15,6 +15,37 @@ You can also subscribe to ``skbase``'s
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
 
+[0.4.2] - 2023-05-02
+====================
+
+Maintenance update that cleans up dependencies.
+
+Notably, ``scikit-base`` no longer has any core dependencies.
+
+This is as per usage intention as a base module,
+therefore this removal is not accompanied by deprecation.
+
+Dependency changes
+~~~~~~~~~~~~~~~~~~
+
+* ``scikit-learn``, ``typing-extensions``, and ``pytest`` are no longer core dependencies.
+  ``pytest`` remains a dependency in ``dev`` and ``test`` dependency sets.
+* ``scikit-learn`` is now part of the ``dev`` and ``test`` depency sets,
+  as it is required to test compatibility with ``scikit-learn``
+* a dependency conflict has been resolved in the ``docs`` dependency set for the docs build,
+  by pinning versions
+
+Maintenance
+-----------
+
+* [MNT] remove dependency on ``typing-extensions`` (:pr:`167`) :user:`fkiraly`
+* [MNT] remove dependency on ``pytest`` (:pr:`168`) :user:`fkiraly`
+* [MNT] remove dependency on ``scikit-learn`` (:pr:`171`) :user:`fkiraly`
+* [MNT] add ``scikit-learn`` to ``test`` dependency set (:pr:`172`) :user:`fkiraly`
+* [MNT] remove ``fail-fast`` flag in CI (:pr:`169`) :user:`fkiraly`
+* [MNT] resolve dependency conflict in ``docs`` dependency set (:pr:`173`) :user:`fkiraly`
+
+
 [0.4.1] - 2023-04-26
 ====================
 
@@ -24,7 +55,7 @@ Fixes
 -----
 
 * [BUG] fix html display for meta-objects (:pr:`160`) :user:`fkiraly`
-* [BUG] Fix `all_objects` lookup, broken tag filter (:pr:`161`) :user:`fkiraly`
+* [BUG] Fix ``all_objects`` lookup, broken tag filter (:pr:`161`) :user:`fkiraly`
 
 
 [0.4.0] - 2023-04-25
