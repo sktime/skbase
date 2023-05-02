@@ -88,6 +88,7 @@ test = [
     "numpy",
     "scipy",
     "pandas",
+    "scikit-learn>=0.24.0",
 ]
 
 [project.urls]
