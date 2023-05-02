@@ -26,7 +26,7 @@ This is as per usage intention as a base module,
 therefore this removal is not accompanied by deprecation.
 
 Dependency changes
-~~~~~~~~~~~~~~~~~~
+------------------
 
 * ``scikit-learn``, ``typing-extensions``, and ``pytest`` are no longer core dependencies.
   ``pytest`` remains a dependency in ``dev`` and ``test`` dependency sets.
