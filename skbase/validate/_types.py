@@ -213,7 +213,7 @@ def is_sequence(
         element_type_ = _convert_scalar_seq_type_input_to_tuple(
             element_type, input_name="element_type"
         )
-        element_types_okay = all([isinstance(e, element_type_) for e in input_seq])
+        element_types_okay = all(isinstance(e, element_type_) for e in input_seq)
         if not element_types_okay:
             is_valid_sequence = False
 
