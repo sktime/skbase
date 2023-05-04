@@ -5,7 +5,7 @@
 
 from warnings import warn
 
-from skbase.utils.dependencies import _check_soft_dependencies, _check_python_version
+from skbase.utils.dependencies import _check_python_version, _check_soft_dependencies
 
 warn(
     "_check_soft_dependencies, _check_python_versiontesting have moved to "
