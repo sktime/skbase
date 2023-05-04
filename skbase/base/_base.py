@@ -76,7 +76,7 @@ class BaseObject(_FlagManager):
     _config = {
         "display": "diagram",
         "print_changed_only": True,
-        "check_clone": True,  # whether to execute validity checks in clone
+        "check_clone": False,  # whether to execute validity checks in clone
     }
 
     def __init__(self):
