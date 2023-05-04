@@ -63,7 +63,7 @@ jobs:
         run: |
           python -m pip install .
 
-      - name: Rune the pytest-free tests
+      - name: Run pytest-free tests
         run: |
           python skbase/_nopytest_tests.py
 
