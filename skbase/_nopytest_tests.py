@@ -9,7 +9,7 @@ MODULES_TO_IGNORE = ("tests", "dependencies", "all")
 
 # all_objectscrawls all modules excepting pytest test files
 # if it encounters an unisolated import, it will throw an exception
-results = all_objects()
+results = all_objects(modules_to_ignore=MODULES_TO_IGNORE)
 
 # try to run all methods of BaseObject without arguments
 # very basic test, but needs to run without pytest
