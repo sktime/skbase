@@ -187,6 +187,10 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
         "skbase.testing.utils.deep_equals": ("deep_equals",),
         "skbase.testing.utils.inspect": ("_get_args",),
         "skbase.utils._check": ("_is_scalar_nan",),
+        "skbase.utils.dependencies": (
+            "_check_soft_dependencies",
+            "_check_python_version",
+        ),
         "skbase.utils._iter": (
             "_format_seq_to_str",
             "_remove_type_text",
@@ -212,6 +216,10 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_softdep_available",
             "_tuple_equals",
             "deep_equals",
+        ),
+        "skbase.utils.dependencies._dependencies": (
+            "_check_soft_dependencies",
+            "_check_python_version",
         ),
         "skbase.validate._named_objects": (
             "check_sequence_named_objects",
