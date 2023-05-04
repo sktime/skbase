@@ -152,7 +152,18 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
         "unflatten",
     ),
     "skbase.utils._utils": ("subset_dict_keys",),
-    "skbase.utils.deep_equals": ("deep_equals",),
+    "skbase.utils.deep_equals": (
+        '_coerce_list',
+        '_dict_equals',
+        '_fh_equals',
+        '_is_npnan',
+        '_is_npndarray',
+        '_is_pandas',
+        '_pandas_equals',
+        '_softdep_available',
+        '_tuple_equals',
+        "deep_equals",
+    ),
     "skbase.validate._types": ("check_sequence", "check_type", "is_sequence"),
 }
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
