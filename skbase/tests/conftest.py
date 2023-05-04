@@ -75,6 +75,8 @@ SKBASE_PUBLIC_MODULES = (
     "skbase.tests.test_baseestimator",
     "skbase.tests.mock_package.test_mock_package",
     "skbase.utils",
+    "skbase.utils.deep_equals",
+    "skbase.utils.dependencies",
     "skbase.validate",
 )
 SKBASE_PUBLIC_CLASSES_BY_MODULE = {
@@ -181,17 +183,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_check_soft_dependencies",
             "_check_python_version",
         ),
-        "skbase.testing.utils.deep_equals": (
-            "_pandas_equals",
-            "_dict_equals",
-            "_is_pandas",
-            "_is_npnan",
-            "_tuple_equals",
-            "_fh_equals",
-            "deep_equals",
-            "_is_npndarray",
-            "_coerce_list",
-        ),
+        "skbase.testing.utils.deep_equals": ("deep_equals"),
         "skbase.testing.utils.inspect": ("_get_args",),
         "skbase.utils._check": ("_is_scalar_nan",),
         "skbase.utils._iter": (
