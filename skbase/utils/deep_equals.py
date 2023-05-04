@@ -14,8 +14,8 @@ __all__: List[str] = ["deep_equals"]
 
 
 # flag variables for available soft dependencies
-# we are not using _check_soft_dependencies in order to uncouple
-# this utility from the dependency on packaging of _check_soft_dependencies
+# we are not using _check_soft_dependencies in order to keep
+# this utility uncouple from the dependency on "packaging", of _check_soft_dependencies
 def _softdep_available(importname):
     from importlib import import_module
 
