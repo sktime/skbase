@@ -93,7 +93,7 @@ class BaseObject(_FlagManager):
 
         Nested BaseObject descendants from get_params are compared via __eq__ as well.
         """
-        from skbase.testing.utils.deep_equals import deep_equals
+        from skbase.utils.deep_equals import deep_equals
 
         if not isinstance(other, BaseObject):
             return False
@@ -161,7 +161,7 @@ class BaseObject(_FlagManager):
         if not self.get_config()["check_clone"]:
             return self_clone
 
-        from skbase.testing.utils.deep_equals import deep_equals
+        from skbase.utils.deep_equals import deep_equals
 
         # check that all attributes are written to the clone
         for attrname in self_params.keys():
