@@ -152,6 +152,7 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
         "unflatten",
     ),
     "skbase.utils._utils": ("subset_dict_keys",),
+    "skbase.utils.deep_equals": ("deep_equals",),
     "skbase.validate._types": ("check_sequence", "check_type", "is_sequence"),
 }
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
@@ -183,7 +184,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_check_soft_dependencies",
             "_check_python_version",
         ),
-        "skbase.testing.utils.deep_equals": ("deep_equals"),
+        "skbase.testing.utils.deep_equals": ("deep_equals",),
         "skbase.testing.utils.inspect": ("_get_args",),
         "skbase.utils._check": ("_is_scalar_nan",),
         "skbase.utils._iter": (
