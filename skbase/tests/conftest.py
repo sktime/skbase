@@ -19,6 +19,7 @@ SKBASE_BASE_CLASSES = (BaseObject, BaseEstimator)
 SKBASE_MODULES = (
     "skbase",
     "skbase._exceptions",
+    "skbase._nopytest_tests",
     "skbase.base",
     "skbase.base._base",
     "skbase.base._meta",
