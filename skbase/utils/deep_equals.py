@@ -9,15 +9,26 @@ Objects compared can have one of the following valid types:
 from inspect import isclass
 from typing import List
 
-from skbase.utils.dependencies import _check_soft_dependencies
-
 __author__: List[str] = ["fkiraly"]
 __all__: List[str] = ["deep_equals"]
 
 
 # flag variables for available soft dependencies
-pandas_available = _check_soft_dependencies("pandas", severity="none")
-numpy_available = _check_soft_dependencies("numpy", severity="none")
+# we are not using _check_soft_dependencies in order to uncouple
+# this utility from the dependency on packaging of _check_soft_dependencies
+def _softdep_available(importname):
+    from importlib import import_module
+
+    try:
+        import_module(importname)
+    except ModuleNotFoundError:
+        return False
+    else:
+        return True
+
+
+numpy_available = _softdep_available("numpy")
+pandas_available = _softdep_available("pandas")
 
 
 def deep_equals(x, y, return_msg=False):
