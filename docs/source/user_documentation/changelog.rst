@@ -15,6 +15,21 @@ You can also subscribe to ``skbase``'s
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
 
+[0.4.3] - 2023-05-04
+====================
+
+Hotfix for accidental import of ``pytest`` through ``BaseObject.clone``,
+including test for ``pytest`` dependency isolation.
+
+Contents
+--------
+
+* [BUG] turn off check in ``BaseObject.clone`` (:pr:`176`) :user:`fkiraly`
+* [MNT] test for isolation of developer dependencies,
+  and basic ``pytest``-less test for ``BaseObject`` (:pr:`179`) :user:`fkiraly`
+* [DOC] fix some broken doc links, linting (:pr:`175`) :user:`fkiraly`
+
+
 [0.4.2] - 2023-05-02
 ====================
 
