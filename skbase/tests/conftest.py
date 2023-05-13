@@ -138,6 +138,7 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
         "is_sequence_named_objects",
     ),
     "skbase.utils": (
+        "deep_equals",
         "flatten",
         "is_flat",
         "make_strings_unique",
