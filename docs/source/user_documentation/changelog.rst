@@ -21,7 +21,7 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 Regular maintenance release.
 
 Deprecations and removals
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 The ``deep_equals`` utility has moved to ``skbase.utils.deep_equals``.
 The old location in ``skbase.testing.utils.deep_equals`` will be removed in
