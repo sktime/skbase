@@ -813,11 +813,13 @@ def test_clone_raises_error_for_nonconforming_objects(
 ):
     """Test that clone raises an error on nonconforming BaseObjects."""
     buggy = fixture_buggy()
+    buggy.set_config(**{"check_clone": True})
     buggy.a = 2
     with pytest.raises(RuntimeError):
         buggy.clone()
 
     varg_obj = fixture_invalid_init(a=7)
+    varg_obj.set_config(**{"check_clone": True})
     with pytest.raises(RuntimeError):
         varg_obj.clone()
 
@@ -826,6 +828,7 @@ def test_clone_raises_error_for_nonconforming_objects(
     # leaving the code here for reference and potential discussion
     #
     # obj_that_modifies = fixture_modify_param(a=[0])
+    # obj_that_modifies.set_config(**{"check_clone": True})
     # with pytest.raises(RuntimeError):
     #     obj_that_modifies.clone()
 
