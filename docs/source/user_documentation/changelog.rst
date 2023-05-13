@@ -15,6 +15,34 @@ You can also subscribe to ``skbase``'s
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
 
+[0.4.4] - 2023-05-13
+====================
+
+Regular maintenance release.
+
+Deprecations and removals
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``deep_equals`` utility has moved to ``skbase.utils.deep_equals``.
+The old location in ``skbase.testing.utils.deep_equals`` will be removed in
+``skbase`` 0.6.0, until then it can still be imported from there, with a warning.
+
+Maintenance
+-----------
+
+* [MNT] move ``deep_equals`` and dependency checkers from testing to utilities
+  to remove accidental coupling to ``pytest`` (:pr:`178`)
+  :user:`fkiraly`, :user:`yarnabrina`
+* [MNT] test for isolation of developer dependencies,
+  and basic ``pytest``-less test for ``BaseObject`` (:pr:`179`, :pr:`183`)
+  :user:`fkiraly`
+
+Contributors
+------------
+:user:`fkiraly`,
+:user:`yarnabrina`
+
+
 [0.4.3] - 2023-05-04
 ====================
 
