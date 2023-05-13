@@ -13,22 +13,23 @@ results = all_objects(modules_to_ignore=MODULES_TO_IGNORE)
 
 # try to run all methods of BaseObject without arguments
 # very basic test, but needs to run without pytest
-METHODS = [
-    "clone",
-    "get_params",
-    "reset",
-    "get_param_names",
-    "get_param_defaults",
-    "get_params",
-    "get_class_tags",
-    "get_tags",
-    "get_config",
-    "get_test_params",
-    "create_test_instance",
-    "create_test_instances_and_names",
-    "is_composite",
-]
+METHODS = {
+    "clone": {},
+    "get_params": {},
+    "reset": {},
+    "get_param_names": {},
+    "get_param_defaults": {},
+    "get_class_tags": {},
+    "get_tags": {},
+    "get_config": {},
+    "get_test_params": {},
+    "create_test_instance": {},
+    "create_test_instances_and_names": {},
+    "is_composite": {},
+    "set_tags": {"foo": "bar"},
+    "set_config": {"bar": "foo"},
+}
 
 mybo = BaseObject()
-for method in METHODS:
-    getattr(mybo, method)
+for method, params in METHODS.items():
+    getattr(mybo, method)(**params)
