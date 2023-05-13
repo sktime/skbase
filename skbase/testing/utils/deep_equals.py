@@ -5,7 +5,7 @@
 
 from warnings import warn
 
-from skbase.utils.deep_equals import deep_equals
+from skbase.utils import deep_equals
 
 warn(
     "deep_equals has moved to "
