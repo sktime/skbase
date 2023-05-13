@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from skbase.testing.utils._dependencies import _check_soft_dependencies
-from skbase.testing.utils.deep_equals import deep_equals
+from skbase.utils.deep_equals import deep_equals
 
 # examples used for comparison below
 EXAMPLES = [

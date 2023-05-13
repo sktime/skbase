@@ -50,6 +50,9 @@ SKBASE_MODULES = (
     "skbase.utils._iter",
     "skbase.utils._nested_iter",
     "skbase.utils._utils",
+    "skbase.utils.deep_equals",
+    "skbase.utils.dependencies",
+    "skbase.utils.dependencies._dependencies",
     "skbase.validate",
     "skbase.validate._named_objects",
     "skbase.validate._types",
@@ -73,6 +76,8 @@ SKBASE_PUBLIC_MODULES = (
     "skbase.tests.test_baseestimator",
     "skbase.tests.mock_package.test_mock_package",
     "skbase.utils",
+    "skbase.utils.deep_equals",
+    "skbase.utils.dependencies",
     "skbase.validate",
 )
 SKBASE_PUBLIC_CLASSES_BY_MODULE = {
@@ -148,6 +153,7 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
         "unflatten",
     ),
     "skbase.utils._utils": ("subset_dict_keys",),
+    "skbase.utils.deep_equals": ("deep_equals",),
     "skbase.validate._types": ("check_sequence", "check_type", "is_sequence"),
 }
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
@@ -179,19 +185,13 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_check_soft_dependencies",
             "_check_python_version",
         ),
-        "skbase.testing.utils.deep_equals": (
-            "_pandas_equals",
-            "_dict_equals",
-            "_is_pandas",
-            "_is_npnan",
-            "_tuple_equals",
-            "_fh_equals",
-            "deep_equals",
-            "_is_npndarray",
-            "_coerce_list",
-        ),
+        "skbase.testing.utils.deep_equals": ("deep_equals",),
         "skbase.testing.utils.inspect": ("_get_args",),
         "skbase.utils._check": ("_is_scalar_nan",),
+        "skbase.utils.dependencies": (
+            "_check_soft_dependencies",
+            "_check_python_version",
+        ),
         "skbase.utils._iter": (
             "_format_seq_to_str",
             "_remove_type_text",
@@ -206,6 +206,22 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "unflatten",
         ),
         "skbase.utils._utils": ("subset_dict_keys",),
+        "skbase.utils.deep_equals": (
+            "_coerce_list",
+            "_dict_equals",
+            "_fh_equals",
+            "_is_npnan",
+            "_is_npndarray",
+            "_is_pandas",
+            "_pandas_equals",
+            "_softdep_available",
+            "_tuple_equals",
+            "deep_equals",
+        ),
+        "skbase.utils.dependencies._dependencies": (
+            "_check_soft_dependencies",
+            "_check_python_version",
+        ),
         "skbase.validate._named_objects": (
             "check_sequence_named_objects",
             "is_named_object_tuple",
