@@ -14,6 +14,11 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.4.5] - 2023-05-14
+====================
+
+Dummy release for ``aarch64`` support on ``conda`` (added in recipe there).
+
 
 [0.4.4] - 2023-05-13
 ====================
