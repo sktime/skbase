@@ -1,3 +1,4 @@
+<a href="https://skbase.readthedocs.io/en/latest/"><img src="https://github.com/sktime/skbase/blob/main/docs/source/images/skbase-logo-with-name.png" width="175" align="right" /></a>
 
 # Welcome to skbase
 
