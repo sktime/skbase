@@ -291,10 +291,10 @@ def _import_module(
     elif isinstance(module, importlib.machinery.SourceFileLoader):
         if suppress_import_stdout:
             sys.stdout = io.StringIO()
-            imported_mod = module.load_module()
+            imported_mod = module.exec_module()
             sys.stdout = sys.__stdout__
         else:
-            imported_mod = module.load_module()
+            imported_mod = module.exec_module()
     else:
         raise ValueError(
             "`module` should be string module name or instance of "
