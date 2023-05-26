@@ -189,9 +189,11 @@ class _MetaObjectMixin:
         # Set variables that let us use same code for retrieving params or fitted params
         if fitted:
             method = "_get_fitted_params"
+            methodd = "get_fitted_params"
             deepkw = {}
         else:
             method = "get_params"
+            methodd = "get_params"
             deepkw = {"deep": deep}
 
         # Get the direct params/fitted params
@@ -207,7 +209,14 @@ class _MetaObjectMixin:
             ]
             out.update(named_objects_)
             for name, obj in named_objects_:
-                if hasattr(obj, method):
+                # checks estimator has the method we want to call
+                cond1 = hasattr(obj, methodd)
+                # checks estimator is fitted if calling get_fitted_params
+                is_fitted = hasattr(obj, "is_fitted") and obj.is_fitted
+                # if we call get_params and not get_fitted_params, this is True
+                cond2 = not fitted or is_fitted
+                # check both conditions together
+                if cond1 and cond2:
                     for key, value in getattr(obj, method)(**deepkw).items():
                         out["%s__%s" % (name, key)] = value
         return out
