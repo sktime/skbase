@@ -1211,7 +1211,7 @@ class BaseEstimator(BaseObject):
         estimator_type = type(estimator)
         # XXX: not handling dictionaries
         if estimator_type in (list, tuple, set, frozenset):
-            return estimator_type([clone(e, safe=safe) for e in estimator])
+            return estimator_type([self._clone(e, safe=safe) for e in estimator])
         elif not hasattr(estimator, "get_params") or isinstance(estimator, type):
             if not safe:
                 return deepcopy(estimator)
@@ -1233,7 +1233,7 @@ class BaseEstimator(BaseObject):
         klass = estimator.__class__
         new_object_params = estimator.get_params(deep=False)
         for name, param in new_object_params.items():
-            new_object_params[name] = clone(param, safe=False)
+            new_object_params[name] = self._clone(param, safe=False)
         new_object = klass(**new_object_params)
         params_set = new_object.get_params(deep=False)
 
