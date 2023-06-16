@@ -8,7 +8,7 @@
 along with tools to make it easier to build your own packages that follow these
 design patterns.
 
-:rocket: Version 0.4.5 is now available. Checkout our
+:rocket: Version 0.4.6 is now available. Checkout our
 [release notes](https://skbase.readthedocs.io/en/latest/changelog.html).
 
 | Overview | |
