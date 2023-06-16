@@ -14,6 +14,17 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.4.6] - 2023-06-16
+====================
+
+Bugfix release:
+
+* [BUG] fix clone for nested sklearn estimators (:pr:`195`)
+  :user:`fkiraly`, :user:`hazrulakmal`
+* [BUG] fix faulty ``suppress_import_stdout`` in ``all_objects`` (:pr:`193`)
+  :user:`fkiraly`
+
+
 [0.4.5] - 2023-05-14
 ====================
 
