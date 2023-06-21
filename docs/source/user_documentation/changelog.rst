@@ -14,6 +14,13 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.5.0] - 2023-06-21
+====================
+
+Maintenance release at python 3.7 end-of-life.
+Removes support for python 3.7.
+
+
 [0.4.6] - 2023-06-16
 ====================
 
