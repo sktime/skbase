@@ -18,6 +18,7 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 ====================
 
 Maintenance release at python 3.7 end-of-life.
+
 Removes support for python 3.7.
 
 
