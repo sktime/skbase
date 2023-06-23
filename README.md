@@ -8,7 +8,7 @@
 along with tools to make it easier to build your own packages that follow these
 design patterns.
 
-:rocket: Version 0.4.6 is now available. Checkout our
+:rocket: Version 0.5.0 is now available. Checkout our
 [release notes](https://skbase.readthedocs.io/en/latest/changelog.html).
 
 | Overview | |
@@ -30,7 +30,7 @@ For trouble shooting or more information, see our
 [detailed installation instructions](https://skbase.readthedocs.io/en/latest/user_documentation/installation.html).
 
 - **Operating system**: macOS X · Linux · Windows 8.1 or higher
-- **Python version**: Python 3.7, 3.8, 3.9, 3.10 and 3.11
+- **Python version**: Python 3.8, 3.9, 3.10 and 3.11
 - **Package managers**: [pip]
 
 [pip]: https://pip.pypa.io/en/stable/
