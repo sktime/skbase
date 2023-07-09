@@ -2,11 +2,10 @@
 
 # Welcome to skbase
 
-> A base class for scikit-learn-like and sktime-like parametric objects
+> A framework factory for scikit-learn-like and sktime-like parametric objects
 
 `skbase` provides base classes for creating scikit-learn-like parametric objects,
-along with tools to make it easier to build your own packages that follow these
-design patterns.
+along with tools to make it easier to build your own packages that follow these design patterns.
 
 :rocket: Version 0.5.0 is now available. Checkout our
 [release notes](https://skbase.readthedocs.io/en/latest/changelog.html).
@@ -21,9 +20,12 @@ design patterns.
 [![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-## Documentation
+## Documentation and Tutorials
 
-To learn more about the package checkout our [documentation](https://skbase.readthedocs.io/en/latest/).
+To learn more about the package check out:
+
+* our [documentation](https://skbase.readthedocs.io/en/latest/)
+* our [introductory tutorial](https://github.com/sktime/sktime-tutorial-pydata-seattle-2023) (jupyter notebooks and video presentation)
 
 ## :hourglass_flowing_sand: Install skbase
 For trouble shooting or more information, see our
