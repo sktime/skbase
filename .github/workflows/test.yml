@@ -104,7 +104,6 @@ jobs:
       - name: Run tests
         run: |
           mkdir -p testdir/
-          cp .coveragerc testdir/
           cp setup.cfg testdir/
           python -m pytest
 
