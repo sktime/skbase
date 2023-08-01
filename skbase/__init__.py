@@ -8,7 +8,7 @@ sktime design principles in your project.
 """
 from typing import List
 
-__version__: str = "0.4.6"
+__version__: str = "0.5.0"
 
 __author__: List[str] = ["fkiraly", "RNKuhns", "mloning"]
 __all__: List[str] = []
