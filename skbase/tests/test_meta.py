@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
-"""Tests for BaseMetaObject and BaseMetaEstimator mixins.
+"""Tests for BaseMetaObject and BaseMetaEstimator mixins."""
 
-tests in this module:
-
-
-"""
-
-__author__ = ["RNKuhns"]
+__author__ = ["RNKuhns", "fkiraly"]
 import inspect
 
 import pytest
@@ -17,13 +12,14 @@ from skbase.base import BaseEstimator, BaseObject
 from skbase.base._meta import (
     BaseMetaEstimator,
     BaseMetaObject,
+    BaseObject,
     _MetaObjectMixin,
     _MetaTagLogicMixin,
 )
 
 
 class MetaObjectTester(BaseMetaObject):
-    """Class to test meta object functionality."""
+    """Class to test meta-object functionality."""
 
     def __init__(self, a=7, b="something", c=None, steps=None):
         self.a = a
@@ -33,7 +29,7 @@ class MetaObjectTester(BaseMetaObject):
 
 
 class MetaEstimatorTester(BaseMetaEstimator):
-    """Class to test meta estimator functionality."""
+    """Class to test meta-estimator functionality."""
 
     def __init__(self, a=7, b="something", c=None, steps=None):
         self.a = a
@@ -42,18 +38,29 @@ class MetaEstimatorTester(BaseMetaEstimator):
         self.steps = steps
 
 
+class ComponentDummy(BaseObject):
+    """Class to use as components in meta-estimator."""
+
+    def __init__(self, a=7, b="something"):
+        self.a = a
+        self.b = b
+
+
 @pytest.fixture
 def fixture_metaestimator_instance():
+    """BaseMetaEstimator instance fixture."""
     return BaseMetaEstimator()
 
 
 @pytest.fixture
 def fixture_meta_object():
+    """MetaObjectTester instance fixture."""
     return MetaObjectTester()
 
 
 @pytest.fixture
 def fixture_meta_estimator():
+    """MetaEstimatorTester instance fixture."""
     return MetaEstimatorTester()
 
 
