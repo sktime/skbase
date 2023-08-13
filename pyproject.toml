@@ -119,7 +119,7 @@ known_first_party = ["skbase"]
 
 [tool.black]
 line-length = 88
-extend-exclude = ["^/setup.py", "docs/conf.py"]
+extend-exclude = "^/setup.py docs/conf.py"
 
 [tool.pydocstyle]
 convention = "numpy"
