@@ -12,7 +12,6 @@ from skbase.base import BaseEstimator, BaseObject
 from skbase.base._meta import (
     BaseMetaEstimator,
     BaseMetaObject,
-    BaseObject,
     _MetaObjectMixin,
     _MetaTagLogicMixin,
 )
@@ -136,3 +135,24 @@ def test_basemetaestimator_check_is_fitted_raises_error_when_unfitted(
 
     fixture_metaestimator_instance._is_fitted = True
     assert fixture_metaestimator_instance.check_is_fitted() is None
+
+
+@pytest.mark.parametrize("long_steps", (True, False))
+def test_metaestimator_composite(long_steps):
+    """Test composite meta-estimator functionality."""
+    if long_steps:
+        steps = [("foo", ComponentDummy(42)), ("bar", ComponentDummy(24))]
+    else:
+        steps = [("foo", ComponentDummy(42), 123), ("bar", ComponentDummy(24), 321)]
+
+    meta_est = MetaEstimatorTester(steps=steps)
+
+    meta_est_params = meta_est.get_params()
+    assert isinstance(meta_est_params, dict)
+    expected_keys = [
+        "a", "b", "c", "steps", "foo", "bar", "foo__a", "foo__b", "bar__a", "bar__b"
+    ]
+    assert set(meta_est_params.keys()) == set(expected_keys)
+
+    meta_est.set_params(bar__b="something else")
+    assert meta_est.get_params()["bar__b"] == "something else"
