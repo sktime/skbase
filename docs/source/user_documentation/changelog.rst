@@ -14,6 +14,37 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.5.1] - 2023-08-14
+====================
+
+Release with minor improvements and bugfixes.
+
+Enhancements
+------------
+
+* [ENH] remove ``sklearn`` dependency in ``test_get_params`` (:pr:`212`) :user:`fkiraly`
+
+Documentation
+-------------
+
+* [DOC] landing page updates (:pr:`188`) :user:`fkiraly`
+
+Maintenance
+-----------
+
+* [MNT] separate windows CI element from unix based CI (:pr:`209`) :user:`fkiraly`
+* [MNT] convert ``black`` ``extend-exclude`` parameter to single string
+  (:pr:`207`) :user:`fkiraly`
+* [MNT] update ``__init__`` version (:pr:`210`) :user:`fkiraly`
+* [MNT] fix linting issue from newest pre-commit versions (:pr:`211`) :user:`fkiraly`
+
+Fixes
+-----
+
+* [BUG] fix for ``get_fitted_params`` in ``_HeterogenousMetaEstimator``
+  (:pr:`191`) :user:`fkiraly`
+
+
 [0.5.0] - 2023-06-21
 ====================
 
