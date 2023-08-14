@@ -153,7 +153,16 @@ def test_metaestimator_composite(long_steps):
     meta_est_params = meta_est.get_params()
     assert isinstance(meta_est_params, dict)
     expected_keys = [
-        "a", "b", "c", "steps", "foo", "bar", "foo__a", "foo__b", "bar__a", "bar__b"
+        "a",
+        "b",
+        "c",
+        "steps",
+        "foo",
+        "bar",
+        "foo__a",
+        "foo__b",
+        "bar__a",
+        "bar__b",
     ]
     assert set(meta_est_params.keys()) == set(expected_keys)
 
