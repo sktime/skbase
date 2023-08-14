@@ -33,14 +33,16 @@ Maintenance
 -----------
 
 * [MNT] separate windows CI element from unix based CI (:pr:`209`) :user:`fkiraly`
-* [MNT] convert ``black`` ``extend-exclude`` parameter to single string (:pr:`207`) :user:`fkiraly`
+* [MNT] convert ``black`` ``extend-exclude`` parameter to single string
+  (:pr:`207`) :user:`fkiraly`
 * [MNT] update ``__init__`` version (:pr:`210`) :user:`fkiraly`
 * [MNT] fix linting issue from newest pre-commit versions (:pr:`211`) :user:`fkiraly`
 
 Fixes
 -----
 
-* [BUG] fix for ``get_fitted_params`` in ``_HeterogenousMetaEstimator`` (:pr:`191`) :user:`fkiraly`
+* [BUG] fix for ``get_fitted_params`` in ``_HeterogenousMetaEstimator``
+  (:pr:`191`) :user:`fkiraly`
 
 
 [0.5.0] - 2023-06-21
