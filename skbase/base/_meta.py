@@ -243,8 +243,8 @@ class _MetaObjectMixin:
         # 2. Step replacement
         items = getattr(self, attr)
         names = []
-        if items:
-            names, _ = zip(*items)
+        if items and isinstance(items, (list, tuple)):
+            names = list(zip(*items))[0]
         for name in list(params.keys()):
             if "__" not in name and name in names:
                 self._replace_object(attr, name, params.pop(name))
@@ -256,9 +256,12 @@ class _MetaObjectMixin:
         """Replace an object in attribute that contains named objects."""
         # assumes `name` is a valid object name
         new_objects = list(getattr(self, attr))
-        for i, (object_name, _) in enumerate(new_objects):
+        for i, obj_tpl in enumerate(new_objects):
+            object_name = obj_tpl[0]
             if object_name == name:
-                new_objects[i] = (name, new_val)
+                new_tpl = list(obj_tpl)
+                new_tpl[1] = new_val
+                new_objects[i] = tuple(new_tpl)
                 break
         setattr(self, attr, new_objects)
 
