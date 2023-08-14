@@ -25,6 +25,7 @@ class MetaObjectTester(BaseMetaObject):
         self.b = b
         self.c = c
         self.steps = steps
+        super().__init__()
 
 
 class MetaEstimatorTester(BaseMetaEstimator):
@@ -35,6 +36,7 @@ class MetaEstimatorTester(BaseMetaEstimator):
         self.b = b
         self.c = c
         self.steps = steps
+        super().__init__()
 
 
 class ComponentDummy(BaseObject):
@@ -43,6 +45,7 @@ class ComponentDummy(BaseObject):
     def __init__(self, a=7, b="something"):
         self.a = a
         self.b = b
+        super().__init__()
 
 
 @pytest.fixture
