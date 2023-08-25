@@ -856,12 +856,48 @@ class BaseMetaObject(_MetaObjectMixin, _MetaTagLogicMixin, BaseObject):
     this would allow `get_params` and `set_params` to retrieve and update the
     parameters of the objects in each step.
 
+    Note: if inheriting from an abstract descendant of `BaseObject`, use
+    ``BaseMetaObjectMixin`` and not ``BaseMetaObject``.
+
     See Also
     --------
+    BaseMetaObjectMixin :
+        Mixin for inheriting from abstract descendants of ``BaseObject``.
+        Same as ``BaseMetaObject``, but does not inherit from ``BaseObject``.
     BaseMetaEstimator :
-        Expands on `BaseMetaObject` by adding functionality for getting fitted
-        parameters from a class's component estimators. `BaseEstimator` should
-        be used when you want to create a meta estimator.
+        Expands on ``BaseMetaObject`` by adding functionality for getting fitted
+        parameters from a class's component estimators.
+    """
+
+
+class BaseMetaObjectMixin(_MetaObjectMixin, _MetaTagLogicMixin):
+    """Parameter and tag management for objects composed of named objects.
+
+    Allows objects to get and set nested parameters when a parameter of the the
+    class has values that follow the named object specification. For example,
+    in a pipeline class with the the "step" parameter accepting named objects,
+    this would allow `get_params` and `set_params` to retrieve and update the
+    parameters of the objects in each step.
+
+    Mixin for inheriting from abstract descendants of ``BaseObject``.
+    Intended use is inheriting as follows:
+
+    ``class MyAbstractBaseClass(BaseObject)``, and then
+    ``class MyConcreteClass(BaseMetaObjectMixin, MyAbstractBaseClass)``
+
+    The mixin will override:
+    ``get_params``, ``set_params``, ``_get_params``, ``_set_params``,
+    ``_get_fitted_params``, ``_sk_visual_block_``
+
+    See Also
+    --------
+    BaseMetaEstimatorMixin :
+        Expands on ``BaseMetaObjectMixin`` by adding functionality for getting fitted
+        parameters from a class's component estimators.
+    BaseMetaObject :
+        same as ``BaseMetaObjectMixin``, but also inherits from ``BaseObject``.
+        Use for a standalone meta-object class.
+        Do not use if inheriting from an abstract descendant of ``BaseObject``.
     """
 
 
@@ -874,10 +910,48 @@ class BaseMetaEstimator(_MetaObjectMixin, _MetaTagLogicMixin, BaseEstimator):
     this would allow `get_params` and `set_params` to retrieve and update the
     parameters of the objects in each step.
 
+    Note: if inheriting from an abstract descendant of `BaseEstimator`, use
+    ``BaseMetaEstimatorMixin`` and not ``BaseMetaEstimator``.
+
     See Also
     --------
+    BaseMetaEstimatorMixin :
+        Mixin for inheriting from abstract descendants of ``BaseObject``.
+        Same as ``BaseMetaObject``, but does not inherit from ``BaseObject``.
     BaseMetaObject :
-        Provides similar functionality to  `BaseMetaEstimator` for getting
-        parameters from a class's component objects, but does not have the
-        estimator interface.
+        Provides similar functionality to  `BaseMetaEstimator`,
+        but does not have the estimator interface for fitting and fitted parameters.
+    """
+
+
+class BaseMetaEstimatorMixin(_MetaObjectMixin, _MetaTagLogicMixin):
+    """Parameter and tag management for estimators composed of named objects.
+
+    Allows estimators to get and set nested parameters when a parameter of the the
+    class has values that follow the named object specification. For example,
+    in a pipeline class with the the "step" parameter accepting named objects,
+    this would allow `get_params` and `set_params` to retrieve and update the
+    parameters of the objects in each step.
+
+    Mixin for inheriting from abstract descendants of ``BaseEstimator``.
+    Intended use is inheriting as follows:
+
+    ``class MyAbstractBaseClass(BaseEstimator)``, and then
+    ``class MyConcreteClass(BaseMetaEstimatorMixin, MyAbstractBaseClass)``
+
+    Note: the order of inheritance is important.
+
+    The mixin will override:
+    ``get_params``, ``set_params``, ``_get_params``, ``_set_params``,
+    ``_get_fitted_params``, ``_sk_visual_block_``
+
+    See Also
+    --------
+    BaseMetaObjectMixin :
+        Provides similar functionality to  `BaseMetaEstimatorMixin`,
+        but does not have the estimator interface for fitting and fitted parameters.
+    BaseMetaEstimator :
+        same as ``BaseMetaEstimatorMixin``, but also inherits from ``BaseEstimator``.
+        Use for a standalone meta-estimator class.
+        Do not use if inheriting from an abstract descendant of ``BaseEstimator``.
     """
