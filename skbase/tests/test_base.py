@@ -77,7 +77,7 @@ import pytest
 import scipy.sparse as sp
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.testing.utils._dependencies import _check_soft_dependencies
+from skbase.utils.dependencies import _check_soft_dependencies
 from skbase.tests.conftest import Child, Parent
 from skbase.tests.mock_package.test_mock_package import CompositionDummy
 
