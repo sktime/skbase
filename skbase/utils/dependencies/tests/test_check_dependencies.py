@@ -3,7 +3,7 @@
 import pytest
 from packaging.requirements import InvalidRequirement
 
-from skbase.testing.utils._dependencies import _check_soft_dependencies
+from skbase.utils.dependencies._dependencies import _check_soft_dependencies
 
 
 def test_check_soft_deps():
