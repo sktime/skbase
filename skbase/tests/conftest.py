@@ -85,11 +85,18 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
     "skbase.base": (
         "BaseEstimator",
         "BaseMetaEstimator",
+        "BaseMetaEstimatorMixin",
         "BaseMetaObject",
+        "BaseMetaObjectMixin",
         "BaseObject",
     ),
     "skbase.base._base": ("BaseEstimator", "BaseObject"),
-    "skbase.base._meta": ("BaseMetaObject", "BaseMetaEstimator"),
+    "skbase.base._meta": (
+        "BaseMetaObject",
+        "BaseMetaObjectMixin",
+        "BaseMetaEstimator",
+        "BaseMetaEstimatorMixin",
+    ),
     "skbase.base._pretty_printing._pprint": ("KeyValTuple", "KeyValTupleParam"),
     "skbase.lookup._lookup": (),
     "skbase.testing": ("BaseFixtureGenerator", "QuickTester", "TestAllObjects"),
@@ -104,7 +111,9 @@ SKBASE_CLASSES_BY_MODULE.update(
     {
         "skbase.base._meta": (
             "BaseMetaObject",
+            "BaseMetaObjectMixin",
             "BaseMetaEstimator",
+            "BaseMetaEstimatorMixin",
             "_MetaObjectMixin",
             "_MetaTagLogicMixin",
         ),
