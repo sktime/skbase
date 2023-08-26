@@ -77,9 +77,9 @@ import pytest
 import scipy.sparse as sp
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.utils.dependencies import _check_soft_dependencies
 from skbase.tests.conftest import Child, Parent
 from skbase.tests.mock_package.test_mock_package import CompositionDummy
+from skbase.utils.dependencies import _check_soft_dependencies
 
 
 # TODO: Determine if we need to add sklearn style test of
