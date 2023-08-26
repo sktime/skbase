@@ -5,7 +5,7 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from skbase.testing.utils._dependencies import _check_soft_dependencies
+from skbase.utils.dependencies import _check_soft_dependencies
 from skbase.utils.deep_equals import deep_equals
 
 # examples used for comparison below
