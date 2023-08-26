@@ -19,8 +19,8 @@ from skbase.testing.utils._conditional_fixtures import (
     create_conditional_fixtures_and_names,
 )
 from skbase.testing.utils.inspect import _get_args
-from skbase.utils.dependencies import _check_soft_dependencies
 from skbase.utils.deep_equals import deep_equals
+from skbase.utils.dependencies import _check_soft_dependencies
 
 __author__: List[str] = ["fkiraly"]
 
