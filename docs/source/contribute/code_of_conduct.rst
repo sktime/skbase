@@ -11,10 +11,10 @@ at all times.
 
 As an offshoot of the sktime project, we ask all members of the community to conform
 to the sktime project's
-`Code of Conduct <https://www.sktime.org/en/stable/get_involved/code_of_conduct.html>`_.
+`Code of Conduct <https://www.sktime.net/en/stable/get_involved/code_of_conduct.html>`_.
 
 If you need to report a Code of Conduct incident, reach out
-to Dr. Franz Király by email at f.kiraly@ucl.ac.uk.
+to Dr. Franz Király by email at franz.kiraly@sktime.net.
 
 .. note::
 

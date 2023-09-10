@@ -238,5 +238,5 @@ References
 Our governance model is inspired by various existing governance
 structures. In particular, we’d like to acknowledge:
 
-* `sktime’s governance model <https://www.sktime.org/en/latest/get_involved/governance.htmls>`_
+* `sktime’s governance model <https://www.sktime.net/en/latest/get_involved/governance.htmls>`_
 * `scikit-learn’s governance model <https://scikit-learn.org/stable/governance.html>`_

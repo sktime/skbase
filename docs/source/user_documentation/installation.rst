@@ -196,7 +196,7 @@ References
 ----------
 
 The installation instruction are adapted from sktime's
-`installation instructions <https://www.sktime.org/en/stable/installation.html>`_.
+`installation instructions <https://www.sktime.net/en/stable/installation.html>`_.
 
 .. _Github repository: https://github.com/sktime/skbase
 .. _repository clone documentation: https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
