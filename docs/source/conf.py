@@ -178,9 +178,14 @@ html_theme_options = {
             "icon": "fab fa-github",
         },
         {
-            "name": "Slack",
-            "url": "https://join.slack.com/t/skbase/shared_invite/zt-1qke3vzl2-fADjZBZadBlXsLUym5NlhA",  # noqa: E501
-            "icon": "fab fa-slack",
+            "name": "Discord",
+            "url": "https://discord.com/invite/54ACzaFsn7",
+            "icon": "fab fa-discord",
+        },
+        {
+            "name": "LinkedIn",
+            "url": "https://www.linkedin.com/company/scikit-time/",
+            "icon": "fab fa-linkedin",
         },
         {
             "name": "PyPI",
