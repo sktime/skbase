@@ -14,6 +14,12 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.6.0] - 2023-10-03
+====================
+
+Support for Python 3.12
+
+
 [0.5.2] - 2023-10-03
 ====================
 

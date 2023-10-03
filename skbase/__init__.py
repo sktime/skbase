@@ -8,4 +8,4 @@ sktime design principles in your project.
 """
 from typing import List
 
-__version__: str = "0.5.2"
+__version__: str = "0.6.0"
