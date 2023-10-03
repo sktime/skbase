@@ -298,6 +298,7 @@ def _import_module(
             imported_mod = importlib.import_module(module)
         elif isinstance(module, importlib.machinery.SourceFileLoader):
             spec = importlib.util.spec_from_loader(module.name, module)
+            spec.origin = module.path
             imported_mod = importlib.util.module_from_spec(spec)
         exc = None
     except Exception as e:
