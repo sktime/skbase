@@ -6,6 +6,4 @@
 The included functionality makes it easy to re-use scikit-learn and
 sktime design principles in your project.
 """
-from typing import List
-
 __version__: str = "0.5.2"
