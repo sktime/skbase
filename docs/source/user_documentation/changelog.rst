@@ -17,9 +17,11 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 [0.5.2] - 2023-10-03
 ====================
 
-Release with minor improvements and bugfixes.
+Release with minor improvements.
 
-
+* [ENH] move tests for dependency checks and ``deep_equals`` to ``utils`` module (:pr:`217`) :user:`fkiraly`
+* [ENH] meta-object mixins (:pr:`216`) :user:`fkiraly`
+* [DOC] update ``sktime`` links (:pr:`219`) :user:`fkiraly`
 
 
 [0.5.1] - 2023-08-14
