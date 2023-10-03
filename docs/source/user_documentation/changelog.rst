@@ -19,7 +19,8 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 
 Release with minor improvements.
 
-* [ENH] move tests for dependency checks and ``deep_equals`` to ``utils`` module (:pr:`217`) :user:`fkiraly`
+* [ENH] move tests for dependency checks and ``deep_equals``
+  to ``utils`` module (:pr:`217`) :user:`fkiraly`
 * [ENH] meta-object mixins (:pr:`216`) :user:`fkiraly`
 * [DOC] update ``sktime`` links (:pr:`219`) :user:`fkiraly`
 
