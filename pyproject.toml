@@ -1,15 +1,13 @@
 [project]
-name = "skbase"
-version = "0.4.5"
+name = "scikit-base"
+version = "0.5.1"
 description = "Base classes for sklearn-like parametric objects"
 authors = [
-    {name = "Franz Király"},
-    {name = "Markus Löning"},
-    {name = "Ryan Kuhns"},
+    {name = "sktime developers", email = "sktime.toolbox@gmail.com"},
 ]
 maintainers = [
-    {name = "Franz Kiraly", email = "f.kiraly@ucl.ac.uk"},
-    {name = "Ryan Kuhns", email = "rk.skbase@gmail.com"},
+    {name = "sktime developers", email = "sktime.toolbox@gmail.com"},
+    {name = "Franz Király"},
 ]
 readme = "README.md"
 keywords = [
@@ -28,13 +26,12 @@ classifiers = [
     "Operating System :: POSIX",
     "Operating System :: Unix",
     "Operating System :: MacOS",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
-requires-python = ">=3.7,<3.12"
+requires-python = ">=3.8,<3.12"
 dependencies = []
 
 [project.optional-dependencies]
@@ -122,7 +119,7 @@ known_first_party = ["skbase"]
 
 [tool.black]
 line-length = 88
-extend-exclude = ["^/setup.py", "docs/conf.py"]
+extend-exclude = "^/setup.py docs/conf.py"
 
 [tool.pydocstyle]
 convention = "numpy"

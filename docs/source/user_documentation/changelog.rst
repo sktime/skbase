@@ -14,6 +14,56 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.5.1] - 2023-08-14
+====================
+
+Release with minor improvements and bugfixes.
+
+Enhancements
+------------
+
+* [ENH] remove ``sklearn`` dependency in ``test_get_params`` (:pr:`212`) :user:`fkiraly`
+
+Documentation
+-------------
+
+* [DOC] landing page updates (:pr:`188`) :user:`fkiraly`
+
+Maintenance
+-----------
+
+* [MNT] separate windows CI element from unix based CI (:pr:`209`) :user:`fkiraly`
+* [MNT] convert ``black`` ``extend-exclude`` parameter to single string
+  (:pr:`207`) :user:`fkiraly`
+* [MNT] update ``__init__`` version (:pr:`210`) :user:`fkiraly`
+* [MNT] fix linting issue from newest pre-commit versions (:pr:`211`) :user:`fkiraly`
+
+Fixes
+-----
+
+* [BUG] fix for ``get_fitted_params`` in ``_HeterogenousMetaEstimator``
+  (:pr:`191`) :user:`fkiraly`
+
+
+[0.5.0] - 2023-06-21
+====================
+
+Maintenance release at python 3.7 end-of-life.
+
+Removes support for python 3.7.
+
+
+[0.4.6] - 2023-06-16
+====================
+
+Bugfix release:
+
+* [BUG] fix clone for nested sklearn estimators (:pr:`195`)
+  :user:`fkiraly`, :user:`hazrulakmal`
+* [BUG] fix faulty ``suppress_import_stdout`` in ``all_objects`` (:pr:`193`)
+  :user:`fkiraly`
+
+
 [0.4.5] - 2023-05-14
 ====================
 

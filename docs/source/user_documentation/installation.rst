@@ -6,7 +6,7 @@ Installation
 
 ``skbase`` currently supports:
 
-* environments with python version 3.7, 3.8, 3.9, 3.10 or 3.11
+* environments with python version 3.8, 3.9, 3.10 or 3.11
 * operating systems Mac OS X, Unix-like OS, Windows 8.1 and higher
 
 Checkout the full list of pre-compiled wheels on
@@ -196,7 +196,7 @@ References
 ----------
 
 The installation instruction are adapted from sktime's
-`installation instructions <https://www.sktime.org/en/stable/installation.html>`_.
+`installation instructions <https://www.sktime.net/en/stable/installation.html>`_.
 
 .. _Github repository: https://github.com/sktime/skbase
 .. _repository clone documentation: https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository

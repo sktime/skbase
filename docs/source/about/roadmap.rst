@@ -33,4 +33,4 @@ We are also considering creating:
   package's testing interface.
 
 .. _scikit-learn: https://scikit-learn.org/stable/index.html
-.. _sktime: https://www.sktime.org/en/stable/index.html
+.. _sktime: https://www.sktime.net/en/stable/index.html

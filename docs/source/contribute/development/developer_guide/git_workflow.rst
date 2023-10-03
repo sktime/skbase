@@ -8,7 +8,7 @@ Git and GitHub workflow
    If your not familiar with ``git`` you may want to start by reviewing
    `Git's documentation <https://git-scm.com/doc>`_ and then trying
    out the workflow. If you get stuck, chat with us on
-   `Slack <https://join.slack.com/t/sktime-group/shared_invite/zt-1cghagwee-sqLJ~eHWGYgzWbqUX937ig>`_.
+   `Discord <https://discord.com/invite/54ACzaFsn7>`_.
 
 The preferred workflow for contributing to ``skbase``'s repository is to
 fork the `main repository <https://github.com//sktime/skbase>`_ on GitHub,

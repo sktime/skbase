@@ -25,4 +25,4 @@ If you are interested in contributing, check out our
 
 .. _scikit-learn: https://scikit-learn.org/stable/index.html
 .. _BaseEstimator API: https://scikit-learn.org/stable/developers/develop.html
-.. _sktime: https://www.sktime.org/en/stable/index.html
+.. _sktime: https://www.sktime.net/en/stable/index.html

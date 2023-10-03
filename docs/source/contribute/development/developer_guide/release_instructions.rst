@@ -33,14 +33,14 @@ the month. To ensure releases go smoothly, the following steps are taken leading
 up to each release:
 
 1. 1 week before release date, update the release project board and alert
-   project contributors of upcoming release on slack.
+   project contributors of upcoming release on Discord.
 2. For major releases or substantial features, optionally extend the release cycle,
    if needed, so that the changes can be completed and incorporated in the release.
-   If a release will be delayed, notify project contributors on slack.
+   If a release will be delayed, notify project contributors on Discord.
 3. All changes to the main branch of the repository are frozen 1 day prior to the
    release. At this point only the release managers (for this release) should
    merge any pull requests. Remind core developers of the timing of the feature
-   freeze on slack when announcing the upcoming release date. Remind core developers
+   freeze on Discord when announcing the upcoming release date. Remind core developers
    of the feature freeze again 1 day prior to its start. Make sure to keep
    core developers in the loop if any delays or extensions to the feature freeze arise.
 4. If "must have" pull requests are not merged by the planned release date, the
@@ -106,7 +106,7 @@ The release process is as follows, on high-level:
    according to the install instructions (choose an arbitrary version/OS).
    If the install does not succeed or wheels have not been uploaded, urgent
    action to diagnose and remedy must be taken. All core developers should be
-   informed of the situation through mail-all in the core developer channel on slack.
+   informed of the situation through mail-all in the core developer channel on Discord.
    In the most common case, the install instructions need to be updated.
    If wheel upload has failed, the tag in 5. needs to be deleted and recreated.
    The tag can be deleted using the ``git`` command

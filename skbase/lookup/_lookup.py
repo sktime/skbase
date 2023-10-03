@@ -280,26 +280,37 @@ def _import_module(
     imported_mod : ModuleType
         The module that was imported.
     """
-    if isinstance(module, str):
-        if suppress_import_stdout:
-            # setup text trap, import, then restore
-            sys.stdout = io.StringIO()
-            imported_mod = importlib.import_module(module)
-            sys.stdout = sys.__stdout__
-        else:
-            imported_mod = importlib.import_module(module)
-    elif isinstance(module, importlib.machinery.SourceFileLoader):
-        if suppress_import_stdout:
-            sys.stdout = io.StringIO()
-            imported_mod = module.exec_module()
-            sys.stdout = sys.__stdout__
-        else:
-            imported_mod = module.exec_module()
-    else:
+    # input check
+    if not isinstance(module, (str, importlib.machinery.SourceFileLoader)):
         raise ValueError(
             "`module` should be string module name or instance of "
             "importlib.machinery.SourceFileLoader."
         )
+
+    # if suppress_import_stdout:
+    # setup text trap, import
+    if suppress_import_stdout:
+        temp_stdout = sys.stdout
+        sys.stdout = io.StringIO()
+
+    try:
+        if isinstance(module, str):
+            imported_mod = importlib.import_module(module)
+        elif isinstance(module, importlib.machinery.SourceFileLoader):
+            imported_mod = module.load_module()
+        exc = None
+    except Exception as e:
+        # we store the exception so we can restore the stdout fisrt
+        exc = e
+
+    # if we set up a text trap, restore it to the initial value
+    if suppress_import_stdout:
+        sys.stdout = temp_stdout
+
+    # if we encountered an exception, now raise it
+    if exc is not None:
+        raise exc
+
     return imported_mod
 
 

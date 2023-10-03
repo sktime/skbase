@@ -55,6 +55,7 @@ __all__ = [
     "test_clone_nan",
     "test_clone_estimator_types",
     "test_clone_class_rather_than_instance_raises_error",
+    "test_clone_sklearn_composite",
     "test_baseobject_repr",
     "test_baseobject_str",
     "test_baseobject_repr_mimebundle_",
@@ -76,9 +77,9 @@ import pytest
 import scipy.sparse as sp
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.testing.utils._dependencies import _check_soft_dependencies
 from skbase.tests.conftest import Child, Parent
 from skbase.tests.mock_package.test_mock_package import CompositionDummy
+from skbase.utils.dependencies import _check_soft_dependencies
 
 
 # TODO: Determine if we need to add sklearn style test of
@@ -929,6 +930,21 @@ def test_clone_class_rather_than_instance_raises_error(
     msg = "You should provide an instance of scikit-learn estimator"
     with pytest.raises(TypeError, match=msg):
         clone(fixture_class_parent)
+
+
+@pytest.mark.skipif(
+    not _check_soft_dependencies("sklearn", severity="none"),
+    reason="skip test if sklearn is not available",
+)  # sklearn is part of the dev dependency set, test should be executed with that
+def test_clone_sklearn_composite(fixture_class_parent: Type[Parent]):
+    """Test clone with keyword parameter set to None."""
+    from sklearn.ensemble import GradientBoostingRegressor
+
+    sklearn_obj = GradientBoostingRegressor(random_state=5, learning_rate=0.02)
+    composite = ResetTester(a=sklearn_obj)
+    composite_set = composite.clone().set_params(a__random_state=42)
+    assert composite.get_params()["a__random_state"] == 5
+    assert composite_set.get_params()["a__random_state"] == 42
 
 
 # Tests of BaseObject pretty printing representation inspired by sklearn

@@ -188,14 +188,16 @@ class _MetaObjectMixin:
         """
         # Set variables that let us use same code for retrieving params or fitted params
         if fitted:
-            method = "_get_fitted_params"
+            method_shallow = "_get_fitted_params"
+            method_public = "get_fitted_params"
             deepkw = {}
         else:
-            method = "get_params"
+            method_shallow = "get_params"
+            method_public = "get_params"
             deepkw = {"deep": deep}
 
         # Get the direct params/fitted params
-        out = getattr(super(), method)(**deepkw)
+        out = getattr(super(), method_shallow)(**deepkw)
 
         if deep and hasattr(self, attr):
             named_objects = getattr(self, attr)
@@ -207,8 +209,15 @@ class _MetaObjectMixin:
             ]
             out.update(named_objects_)
             for name, obj in named_objects_:
-                if hasattr(obj, method):
-                    for key, value in getattr(obj, method)(**deepkw).items():
+                # checks estimator has the method we want to call
+                cond1 = hasattr(obj, method_public)
+                # checks estimator is fitted if calling get_fitted_params
+                is_fitted = hasattr(obj, "is_fitted") and obj.is_fitted
+                # if we call get_params and not get_fitted_params, this is True
+                cond2 = not fitted or is_fitted
+                # check both conditions together
+                if cond1 and cond2:
+                    for key, value in getattr(obj, method_public)(**deepkw).items():
                         out["%s__%s" % (name, key)] = value
         return out
 
@@ -234,8 +243,8 @@ class _MetaObjectMixin:
         # 2. Step replacement
         items = getattr(self, attr)
         names = []
-        if items:
-            names, _ = zip(*items)
+        if items and isinstance(items, (list, tuple)):
+            names = list(zip(*items))[0]
         for name in list(params.keys()):
             if "__" not in name and name in names:
                 self._replace_object(attr, name, params.pop(name))
@@ -247,9 +256,12 @@ class _MetaObjectMixin:
         """Replace an object in attribute that contains named objects."""
         # assumes `name` is a valid object name
         new_objects = list(getattr(self, attr))
-        for i, (object_name, _) in enumerate(new_objects):
+        for i, obj_tpl in enumerate(new_objects):
+            object_name = obj_tpl[0]
             if object_name == name:
-                new_objects[i] = (name, new_val)
+                new_tpl = list(obj_tpl)
+                new_tpl[1] = new_val
+                new_objects[i] = tuple(new_tpl)
                 break
         setattr(self, attr, new_objects)
 
@@ -844,12 +856,48 @@ class BaseMetaObject(_MetaObjectMixin, _MetaTagLogicMixin, BaseObject):
     this would allow `get_params` and `set_params` to retrieve and update the
     parameters of the objects in each step.
 
+    Note: if inheriting from an abstract descendant of `BaseObject`, use
+    ``BaseMetaObjectMixin`` and not ``BaseMetaObject``.
+
     See Also
     --------
+    BaseMetaObjectMixin :
+        Mixin for inheriting from abstract descendants of ``BaseObject``.
+        Same as ``BaseMetaObject``, but does not inherit from ``BaseObject``.
     BaseMetaEstimator :
-        Expands on `BaseMetaObject` by adding functionality for getting fitted
-        parameters from a class's component estimators. `BaseEstimator` should
-        be used when you want to create a meta estimator.
+        Expands on ``BaseMetaObject`` by adding functionality for getting fitted
+        parameters from a class's component estimators.
+    """
+
+
+class BaseMetaObjectMixin(_MetaObjectMixin, _MetaTagLogicMixin):
+    """Parameter and tag management for objects composed of named objects.
+
+    Allows objects to get and set nested parameters when a parameter of the the
+    class has values that follow the named object specification. For example,
+    in a pipeline class with the the "step" parameter accepting named objects,
+    this would allow `get_params` and `set_params` to retrieve and update the
+    parameters of the objects in each step.
+
+    Mixin for inheriting from abstract descendants of ``BaseObject``.
+    Intended use is inheriting as follows:
+
+    ``class MyAbstractBaseClass(BaseObject)``, and then
+    ``class MyConcreteClass(BaseMetaObjectMixin, MyAbstractBaseClass)``
+
+    The mixin will override:
+    ``get_params``, ``set_params``, ``_get_params``, ``_set_params``,
+    ``_get_fitted_params``, ``_sk_visual_block_``
+
+    See Also
+    --------
+    BaseMetaEstimatorMixin :
+        Expands on ``BaseMetaObjectMixin`` by adding functionality for getting fitted
+        parameters from a class's component estimators.
+    BaseMetaObject :
+        same as ``BaseMetaObjectMixin``, but also inherits from ``BaseObject``.
+        Use for a standalone meta-object class.
+        Do not use if inheriting from an abstract descendant of ``BaseObject``.
     """
 
 
@@ -862,10 +910,48 @@ class BaseMetaEstimator(_MetaObjectMixin, _MetaTagLogicMixin, BaseEstimator):
     this would allow `get_params` and `set_params` to retrieve and update the
     parameters of the objects in each step.
 
+    Note: if inheriting from an abstract descendant of `BaseEstimator`, use
+    ``BaseMetaEstimatorMixin`` and not ``BaseMetaEstimator``.
+
     See Also
     --------
+    BaseMetaEstimatorMixin :
+        Mixin for inheriting from abstract descendants of ``BaseObject``.
+        Same as ``BaseMetaObject``, but does not inherit from ``BaseObject``.
     BaseMetaObject :
-        Provides similar functionality to  `BaseMetaEstimator` for getting
-        parameters from a class's component objects, but does not have the
-        estimator interface.
+        Provides similar functionality to  `BaseMetaEstimator`,
+        but does not have the estimator interface for fitting and fitted parameters.
+    """
+
+
+class BaseMetaEstimatorMixin(_MetaObjectMixin, _MetaTagLogicMixin):
+    """Parameter and tag management for estimators composed of named objects.
+
+    Allows estimators to get and set nested parameters when a parameter of the the
+    class has values that follow the named object specification. For example,
+    in a pipeline class with the the "step" parameter accepting named objects,
+    this would allow `get_params` and `set_params` to retrieve and update the
+    parameters of the objects in each step.
+
+    Mixin for inheriting from abstract descendants of ``BaseEstimator``.
+    Intended use is inheriting as follows:
+
+    ``class MyAbstractBaseClass(BaseEstimator)``, and then
+    ``class MyConcreteClass(BaseMetaEstimatorMixin, MyAbstractBaseClass)``
+
+    Note: the order of inheritance is important.
+
+    The mixin will override:
+    ``get_params``, ``set_params``, ``_get_params``, ``_set_params``,
+    ``_get_fitted_params``, ``_sk_visual_block_``
+
+    See Also
+    --------
+    BaseMetaObjectMixin :
+        Provides similar functionality to  `BaseMetaEstimatorMixin`,
+        but does not have the estimator interface for fitting and fitted parameters.
+    BaseMetaEstimator :
+        same as ``BaseMetaEstimatorMixin``, but also inherits from ``BaseEstimator``.
+        Use for a standalone meta-estimator class.
+        Do not use if inheriting from an abstract descendant of ``BaseEstimator``.
     """
