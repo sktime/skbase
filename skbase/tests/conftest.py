@@ -35,8 +35,6 @@ SKBASE_MODULES = (
     "skbase.testing.test_all_objects",
     "skbase.testing.utils",
     "skbase.testing.utils._conditional_fixtures",
-    "skbase.testing.utils._dependencies",
-    "skbase.testing.utils.deep_equals",
     "skbase.testing.utils.inspect",
     "skbase.testing.utils.tests",
     "skbase.testing.utils.tests.test_deep_equals",
@@ -66,7 +64,6 @@ SKBASE_PUBLIC_MODULES = (
     "skbase.testing",
     "skbase.testing.test_all_objects",
     "skbase.testing.utils",
-    "skbase.testing.utils.deep_equals",
     "skbase.testing.utils.inspect",
     "skbase.testing.utils.tests",
     "skbase.testing.utils.tests.test_deep_equals",
@@ -132,7 +129,6 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
     "skbase.testing.utils._conditional_fixtures": (
         "create_conditional_fixtures_and_names",
     ),
-    "skbase.testing.utils.deep_equals": ("deep_equals",),
     "skbase.validate": (
         "check_sequence_named_objects",
         "check_sequence",
@@ -191,11 +187,6 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_check_object_types",
             "_get_module_info",
         ),
-        "skbase.testing.utils._dependencies": (
-            "_check_soft_dependencies",
-            "_check_python_version",
-        ),
-        "skbase.testing.utils.deep_equals": ("deep_equals",),
         "skbase.testing.utils.inspect": ("_get_args",),
         "skbase.utils._check": ("_is_scalar_nan",),
         "skbase.utils.dependencies": (
