@@ -14,11 +14,34 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
-[0.6.0] - 2023-10-0X
+[0.6.0] - 2023-10-05
 ====================
 
-Support for Python 3.12
+Maintenance release at python 3.12 release.
 
+Adds support for python 3.12.
+
+Dependency changes
+------------------
+
+* ``skbase`` now supports python 3.12.
+
+Deprecations and removals
+-------------------------
+
+* the ``deep_equals`` utility has moved to ``skbase.utils.deep_equals``.
+  The old location in ``skbase.testing.utils.deep_equals`` has now been removed.
+
+Contents
+--------
+
+* [MNT] address deprecation of ``load_module`` in ``python 3.12``
+  (:pr:`190`) :user:`fkiraly`
+* [MNT] simplify test CI and remove ``conda`` (:pr:`224`) :user:`fkiraly`
+* [MNT] update dependency versions in ``doc`` dependency set and set upper bounds
+  (:pr:`226`, :pr:`227`) :user:`fkiraly`
+* [MNT] update ``python`` version to 3.12 (:pr:`221`) :user:`fkiraly`
+* [MNT] 0.6.0 deprecation actions (:pr:`225`) :user:`fkiraly`
 
 
 [0.5.2] - 2023-10-03
