@@ -297,7 +297,7 @@ def _import_module(
         if isinstance(module, str):
             imported_mod = importlib.import_module(module)
         elif isinstance(module, importlib.machinery.SourceFileLoader):
-            spec = importlib.spec_from_file_location(module.name, module.path)
+            spec = importlib.util.spec_from_file_location(module.name, module.path)
             imported_mod = importlib.util.module_from_spec(spec)
 
             loader = spec.loader
