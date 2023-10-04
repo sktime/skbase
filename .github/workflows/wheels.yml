@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v4
         with:
@@ -37,7 +37,7 @@ jobs:
         python-version: ['3.8', '3.9', '3.10', '3.11']
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
@@ -51,7 +51,7 @@ jobs:
         run: echo "WHEELNAME=$(ls ./wheelhouse/scikit_base-*none-any.whl)" >> $GITHUB_ENV
 
       - name: Install wheel and extras
-        run: python -m pip install "${{ env.WHEELNAME }}[all_extras,dev]"
+        run: python -m pip install "${{ env.WHEELNAME }}[test]"
 
       - name: Run tests
         run: |
@@ -87,7 +87,7 @@ jobs:
             platform_id: win_amd64
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: test
@@ -116,7 +116,7 @@ jobs:
         run: conda activate test
 
       - name: Install wheel and extras
-        run: python -m pip install "${env:WHEELNAME}[all_extras,dev]"
+        run: python -m pip install "${env:WHEELNAME}[test]"
 
       - name: Show conda packages
         run: conda list -n test
