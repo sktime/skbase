@@ -32,7 +32,8 @@ jobs:
   code-quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v4
       - id: file_changes
         uses: trilom/file-changes-action@v1.2.4
@@ -51,7 +52,8 @@ jobs:
     needs: code-quality
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -67,115 +69,34 @@ jobs:
         run: |
           python skbase/_nopytest_tests.py
 
-
-  test-windows:
-    needs: code-quality
-    runs-on: windows-2019
-    strategy:
-      fail-fast: false  # to not fail all combinations if just one fail
-      matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-update-conda: true
-          python-version: ${{ matrix.python-version }}
-          channels: anaconda, conda-forge,
-
-      - run: conda --version
-      - run: which python
-
-      - name: Fix windows paths
-        if: ${{ runner.os == 'Windows' }}
-        run: echo "C:\Program Files (x86)\Windows Kits\10\bin\10.0.18362.0\x64" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-      - name: Install conda libpython
-        run: conda install -c anaconda libpython
-
-      - name: Install sktime and dependencies
-        run: python -m pip install .[test]
-
-      - name: Show dependencies
-        run: python -m pip list
-
-      - name: Run tests
-        run: |
-          mkdir -p testdir/
-          cp setup.cfg testdir/
-          python -m pytest
-
-      - name: Publish code coverage
-        uses: codecov/codecov-action@v3
-
-  test-unix:
+  test-full:
     needs: code-quality
     name: Test ${{ matrix.os }}-${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
         fail-fast: false
         matrix:
-          os: [ubuntu-latest, macOS-latest]
+          os: [ubuntu-latest, macOS-latest, windows-latest]
           python-version: ['3.8', '3.9', '3.10', '3.11']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: conda-incubator/setup-miniconda@v2
-        name: Set up conda
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          # We want to come back and add a previous step (maybe our own github action)
-          # that will generate the test_env.yml file based on pyproject.toml
-          # Doing it this way is easier and lets us easily use conda to install everything
-          # But just have packages listed in pyproject.toml
-          # activate-environment: test_env
-          # environment-file: build_tools/test_env.yml
-          auto-update-conda: true
-          miniconda-version: "latest"
           python-version: ${{ matrix.python-version }}
-          channels: anaconda, conda-forge
-          channel-priority: true
-          auto-activate-base: false
-          activate-environment: test
-          use-only-tar-bz2: true
 
-      # Useful for troubleshooting
-      - name: Check Conda Setup
-        shell: bash -l {0}
-        run: |
-          conda --version
-          conda info --envs
-          which python
-          which pip
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
 
-      # We want to replace this with the earlier step that
-      # auto generates a environment.yml (named based on pyproject.toml dep table name)
-      # that is installed by conda
-      # The downside of doing it this way is that pip will be greedy
-      # It could cause some dependencies all ready installed by conda to be
-      # installed in different verisons that break the installation
-      # in BaseObject this likelihood is not high, but creating this functionality
-      # will be a nice value add (and has uses outside of .github actions)
       - name: Install dependencies
-        shell: bash -l {0}
         run: |
-          python -VV
-          python -m pip install .[test]
+          python -m pip install .[test] --no-cache-dir
 
-      # Commented out for now. Turn on once dependencies are shrunk.
-      # - name: Run Safety security check
-      #   shell: bash -l {0}
-        # This will scan the installed python environment for all installed dependencies
-        # including transitive dependencies. Checks for dependencies with known CVEs
-        # Ignoring CVEs disputed by NumPy devs with IDs 44715, 44716, 44717
-        # run: safety check --full-report -i 44715 -i 44716 -i 44717
-        # Do not continue on error. Fail the action if safety returns a
-        # non-zero exit code indicating a vulnerability has been found
-      #   continue-on-error: false
+      - name: Show dependencies
+        run: python -m pip list
 
       - name: Run tests
-        shell: bash -l {0}
         run: |
           python -m pytest
 
