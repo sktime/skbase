@@ -6,9 +6,4 @@
 The included functionality makes it easy to re-use scikit-learn and
 sktime design principles in your project.
 """
-from typing import List
-
-__version__: str = "0.5.1"
-
-__author__: List[str] = ["fkiraly", "RNKuhns", "mloning"]
-__all__: List[str] = []
+__version__: str = "0.5.2"
