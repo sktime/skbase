@@ -30,8 +30,9 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
-requires-python = ">=3.8,<3.12"
+requires-python = ">=3.8,<3.13"
 dependencies = []
 
 [project.optional-dependencies]
@@ -71,8 +72,8 @@ docs = [
     "pydata-sphinx-theme",
     "sphinx-issues<4.0.0",
     "sphinx-gallery<0.15.0",
+    "sphinx-panels",
     "sphinx-design<0.6.0",
-    "sphinx-version-warning",
     "Sphinx<8.0.0,!=7.2.0",
     "tabulate",
 ]
