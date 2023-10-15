@@ -31,6 +31,18 @@ numpy_available = _softdep_available("numpy")
 pandas_available = _softdep_available("pandas")
 
 
+def _ret(is_equal, msg="", string_arguments: list = None, return_msg=False):
+    if return_msg:
+        if is_equal:
+            msg = ""
+        elif len(string_arguments) > 0:
+            string_arguments = [] if string_arguments is None else string_arguments
+            msg = msg.format(*string_arguments)
+        return is_equal, msg
+    else:
+        return is_equal
+
+
 def deep_equals(x, y, return_msg=False):
     """Test two objects for equality in value.
 
@@ -72,13 +84,8 @@ def deep_equals(x, y, return_msg=False):
             != - call to generic != returns False
     """
 
-    def ret(is_equal, msg):
-        if return_msg:
-            if is_equal:
-                msg = ""
-            return is_equal, msg
-        else:
-            return is_equal
+    def ret(is_equal, msg, string_arguments=None):
+        _ret(is_equal, msg, string_arguments, return_msg)
 
     if type(x) is not type(y):
         return ret(False, f".type, x.type = {type(x)} != y.type = {type(y)}")
@@ -160,17 +167,12 @@ def _coerce_list(x):
 def _pandas_equals(x, y, return_msg=False):
     import pandas as pd
 
-    def ret(is_equal, msg):
-        if return_msg:
-            if is_equal:
-                msg = ""
-            return is_equal, msg
-        else:
-            return is_equal
+    def ret(is_equal, msg, string_arguments=None):
+        _ret(is_equal, msg, string_arguments, return_msg)
 
     if isinstance(x, pd.Series):
         if x.dtype != y.dtype:
-            return ret(False, f".dtype, x.dtype= {x.dtype} != y.dtype = {y.dtype}")
+            return ret(False, ".dtype, x.dtype= {} != y.dtype = {}", [x.dtype, y.dtype])
         # if columns are object, recurse over entries and index
         if x.dtype == "object":
             index_equal = x.index.equals(y.index)
@@ -185,11 +187,13 @@ def _pandas_equals(x, y, return_msg=False):
                 msg = ""
             return ret(index_equal and values_equal, msg)
         else:
-            return ret(x.equals(y), f".series_equals, x = {x} != y = {y}")
+            return ret(x.equals(y), ".series_equals, x = {} != y = {}", [x, y])
     elif isinstance(x, pd.DataFrame):
         if not x.columns.equals(y.columns):
             return ret(
-                False, f".columns, x.columns = {x.columns} != y.columns = {y.columns}"
+                False,
+                ".columns, x.columns = {} != y.columns = {}",
+                [x.columns, y.columns],
             )
         # if columns are equal and at least one is object, recurse over Series
         if sum(x.dtypes == "object") > 0:
@@ -199,9 +203,9 @@ def _pandas_equals(x, y, return_msg=False):
                     return ret(False, f"[{c!r}]" + msg)
             return ret(True, "")
         else:
-            return ret(x.equals(y), f".df_equals, x = {x} != y = {y}")
+            return ret(x.equals(y), ".df_equals, x = {} != y = {}", [x, y])
     elif isinstance(x, pd.Index):
-        return ret(x.equals(y), f".index_equals, x = {x} != y = {y}")
+        return ret(x.equals(y), ".index_equals, x = {} != y = {}", [x, y])
 
 
 def _tuple_equals(x, y, return_msg=False):
@@ -231,12 +235,7 @@ def _tuple_equals(x, y, return_msg=False):
     """
 
     def ret(is_equal, msg):
-        if return_msg:
-            if is_equal:
-                msg = ""
-            return is_equal, msg
-        else:
-            return is_equal
+        _ret(is_equal, msg, return_msg)
 
     n = len(x)
 
@@ -283,12 +282,7 @@ def _dict_equals(x, y, return_msg=False):
     """
 
     def ret(is_equal, msg):
-        if return_msg:
-            if is_equal:
-                msg = ""
-            return is_equal, msg
-        else:
-            return is_equal
+        _ret(is_equal, msg, return_msg)
 
     xkeys = set(x.keys())
     ykeys = set(y.keys())
@@ -340,12 +334,7 @@ def _fh_equals(x, y, return_msg=False):
     """
 
     def ret(is_equal, msg):
-        if return_msg:
-            if is_equal:
-                msg = ""
-            return is_equal, msg
-        else:
-            return is_equal
+        _ret(is_equal, msg, return_msg)
 
     if x.is_relative != y.is_relative:
         return ret(False, ".is_relative")
