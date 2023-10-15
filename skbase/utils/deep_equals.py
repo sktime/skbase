@@ -46,6 +46,7 @@ def _ret(is_equal, msg="", string_arguments: list = None, return_msg=False):
 def _make_ret(return_msg):
     def ret(is_equal, msg, string_arguments=None):
         return _ret(is_equal, msg, string_arguments, return_msg)
+
     return ret
 
 
