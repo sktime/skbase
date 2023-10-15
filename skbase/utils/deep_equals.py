@@ -234,8 +234,8 @@ def _tuple_equals(x, y, return_msg=False):
             [i] - i-th element not equal
     """
 
-    def ret(is_equal, msg):
-        _ret(is_equal, msg, return_msg)
+    def ret(is_equal, msg, string_arguments=None):
+        _ret(is_equal, msg, string_arguments, return_msg)
 
     n = len(x)
 
@@ -281,8 +281,8 @@ def _dict_equals(x, y, return_msg=False):
             [key] - values at key is not equal
     """
 
-    def ret(is_equal, msg):
-        _ret(is_equal, msg, return_msg)
+    def ret(is_equal, msg, string_arguments=None):
+        _ret(is_equal, msg, string_arguments, return_msg)
 
     xkeys = set(x.keys())
     ykeys = set(y.keys())
@@ -333,8 +333,8 @@ def _fh_equals(x, y, return_msg=False):
             .values - values of x and y are not equal
     """
 
-    def ret(is_equal, msg):
-        _ret(is_equal, msg, return_msg)
+    def ret(is_equal, msg, string_arguments=None):
+        _ret(is_equal, msg, string_arguments, return_msg)
 
     if x.is_relative != y.is_relative:
         return ret(False, ".is_relative")
