@@ -43,6 +43,12 @@ def _ret(is_equal, msg="", string_arguments: list = None, return_msg=False):
         return is_equal
 
 
+def _make_ret(return_msg):
+    def ret(is_equal, msg, string_arguments=None):
+        return _ret(is_equal, msg, string_arguments, return_msg)
+    return ret
+
+
 def deep_equals(x, y, return_msg=False):
     """Test two objects for equality in value.
 
@@ -83,9 +89,7 @@ def deep_equals(x, y, return_msg=False):
             [colname] - if pandas.DataFrame: column with name colname is not equal
             != - call to generic != returns False
     """
-
-    def ret(is_equal, msg, string_arguments=None):
-        _ret(is_equal, msg, string_arguments, return_msg)
+    ret = _make_ret(return_msg)
 
     if type(x) is not type(y):
         return ret(False, f".type, x.type = {type(x)} != y.type = {type(y)}")
@@ -167,8 +171,7 @@ def _coerce_list(x):
 def _pandas_equals(x, y, return_msg=False):
     import pandas as pd
 
-    def ret(is_equal, msg, string_arguments=None):
-        _ret(is_equal, msg, string_arguments, return_msg)
+    ret = _make_ret(return_msg)
 
     if isinstance(x, pd.Series):
         if x.dtype != y.dtype:
@@ -234,8 +237,7 @@ def _tuple_equals(x, y, return_msg=False):
             [i] - i-th element not equal
     """
 
-    def ret(is_equal, msg, string_arguments=None):
-        _ret(is_equal, msg, string_arguments, return_msg)
+    ret = _make_ret(return_msg)
 
     n = len(x)
 
@@ -281,8 +283,7 @@ def _dict_equals(x, y, return_msg=False):
             [key] - values at key is not equal
     """
 
-    def ret(is_equal, msg, string_arguments=None):
-        _ret(is_equal, msg, string_arguments, return_msg)
+    ret = _make_ret(return_msg)
 
     xkeys = set(x.keys())
     ykeys = set(y.keys())
@@ -333,8 +334,7 @@ def _fh_equals(x, y, return_msg=False):
             .values - values of x and y are not equal
     """
 
-    def ret(is_equal, msg, string_arguments=None):
-        _ret(is_equal, msg, string_arguments, return_msg)
+    ret = _make_ret(return_msg)
 
     if x.is_relative != y.is_relative:
         return ret(False, ".is_relative")
