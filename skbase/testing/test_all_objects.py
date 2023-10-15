@@ -143,7 +143,7 @@ class BaseFixtureGenerator:
         return all_objects(
             object_types=getattr(self, "object_type_filter", None),
             return_names=False,
-            exclude_estimators=self.exclude_objects,
+            exclude_objects=self.exclude_objects,
             package_name=self.package_name,
         )
 
