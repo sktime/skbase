@@ -326,3 +326,46 @@ def _fh_equals(x, y, return_msg=False):
         return ret(False, ".values" + msg)
 
     return ret(True, "")
+
+
+def deep_equals_custom(x, y, return_msg=False, plugins=None):
+    """Test two objects for equality in value.
+
+    Correct if x/y are one of the following valid types:
+        types compatible with != comparison
+        pd.Series, pd.DataFrame, np.ndarray
+        lists, tuples, or dicts of a valid type (recursive)
+
+    Important note:
+        this function will return "not equal" if types of x,y are different
+        for instant, bool and numpy.bool are *not* considered equal
+
+    Parameters
+    ----------
+    x : object
+    y : object
+    return_msg : bool, optional, default=False
+        whether to return informative message about what is not equal
+
+    Returns
+    -------
+    is_equal: bool - True if x and y are equal in value
+        x and y do not need to be equal in reference
+    msg : str, only returned if return_msg = True
+        indication of what is the reason for not being equal
+            concatenation of the following strings:
+            .type - type is not equal
+            .class - both objects are classes but not equal
+            .len - length is not equal
+            .value - value is not equal
+            .keys - if dict, keys of dict are not equal
+                    if class/object, names of attributes and methods are not equal
+            .dtype - dtype of pandas or numpy object is not equal
+            .index - index of pandas object is not equal
+            .series_equals, .df_equals, .index_equals - .equals of pd returns False
+            [i] - if tuple/list: i-th element not equal
+            [key] - if dict: value at key is not equal
+            [colname] - if pandas.DataFrame: column with name colname is not equal
+            != - call to generic != returns False
+    """
+
