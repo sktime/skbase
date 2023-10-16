@@ -210,7 +210,6 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
         ),
         "skbase.utils._utils": ("subset_dict_keys",),
         "skbase.utils.deep_equals": ("deep_equals",),
-        "skbase.utils._common": tuple(),
         "skbase.utils._deep_equals": (
             "_coerce_list",
             "_dict_equals",

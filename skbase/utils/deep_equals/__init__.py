@@ -6,5 +6,3 @@ from skbase.utils.deep_equals._deep_equals import deep_equals
 __all__ = [
     "deep_equals",
 ]
-
-from skbase.utils.deep_equals._deep_equals import deep_equals
