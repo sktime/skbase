@@ -368,4 +368,3 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
             [colname] - if pandas.DataFrame: column with name colname is not equal
             != - call to generic != returns False
     """
-
