@@ -6,7 +6,7 @@ Objects compared can have one of the following valid types:
     pd.Series, pd.DataFrame, np.ndarray
     lists, tuples, or dicts of a valid type (recursive)
 """
-from inspect import isclass
+from inspect import isclass, signature
 from typing import List
 
 from skbase.utils.deep_equals._common import _make_ret
@@ -29,11 +29,7 @@ def _softdep_available(importname):
         return True
 
 
-numpy_available = _softdep_available("numpy")
-pandas_available = _softdep_available("pandas")
-
-
-def deep_equals(x, y, return_msg=False):
+def deep_equals(x, y, return_msg=False, plugins=None):
     """Test two objects for equality in value.
 
     Correct if x/y are one of the following valid types:
@@ -51,6 +47,10 @@ def deep_equals(x, y, return_msg=False):
     y : object
     return_msg : bool, optional, default=False
         whether to return informative message about what is not equal
+    plugins : list, optional, default=None
+        optional additional deep_equals plugins to use
+        will be appended to the default plugins from ``deep_equals_custom``
+        see ``deep_equals_custom`` for details of signature of plugins
 
     Returns
     -------
@@ -73,48 +73,20 @@ def deep_equals(x, y, return_msg=False):
             [colname] - if pandas.DataFrame: column with name colname is not equal
             != - call to generic != returns False
     """
-    ret = _make_ret(return_msg)
+    # call deep_equals_custom with default plugins
+    plugins_default = [
+        _numpy_equals_plugin,
+        _pandas_equals_plugin,
+        _fh_equals_plugin,
+    ]
 
-    if type(x) is not type(y):
-        return ret(False, f".type, x.type = {type(x)} != y.type = {type(y)}")
+    if plugins is not None:
+        plugins_inner = plugins_default + plugins
+    else:
+        plugins_inner = plugins_default
 
-    # we now know all types are the same
-    # so now we compare values
-
-    if numpy_available:
-        import numpy as np
-
-    # pandas is a soft dependency, so we compare pandas objects separately
-    #   and only if pandas is installed in the environment
-    if _is_pandas(x) and pandas_available:
-        res = _pandas_equals(x, y, return_msg=return_msg)
-        if res is not None:
-            return _pandas_equals(x, y, return_msg=return_msg)
-
-    if numpy_available and _is_npndarray(x):
-        if x.dtype != y.dtype:
-            return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
-        return ret(np.array_equal(x, y, equal_nan=True), ".values")
-    # recursion through lists, tuples and dicts
-    elif isinstance(x, (list, tuple)):
-        return ret(*_tuple_equals(x, y, return_msg=True))
-    elif isinstance(x, dict):
-        return ret(*_dict_equals(x, y, return_msg=True))
-    elif _is_npnan(x):
-        return ret(_is_npnan(y), f"type(x)={type(x)} != type(y)={type(y)}")
-    elif isclass(x):
-        return ret(x == y, f".class, x={x.__name__} != y={y.__name__}")
-    elif type(x).__name__ == "ForecastingHorizon":
-        return ret(*_fh_equals(x, y, return_msg=True))
-    # this elif covers case where != is boolean
-    # some types return a vector upon !=, this is covered in the next elif
-    elif isinstance(x == y, bool):
-        return ret(x == y, f" !=, {x} != {y}")
-    # deal with the case where != returns a vector
-    elif numpy_available and np.any(x != y) or any(_coerce_list(x != y)):
-        return ret(False, f" !=, {x} != {y}")
-
-    return ret(True, "")
+    res = deep_equals_custom(x, y, return_msg=return_msg, plugins=plugins_inner)
+    return res
 
 
 def _is_pandas(x):
@@ -133,6 +105,8 @@ def _is_npndarray(x):
 
 
 def _is_npnan(x):
+    numpy_available = _softdep_available("numpy")
+
     if numpy_available:
         import numpy as np
 
@@ -152,7 +126,37 @@ def _coerce_list(x):
     return x
 
 
-def _pandas_equals(x, y, return_msg=False):
+def _numpy_equals_plugin(x, y, return_msg=False):
+    numpy_available = _softdep_available("numpy")
+
+    if not numpy_available:
+        return None
+    else:
+        import numpy as np
+
+    ret = _make_ret(return_msg)
+
+    if _is_npndarray(x):
+        if x.dtype != y.dtype:
+            return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
+        return ret(np.array_equal(x, y, equal_nan=True), ".values")
+
+
+def _pandas_equals_plugin(x, y, return_msg=False, deep_equals=None):
+    pandas_available = _softdep_available("pandas")
+
+    if not pandas_available:
+        return None
+
+    # pandas is a soft dependency, so we compare pandas objects separately
+    #   and only if pandas is installed in the environment
+    if _is_pandas(x):
+        res = _pandas_equals(x, y, return_msg=return_msg, deep_equals=deep_equals)
+        if res is not None:
+            return res
+
+
+def _pandas_equals(x, y, return_msg=False, deep_equals=None):
     import pandas as pd
 
     ret = _make_ret(return_msg)
@@ -293,7 +297,7 @@ def _dict_equals(x, y, return_msg=False):
     return ret(True, "")
 
 
-def _fh_equals(x, y, return_msg=False):
+def _fh_equals_plugin(x, y, return_msg=False, deep_equals=None):
     """Test two forecasting horizons for equality.
 
     Correct if both x and y are ForecastingHorizon
@@ -315,6 +319,9 @@ def _fh_equals(x, y, return_msg=False):
             .is_relative - x is absolute and y is relative, or vice versa
             .values - values of x and y are not equal
     """
+    if type(x).__name__ != "ForecastingHorizon":
+        return None
+
     ret = _make_ret(return_msg)
 
     if x.is_relative != y.is_relative:
@@ -346,6 +353,16 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
     y : object
     return_msg : bool, optional, default=False
         whether to return informative message about what is not equal
+    plugins : list, optional, default=None
+        list of plugins to use for custom deep_equals
+        entries must be functions with the signature:
+        ``(x, y, return_msg: bool) -> return``
+        where return is:
+        ``None``, if the plugin does not apply, otheriwse:
+        ``is_equal: bool`` if ``return_msg=False``,
+        ``(is_equal: bool, msg: str)`` if return_msg=True.
+        Plugins can have an additional argument ``deep_equals=None``
+        by which the parent function to be called recursively is passed
 
     Returns
     -------
@@ -353,18 +370,57 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
         x and y do not need to be equal in reference
     msg : str, only returned if return_msg = True
         indication of what is the reason for not being equal
-            concatenation of the following strings:
-            .type - type is not equal
-            .class - both objects are classes but not equal
-            .len - length is not equal
-            .value - value is not equal
-            .keys - if dict, keys of dict are not equal
-                    if class/object, names of attributes and methods are not equal
-            .dtype - dtype of pandas or numpy object is not equal
-            .index - index of pandas object is not equal
-            .series_equals, .df_equals, .index_equals - .equals of pd returns False
-            [i] - if tuple/list: i-th element not equal
-            [key] - if dict: value at key is not equal
-            [colname] - if pandas.DataFrame: column with name colname is not equal
-            != - call to generic != returns False
     """
+    ret = _make_ret(return_msg)
+
+    if type(x) is not type(y):
+        return ret(False, f".type, x.type = {type(x)} != y.type = {type(y)}")
+
+    # we now know all types are the same
+    # so now we compare values
+
+    # recursion through lists, tuples and dicts
+    if isinstance(x, (list, tuple)):
+        return ret(*_tuple_equals(x, y, return_msg=True))
+    elif isinstance(x, dict):
+        return ret(*_dict_equals(x, y, return_msg=True))
+    elif _is_npnan(x):
+        return ret(_is_npnan(y), f"type(x)={type(x)} != type(y)={type(y)}")
+    elif isclass(x):
+        return ret(x == y, f".class, x={x.__name__} != y={y.__name__}")
+
+    if plugins is not None:
+        for plugin in plugins:
+            # check if plugin has deep_equals argument
+            # if so, pass this function as argument to plugin
+            # this allows for recursive calls to deep_equals
+
+            # get the signature of the plugin
+            sig = signature(plugin)
+            # check if deep_equals is an argument of the plugin
+            if "deep_equals" in sig.parameters:
+                kwargs = {"deep_equals": deep_equals_custom}
+            else:
+                kwargs = {}
+
+            res = plugin(x, y, return_msg=return_msg, **kwargs)
+
+            # if plugin does not apply, res is None
+            if res is not None:
+                return res
+
+    # this if covers case where != is boolean
+    # some types return a vector upon !=, this is covered in the next elif
+    if isinstance(x == y, bool):
+        return ret(x == y, f" !=, {x} != {y}")
+
+    # check if numpy is available
+    numpy_available = _softdep_available("numpy")
+    if numpy_available:
+        import numpy as np
+
+    # deal with the case where != returns a vector
+    if numpy_available and np.any(x != y) or any(_coerce_list(x != y)):
+        return ret(False, f" !=, {x} != {y}")
+
+    return ret(True, "")
