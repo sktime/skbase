@@ -144,7 +144,7 @@ def _numpy_equals_plugin(x, y, return_msg=False):
 def _pandas_equals_plugin(x, y, return_msg=False, deep_equals=None):
     pandas_available = _softdep_available("pandas")
 
-    if not pandas_available or not if _is_pandas(x):
+    if not pandas_available or not _is_pandas(x):
         return None
 
     # pandas is a soft dependency, so we compare pandas objects separately
