@@ -129,31 +129,28 @@ def _coerce_list(x):
 def _numpy_equals_plugin(x, y, return_msg=False):
     numpy_available = _softdep_available("numpy")
 
-    if not numpy_available:
+    if not numpy_available or not _is_npndarray(x):
         return None
     else:
         import numpy as np
 
     ret = _make_ret(return_msg)
 
-    if _is_npndarray(x):
-        if x.dtype != y.dtype:
-            return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
-        return ret(np.array_equal(x, y, equal_nan=True), ".values")
+    if x.dtype != y.dtype:
+        return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
+    return ret(np.array_equal(x, y, equal_nan=True), ".values")
 
 
 def _pandas_equals_plugin(x, y, return_msg=False, deep_equals=None):
     pandas_available = _softdep_available("pandas")
 
-    if not pandas_available:
+    if not pandas_available or not if _is_pandas(x):
         return None
 
     # pandas is a soft dependency, so we compare pandas objects separately
     #   and only if pandas is installed in the environment
-    if _is_pandas(x):
-        res = _pandas_equals(x, y, return_msg=return_msg, deep_equals=deep_equals)
-        if res is not None:
-            return res
+    res = _pandas_equals(x, y, return_msg=return_msg, deep_equals=deep_equals)
+    return res
 
 
 def _pandas_equals(x, y, return_msg=False, deep_equals=None):
