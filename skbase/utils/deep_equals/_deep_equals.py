@@ -397,6 +397,7 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
                     return deep_equals_custom(
                         x, y, return_msg=return_msg, plugins=plugins
                     )
+
                 kwargs = {"deep_equals": deep_equals_curried}
             else:
                 kwargs = {}
