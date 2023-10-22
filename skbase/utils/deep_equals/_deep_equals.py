@@ -392,6 +392,7 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
             sig = signature(plugin)
             # check if deep_equals is an argument of the plugin
             if "deep_equals" in sig.parameters:
+                # we need to pass in the same plugins, so we curry
                 def deep_equals_curried(x, y, return_msg=False):
                     return deep_equals_custom(
                         x, y, return_msg=return_msg, plugins=plugins
