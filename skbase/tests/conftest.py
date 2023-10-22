@@ -212,17 +212,20 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
         "skbase.utils._utils": ("subset_dict_keys",),
         "skbase.utils.deep_equals": ("deep_equals",),
         "skbase.utils.deep_equals._common": ("_make_ret", "_ret"),
-        "skbase.utils._deep_equals": (
+        "skbase.utils.deep_equals._deep_equals": (
             "_coerce_list",
             "_dict_equals",
-            "_fh_equals",
+            "_fh_equals_plugin",
             "_is_npnan",
             "_is_npndarray",
             "_is_pandas",
+            "_numpy_equals_plugin",
             "_pandas_equals",
+            "_pandas_equals_plugin",
             "_softdep_available",
             "_tuple_equals",
             "deep_equals",
+            "deep_equals_custom",
         ),
         "skbase.utils.dependencies._dependencies": (
             "_check_soft_dependencies",
