@@ -750,8 +750,8 @@ def test_get_package_metadata_returns_expected_results(
             module_funcs = SKBASE_FUNCTIONS_BY_MODULE.get(module, ())
             module_classes = SKBASE_CLASSES_BY_MODULE.get(module, ())
             which_str = "all"
-            fun_str = "SKBASE_PUBLIC_FUNCTIONS_BY_MODULE"
-            cls_str = "SKBASE_PUBLIC_CLASSES_BY_MODULE"
+            fun_str = "SKBASE_FUNCTIONS_BY_MODULE"
+            cls_str = "SKBASE_CLASSES_BY_MODULE"
 
         # Verify expected functions are returned
         retrieved_funcs = set(results[module]["functions"].keys())
@@ -761,8 +761,8 @@ def test_get_package_metadata_returns_expected_results(
             msg = (
                 "When using get_package_metadata utility, retrieved objects "
                 f"for {which_str} functions in module {module} do not match expected. "
-                f"Expected: {retrieved_funcs}; "
-                f"retrieved: {expected_funcs}. "
+                f"Expected: {expected_funcs}; "
+                f"retrieved: {retrieved_funcs}. "
                 f"Expected functions are stored in {fun_str}, in test_lookup."
             )
             raise AssertionError(msg)
@@ -775,8 +775,8 @@ def test_get_package_metadata_returns_expected_results(
             msg = (
                 "When using get_package_metadata utility, retrieved objects "
                 f"for {which_str} classes in module {module} do not match expected. "
-                f"Expected: {retrieved_cls}; "
-                f"retrieved: {expected_cls}. "
+                f"Expected: {expected_cls}; "
+                f"retrieved: {retrieved_cls}. "
                 f"Expected functions are stored in {cls_str}, in test_lookup."
             )
             raise AssertionError(msg)
