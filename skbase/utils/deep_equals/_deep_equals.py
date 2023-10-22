@@ -161,7 +161,7 @@ def _pandas_equals(x, y, return_msg=False, deep_equals=None):
         if x.dtype == "object":
             index_equal = x.index.equals(y.index)
             values_equal, values_msg = deep_equals(
-                list(x.to_array()), list(y.to_array()), return_msg=True
+                list(x.values), list(y.values), return_msg=True
             )
             if not values_equal:
                 msg = ".values" + values_msg
@@ -392,7 +392,11 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
             sig = signature(plugin)
             # check if deep_equals is an argument of the plugin
             if "deep_equals" in sig.parameters:
-                kwargs = {"deep_equals": deep_equals_custom}
+                def deep_equals_curried(x, y, return_msg=False):
+                    return deep_equals_custom(
+                        x, y, return_msg=return_msg, plugins=plugins
+                    )
+                kwargs = {"deep_equals": deep_equals_curried}
             else:
                 kwargs = {}
 
