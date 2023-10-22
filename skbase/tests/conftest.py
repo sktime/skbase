@@ -162,6 +162,7 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
     ),
     "skbase.utils._utils": ("subset_dict_keys",),
     "skbase.utils.deep_equals": ("deep_equals",),
+    "skbase.utils.deep_equals._deep_equals": ("deep_equals", "deep_equals_custom"),
     "skbase.validate._types": ("check_sequence", "check_type", "is_sequence"),
 }
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
@@ -210,6 +211,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
         ),
         "skbase.utils._utils": ("subset_dict_keys",),
         "skbase.utils.deep_equals": ("deep_equals",),
+        "skbase.utils.deep_equals._common": ("_make_ret", "_ret"),
         "skbase.utils._deep_equals": (
             "_coerce_list",
             "_dict_equals",
