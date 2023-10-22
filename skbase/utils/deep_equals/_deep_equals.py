@@ -90,13 +90,9 @@ def deep_equals(x, y, return_msg=False, plugins=None):
 
 
 def _is_pandas(x):
-    clstr = type(x).__name__
-    if clstr in ["DataFrame", "Series"]:
-        return True
-    if clstr.endswith("Index"):
-        return True
-    else:
-        return False
+    import pandas as pd
+
+    return isinstance(x, (pd.Series, pd.DataFrame, pd.Index))
 
 
 def _is_npndarray(x):
