@@ -190,6 +190,12 @@ def _pandas_equals(x, y, return_msg=False, deep_equals=None):
             return ret(x.equals(y), ".df_equals, x = {} != y = {}", [x, y])
     elif isinstance(x, pd.Index):
         return ret(x.equals(y), ".index_equals, x = {} != y = {}", [x, y])
+    else:
+        raise RuntimeError(
+            f"Unexpected type of pandas object in _pandas_equals: type(x)={type(x)},"
+            f" type(y)={type(y)}, both should be one of "
+            "pd.Series, pd.DataFrame, pd.Index"
+        )
 
 
 def _tuple_equals(x, y, return_msg=False):
