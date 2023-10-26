@@ -23,7 +23,7 @@ Highlights
 * ``set_params`` now recognizes unique suffixes as aliases
   for full parameter strings, e.g., ``foo`` instead of
   ``estimator__component__foo`` (:pr:`229`) :user:`fkiraly`
-* the ``deep_equals`` utility now admits custom plugins wirg dependency
+* the ``deep_equals`` utility now admits custom plugins with dependency
   isolation, e.g., for data types such as ``dask`` or ``polars``
   (:pr:`238`) :user:`fkiraly`
 * ``dependabot`` is now enabled for the ``skbase`` repository
