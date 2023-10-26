@@ -2,7 +2,6 @@
 """Tests for deep_equals utility."""
 from copy import deepcopy
 
-import numpy as np
 import pytest
 
 from skbase.utils.deep_equals import deep_equals
@@ -14,13 +13,18 @@ EXAMPLES = [
     [],
     ((((())))),
     [([([([()])])])],
-    np.array([2, 3, 4]),
-    np.array([2, 4, 5]),
     3.5,
     4.2,
-    np.nan,
 ]
 
+if _check_soft_dependencies("numpy", severity="none"):
+    import numpy as np
+
+    EXAMPLES += [
+        np.array([2, 3, 4]),
+        np.array([2, 4, 5]),
+        np.nan,
+    ]
 
 if _check_soft_dependencies("pandas", severity="none"):
     import pandas as pd
