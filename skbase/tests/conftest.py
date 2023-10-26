@@ -49,6 +49,8 @@ SKBASE_MODULES = (
     "skbase.utils._nested_iter",
     "skbase.utils._utils",
     "skbase.utils.deep_equals",
+    "skbase.utils.deep_equals._common",
+    "skbase.utils.deep_equals._deep_equals",
     "skbase.utils.dependencies",
     "skbase.utils.dependencies._dependencies",
     "skbase.validate",
@@ -160,6 +162,7 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
     ),
     "skbase.utils._utils": ("subset_dict_keys",),
     "skbase.utils.deep_equals": ("deep_equals",),
+    "skbase.utils.deep_equals._deep_equals": ("deep_equals", "deep_equals_custom"),
     "skbase.validate._types": ("check_sequence", "check_type", "is_sequence"),
 }
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
@@ -207,19 +210,22 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "unflatten",
         ),
         "skbase.utils._utils": ("subset_dict_keys",),
-        "skbase.utils.deep_equals": (
+        "skbase.utils.deep_equals": ("deep_equals",),
+        "skbase.utils.deep_equals._common": ("_make_ret", "_ret"),
+        "skbase.utils.deep_equals._deep_equals": (
             "_coerce_list",
             "_dict_equals",
-            "_fh_equals",
+            "_fh_equals_plugin",
             "_is_npnan",
             "_is_npndarray",
             "_is_pandas",
-            "_make_ret",
+            "_numpy_equals_plugin",
             "_pandas_equals",
-            "_ret",
+            "_pandas_equals_plugin",
             "_softdep_available",
             "_tuple_equals",
             "deep_equals",
+            "deep_equals_custom",
         ),
         "skbase.utils.dependencies._dependencies": (
             "_check_soft_dependencies",

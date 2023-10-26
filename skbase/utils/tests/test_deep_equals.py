@@ -33,6 +33,19 @@ if _check_soft_dependencies("pandas", severity="none"):
         {"bar": [42], "foo": pd.Series([1, 2])},
     ]
 
+    # nested DataFrame example
+    cols = [f"var_{i}" for i in range(2)]
+    X = pd.DataFrame(columns=cols, index=[0, 1, 2])
+    X["var_0"] = pd.Series(
+        [pd.Series([1, 2, 3]), pd.Series([1, 2, 3]), pd.Series([1, 2, 3])]
+    )
+
+    X["var_1"] = pd.Series(
+        [pd.Series([4, 5, 6]), pd.Series([4, 55, 6]), pd.Series([42, 5, 6])]
+    )
+
+    EXAMPLES += [X]
+
 
 @pytest.mark.parametrize("fixture", EXAMPLES)
 def test_deep_equals_positive(fixture):
