@@ -17,6 +17,61 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 [0.6.1] - 2023-10-26
 ====================
 
+Highlights
+----------
+
+* ``set_params`` now recognizes unique suffixes as aliases
+  for full parameter strings, e.g., ``foo`` instead of
+  ``estimator__component__foo`` (:pr:`229`) :user:`fkiraly`
+* the ``deep_equals`` utility now admits custom plugins wirg dependency
+  isolation, e.g., for data types such as ``dask`` or ``polars``
+  (:pr:`238`) :user:`fkiraly`
+* ``dependabot`` is now enabled for the ``skbase`` repository
+  (:pr:`228`) :user:`fkiraly`
+
+
+Core interface changes
+----------------------
+
+* ``set_params`` now recognizes unique suffixes as aliases
+  for full parameter strings. This change is not breaking as behaviour
+  changes only in cases where previously exceptions were raised.
+
+Enhancements
+------------
+
+* [ENH] ``set_params`` to recognize unique suffixes as aliases
+  for full parameter string (:pr:`229`) :user:`fkiraly`
+* [ENH] refactor string coercions and return logic in ``deep_equals`` utility
+  (:pr:`237`) :user:`fkiraly`
+* [ENH] improved ``deep_equals`` utility - plugins for custom types
+  (:pr:`238`) :user:`fkiraly`
+* [ENH] informative failure message in
+  ``test_get_package_metadata_returns_expected_results`` (:pr:`239`) :user:`fkiraly`
+
+Maintenance
+-----------
+
+* [MNT] activate ``dependabot`` for version updates and maintenance
+  (:pr:`228`) :user:`fkiraly`
+* [MNT] [Dependabot](deps): Bump actions/upload-artifact from 2 to 3
+  (:pr:`230`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump actions/dependency-review-action from 1 to 3
+  (:pr:`231`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump actions/checkout from 3 to 4
+  (:pr:`232`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump actions/download-artifact from 2 to 3
+  (:pr:`233`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump styfle/cancel-workflow-action from 0.9.1 to 0.12.0
+  (:pr:`234`) :user:`dependabot`
+
+Fixes
+-----
+
+* [BUG] correct parameter name in ``TestAllObjects`` ``all_objects`` call
+  (:pr:`236`) :user:`fkiraly`
+
+
 [0.6.0] - 2023-10-05
 ====================
 
