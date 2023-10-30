@@ -7,12 +7,11 @@ Objects compared can have one of the following valid types:
     lists, tuples, or dicts of a valid type (recursive)
 """
 from inspect import isclass, signature
-from typing import List
 
 from skbase.utils.deep_equals._common import _make_ret
 
-__author__: List[str] = ["fkiraly"]
-__all__: List[str] = ["deep_equals"]
+__author__ = ["fkiraly"]
+__all__ = ["deep_equals"]
 
 
 # flag variables for available soft dependencies
@@ -96,8 +95,9 @@ def _is_pandas(x):
 
 
 def _is_npndarray(x):
-    clstr = type(x).__name__
-    return clstr == "ndarray"
+    import numpy as np
+
+    return isinstance(x, np.array)
 
 
 def _is_npnan(x):
