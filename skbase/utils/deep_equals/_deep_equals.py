@@ -97,7 +97,7 @@ def _is_pandas(x):
 def _is_npndarray(x):
     import numpy as np
 
-    return isinstance(x, np.array)
+    return isinstance(x, np.ndarray)
 
 
 def _is_npnan(x):
