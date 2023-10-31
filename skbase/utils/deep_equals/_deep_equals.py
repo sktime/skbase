@@ -161,10 +161,7 @@ def _pandas_equals(x, y, return_msg=False, deep_equals=None):
         if x.dtype == "object":
             index_equal = x.index.equals(y.index)
             values_equal, values_msg = deep_equals(
-                list(x.to_numpy()),
-                list(y.to_numpy()),
-                return_msg=True,
-                deep_equals=deep_equals,
+                list(x.to_numpy()), list(y.to_numpy()), return_msg=True
             )
             if not values_equal:
                 msg = ".values" + values_msg
@@ -185,9 +182,7 @@ def _pandas_equals(x, y, return_msg=False, deep_equals=None):
         # if columns are equal and at least one is object, recurse over Series
         if sum(x.dtypes == "object") > 0:
             for c in x.columns:
-                is_equal, msg = deep_equals(
-                    x[c], y[c], return_msg=True, deep_equals=deep_equals
-                )
+                is_equal, msg = deep_equals(x[c], y[c], return_msg=True)
                 if not is_equal:
                     return ret(False, f"[{c!r}]" + msg)
             return ret(True, "")
@@ -241,7 +236,7 @@ def _tuple_equals(x, y, return_msg=False, deep_equals=None):
         yi = y[i]
 
         # recurse through xi/yi
-        is_equal, msg = deep_equals(xi, yi, return_msg=True, deep_equals=deep_equals)
+        is_equal, msg = deep_equals(xi, yi, return_msg=True)
         if not is_equal:
             return ret(False, f"[{i}]" + msg)
 
@@ -294,7 +289,7 @@ def _dict_equals(x, y, return_msg=False, deep_equals=None):
         yi = y[key]
 
         # recurse through xi/yi
-        is_equal, msg = deep_equals(xi, yi, return_msg=True, deep_equals=deep_equals)
+        is_equal, msg = deep_equals(xi, yi, return_msg=True)
         if not is_equal:
             return ret(False, f"[{key}]" + msg)
 
@@ -332,9 +327,7 @@ def _fh_equals_plugin(x, y, return_msg=False, deep_equals=None):
         return ret(False, ".is_relative")
 
     # recurse through values of x, y
-    is_equal, msg = deep_equals(
-        x._values, y._values, return_msg=True, deep_equals=deep_equals
-    )
+    is_equal, msg = deep_equals(x._values, y._values, return_msg=True)
     if not is_equal:
         return ret(False, ".values" + msg)
 
@@ -387,9 +380,9 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
 
     # recursion through lists, tuples and dicts
     if isinstance(x, (list, tuple)):
-        return ret(*_tuple_equals(x, y, return_msg=True))
+        return ret(*_tuple_equals(x, y, return_msg=True, deep_equals=deep_equals))
     elif isinstance(x, dict):
-        return ret(*_dict_equals(x, y, return_msg=True))
+        return ret(*_dict_equals(x, y, return_msg=True, deep_equals=deep_equals))
     elif _is_npnan(x):
         return ret(_is_npnan(y), f"type(x)={type(x)} != type(y)={type(y)}")
     elif isclass(x):
