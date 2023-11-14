@@ -341,7 +341,7 @@ Highlights
 
 - Expanded test coverage of ``skbase.base`` and ``skbase.lookup`` modules and
   ``skbase`` exceptions (:pr:`62`, :pr:`80`, :pr:`91`) :user:`rnkuhns`
-- Add equality dunder to ``BaseObject`` to allow ``BaseObejct``-s to be compared based
+- Add equality dunder to ``BaseObject`` to allow ``BaseObject``-s to be compared based
   on parameter equality (:pr:`86`) :user:`fkiraly`
 - Add ``sktime``-like interface for retrieving fitted parameters to ``BaseEstimator``
   (:pr:`87`) :user:`fkiraly`

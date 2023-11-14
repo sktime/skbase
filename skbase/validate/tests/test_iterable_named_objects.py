@@ -36,7 +36,7 @@ def test_is_named_object_tuple_output(
     fixture_estimator_instance, fixture_object_instance
 ):
     """Test is_named_object_tuple returns expected value."""
-    # Default checks for object to be an instance of BaseOBject
+    # Default checks for object to be an instance of BaseObject
     assert is_named_object_tuple(("Step 1", fixture_object_instance)) is True
     assert is_named_object_tuple(("Step 2", fixture_estimator_instance)) is True
 

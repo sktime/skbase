@@ -829,13 +829,13 @@ def test_set_params_raises_error_non_existent_param(
     # non-existing parameter in svc
     with pytest.raises(ValueError):
         fixture_class_parent_instance.set_params(
-            non_existant_param="updated param value"
+            non_existent_param="updated param value"
         )
 
     # non-existing parameter of composite
     composite = fixture_composition_dummy(foo=fixture_class_parent_instance, bar=84)
     with pytest.raises(ValueError):
-        composite.set_params(foo__non_existant_param=True)
+        composite.set_params(foo__non_existent_param=True)
 
 
 def test_set_params_raises_error_non_interface_composite(

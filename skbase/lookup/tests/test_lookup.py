@@ -834,7 +834,7 @@ def test_get_return_tags():
 
 @pytest.mark.parametrize("as_dataframe", [True, False])
 @pytest.mark.parametrize("return_names", [True, False])
-@pytest.mark.parametrize("return_tags", [None, "A", ["A", "a_non_existant_tag"]])
+@pytest.mark.parametrize("return_tags", [None, "A", ["A", "a_non_existent_tag"]])
 @pytest.mark.parametrize("modules_to_ignore", ["tests", ("testing", "lookup"), None])
 @pytest.mark.parametrize("exclude_objects", [None, "Child", ["CompositionDummy"]])
 @pytest.mark.parametrize("suppress_import_stdout", [True, False])
