@@ -116,7 +116,7 @@ def _is_ignored_module(
     `"bar.foo.bar"`, etc.
 
     Parameters
-    ---------
+    ----------
     module_name : str
         Name of the module.
     modules_to_ignore : str, list[str] or tuple[str]
