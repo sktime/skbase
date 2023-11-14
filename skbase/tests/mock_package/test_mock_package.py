@@ -52,7 +52,7 @@ class InheritsFromBaseObject(BaseObject):
 
 
 class AnotherClass(BaseObject):
-    """Another class inheritting from BaseObject."""
+    """Another class inheriting from BaseObject."""
 
 
 class NotABaseObject:
@@ -63,7 +63,7 @@ class NotABaseObject:
 
 
 class _NonPublicClass(BaseObject):
-    """A nonpublic class inheritting from BaseObject."""
+    """A nonpublic class inheriting from BaseObject."""
 
 
 MOCK_PACKAGE_OBJECTS = [

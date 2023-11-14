@@ -112,9 +112,9 @@ to the user guide and link to it if it does not already exist.
 See Also
 ~~~~~~~~
 
-This section should reference other ``skbase`` code artifcats related to the code
+This section should reference other ``skbase`` code artifacts related to the code
 artifact being documented by the docstring. Developers should use judgement in
-determining related code artifcats.
+determining related code artifacts.
 
 Notes
 ~~~~~
@@ -172,7 +172,7 @@ a minimum this should include a single example that illustrates basic functional
 
 
 The examples should use simple data (e.g. randomly generated data, etc)
-generated using a ``skbase`` dependency and whereever possible only depend
+generated using a ``skbase`` dependency and wherever possible only depend
 on ``skbase`` or its core dependencies. Examples should also be designed to
 run quickly where possible. For quick running code artifacts, additional examples
 can be included to illustrate the affect of different parameter settings.

@@ -35,7 +35,7 @@ Code of Conduct
 ===============
 
 The ``skbase`` project believes that everyone should be able to participate
-in our community without fear of harrassment or discrimination (see our
+in our community without fear of harassment or discrimination (see our
 :ref:`Code of Conduct guide <coc>`).
 
 Roles
@@ -172,7 +172,7 @@ Lazy consensus
 
 Changes are approved "lazily" when after *reasonable* amount of time
 the change receives approval from at least one core developer
-and no rejections (excercise of core developer veto right).
+and no rejections (exercise of core developer veto right).
 
 .. _gov_bep:
 

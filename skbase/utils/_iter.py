@@ -90,7 +90,7 @@ def _format_seq_to_str(
     last_sep: Optional[str] = None,
     remove_type_text: bool = True,
 ) -> str:
-    """Format a sequence to a string of delimitted elements.
+    """Format a sequence to a string of delimited elements.
 
     This is useful to format sequences into a pretty printing format for
     creating error messages or warnings.

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
-# Elements of these tests re-use code developed in scikit-learn. These elements
+# Elements of these tests reuse code developed in scikit-learn. These elements
 # are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
 # conditions see https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
 """Tests for BaseObject universal base class.
@@ -1203,7 +1203,7 @@ def test_has_implementation_of(
     """Test _has_implementation_of detects methods in class with overrides in mro."""
     # When the class overrides a parent classes method should return True
     assert fixture_class_child_instance._has_implementation_of("some_method")
-    # When class implements method first time it shoudl return False
+    # When class implements method first time it should return False
     assert not fixture_class_child_instance._has_implementation_of("some_other_method")
 
     # If the method is defined the first time in the parent class it should not

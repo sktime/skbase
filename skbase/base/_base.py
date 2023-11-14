@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
-# Elements of BaseObject re-use code developed in scikit-learn. These elements
+# Elements of BaseObject reuse code developed in scikit-learn. These elements
 # are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
 # conditions see https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
 """Base class template for objects and fittable objects.
@@ -258,7 +258,7 @@ class BaseObject(_FlagManager):
 
     @classmethod
     def _get_init_signature(cls):
-        """Get class init sigature.
+        """Get class init signature.
 
         Useful in parameter inspection.
 
@@ -597,7 +597,7 @@ class BaseObject(_FlagManager):
 
         Notes
         -----
-        Changes object state by settting tag values in tag_dict as dynamic tags in self.
+        Changes object state by setting tag values in tag_dict as dynamic tags in self.
         """
         self._set_flags(flag_attr_name="_tags", **tag_dict)
 
@@ -1097,7 +1097,7 @@ class TagAliaserMixin:
 
         Notes
         -----
-        Changes object state by settting tag values in tag_dict as dynamic tags
+        Changes object state by setting tag values in tag_dict as dynamic tags
         in self.
         """
         self._deprecate_tag_warn(tag_dict.keys())

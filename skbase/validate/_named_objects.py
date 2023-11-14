@@ -163,7 +163,7 @@ def is_sequence_named_objects(
     --------
     is_named_object_tuple :
         Indicate (True/False) if input follows the named object API format for
-        a single named object (e.g., tupe[str, expected class type]).
+        a single named object (e.g., tuple[str, expected class type]).
     check_sequence_named_objects :
         Validate input to see if it follows sequence of named objects API. An error
         is raised for input that does not conform to the API format.
@@ -346,7 +346,7 @@ def check_sequence_named_objects(
     --------
     is_named_object_tuple :
         Indicate (True/False) if input follows the named object API format for
-        a single named object (e.g., tupe[str, expected class type]).
+        a single named object (e.g., tuple[str, expected class type]).
     is_sequence_named_objects :
         Indicate (True/False) if an input sequence follows the named object API.
 

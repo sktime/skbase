@@ -2,7 +2,7 @@
 Changelog
 =========
 
-All notable changes to this project beggining with version 0.1.0 will be
+All notable changes to this project beginning with version 0.1.0 will be
 documented in this file. The format is based on
 `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_ and we adhere
 to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_. The source
@@ -228,7 +228,7 @@ Dependency changes
 * ``scikit-learn``, ``typing-extensions``, and ``pytest`` are no longer
   core dependencies.
   ``pytest`` remains a dependency in ``dev`` and ``test`` dependency sets.
-* ``scikit-learn`` is now part of the ``dev`` and ``test`` depency sets,
+* ``scikit-learn`` is now part of the ``dev`` and ``test`` dependency sets,
   as it is required to test compatibility with ``scikit-learn``
 * a dependency conflict has been resolved in the ``docs`` dependency set for
   the docs build,
