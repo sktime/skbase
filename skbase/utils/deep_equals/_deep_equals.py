@@ -173,12 +173,19 @@ def _pandas_equals(x, y, return_msg=False, deep_equals=None):
         else:
             return ret(x.equals(y), ".series_equals, x = {} != y = {}", [x, y])
     elif isinstance(x, pd.DataFrame):
+        # check column names for equality
         if not x.columns.equals(y.columns):
             return ret(
                 False,
                 ".columns, x.columns = {} != y.columns = {}",
                 [x.columns, y.columns],
             )
+        # check dtypes for equality
+        if not x.dtypes.equals(y.dtypes):
+            return ret(
+                False, f".dtypes, x.dtypes = {x.dtypes} != y.dtypes = {y.dtypes}"
+            )
+        # if columns, dtypes are equal and at least one is object, recurse over Series
         # if columns are equal and at least one is object, recurse over Series
         if sum(x.dtypes == "object") > 0:
             for c in x.columns:
