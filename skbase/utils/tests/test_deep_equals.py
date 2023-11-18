@@ -24,6 +24,10 @@ if _check_soft_dependencies("numpy", severity="none"):
         np.array([2, 3, 4]),
         np.array([2, 4, 5]),
         np.nan,
+        # these cases test that plugins are passed to recursions
+        # in this case, the numpy equality plugin
+        {"a": np.array([2, 3, 4]), "b": np.array([4, 3, 2])},
+        [np.array([2, 3, 4]), np.array([4, 3, 2])],
     ]
 
 if _check_soft_dependencies("pandas", severity="none"):
