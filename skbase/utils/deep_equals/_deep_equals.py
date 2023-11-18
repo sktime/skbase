@@ -303,8 +303,8 @@ def _fh_equals_plugin(x, y, return_msg=False, deep_equals=None):
 
     Parameters
     ----------
-    x: ForcastingHorizon
-    y: ForcastingHorizon
+    x: ForecastingHorizon
+    y: ForecastingHorizon
     return_msg : bool, optional, default=False
         whether to return informative message about what is not equal
 
@@ -357,7 +357,7 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
         entries must be functions with the signature:
         ``(x, y, return_msg: bool) -> return``
         where return is:
-        ``None``, if the plugin does not apply, otheriwse:
+        ``None``, if the plugin does not apply, otherwise:
         ``is_equal: bool`` if ``return_msg=False``,
         ``(is_equal: bool, msg: str)`` if return_msg=True.
         Plugins can have an additional argument ``deep_equals=None``

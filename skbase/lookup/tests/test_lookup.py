@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tests for skbase lookup functionality."""
-# Elements of the lookup tests re-use code developed in sktime. These elements
+# Elements of the lookup tests reuse code developed in sktime. These elements
 # are copyrighted by the sktime developers, BSD-3-Clause License. For
 # conditions see https://github.com/sktime/sktime/blob/main/LICENSE
 import importlib
@@ -158,7 +158,7 @@ def _check_package_metadata_result(results):
             isinstance(mod_metadata[k], str) for k in ("path", "name", "authors")
         ):
             return False
-        # Verify keys with bool values have bool valeus
+        # Verify keys with bool values have bool values
         if not all(
             isinstance(mod_metadata[k], bool)
             for k in (
@@ -309,7 +309,7 @@ def test_check_package_metadata_result(fixture_sample_package_metadata):
 
 
 def test_is_non_public_module(mod_names):
-    """Test _is_non_public_module correctly indentifies non-public modules."""
+    """Test _is_non_public_module correctly identifies non-public modules."""
     for mod in mod_names["public"]:
         assert _is_non_public_module(mod) is False
     for mod in mod_names["non_public"]:
@@ -328,7 +328,7 @@ def test_is_ignored_module(mod_names):
     for mod in mod_names["public"]:
         assert _is_ignored_module(mod) is False
 
-    # No modules should be flagged as ignored if the ignored moduels aren't encountered
+    # No modules should be flagged as ignored if the ignored modules aren't encountered
     modules_to_ignore = ("a_module_not_encountered",)
     for mod in mod_names["public"]:
         assert _is_ignored_module(mod, modules_to_ignore=modules_to_ignore) is False
@@ -355,7 +355,7 @@ def test_filter_by_class():
     # Test case when no class filter is applied (should always return True)
     assert _filter_by_class(CompositionDummy) is True
 
-    # Test case where a signle filter is applied
+    # Test case where a single filter is applied
     assert _filter_by_class(Parent, BaseObject) is True
     assert _filter_by_class(NotABaseObject, BaseObject) is False
     assert _filter_by_class(NotABaseObject, CompositionDummy) is False
@@ -391,7 +391,7 @@ def test_filter_by_tags():
     assert _filter_by_tags(Parent, {"A": "1", "B": 2}) is True
     # All keys in dict are in tag_filter, but at least 1 value doesn't match
     assert _filter_by_tags(Parent, {"A": 1, "B": 2}) is False
-    # Atleast 1 key in dict is not in tag_filter
+    # At least 1 key in dict is not in tag_filter
     assert _filter_by_tags(Parent, {"E": 1, "B": 2}) is False
 
     # Iterable tags should be all strings
@@ -413,7 +413,7 @@ def test_walk_returns_expected_format(fixture_skbase_root_path):
     def _test_walk_return(p):
         assert (
             isinstance(p, tuple) and len(p) == 3
-        ), "_walk shoul return tuple of length 3"
+        ), "_walk should return tuple of length 3"
         assert (
             isinstance(p[0], str)
             and isinstance(p[1], bool)
@@ -834,7 +834,7 @@ def test_get_return_tags():
 
 @pytest.mark.parametrize("as_dataframe", [True, False])
 @pytest.mark.parametrize("return_names", [True, False])
-@pytest.mark.parametrize("return_tags", [None, "A", ["A", "a_non_existant_tag"]])
+@pytest.mark.parametrize("return_tags", [None, "A", ["A", "a_non_existent_tag"]])
 @pytest.mark.parametrize("modules_to_ignore", ["tests", ("testing", "lookup"), None])
 @pytest.mark.parametrize("exclude_objects", [None, "Child", ["CompositionDummy"]])
 @pytest.mark.parametrize("suppress_import_stdout", [True, False])

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3 -u
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
-# BaseMetaObject and BaseMetaEstimator re-use code developed in scikit-learn and sktime.
+# BaseMetaObject and BaseMetaEstimator reuse code developed in scikit-learn and sktime.
 # These elements are copyrighted by the respective
 # scikit-learn developers (BSD-3-Clause License) and sktime (BSD-3-Clause) developers.
 # For conditions see licensing:
@@ -335,7 +335,7 @@ class _MetaObjectMixin:
             Named object tuple.
 
             - If `obj` was an object then returns (obj.__class__.__name__, obj).
-            - If `obj` was aleady a (name, object) tuple it is returned (a copy
+            - If `obj` was already a (name, object) tuple it is returned (a copy
               is returned if ``clone=True``).
         """
         if isinstance(obj, tuple) and len(obj) >= 2:
@@ -567,7 +567,7 @@ class _MetaObjectMixin:
         Parameters
         ----------
         other : BaseObject subclass
-            An object inheritting from `composite_class` or `base_class`, otherwise
+            An object inheriting from `composite_class` or `base_class`, otherwise
             `NotImplemented` is returned.
         base_class : BaseObject subclass
             Class assumed as base class for self and `other`. ,

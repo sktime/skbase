@@ -306,13 +306,13 @@ def check_sequence(
         else:
             input_seq = _scalar_to_seq(input_seq, sequence_type=sequence_type)
 
-    is_valid_seqeunce = is_sequence(
+    is_valid_sequence = is_sequence(
         input_seq,
         sequence_type=sequence_type,
         element_type=element_type,
     )
     # Raise error is format is not expected.
-    if not is_valid_seqeunce:
+    if not is_valid_sequence:
         name_str = "Input sequence" if sequence_name is None else f"`{sequence_name}`"
         if sequence_type is None:
             seq_str = "a sequence"

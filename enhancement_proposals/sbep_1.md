@@ -21,9 +21,9 @@ Specifically,`skbase` will provide:
   illustrating how developers can use `skbase` in their own projects and
   providing test cases
 - A [template repository](#Template-Repository) that developers can clone to
-  easiliy set up a a new project using `skbase`'s principles
+  easily set up a a new project using `skbase`'s principles
 
-Although the package will initially inherit some of this functinality from
+Although the package will initially inherit some of this functionality from
 `scikit-learn` the goal is to make it easy to use the design patterns in a
 variety of contexts, not just those that depend on `scikit-learn`. Accordingly,
 `skbase` has a goal of providing the proposed functionality with minimal
@@ -61,7 +61,7 @@ contexts. This includes:
 - [BaseMetaObject](#BaseMetaObjectMixin): A mixin that provides a high-level interface
   for working with classes composed of collections of `BaseObject`s.
 - [Base pipeline classes](#Base-Pipeline-Classes): `BaseObject`s that also
-  inherit from `BaseMetaObject` mixin and provide additional generic functionalty
+  inherit from `BaseMetaObject` mixin and provide additional generic functionality
   for common pipeline use cases.
 
 #### BaseObject
@@ -195,7 +195,7 @@ collecting and testing classes that descend from BaseObject.
 This benefits users by:
 
 - Making it easy to incorporate these tests in their own projects, reducing the need
-  to spend time testing that their classes comply with the interface inheritted
+  to spend time testing that their classes comply with the interface inherited
   from `BaseObject`.
 - Providing an extensible framework they can use to collect and test their own
   object interfaces and functionality.
@@ -203,7 +203,7 @@ This benefits users by:
 #### `skbase.validate`: Validating and Comparing BaseObjects
 
 When developing packages that include parametric objects, verifying and comparing
-objects is a common worfklow.
+objects is a common workflow.
 
 To aid this `skbase` will provide functions to:
 - Check if a `BaseObject` complies with the expected interface

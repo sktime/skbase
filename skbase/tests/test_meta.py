@@ -66,7 +66,7 @@ def fixture_meta_estimator():
     return MetaEstimatorTester()
 
 
-def test_is_composit_returns_true(fixture_meta_object, fixture_meta_estimator):
+def test_is_composite_returns_true(fixture_meta_object, fixture_meta_estimator):
     """Test that `is_composite` method returns True."""
     msg = "`is_composite` should always be True for subclasses of "
     assert fixture_meta_object.is_composite() is True, msg + "`BaseMetaObject`."

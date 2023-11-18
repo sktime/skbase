@@ -3,7 +3,7 @@
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """:mod:`skbase.base` contains base classes for creating parametric objects.
 
-The included functionality makes it easy to re-use scikit-learn and
+The included functionality makes it easy to reuse scikit-learn and
 sktime design principles in your project.
 """
 from typing import List

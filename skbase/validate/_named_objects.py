@@ -27,7 +27,7 @@ __author__: List[str] = ["RNKuhns"]
 def _named_baseobject_error_msg(
     sequence_name: Optional[str] = None, allow_dict: bool = True
 ):
-    """Create error message for non-comformance with named BaseObject api."""
+    """Create error message for non-conformance with named BaseObject api."""
     name_str = f"{sequence_name}" if sequence_name is not None else "Input"
     allowed_types = "a sequence of (string name, BaseObject instance) tuples"
 
@@ -70,7 +70,7 @@ def is_named_object_tuple(
     >>> from skbase.base import BaseObject, BaseEstimator
     >>> from skbase.validate import is_named_object_tuple
 
-    Default checks for object to be an instance of BaseOBject
+    Default checks for object to be an instance of BaseObject
 
     >>> is_named_object_tuple(("Step 1", BaseObject()))
     True
@@ -163,7 +163,7 @@ def is_sequence_named_objects(
     --------
     is_named_object_tuple :
         Indicate (True/False) if input follows the named object API format for
-        a single named object (e.g., tupe[str, expected class type]).
+        a single named object (e.g., tuple[str, expected class type]).
     check_sequence_named_objects :
         Validate input to see if it follows sequence of named objects API. An error
         is raised for input that does not conform to the API format.
@@ -346,7 +346,7 @@ def check_sequence_named_objects(
     --------
     is_named_object_tuple :
         Indicate (True/False) if input follows the named object API format for
-        a single named object (e.g., tupe[str, expected class type]).
+        a single named object (e.g., tuple[str, expected class type]).
     is_sequence_named_objects :
         Indicate (True/False) if an input sequence follows the named object API.
 
