@@ -36,6 +36,7 @@ if _check_soft_dependencies("pandas", severity="none"):
     EXAMPLES += [
         pd.DataFrame({"a": [4, 2]}),
         pd.DataFrame({"a": [4, 3]}),
+        pd.DataFrame({"a": ["4", "3"]}),
         (np.array([1, 2, 4]), [pd.DataFrame({"a": [4, 2]})]),
         {"foo": [42], "bar": pd.Series([1, 2])},
         {"bar": [42], "foo": pd.Series([1, 2])},
