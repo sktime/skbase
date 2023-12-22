@@ -174,7 +174,7 @@ def _pandas_equals(x, y, return_msg=False, deep_equals=None):
         else:
             return ret(x.equals(y), ".series_equals, x = {} != y = {}", [x, y])
     elif isinstance(x, pd.DataFrame):
-         # check column names for equality
+        # check column names for equality
         if not x.columns.equals(y.columns):
             return ret(
                 False, f".columns, x.columns = {x.columns} != y.columns = {y.columns}"
