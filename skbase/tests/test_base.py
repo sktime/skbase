@@ -1320,8 +1320,11 @@ def test_get_set_config():
     # Test set_config
     test_obj.set_config(foo_config=37)
 
-    assert test_obj.get_config() == {"foo_config": 37, "bar": "a"}
+    expected_config = BaseObject._config.copy()
+    expected_config.update({"foo_config": 37, "bar": "a"})
+
+    assert test_obj.get_config() == expected_config
 
     # test that reset does not reset config
     test_obj.reset()
-    assert test_obj.get_config() == {"foo_config": 37, "bar": "a"}
+    assert test_obj.get_config() == expected_config
