@@ -14,6 +14,47 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+
+[0.6.2] - 2023-12-30
+====================
+
+Release with minor improvements and bugfixes.
+
+Enhancements
+------------
+
+* [ENH] ``deep_equals`` - clearer return on diffs from ``dtypes`` and ``index``,
+  relaxation of ``MultiIndex`` equality check (:pr:`246`) :user:`fkiraly`
+
+Fixes
+-----
+
+* [BUG] ensure ``deep_equals`` plugins are passed on to all recursions
+  (:pr:`243`) :user:`fkiraly`
+
+Documentation
+-------------
+
+* [DOC] Fixed spelling mistakes as identified by ``codespell`` and ``typos``
+  (:pr:`245`) :user:`yarnabrina`
+
+Maintenance
+-----------
+
+* [MNT] [Dependabot](deps-dev): Update sphinx-gallery requirement
+  from ``<0.15.0`` to ``<0.16.0`` (:pr:`247`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump actions/setup-python from 4 to 5
+  (:pr:`250`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump conda-incubator/setup-miniconda from 2 to 3
+  (:pr:`249`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump github/codeql-action from 2 to 3
+  (:pr:`252`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump actions/download-artifact from 3 to 4
+  (:pr:`253`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump actions/upload-artifact from 3 to 4
+  (:pr:`254`) :user:`dependabot`
+
+
 [0.6.1] - 2023-10-26
 ====================
 
