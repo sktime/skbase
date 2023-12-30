@@ -1314,14 +1314,17 @@ def test_get_set_config():
 
     test_obj = _TestConfig(7)
 
-    # Test get_config
-    assert test_obj.get_config() == _TestConfig._config
+    expected_config_orig = BaseObject._config.copy()
+    expected_config_orig.update({"foo_config": 42, "bar": "a"})
 
-    # Test set_config
-    test_obj.set_config(foo_config=37)
+    # Test get_config
+    assert test_obj.get_config() == expected_config_orig
 
     expected_config = BaseObject._config.copy()
     expected_config.update({"foo_config": 37, "bar": "a"})
+
+    # Test set_config
+    test_obj.set_config(foo_config=37)
 
     assert test_obj.get_config() == expected_config
 
