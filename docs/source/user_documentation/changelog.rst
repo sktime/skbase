@@ -29,12 +29,14 @@ Enhancements
 Fixes
 -----
 
-* [BUG] ensure ``deep_equals`` plugins are passed on to all recursions (:pr:`243`) :user:`fkiraly`
+* [BUG] ensure ``deep_equals`` plugins are passed on to all recursions
+  (:pr:`243`) :user:`fkiraly`
 
 Documentation
 -------------
 
-* [DOC] Fixed spelling mistakes as identified by ``codespell`` and ``typos`` (:pr:`245`) :user:`yarnabrina`
+* [DOC] Fixed spelling mistakes as identified by ``codespell`` and ``typos``
+  (:pr:`245`) :user:`yarnabrina`
 
 Maintenance
 -----------
