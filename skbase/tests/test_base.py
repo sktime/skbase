@@ -955,7 +955,7 @@ def test_config_after_clone_tags(clone_config):
         # the new config key foo should be present, as it has non default
         expected = 42
 
-    test_obj_clone = clone(test_obj)
+    test_obj_clone = test_obj.clone()
 
     assert "check_clone" in test_obj_clone.get_config().keys()
     assert test_obj_clone.get_config()["check_clone"] == expected
