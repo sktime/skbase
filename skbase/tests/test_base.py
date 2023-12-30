@@ -931,7 +931,7 @@ def test_clone_raises_error_for_nonconforming_objects(
     #     obj_that_modifies.clone()
 
 
-@pytest.mark.parametrize("clone_config": [True, False])
+@pytest.mark.parametrize("clone_config", [True, False])
 def test_config_after_clone_tags(clone_config):
     """Test clone also clones config works as expected."""
     from sklearn.base import clone
