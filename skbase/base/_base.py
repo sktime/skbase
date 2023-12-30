@@ -159,7 +159,7 @@ class BaseObject(_FlagManager):
         self_clone = self._clone(self)
 
         if self.get_config()["clone_config"]:
-            self._clone.set_config(**self.get_config())
+            self_clone.set_config(**self.get_config())
 
         # if checking the clone is turned off, return now
         if not self.get_config()["check_clone"]:
