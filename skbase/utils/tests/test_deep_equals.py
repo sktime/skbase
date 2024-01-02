@@ -40,8 +40,8 @@ if _check_soft_dependencies("pandas", severity="none"):
         (np.array([1, 2, 4]), [pd.DataFrame({"a": [4, 2]})]),
         {"foo": [42], "bar": pd.Series([1, 2])},
         {"bar": [42], "foo": pd.Series([1, 2])},
-        pd.Index([1, 2, 3])
-        pd.Index([2, 3, 4])
+        pd.Index([1, 2, 3]),
+        pd.Index([2, 3, 4]),
     ]
 
     # nested DataFrame example
