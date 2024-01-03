@@ -488,7 +488,7 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
         import numpy as np
 
     # deal with the case where != returns a vector
-    if numpy_available and np.any(x != y) or any(_coerce_list(x != y)):
+    if numpy_available and np.any(x != y) or np.any(_coerce_list(x != y)):
         return ret(False, f" !=, {x} != {y}")
 
     return ret(True, "")
