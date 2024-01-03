@@ -127,6 +127,7 @@ class BaseObject(_FlagManager):
         """
         # retrieve parameters to copy them later
         params = self.get_params(deep=False)
+        config = self.get_config()
 
         # delete all object attributes in self
         attrs = [attr for attr in dir(self) if "__" not in attr]
@@ -137,6 +138,7 @@ class BaseObject(_FlagManager):
 
         # run init with a copy of parameters self had at the start
         self.__init__(**params)
+        self.set_config(**config)
 
         return self
 

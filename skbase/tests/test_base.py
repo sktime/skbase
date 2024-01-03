@@ -1297,3 +1297,37 @@ def test_eq_dunder():
     assert composite == composite_2
     assert composite != composite_3
     assert composite_2 != composite_3
+
+
+def test_get_set_config():
+    """Tests get_config and set_config methods."""
+
+    class _TestConfig(BaseObject):
+        _config = {"foo_config": 42, "bar": "a"}
+
+        clsvar = 210
+
+        def __init__(self, a, b=42):
+            self.a = a
+            self.b = b
+            self.c = 84
+
+    test_obj = _TestConfig(7)
+
+    expected_config_orig = BaseObject._config.copy()
+    expected_config_orig.update({"foo_config": 42, "bar": "a"})
+
+    # Test get_config
+    assert test_obj.get_config() == expected_config_orig
+
+    expected_config = BaseObject._config.copy()
+    expected_config.update({"foo_config": 37, "bar": "a"})
+
+    # Test set_config
+    test_obj.set_config(foo_config=37)
+
+    assert test_obj.get_config() == expected_config
+
+    # test that reset does not reset config
+    test_obj.reset()
+    assert test_obj.get_config() == expected_config
