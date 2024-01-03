@@ -77,6 +77,7 @@ class BaseObject(_FlagManager):
         "display": "diagram",
         "print_changed_only": True,
         "check_clone": False,  # whether to execute validity checks in clone
+        "clone_config": True,  # clone config values (True) or use defaults (False)
     }
 
     def __init__(self):
@@ -158,6 +159,9 @@ class BaseObject(_FlagManager):
         """
         self_params = self.get_params(deep=False)
         self_clone = self._clone(self)
+
+        if self.get_config()["clone_config"]:
+            self_clone.set_config(**self.get_config())
 
         # if checking the clone is turned off, return now
         if not self.get_config()["check_clone"]:
