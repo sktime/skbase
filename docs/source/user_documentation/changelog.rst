@@ -15,6 +15,43 @@ You can also subscribe to ``skbase``'s
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
 
+[0.7.0] - 2023-01-03
+====================
+
+Bugfix release with potentially breaking changes related to
+``set_config``, ``get_config`` (:pr:`257`, :pr:`259`, :user:`fkiraly`)
+due to masking of third party bugs,
+please consult the changelog for details in case of breakage.
+
+Core interface changes
+----------------------
+
+* configuration values - set via ``set_config`` and inspectable via ``get_config`` -
+  are now retained through ``clone`` and ``reset``.
+  Previous behaviour was to reset configuration values to default,
+  which is considered a bug. However, this change may break existing code
+  if two errors cancel out, e.g.,
+  if a breaking (without bug) configuration was set, the reset through the bug.
+  In this case, the bug masked the breaking configuration, which should be addressed.
+  Most breakages over 0.6.2 should be addressable by removing ``set_config`` calls,
+  i.e., removing the genuinely breaking configuration.
+* A configuration field ``clone_config`` was added that allows to configure
+  whether ``clone`` should clone the configuration.
+  This is useful for meta-estimators that
+  should not clone the configuration of their components.
+  This change is not breaking - considered in difference to the above - as
+  the default behaviour is to clone the configuration.
+
+Fixes
+-----
+
+* [BUG] fix ``deep_equals`` plugin for ``pd.Index`` (:pr:`260`) :user:`fkiraly`
+* [BUG] retain config at ``reset``, add tests for ``set_config``, ``get_config``
+  (:pr:`259`) :user:`fkiraly`
+* [BUG] retain config after ``clone``, add config to configure whether to clone config
+  (:pr:`257`) :user:`fkiraly`
+
+
 [0.6.2] - 2023-12-30
 ====================
 
