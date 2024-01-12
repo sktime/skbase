@@ -19,6 +19,13 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 
 Minor bugfix and maintenance release.
 
+Contents  
+--------
+
+* [BUG] fix ``deep_equals`` for ``np.array`` with ``dtype="object"`` (:pr:`263`) :user:`fkiraly`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`264`) :user:`precommit-ci`
+
+
 [0.7.0] - 2023-01-03
 ====================
 
