@@ -22,7 +22,8 @@ Minor bugfix and maintenance release.
 Contents
 --------
 
-* [BUG] fix ``deep_equals`` for ``np.array`` with ``dtype="object"`` (:pr:`263`) :user:`fkiraly`
+* [BUG] fix ``deep_equals`` for ``np.array`` with ``dtype="object"``
+  (:pr:`263`) :user:`fkiraly`
 * [pre-commit.ci] pre-commit autoupdate (:pr:`264`) :user:`precommit-ci`
 
 
