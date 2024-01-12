@@ -134,7 +134,10 @@ def _numpy_equals_plugin(x, y, return_msg=False):
 
     if x.dtype != y.dtype:
         return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
-    return ret(np.array_equal(x, y, equal_nan=True), ".values")
+    if x.dtype in ["object", "str"]:
+        return ret(np.array_equal(x, y), ".values")
+    else:
+        return ret(np.array_equal(x, y, equal_nan=True), ".values")
 
 
 def _pandas_equals_plugin(x, y, return_msg=False, deep_equals=None):
