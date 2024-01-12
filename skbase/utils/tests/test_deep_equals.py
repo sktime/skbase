@@ -28,6 +28,9 @@ if _check_soft_dependencies("numpy", severity="none"):
         # in this case, the numpy equality plugin
         {"a": np.array([2, 3, 4]), "b": np.array([4, 3, 2])},
         [np.array([2, 3, 4]), np.array([4, 3, 2])],
+        # test case to cover branch re dtype and equal_nan
+        np.array([0.1, 1], dtype="object"),
+        np.array([0.2, 1], dtype="object"),
     ]
 
 if _check_soft_dependencies("pandas", severity="none"):
