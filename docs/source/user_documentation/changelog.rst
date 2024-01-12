@@ -19,7 +19,7 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 
 Minor bugfix and maintenance release.
 
-Contents  
+Contents
 --------
 
 * [BUG] fix ``deep_equals`` for ``np.array`` with ``dtype="object"`` (:pr:`263`) :user:`fkiraly`
