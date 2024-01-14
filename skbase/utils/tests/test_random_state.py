@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tests of random_seed related functionality."""
 import pytest
@@ -55,7 +56,7 @@ def test_set_random_state(external, deep):
     simple = SeedCompositionDummy(foo=1, random_state=42)
     seedless = DummyDummy(foo=42)
     composite1 = SeedCompositionDummy(foo=simple, random_state=42)
-    composite2 = SeedCompositionDummy(foo=seedless, random_state=None) 
+    composite2 = SeedCompositionDummy(foo=seedless, random_state=None)
 
     # in the simple case, the seed is set
     # even though the seed in set_random_seed is 42, the set param will not be 42,
