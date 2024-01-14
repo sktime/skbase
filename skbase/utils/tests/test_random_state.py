@@ -48,7 +48,6 @@ def test_set_random_state(external, deep):
 
         def __init__(self, foo, random_state=None):
             self.foo = foo
-            self.foo_ = foo.clone()
             self.random_state = random_state
 
             super(SeedCompositionDummy, self).__init__()

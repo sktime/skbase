@@ -53,6 +53,7 @@ SKBASE_MODULES = (
     "skbase.utils.deep_equals._deep_equals",
     "skbase.utils.dependencies",
     "skbase.utils.dependencies._dependencies",
+    "skbase.utils.random_state",
     "skbase.validate",
     "skbase.validate._named_objects",
     "skbase.validate._types",
@@ -77,6 +78,7 @@ SKBASE_PUBLIC_MODULES = (
     "skbase.utils",
     "skbase.utils.deep_equals",
     "skbase.utils.dependencies",
+    "skbase.utils.random_state",
     "skbase.validate",
 )
 SKBASE_PUBLIC_CLASSES_BY_MODULE = {
