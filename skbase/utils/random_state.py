@@ -4,7 +4,7 @@
 __author__ = ["fkiraly"]
 
 
-def set_random_state(estimator, random_state=0, deep=True):
+def set_random_state(estimator, random_state=None, deep=True):
     """Set random_state pseudo-random seed parameters for an estimator.
 
     Finds ``random_state`` named parameters via ``estimator.get_params``,

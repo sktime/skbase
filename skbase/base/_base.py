@@ -973,7 +973,7 @@ class BaseObject(_FlagManager):
             output["text/html"] = _object_html_repr(self)
         return output
 
-    def set_random_state(self, random_state, deep=True):
+    def set_random_state(self, random_state=None, deep=True):
         """Set random_state pseudo-random seed parameters for self.
 
         Finds ``random_state`` named parameters via ``self.get_params``,
