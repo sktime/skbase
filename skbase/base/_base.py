@@ -990,11 +990,11 @@ class BaseObject(_FlagManager):
         ----------
         random_state : int, RandomState instance or None, default=None
             Pseudo-random number generator to control the generation of the random
-            integers. Pass an int for reproducible output across multiple function calls.
+            integers. Pass int for reproducible output across multiple function calls.
 
         deep : bool, default=True
             Whether to set the random state in sub-estimators.
-            If False, will set only ``estimator``'s ``random_state`` parameter, if exists.
+            If False, will set only ``self``'s ``random_state`` parameter, if exists.
             If True, will set ``random_state`` parameters in sub-estimators as well.
 
         Returns
