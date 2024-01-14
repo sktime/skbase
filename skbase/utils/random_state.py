@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Utilities for handling the random_state variable."""
 
 __author__ = ["fkiraly"]
@@ -64,6 +65,7 @@ def check_random_state(seed):
         Otherwise raise ValueError.
     """
     import numbers
+
     import numpy as np
 
     if seed is None or seed is np.random:
@@ -111,7 +113,7 @@ def sample_dependent_seed(seed, n_seeds=None):
     import hashlib
 
     # Convert the base seed to bytes
-    seed_bytes = str(seed).encode('utf-8')
+    seed_bytes = str(seed).encode("utf-8")
 
     # Use a cryptographic hash function (SHA-256) to generate a secure hash
     hash_object = hashlib.sha256(seed_bytes)
