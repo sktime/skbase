@@ -973,6 +973,37 @@ class BaseObject(_FlagManager):
             output["text/html"] = _object_html_repr(self)
         return output
 
+    def set_random_state(self, random_state, deep=True):
+        """Set random_state pseudo-random seed parameters for self.
+
+        Finds ``random_state`` named parameters via ``self.get_params``,
+        and sets them to integers derived from ``random_state`` via ``set_params``.
+
+        Applies to ``random_state`` parameters in ``self`` always,
+        and all component estimators if and only if ``deep=True``.
+
+        Note: calls ``set_params`` even if ``self`` does not have a ``random_state``,
+        therefore ``set_random_state`` will reset any ``scikit-base`` estimator,
+        even those without a ``random_state`` parameter.
+
+        Parameters
+        ----------
+        random_state : int, RandomState instance or None, default=None
+            Pseudo-random number generator to control the generation of the random
+            integers. Pass an int for reproducible output across multiple function calls.
+
+        deep : bool, default=True
+            Whether to set the random state in sub-estimators.
+            If False, will set only ``estimator``'s ``random_state`` parameter, if exists.
+            If True, will set ``random_state`` parameters in sub-estimators as well.
+
+        Returns
+        -------
+        self : reference to self
+        """
+        from skbase.utils.random_state import set_random_state
+
+        return set_random_state(self, random_state=random_state, deep=deep)
 
 class TagAliaserMixin:
     """Mixin class for tag aliasing and deprecation of old tags.
