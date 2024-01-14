@@ -1005,6 +1005,7 @@ class BaseObject(_FlagManager):
 
         return set_random_state(self, random_state=random_state, deep=deep)
 
+
 class TagAliaserMixin:
     """Mixin class for tag aliasing and deprecation of old tags.
 
