@@ -31,9 +31,9 @@ def test_set_random_state(external, deep):
 
     def set_seed(obj):
         if external:
-            return set_random_state(obj, seed=42, deep=deep)
+            return set_random_state(obj, random_state=42, deep=deep)
         else:
-            return obj.set_random_state(seed=42, deep=deep)
+            return obj.set_random_state(random_state=42, deep=deep)
 
     class DummyDummy(BaseObject):
         """Has no random_state attribute."""
