@@ -10,7 +10,7 @@ def set_random_state(estimator, random_state=0, deep=True):
     and sets them to integers derived from ``random_state`` via ``set_params``.
 
     Applies to ``random_state`` parameters in ``estimator`` always,
-    and all sub-estimators if and only if ``deep=True``.
+    and all component estimators if and only if ``deep=True``.
 
     Note: calls ``set_params`` even if ``estimator`` does not have a ``random_state``,
     therefore ``set_random_state`` will reset any ``scikit-base`` estimator,
@@ -33,7 +33,7 @@ def set_random_state(estimator, random_state=0, deep=True):
     Returns
     -------
     estimator : estimator
-        referece to ``estimator`` with state changed, random seed set
+        reference to ``estimator`` with state changed, random seed set
     """
     random_state = check_random_state(random_state)
 
