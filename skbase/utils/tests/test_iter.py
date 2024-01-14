@@ -3,7 +3,7 @@
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tests of the functionality for working with iterables.
 
-tests in this module incdlue:
+tests in this module include:
 
 - test_format_seq_to_str: verify that _format_seq_to_str outputs expected format.
 - test_format_seq_to_str_raises: verify _format_seq_to_str raises error on unexpected

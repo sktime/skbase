@@ -3,7 +3,7 @@
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tests of the functionality for miscellaneous utilities.
 
-tests in this module incdlue:
+tests in this module include:
 
 - test_subset_dict_keys_output: verify that subset_dict_keys outputs expected format.
 """
