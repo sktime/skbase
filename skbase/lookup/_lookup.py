@@ -178,7 +178,7 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
         * value str or list of string are tag values
         * condition is "tag value at key must be equal to search value",
           if search value, tag value are not iterable.
-          if on of search value, tag value, or oth are iterable: condition is
+          if one of search value, tag value, or both, are lists: condition is
           "at least one element of search value must be contained in tag value"
 
     Returns
