@@ -221,10 +221,13 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
 
     cond_sat = True
 
-    for key, value in tag_filter.items():
-        if not isinstance(value, list):
-            value = [value]
-        cond_sat = cond_sat and obj.get_class_tag(key) in set(value)
+    for key, search_value in tag_filter.items():
+        if not isinstance(search_value, list):
+            search_value = [search_value]
+        tag_value = obj.get_class_tag(key)
+        if not isinstance(tag_value, list):
+            tag_value = [tag_value]
+        cond_sat = cond_sat and len(set(search_value).intersection(tag_value)) > 0
 
     return cond_sat
 
