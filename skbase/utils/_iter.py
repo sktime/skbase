@@ -163,13 +163,13 @@ def _format_seq_to_str(
 
 
 @overload
-def make_strings_unique(str_list: Tuple[str, ...]) -> Tuple[str, ...]:
-    ...  # pragma: no cover
+def make_strings_unique(
+    str_list: Tuple[str, ...]
+) -> Tuple[str, ...]: ...  # pragma: no cover
 
 
 @overload
-def make_strings_unique(str_list: List[str]) -> List[str]:
-    ...  # pragma: no cover
+def make_strings_unique(str_list: List[str]) -> List[str]: ...  # pragma: no cover
 
 
 def make_strings_unique(

@@ -254,8 +254,9 @@ def check_sequence_named_objects(
     require_unique_names=False,
     object_type: Optional[Union[type, Tuple[type]]] = None,
     sequence_name: Optional[str] = None,
-) -> Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]]:
-    ...  # pragma: no cover
+) -> Union[
+    Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]
+]: ...  # pragma: no cover
 
 
 @overload
@@ -265,8 +266,7 @@ def check_sequence_named_objects(
     require_unique_names=False,
     object_type: Optional[Union[type, Tuple[type]]] = None,
     sequence_name: Optional[str] = None,
-) -> Sequence[Tuple[str, BaseObject]]:
-    ...  # pragma: no cover
+) -> Sequence[Tuple[str, BaseObject]]: ...  # pragma: no cover
 
 
 @overload
@@ -276,8 +276,9 @@ def check_sequence_named_objects(
     require_unique_names=False,
     object_type: Optional[Union[type, Tuple[type]]] = None,
     sequence_name: Optional[str] = None,
-) -> Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]]:
-    ...  # pragma: no cover
+) -> Union[
+    Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]
+]: ...  # pragma: no cover
 
 
 def check_sequence_named_objects(
