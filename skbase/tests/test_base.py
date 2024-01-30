@@ -966,6 +966,45 @@ def test_config_after_clone_tags(clone_config):
         assert "foo" not in test_obj_clone.get_config().keys()
 
 
+@pytest.mark.parametrize("clone_config", [True, False])
+def test_nested_config_after_clone_tags(clone_config):
+    """Test clone also clones config of nested objects."""
+
+    class TestClass(BaseObject):
+        _tags = {"some_tag": True, "another_tag": 37}
+        _config = {"check_clone": 0}
+
+        def __init__(self, nested=None):
+            self.nested = nested
+
+    test_obj = TestClass(
+        nested=[TestClass().set_config(**{"check_clone": 42, "foo": "bar"})]
+    )
+
+    if not clone_config:
+        # if clone_config config is set to False:
+        # config key check_clone should be default, 0
+        # the new config key foo should not be present
+        test_obj.nested[0].set_config(**{"clone_config": False})
+        expected = 0
+    else:
+        # if clone_config config is set to True:
+        # config key check_clone should be 42, as set above
+        # the new config key foo should be present, as it has non default
+        expected = 42
+
+    test_obj_clone = test_obj.clone().nested[0]
+
+    assert "check_clone" in test_obj_clone.get_config().keys()
+    assert test_obj_clone.get_config()["check_clone"] == expected
+
+    if clone_config:
+        assert "foo" in test_obj_clone.get_config().keys()
+        assert test_obj_clone.get_config()["foo"] == "bar"
+    else:
+        assert "foo" not in test_obj_clone.get_config().keys()
+
+
 @pytest.mark.skipif(
     not _check_soft_dependencies("sklearn", severity="none"),
     reason="skip test if sklearn is not available",
