@@ -18,6 +18,55 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 [0.7.2] - 2023-01-31
 ====================
 
+Feature and bugfix release.
+
+Core interface changes
+----------------------
+
+* all ``BaseObject`` descendants now possess a method ``set_random_stat``.
+  This can be used for nested setting of ``random_state`` variables,
+  and is useful for ensuring reproducibility in nested estimators.
+  (:pr:`268`) :user:`fkiraly`
+* ``all_objects`` now supports filtering for list-valued tags in ``filter_tags``
+  as a convenience feature.
+  When the query value is a single value or a list, the filter condition is
+  that the tag value and the query value have at least one element in common.
+  (:pr:`273`) :user:`fkiraly`
+
+Enhancements
+------------
+
+* [ENH] ``all_objects`` ``filter_tags`` to function with list-of tags
+  (:pr:`273`) :user:`fkiraly`
+* [ENH] Random state handling, ``set_random_state`` method (:pr:`268`) :user:`fkiraly`
+
+Fixes
+-----
+
+* [BUG] Fix cloning of config for nested objects (:pr:`276`) :user:`tpvasconcelos`
+
+Documentation
+-------------
+
+* [DOC] lint changelog (:pr:`267`) :user:`fkiraly`
+
+Maintenance
+-----------
+
+* [pre-commit.ci] pre-commit autoupdate (:pr:`274`) :user:`precommit-ci`
+* [MNT] [Dependabot](deps): Bump ``actions/dependency-review-action`` from 3 to 4
+  (:pr:`269`) :user:`dependabot`
+* [MNT] [Dependabot](deps-dev): Update ``sphinx-issues`` requirement
+  from ``<4.0.0`` to ``<5.0.0`` (:pr:`271`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump styfle/cancel-workflow-action
+  from ``0.12.0`` to ``0.12.1`` (:pr:`272`) :user:`dependabot`
+* [MNT] Add common IDE files to ``.gitignore`` (:pr:`277`) :user:`tpvasconcelos`
+
+Contributors
+------------
+:user:`fkiraly`,
+:user:`tpvasconcelos`
+
 
 [0.7.1] - 2023-01-12
 ====================
