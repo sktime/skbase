@@ -144,6 +144,32 @@ def _sklearn_clone(estimator, *, safe=True):
     return new_object
 
 
+def _check_clone(original, clone):
+    from skbase.utils.deep_equals import deep_equals
+
+    self_params = original.get_params(deep=False)
+
+    # check that all attributes are written to the clone
+    for attrname in self_params.keys():
+        if not hasattr(clone, attrname):
+            raise RuntimeError(
+                f"error in {original}.clone, __init__ must write all arguments "
+                f"to self and not mutate them, but {attrname} was not found. "
+                f"Please check __init__ of {original}."
+            )
+
+    clone_attrs = {attr: getattr(clone, attr) for attr in self_params.keys()}
+
+    # check equality of parameters post-clone and pre-clone
+    clone_attrs_valid, msg = deep_equals(self_params, clone_attrs, return_msg=True)
+    if not clone_attrs_valid:
+        raise RuntimeError(
+            f"error in {original}.clone, __init__ must write all arguments "
+            f"to self and not mutate them, but this is not the case. "
+            f"Error on equality check of arguments (x) vs parameters (y): {msg}"
+        )
+
+
 class BaseObject(_FlagManager):
     """Base class for parametric objects with sktime style tag interface.
 
@@ -234,35 +260,9 @@ class BaseObject(_FlagManager):
         -----
         If successful, equal in value to ``type(self)(**self.get_params(deep=False))``.
         """
-        self_params = self.get_params(deep=False)
         self_clone = _sklearn_clone(self)
-
-        # if checking the clone is turned off, return now
-        if not self.get_config()["check_clone"]:
-            return self_clone
-
-        from skbase.utils.deep_equals import deep_equals
-
-        # check that all attributes are written to the clone
-        for attrname in self_params.keys():
-            if not hasattr(self_clone, attrname):
-                raise RuntimeError(
-                    f"error in {self}.clone, __init__ must write all arguments "
-                    f"to self and not mutate them, but {attrname} was not found. "
-                    f"Please check __init__ of {self}."
-                )
-
-        clone_attrs = {attr: getattr(self_clone, attr) for attr in self_params.keys()}
-
-        # check equality of parameters post-clone and pre-clone
-        clone_attrs_valid, msg = deep_equals(self_params, clone_attrs, return_msg=True)
-        if not clone_attrs_valid:
-            raise RuntimeError(
-                f"error in {self}.clone, __init__ must write all arguments "
-                f"to self and not mutate them, but this is not the case. "
-                f"Error on equality check of arguments (x) vs parameters (y): {msg}"
-            )
-
+        if self.get_config()["check_clone"]:
+            return _check_clone(original=self, clone=self_clone)
         return self_clone
 
     @classmethod
@@ -975,6 +975,54 @@ class BaseObject(_FlagManager):
         if self.get_config()["display"] == "diagram":
             output["text/html"] = _object_html_repr(self)
         return output
+
+    def set_random_state(self, random_state=None, deep=True, self_policy="copy"):
+        """Set random_state pseudo-random seed parameters for self.
+
+        Finds ``random_state`` named parameters via ``estimator.get_params``,
+        and sets them to integers derived from ``random_state`` via ``set_params``.
+        These integers are sampled from chain hashing via ``sample_dependent_seed``,
+        and guarantee pseudo-random independence of seeded random generators.
+
+        Applies to ``random_state`` parameters in ``estimator`` depending on
+        ``self_policy``, and remaining component estimators
+        if and only if ``deep=True``.
+
+        Note: calls ``set_params`` even if ``self`` does not have a ``random_state``,
+        or none of the components have a ``random_state`` parameter.
+        Therefore, ``set_random_state`` will reset any ``scikit-base`` estimator,
+        even those without a ``random_state`` parameter.
+
+        Parameters
+        ----------
+        random_state : int, RandomState instance or None, default=None
+            Pseudo-random number generator to control the generation of the random
+            integers. Pass int for reproducible output across multiple function calls.
+
+        deep : bool, default=True
+            Whether to set the random state in sub-estimators.
+            If False, will set only ``self``'s ``random_state`` parameter, if exists.
+            If True, will set ``random_state`` parameters in sub-estimators as well.
+
+        self_policy : str, one of {"copy", "keep", "new"}, default="copy"
+
+            * "copy" : ``estimator.random_state`` is set to input ``random_state``
+            * "keep" : ``estimator.random_state`` is kept as is
+            * "new" : ``estimator.random_state`` is set to a new random state,
+            derived from input ``random_state``, and in general different from it
+
+        Returns
+        -------
+        self : reference to self
+        """
+        from skbase.utils.random_state import set_random_state
+
+        return set_random_state(
+            self,
+            random_state=random_state,
+            deep=deep,
+            root_policy=self_policy,
+        )
 
 
 class TagAliaserMixin:

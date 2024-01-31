@@ -53,6 +53,7 @@ SKBASE_MODULES = (
     "skbase.utils.deep_equals._deep_equals",
     "skbase.utils.dependencies",
     "skbase.utils.dependencies._dependencies",
+    "skbase.utils.random_state",
     "skbase.validate",
     "skbase.validate._named_objects",
     "skbase.validate._types",
@@ -77,6 +78,7 @@ SKBASE_PUBLIC_MODULES = (
     "skbase.utils",
     "skbase.utils.deep_equals",
     "skbase.utils.dependencies",
+    "skbase.utils.random_state",
     "skbase.validate",
 )
 SKBASE_PUBLIC_CLASSES_BY_MODULE = {
@@ -145,10 +147,13 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
         "is_sequence_named_objects",
     ),
     "skbase.utils": (
+        "check_random_state",
         "deep_equals",
         "flatten",
         "is_flat",
         "make_strings_unique",
+        "sample_dependent_seed",
+        "set_random_state",
         "subset_dict_keys",
         "unflat_len",
         "unflatten",
@@ -163,6 +168,11 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
     "skbase.utils._utils": ("subset_dict_keys",),
     "skbase.utils.deep_equals": ("deep_equals",),
     "skbase.utils.deep_equals._deep_equals": ("deep_equals", "deep_equals_custom"),
+    "skbase.utils.random_state": (
+        "check_random_state",
+        "sample_dependent_seed",
+        "set_random_state",
+    ),
     "skbase.validate._types": ("check_sequence", "check_type", "is_sequence"),
 }
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
@@ -231,6 +241,11 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
         "skbase.utils.dependencies._dependencies": (
             "_check_soft_dependencies",
             "_check_python_version",
+        ),
+        "skbase.utils.random_state": (
+            "check_random_state",
+            "sample_dependent_seed",
+            "set_random_state",
         ),
         "skbase.validate._named_objects": (
             "check_sequence_named_objects",
