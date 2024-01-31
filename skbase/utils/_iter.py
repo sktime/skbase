@@ -83,7 +83,7 @@ def _remove_type_text(input_):
         return input_
 
 
-def _format_seq_to_str(seq, sep, last_sep, remove_type_text):
+def _format_seq_to_str(seq, sep=", ", last_sep=None, remove_type_text=True):
     """Format a sequence to a string of delimitted elements.
 
     This is useful to format sequences into a pretty printing format for
@@ -93,7 +93,7 @@ def _format_seq_to_str(seq, sep, last_sep, remove_type_text):
     ----------
     seq : Sequence
         The input sequence to convert to a str of the elements separated by `sep`.
-    sep : str
+    sep : str, default=", "
         The separator to use when creating the str output.
     last_sep : str, default=None
         The separator to use prior to last element.
