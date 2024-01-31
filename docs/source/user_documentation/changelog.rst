@@ -23,7 +23,7 @@ Feature and bugfix release.
 Core interface changes
 ----------------------
 
-* all ``BaseObject`` descendants now possess a method ``set_random_stat``.
+* all ``BaseObject`` descendants now possess a method ``set_random_state``.
   This can be used for nested setting of ``random_state`` variables,
   and is useful for ensuring reproducibility in nested estimators.
   (:pr:`268`) :user:`fkiraly`
