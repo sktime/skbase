@@ -41,7 +41,7 @@ class _MetaObjectMixin:
     # this must be an iterable of (name: str, estimator) pairs for the default
     _tags = {"named_object_parameters": "steps"}
 
-    def is_composite(self) -> bool:
+    def is_composite(self):
         """Check if the object is composite.
 
         A composite object is an object which contains objects as parameter values.
@@ -55,7 +55,7 @@ class _MetaObjectMixin:
         # children of this class are always composite
         return True
 
-    def get_params(self, deep: bool = True) -> Dict[str, Any]:
+    def get_params(self, deep=True):
         """Get a dict of parameters values for this object.
 
         This expands on `get_params` of standard `BaseObject` by also retrieving
@@ -151,9 +151,7 @@ class _MetaObjectMixin:
 
         return fitted_params
 
-    def _get_params(
-        self, attr: str, deep: bool = True, fitted: bool = False
-    ) -> Dict[str, Any]:
+    def _get_params(self, attr, deep=True, fitted=False):
         """Logic for getting parameters on meta objects/estimators.
 
         Separates out logic for parameter getting on meta objects from public API point.
@@ -265,19 +263,7 @@ class _MetaObjectMixin:
                 break
         setattr(self, attr, new_objects)
 
-    @overload
-    def _check_names(
-        self, names: List[str], make_unique: bool = True
-    ) -> List[str]: ...  # pragma: no cover
-
-    @overload
-    def _check_names(
-        self, names: Tuple[str, ...], make_unique: bool = True
-    ) -> Tuple[str, ...]: ...  # pragma: no cover
-
-    def _check_names(
-        self, names: Union[List[str], Tuple[str, ...]], make_unique: bool = True
-    ) -> Union[List[str], Tuple[str, ...]]:
+    def _check_names(self, names, make_unique=True):
         """Validate that names of named objects follow API rules.
 
         The names for named objects should:
@@ -313,11 +299,7 @@ class _MetaObjectMixin:
 
         return names
 
-    def _coerce_object_tuple(
-        self,
-        obj: Union[BaseObject, Tuple[str, BaseObject]],
-        clone: bool = False,
-    ) -> Tuple[str, BaseObject]:
+    def _coerce_object_tuple(self, obj, clone):
         """Coerce object or (str, BaseObject) tuple to (str, BaseObject) tuple.
 
         Used to make sure input will work with expected named object tuple API format.
@@ -454,13 +436,7 @@ class _MetaObjectMixin:
 
         return self._coerce_to_named_object_tuples(objs, clone=clone, make_unique=True)
 
-    def _get_names_and_objects(
-        self,
-        named_objects: Union[
-            Sequence[Union[BaseObject, Tuple[str, BaseObject]]], Dict[str, BaseObject]
-        ],
-        make_unique: bool = False,
-    ) -> Tuple[List[str], List[BaseObject]]:
+    def _get_names_and_objects(self, named_objects, make_unique=False):
         """Return lists of names and object from input that follows named object API.
 
         Handles input that is dictionary mapping str names of object instances or
@@ -492,14 +468,7 @@ class _MetaObjectMixin:
             names = make_strings_unique(names)
         return list(names), list(objs)
 
-    def _coerce_to_named_object_tuples(
-        self,
-        objs: Union[
-            Sequence[Union[BaseObject, Tuple[str, BaseObject]]], Dict[str, BaseObject]
-        ],
-        clone: bool = False,
-        make_unique: bool = True,
-    ) -> List[Tuple[str, BaseObject]]:
+    def _coerce_to_named_object_tuples(self, objs, clone=False, make_unique=True):
         """Coerce sequence of objects or named objects to list of (str, obj) tuples.
 
         Input that is sequence of objects, list of (str, obj) tuples or
