@@ -966,6 +966,56 @@ def test_config_after_clone_tags(clone_config):
         assert "foo" not in test_obj_clone.get_config().keys()
 
 
+@pytest.mark.parametrize("clone_config", [True, False])
+def test_nested_config_after_clone_tags(clone_config):
+    """Test clone also clones config of nested objects."""
+
+    class TestClass(BaseObject):
+        _config = {"check_clone": 0}
+
+    class TestNestedClass(BaseObject):
+        def __init__(self, obj, obj_iterable):
+            self.obj = obj
+            self.obj_iterable = obj_iterable
+
+    test_obj = TestNestedClass(
+        obj=TestClass().set_config(**{"check_clone": 1, "foo": "bar"}),
+        obj_iterable=[TestClass().set_config(**{"check_clone": 2, "foo": "barz"})],
+    )
+
+    if not clone_config:
+        # if clone_config config is set to False:
+        # config key check_clone should be default, 0
+        # the new config key foo should not be present
+        test_obj.obj.set_config(**{"clone_config": False})
+        test_obj.obj_iterable[0].set_config(**{"clone_config": False})
+        expected_obj = 0
+        expected_obj_iterable = 0
+    else:
+        # if clone_config config is set to True:
+        # config key check_clone should be 42, as set above
+        # the new config key foo should be present, as it has non default
+        expected_obj = 1
+        expected_obj_iterable = 2
+
+    test_obj_clone = test_obj.clone().obj
+    test_obj_iterable_clone = test_obj.clone().obj_iterable[0]
+
+    assert "check_clone" in test_obj_clone.get_config().keys()
+    assert "check_clone" in test_obj_iterable_clone.get_config().keys()
+    assert test_obj_clone.get_config()["check_clone"] == expected_obj
+    assert test_obj_iterable_clone.get_config()["check_clone"] == expected_obj_iterable
+
+    if clone_config:
+        assert "foo" in test_obj_clone.get_config().keys()
+        assert "foo" in test_obj_iterable_clone.get_config().keys()
+        assert test_obj_clone.get_config()["foo"] == "bar"
+        assert test_obj_iterable_clone.get_config()["foo"] == "barz"
+    else:
+        assert "foo" not in test_obj_clone.get_config().keys()
+        assert "foo" not in test_obj_iterable_clone.get_config().keys()
+
+
 @pytest.mark.skipif(
     not _check_soft_dependencies("sklearn", severity="none"),
     reason="skip test if sklearn is not available",

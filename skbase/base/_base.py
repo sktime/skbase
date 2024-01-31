@@ -160,9 +160,6 @@ class BaseObject(_FlagManager):
         self_params = self.get_params(deep=False)
         self_clone = self._clone(self)
 
-        if self.get_config()["clone_config"]:
-            self_clone.set_config(**self.get_config())
-
         # if checking the clone is turned off, return now
         if not self.get_config()["check_clone"]:
             return self_clone
@@ -260,6 +257,11 @@ class BaseObject(_FlagManager):
                     "Cannot clone object %s, as the constructor "
                     "either does not set or modifies parameter %s" % (estimator, name)
                 )
+
+        # This is an extension to the original sklearn implementation
+        if isinstance(estimator, BaseObject) and estimator.get_config()["clone_config"]:
+            new_object.set_config(**estimator.get_config())
+
         return new_object
 
     @classmethod
