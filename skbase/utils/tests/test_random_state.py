@@ -24,16 +24,21 @@ def test_sample_dependent_seed(seed, n_seeds):
 
 @pytest.mark.parametrize("deep", [True, False])
 @pytest.mark.parametrize("external", [True, False])
-def test_set_random_state(external, deep):
+@pytest.mark.parametrize("root_policy", ["copy", "new", "keep"])
+def test_set_random_state(external, deep, root_policy):
     """Test _format_seq_to_str returns expected output."""
     # importing here to avoid circularity
     from skbase.base import BaseObject
 
     def set_seed(obj):
         if external:
-            return set_random_state(obj, random_state=42, deep=deep)
+            return set_random_state(
+                obj, random_state=41, deep=deep, root_policy=root_policy
+            )
         else:
-            return obj.set_random_state(random_state=42, deep=deep)
+            return obj.set_random_state(
+                random_state=41, deep=deep, self_policy=root_policy
+            )
 
     class DummyDummy(BaseObject):
         """Has no random_state attribute."""
@@ -52,25 +57,37 @@ def test_set_random_state(external, deep):
 
             super(SeedCompositionDummy, self).__init__()
 
-    simple = SeedCompositionDummy(foo=1, random_state=42)
+    simple = SeedCompositionDummy(foo=1, random_state=41)
     seedless = DummyDummy(foo=42)
-    composite1 = SeedCompositionDummy(foo=simple.clone(), random_state=42)
+    composite1 = SeedCompositionDummy(foo=simple.clone(), random_state=41)
     composite2 = SeedCompositionDummy(foo=seedless.clone(), random_state=None)
 
     # in the simple case, the seed is set
-    # even though the seed in set_random_seed is 42, the set param will not be 42,
-    # because it is sampled from the set_random_seed seed 42
     set_seed(simple)
-    assert simple.get_params()["random_state"] != 42
+    # check that the root_policy spec is respected
+    if root_policy == "keep":
+        assert simple.get_params()["random_state"] == 41
+    elif root_policy == "copy":
+        assert simple.get_params()["random_state"] == 42
+    else:  # root_policy == "new"
+        # sampled from the set_random_seed seed 42, so not 42
+        assert simple.get_params()["random_state"] != 42
 
     # this does not have a random_state attribute
     # all we test is that it does not break
     set_seed(seedless)
 
     # in the composite case, the seed is set
-    # what happens to the nested param depends on the deep argument
     set_seed(composite1)
-    assert composite1.get_params()["random_state"] != 42
+    # the root param depends on the root_policy argument
+    if root_policy == "keep":
+        assert composite1.get_params()["random_state"] == 41
+    elif root_policy == "copy":
+        assert composite1.get_params()["random_state"] == 42
+    else:  # root_policy == "new"
+        # sampled from the set_random_seed seed 42, so not 42
+        assert composite1.get_params()["random_state"] != 42
+    # the nested param depends on the deep argument
     if deep:
         assert composite1.get_params()["foo__random_state"] != 42
     else:
@@ -80,5 +97,11 @@ def test_set_random_state(external, deep):
     # does not break for seedless composites
     # behaviour if self.random_state is None
     set_seed(composite2)
-    assert composite2.get_params()["random_state"] is not None
-    assert composite2.get_params()["random_state"] != 42
+    if root_policy == "keep":
+        assert composite2.get_params()["random_state"] is None
+    elif root_policy == "copy":
+        assert composite2.get_params()["random_state"] == 42
+    else:  # root_policy == "new"
+        # sampled from the set_random_seed seed 42, so not 42
+        assert composite2.get_params()["random_state"] is not None
+        assert composite2.get_params()["random_state"] != 42

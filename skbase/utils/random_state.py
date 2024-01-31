@@ -4,17 +4,21 @@
 __author__ = ["fkiraly"]
 
 
-def set_random_state(estimator, random_state=None, deep=True):
+def set_random_state(estimator, random_state=None, deep=True, root_policy="copy"):
     """Set random_state pseudo-random seed parameters for an estimator.
 
     Finds ``random_state`` named parameters via ``estimator.get_params``,
     and sets them to integers derived from ``random_state`` via ``set_params``.
+    These integers are sampled from chain hashing via ``sample_dependent_seed``,
+    and guarantee pseudo-random independence of seeded random generators.
 
-    Applies to ``random_state`` parameters in ``estimator`` always,
-    and all component estimators if and only if ``deep=True``.
+    Applies to ``random_state`` parameters in ``estimator`` depending on
+    ``root_policy``, and remaining component estimators if and only if ``deep=True``.
 
-    Note: calls ``set_params`` even if ``estimator`` does not have a ``random_state``,
-    therefore ``set_random_state`` will reset any ``scikit-base`` estimator,
+    Note: calls ``estimator.set_params`` even if ``estimator``
+    does not have a ``random_state``,
+    or none of its components have a ``random_state`` parameter.
+    Therefore, ``set_random_state`` will reset any ``scikit-base`` estimator,
     even those without a ``random_state`` parameter.
 
     Parameters
@@ -31,22 +35,33 @@ def set_random_state(estimator, random_state=None, deep=True):
         If False, will set only ``estimator``'s ``random_state`` parameter, if exists.
         If True, will set ``random_state`` parameters in sub-estimators as well.
 
+    root_policy : str, one of {"copy", "keep", "new"}, default="copy"
+
+        * "copy" : ``estimator.random_state`` is set to input ``random_state``
+        * "keep" : ``estimator.random_state`` is kept as is
+        * "new" : ``estimator.random_state`` is set to a new random state,
+          derived from input ``random_state``, and in general different from it
+
     Returns
     -------
     estimator : estimator
         reference to ``estimator`` with state changed, random seed set
     """
+    random_state_orig = random_state
     random_state = check_random_state(random_state)
 
     keys = []
     for key in sorted(estimator.get_params(deep=True)):
-        if key == "random_state":
+        if key == "random_state" and root_policy != "keep":
             keys.append(key)
         if key.endswith("__random_state") and deep:
             keys.append(key)
 
     seeds = sample_dependent_seed(random_state, n_seeds=len(keys))
     to_set = dict(zip(keys, seeds))
+
+    if root_policy == "copy" and "random_state" in to_set:
+        to_set["random_state"] = random_state_orig
 
     estimator.set_params(**to_set)
     return estimator

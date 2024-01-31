@@ -973,17 +973,21 @@ class BaseObject(_FlagManager):
             output["text/html"] = _object_html_repr(self)
         return output
 
-    def set_random_state(self, random_state=None, deep=True):
+    def set_random_state(self, random_state=None, deep=True, self_policy="copy"):
         """Set random_state pseudo-random seed parameters for self.
 
-        Finds ``random_state`` named parameters via ``self.get_params``,
+        Finds ``random_state`` named parameters via ``estimator.get_params``,
         and sets them to integers derived from ``random_state`` via ``set_params``.
+        These integers are sampled from chain hashing via ``sample_dependent_seed``,
+        and guarantee pseudo-random independence of seeded random generators.
 
-        Applies to ``random_state`` parameters in ``self`` always,
-        and all component estimators if and only if ``deep=True``.
+        Applies to ``random_state`` parameters in ``estimator`` depending on
+        ``self_policy``, and remaining component estimators
+        if and only if ``deep=True``.
 
         Note: calls ``set_params`` even if ``self`` does not have a ``random_state``,
-        therefore ``set_random_state`` will reset any ``scikit-base`` estimator,
+        or none of the components have a ``random_state`` parameter.
+        Therefore, ``set_random_state`` will reset any ``scikit-base`` estimator,
         even those without a ``random_state`` parameter.
 
         Parameters
@@ -997,13 +1001,25 @@ class BaseObject(_FlagManager):
             If False, will set only ``self``'s ``random_state`` parameter, if exists.
             If True, will set ``random_state`` parameters in sub-estimators as well.
 
+        self_policy : str, one of {"copy", "keep", "new"}, default="copy"
+
+            * "copy" : ``estimator.random_state`` is set to input ``random_state``
+            * "keep" : ``estimator.random_state`` is kept as is
+            * "new" : ``estimator.random_state`` is set to a new random state,
+            derived from input ``random_state``, and in general different from it
+
         Returns
         -------
         self : reference to self
         """
         from skbase.utils.random_state import set_random_state
 
-        return set_random_state(self, random_state=random_state, deep=deep)
+        return set_random_state(
+            self,
+            random_state=random_state,
+            deep=deep,
+            root_policy=self_policy,
+        )
 
 
 class TagAliaserMixin:
