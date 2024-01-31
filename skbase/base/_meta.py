@@ -9,15 +9,14 @@
 # sktime:  https://github.com/sktime/sktime/blob/main/LICENSE
 """Implements functionality for meta objects composed of other objects."""
 from inspect import isclass
-from typing import TYPE_CHECKING, Any, Dict, List, Sequence, Tuple, Union, overload
 
 from skbase.base._base import BaseEstimator, BaseObject
 from skbase.base._pretty_printing._object_html_repr import _VisualBlock
 from skbase.utils._iter import _format_seq_to_str, make_strings_unique
 from skbase.validate import is_named_object_tuple
 
-__author__: List[str] = ["mloning", "fkiraly", "RNKuhns"]
-__all__: List[str] = ["BaseMetaEstimator", "BaseMetaObject"]
+__author__ = ["mloning", "fkiraly", "RNKuhns"]
+__all__ = ["BaseMetaEstimator", "BaseMetaObject"]
 
 
 class _MetaObjectMixin:
@@ -250,8 +249,27 @@ class _MetaObjectMixin:
         super().set_params(**params)  # type: ignore
         return self
 
-    def _replace_object(self, attr: str, name: str, new_val: Any) -> None:
-        """Replace an object in attribute that contains named objects."""
+    def _replace_object(self, attr, name, new_val) -> None:
+        """Replace an object in attribute that contains named objects.
+
+        Replaces the object with name ``name`` in attribute ``attr`` with ``new_val``.
+        ``getattr(self, attr)`` is assumed to contain a list of (str, object) tuples.
+
+        Directly mutates the list pointed to by ``attr``, in place.
+
+        Parameters
+        ----------
+        attr : str
+            Name of parameter whose values should contain named objects.
+        name : str
+            Name of object to replace.
+        new_val : Any
+            New value to replace object with.
+
+        Returns
+        -------
+        None
+        """
         # assumes `name` is a valid object name
         new_objects = list(getattr(self, attr))
         for i, obj_tpl in enumerate(new_objects):
@@ -337,13 +355,13 @@ class _MetaObjectMixin:
 
     def _check_objects(
         self,
-        objs: Any,
-        attr_name: str = "steps",
-        cls_type: Union[type, Tuple[type, ...]] = None,
-        allow_dict: bool = False,
-        allow_mix: bool = True,
-        clone: bool = True,
-    ) -> List[Tuple[str, BaseObject]]:
+        objs,
+        attr_name="steps",
+        cls_type=None,
+        allow_dict=False,
+        allow_mix=True,
+        clone=True,
+    ):
         """Check that objects is a list of objects or sequence of named objects.
 
         Parameters
@@ -456,8 +474,6 @@ class _MetaObjectMixin:
         objs : list[BaseObject]
             The
         """
-        names: Tuple[str, ...]
-        objs: Tuple[BaseObject, ...]
         if isinstance(named_objects, dict):
             names, objs = zip(*named_objects.items())
         else:
@@ -505,8 +521,6 @@ class _MetaObjectMixin:
             named_objects = [(k, v) for k, v in objs.items()]
         else:
             # Otherwise get named object format
-            if TYPE_CHECKING:
-                assert not isinstance(objs, dict)  # nosec: B1010
             named_objects = [
                 self._coerce_object_tuple(obj, clone=clone) for obj in objs
             ]
