@@ -317,7 +317,7 @@ class _MetaObjectMixin:
 
         return names
 
-    def _coerce_object_tuple(self, obj, clone):
+    def _coerce_object_tuple(self, obj, clone=False):
         """Coerce object or (str, BaseObject) tuple to (str, BaseObject) tuple.
 
         Used to make sure input will work with expected named object tuple API format.
