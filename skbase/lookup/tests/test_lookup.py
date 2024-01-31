@@ -577,9 +577,11 @@ def test_get_package_metadata_returns_expected_types(
         if isinstance(package_base_classes, type):
             package_base_classes = (package_base_classes,)
         expected_is_base_class_returned = [
-            k["klass"] in package_base_classes
-            if k["is_base_class"]
-            else k["klass"] not in package_base_classes
+            (
+                k["klass"] in package_base_classes
+                if k["is_base_class"]
+                else k["klass"] not in package_base_classes
+            )
             for k in klass_metadata
         ]
         assert all(expected_is_base_class_returned)

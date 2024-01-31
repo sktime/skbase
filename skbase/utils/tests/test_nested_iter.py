@@ -3,7 +3,7 @@
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tests of the functionality for working with iterables.
 
-tests in this module incdlue:
+tests in this module include:
 
 - test_remove_single
 - test_flatten

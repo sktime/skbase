@@ -2,31 +2,18 @@
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Validate if an input is one of the allowed named object formats."""
 import collections.abc
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-    overload,
-)
 
 from skbase.base import BaseObject
 
-__all__: List[str] = [
+__all__ = [
     "check_sequence_named_objects",
     "is_named_object_tuple",
     "is_sequence_named_objects",
 ]
-__author__: List[str] = ["RNKuhns"]
+__author__ = ["RNKuhns"]
 
 
-def _named_baseobject_error_msg(
-    sequence_name: Optional[str] = None, allow_dict: bool = True
-):
+def _named_baseobject_error_msg(sequence_name=None, allow_dict=True):
     """Create error message for non-conformance with named BaseObject api."""
     name_str = f"{sequence_name}" if sequence_name is not None else "Input"
     allowed_types = "a sequence of (string name, BaseObject instance) tuples"
@@ -37,9 +24,7 @@ def _named_baseobject_error_msg(
     return msg
 
 
-def is_named_object_tuple(
-    obj: Any, object_type: Optional[Union[type, Tuple[type, ...]]] = None
-) -> bool:
+def is_named_object_tuple(obj, object_type=None):
     """Indicate if input is a a tuple of format (str, `object_type`).
 
     Used to validate that input follows named object tuple API format.
@@ -104,11 +89,11 @@ def is_named_object_tuple(
 
 
 def is_sequence_named_objects(
-    seq_to_check: Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]],
-    allow_dict: bool = True,
+    seq_to_check,
+    allow_dict=True,
     require_unique_names=False,
-    object_type: Optional[Union[type, Tuple[type]]] = None,
-) -> bool:
+    object_type=None,
+):
     """Indicate if input is a sequence of named BaseObject instances.
 
     This can be a sequence of (str, BaseObject instance) tuples or
@@ -216,11 +201,7 @@ def is_sequence_named_objects(
     ):
         return False
 
-    all_expected_format: bool
-    all_unique_names: bool
     if is_dict:
-        if TYPE_CHECKING:  # pragma: no cover
-            assert isinstance(seq_to_check, dict)  # nosec B101
         elements_expected_format = [
             isinstance(name, str) and isinstance(obj, object_type)
             for name, obj in seq_to_check.items()
@@ -247,46 +228,13 @@ def is_sequence_named_objects(
     return is_expected_format
 
 
-@overload
 def check_sequence_named_objects(
-    seq_to_check: Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]],
-    allow_dict: bool = True,
+    seq_to_check,
+    allow_dict=True,
     require_unique_names=False,
-    object_type: Optional[Union[type, Tuple[type]]] = None,
-    sequence_name: Optional[str] = None,
-) -> Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]]:
-    ...  # pragma: no cover
-
-
-@overload
-def check_sequence_named_objects(
-    seq_to_check: Sequence[Tuple[str, BaseObject]],
-    allow_dict: bool,
-    require_unique_names=False,
-    object_type: Optional[Union[type, Tuple[type]]] = None,
-    sequence_name: Optional[str] = None,
-) -> Sequence[Tuple[str, BaseObject]]:
-    ...  # pragma: no cover
-
-
-@overload
-def check_sequence_named_objects(
-    seq_to_check: Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]],
-    allow_dict: bool = True,
-    require_unique_names=False,
-    object_type: Optional[Union[type, Tuple[type]]] = None,
-    sequence_name: Optional[str] = None,
-) -> Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]]:
-    ...  # pragma: no cover
-
-
-def check_sequence_named_objects(
-    seq_to_check: Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]],
-    allow_dict: bool = True,
-    require_unique_names=False,
-    object_type: Optional[Union[type, Tuple[type]]] = None,
-    sequence_name: Optional[str] = None,
-) -> Union[Sequence[Tuple[str, BaseObject]], Dict[str, BaseObject]]:
+    object_type=None,
+    sequence_name=None,
+):
     """Check if input is a sequence of named BaseObject instances.
 
     `seq_to_check` is returned unchanged when it follows the allowed named

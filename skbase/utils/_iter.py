@@ -5,12 +5,11 @@
 import collections
 import re
 from collections.abc import Sequence
-from typing import Any, List, Optional, Tuple, Union, overload
 
 from skbase.utils._nested_iter import _remove_single, flatten, is_flat, unflatten
 
-__author__: List[str] = ["RNKuhns"]
-__all__: List[str] = [
+__author__ = ["fkiraly", "RNKuhns"]
+__all__ = [
     "_scalar_to_seq",
     "_remove_type_text",
     "_format_seq_to_str",
@@ -18,7 +17,7 @@ __all__: List[str] = [
 ]
 
 
-def _scalar_to_seq(scalar: Any, sequence_type: type = None) -> Sequence:
+def _scalar_to_seq(scalar, sequence_type=None):
     """Convert a scalar input to a sequence.
 
     If the input is already a sequence it is returned unchanged. Unlike standard
@@ -84,13 +83,8 @@ def _remove_type_text(input_):
         return input_
 
 
-def _format_seq_to_str(
-    seq: Union[str, Sequence],
-    sep: str = ", ",
-    last_sep: Optional[str] = None,
-    remove_type_text: bool = True,
-) -> str:
-    """Format a sequence to a string of delimited elements.
+def _format_seq_to_str(seq, sep=", ", last_sep=None, remove_type_text=True):
+    """Format a sequence to a string of delimitted elements.
 
     This is useful to format sequences into a pretty printing format for
     creating error messages or warnings.
@@ -99,7 +93,7 @@ def _format_seq_to_str(
     ----------
     seq : Sequence
         The input sequence to convert to a str of the elements separated by `sep`.
-    sep : str
+    sep : str, default=", "
         The separator to use when creating the str output.
     last_sep : str, default=None
         The separator to use prior to last element.
@@ -162,19 +156,8 @@ def _format_seq_to_str(
     return output_str
 
 
-@overload
-def make_strings_unique(str_list: Tuple[str, ...]) -> Tuple[str, ...]:
-    ...  # pragma: no cover
-
-
-@overload
-def make_strings_unique(str_list: List[str]) -> List[str]:
-    ...  # pragma: no cover
-
-
-def make_strings_unique(
-    str_list: Union[List[str], Tuple[str, ...]]
-) -> Union[List[str], Tuple[str, ...]]:
+# copied from sktime _HeterogenousMetaEstimator._make_strings_unique
+def make_strings_unique(str_list):
     """Make a list or tuple of strings unique by appending number of occurrence.
 
     Supports making string elements unique for nested list/tuple input.

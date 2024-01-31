@@ -176,7 +176,10 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
 
         * key is tag name to sub-set on
         * value str or list of string are tag values
-        * condition is "key must be equal to value, or in set(value)"
+        * condition is "tag value at key must be equal to search value",
+          if search value, tag value are not iterable.
+          if one of search value, tag value, or both, are lists: condition is
+          "at least one element of search value must be contained in tag value"
 
     Returns
     -------
@@ -221,10 +224,13 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
 
     cond_sat = True
 
-    for key, value in tag_filter.items():
-        if not isinstance(value, list):
-            value = [value]
-        cond_sat = cond_sat and obj.get_class_tag(key) in set(value)
+    for key, search_value in tag_filter.items():
+        if not isinstance(search_value, list):
+            search_value = [search_value]
+        tag_value = obj.get_class_tag(key)
+        if not isinstance(tag_value, list):
+            tag_value = [tag_value]
+        cond_sat = cond_sat and len(set(search_value).intersection(tag_value)) > 0
 
     return cond_sat
 
@@ -737,6 +743,8 @@ def all_objects(
             to the value are returned.
           - If a dict key maps to multiple values (e.g., list) only classes with
             tag values in these values are returned.
+          - If tag values are iterable,
+            condition is "at least one search value is contained in tag values".
 
     exclude_objects: str or list[str], default=None
         Names of estimators to exclude.
