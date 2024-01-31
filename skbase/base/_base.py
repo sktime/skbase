@@ -68,7 +68,7 @@ __all__: List[str] = ["BaseEstimator", "BaseObject"]
 
 
 # Adapted from sklearn's `_clone_parametrized()`
-def _sklearn_clone(estimator, *, safe=True):
+def _clone(estimator, *, safe=True):
     """Construct a new unfitted estimator with the same parameters.
 
     Clone does a deep copy of the model in an estimator
@@ -101,7 +101,7 @@ def _sklearn_clone(estimator, *, safe=True):
     estimator_type = type(estimator)
     # XXX: not handling dictionaries
     if estimator_type in (list, tuple, set, frozenset):
-        return estimator_type([_sklearn_clone(e, safe=safe) for e in estimator])
+        return estimator_type([_clone(e, safe=safe) for e in estimator])
     elif not hasattr(estimator, "get_params") or isinstance(estimator, type):
         if not safe:
             return deepcopy(estimator)
@@ -123,7 +123,7 @@ def _sklearn_clone(estimator, *, safe=True):
     klass = estimator.__class__
     new_object_params = estimator.get_params(deep=False)
     for name, param in new_object_params.items():
-        new_object_params[name] = _sklearn_clone(param, safe=False)
+        new_object_params[name] = _clone(param, safe=False)
     new_object = klass(**new_object_params)
     params_set = new_object.get_params(deep=False)
 
@@ -262,7 +262,7 @@ class BaseObject(_FlagManager):
         -----
         If successful, equal in value to ``type(self)(**self.get_params(deep=False))``.
         """
-        self_clone = _sklearn_clone(self)
+        self_clone = _clone(self)
         if self.get_config()["check_clone"]:
             return _check_clone(original=self, clone=self_clone)
         return self_clone
