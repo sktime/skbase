@@ -89,9 +89,9 @@ def test_set_random_state(external, deep, root_policy):
         assert composite1.get_params()["random_state"] != 42
     # the nested param depends on the deep argument
     if deep:
-        assert composite1.get_params()["foo__random_state"] != 42
+        assert composite1.get_params()["foo__random_state"] != 41
     else:
-        assert composite1.get_params()["foo__random_state"] == 42
+        assert composite1.get_params()["foo__random_state"] == 41
 
     # here we test two things:
     # does not break for seedless composites
