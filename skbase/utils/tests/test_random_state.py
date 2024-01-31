@@ -33,11 +33,11 @@ def test_set_random_state(external, deep, root_policy):
     def set_seed(obj):
         if external:
             return set_random_state(
-                obj, random_state=41, deep=deep, root_policy=root_policy
+                obj, random_state=42, deep=deep, root_policy=root_policy
             )
         else:
             return obj.set_random_state(
-                random_state=41, deep=deep, self_policy=root_policy
+                random_state=42, deep=deep, self_policy=root_policy
             )
 
     class DummyDummy(BaseObject):
