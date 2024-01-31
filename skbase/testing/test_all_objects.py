@@ -18,9 +18,9 @@ from skbase.lookup import all_objects
 from skbase.testing.utils._conditional_fixtures import (
     create_conditional_fixtures_and_names,
 )
-from skbase.testing.utils._dependencies import _check_soft_dependencies
 from skbase.testing.utils.inspect import _get_args
 from skbase.utils.deep_equals import deep_equals
+from skbase.utils.dependencies import _check_soft_dependencies
 
 __author__: List[str] = ["fkiraly"]
 
@@ -143,7 +143,7 @@ class BaseFixtureGenerator:
         return all_objects(
             object_types=getattr(self, "object_type_filter", None),
             return_names=False,
-            exclude_estimators=self.exclude_objects,
+            exclude_objects=self.exclude_objects,
             package_name=self.package_name,
         )
 
@@ -659,21 +659,17 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         assert not hasattr(object_instance, "test__attr")
         object_instance.test__attr = 42
 
-    @pytest.mark.skipif(
-        not _check_soft_dependencies("sklearn", severity="none"),
-        reason="skip test if sklearn is not available",
-    )  # sklearn is part of the dev dependency set, test should be executed with that
     def test_get_params(self, object_instance):
         """Check that get_params works correctly, against sklearn interface."""
-        from sklearn.utils.estimator_checks import (
-            check_get_params_invariance as _check_get_params_invariance,
-        )
-
         params = object_instance.get_params()
         assert isinstance(params, dict)
-        _check_get_params_invariance(
-            object_instance.__class__.__name__, object_instance
-        )
+
+        e = object_instance.clone()
+
+        shallow_params = e.get_params(deep=False)
+        deep_params = e.get_params(deep=True)
+
+        assert all(item in deep_params.items() for item in shallow_params.items())
 
     def test_set_params(self, object_instance):
         """Check that set_params works correctly."""

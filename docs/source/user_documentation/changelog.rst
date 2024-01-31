@@ -2,7 +2,7 @@
 Changelog
 =========
 
-All notable changes to this project beggining with version 0.1.0 will be
+All notable changes to this project beginning with version 0.1.0 will be
 documented in this file. The format is based on
 `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_ and we adhere
 to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_. The source
@@ -13,6 +13,226 @@ You can also subscribe to ``skbase``'s
 `PyPi release <https://libraries.io/pypi/scikit-base>`_.
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
+
+[0.7.1] - 2023-01-12
+====================
+
+Minor bugfix and maintenance release.
+
+Contents
+--------
+
+* [BUG] fix ``deep_equals`` for ``np.array`` with ``dtype="object"``
+  (:pr:`263`) :user:`fkiraly`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`264`) :user:`precommit-ci`
+
+
+[0.7.0] - 2023-01-03
+====================
+
+Bugfix release with potentially breaking changes related to
+``set_config``, ``get_config`` (:pr:`257`, :pr:`259`, :user:`fkiraly`)
+due to masking of third party bugs,
+please consult the changelog for details in case of breakage.
+
+Core interface changes
+----------------------
+
+* configuration values - set via ``set_config`` and inspectable via ``get_config`` -
+  are now retained through ``clone`` and ``reset``.
+  Previous behaviour was to reset configuration values to default,
+  which is considered a bug. However, this change may break existing code
+  if two errors cancel out, e.g.,
+  if a breaking (without bug) configuration was set, the reset through the bug.
+  In this case, the bug masked the breaking configuration, which should be addressed.
+  Most breakages over 0.6.2 should be addressable by removing ``set_config`` calls,
+  i.e., removing the genuinely breaking configuration.
+* A configuration field ``clone_config`` was added that allows to configure
+  whether ``clone`` should clone the configuration.
+  This is useful for meta-estimators that
+  should not clone the configuration of their components.
+  This change is not breaking - considered in difference to the above - as
+  the default behaviour is to clone the configuration.
+
+Fixes
+-----
+
+* [BUG] fix ``deep_equals`` plugin for ``pd.Index`` (:pr:`260`) :user:`fkiraly`
+* [BUG] retain config at ``reset``, add tests for ``set_config``, ``get_config``
+  (:pr:`259`) :user:`fkiraly`
+* [BUG] retain config after ``clone``, add config to configure whether to clone config
+  (:pr:`257`) :user:`fkiraly`
+
+
+[0.6.2] - 2023-12-30
+====================
+
+Release with minor improvements and bugfixes.
+
+Enhancements
+------------
+
+* [ENH] ``deep_equals`` - clearer return on diffs from ``dtypes`` and ``index``,
+  relaxation of ``MultiIndex`` equality check (:pr:`246`) :user:`fkiraly`
+
+Fixes
+-----
+
+* [BUG] ensure ``deep_equals`` plugins are passed on to all recursions
+  (:pr:`243`) :user:`fkiraly`
+
+Documentation
+-------------
+
+* [DOC] Fixed spelling mistakes as identified by ``codespell`` and ``typos``
+  (:pr:`245`) :user:`yarnabrina`
+
+Maintenance
+-----------
+
+* [MNT] [Dependabot](deps-dev): Update sphinx-gallery requirement
+  from ``<0.15.0`` to ``<0.16.0`` (:pr:`247`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump actions/setup-python from 4 to 5
+  (:pr:`250`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump conda-incubator/setup-miniconda from 2 to 3
+  (:pr:`249`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump github/codeql-action from 2 to 3
+  (:pr:`252`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump actions/download-artifact from 3 to 4
+  (:pr:`253`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump actions/upload-artifact from 3 to 4
+  (:pr:`254`) :user:`dependabot`
+
+
+[0.6.1] - 2023-10-26
+====================
+
+Highlights
+----------
+
+* ``set_params`` now recognizes unique suffixes as aliases
+  for full parameter strings, e.g., ``foo`` instead of
+  ``estimator__component__foo`` (:pr:`229`) :user:`fkiraly`
+* the ``deep_equals`` utility now admits custom plugins with dependency
+  isolation, e.g., for data types such as ``dask`` or ``polars``
+  (:pr:`238`) :user:`fkiraly`
+* ``dependabot`` is now enabled for the ``skbase`` repository
+  (:pr:`228`) :user:`fkiraly`
+
+
+Core interface changes
+----------------------
+
+* ``set_params`` now recognizes unique suffixes as aliases
+  for full parameter strings. This change is not breaking as behaviour
+  changes only in cases where previously exceptions were raised.
+
+Enhancements
+------------
+
+* [ENH] ``set_params`` to recognize unique suffixes as aliases
+  for full parameter string (:pr:`229`) :user:`fkiraly`
+* [ENH] refactor string coercions and return logic in ``deep_equals`` utility
+  (:pr:`237`) :user:`fkiraly`
+* [ENH] improved ``deep_equals`` utility - plugins for custom types
+  (:pr:`238`) :user:`fkiraly`
+* [ENH] informative failure message in
+  ``test_get_package_metadata_returns_expected_results`` (:pr:`239`) :user:`fkiraly`
+
+Maintenance
+-----------
+
+* [MNT] activate ``dependabot`` for version updates and maintenance
+  (:pr:`228`) :user:`fkiraly`
+* [MNT] [Dependabot](deps): Bump actions/upload-artifact from 2 to 3
+  (:pr:`230`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump actions/dependency-review-action from 1 to 3
+  (:pr:`231`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump actions/checkout from 3 to 4
+  (:pr:`232`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump actions/download-artifact from 2 to 3
+  (:pr:`233`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump styfle/cancel-workflow-action from 0.9.1 to 0.12.0
+  (:pr:`234`) :user:`dependabot`
+
+Fixes
+-----
+
+* [BUG] correct parameter name in ``TestAllObjects`` ``all_objects`` call
+  (:pr:`236`) :user:`fkiraly`
+
+
+[0.6.0] - 2023-10-05
+====================
+
+Maintenance release at python 3.12 release.
+
+Adds support for python 3.12.
+
+Dependency changes
+------------------
+
+* ``skbase`` now supports python 3.12.
+
+Deprecations and removals
+-------------------------
+
+* the ``deep_equals`` utility has moved to ``skbase.utils.deep_equals``.
+  The old location in ``skbase.testing.utils.deep_equals`` has now been removed.
+
+Contents
+--------
+
+* [MNT] address deprecation of ``load_module`` in ``python 3.12``
+  (:pr:`190`) :user:`fkiraly`
+* [MNT] simplify test CI and remove ``conda`` (:pr:`224`) :user:`fkiraly`
+* [MNT] update dependency versions in ``doc`` dependency set and set upper bounds
+  (:pr:`226`, :pr:`227`) :user:`fkiraly`
+* [MNT] update ``python`` version to 3.12 (:pr:`221`) :user:`fkiraly`
+* [MNT] 0.6.0 deprecation actions (:pr:`225`) :user:`fkiraly`
+
+
+[0.5.2] - 2023-10-03
+====================
+
+Release with minor improvements.
+
+* [ENH] move tests for dependency checks and ``deep_equals``
+  to ``utils`` module (:pr:`217`) :user:`fkiraly`
+* [ENH] meta-object mixins (:pr:`216`) :user:`fkiraly`
+* [DOC] update ``sktime`` links (:pr:`219`) :user:`fkiraly`
+
+
+[0.5.1] - 2023-08-14
+====================
+
+Release with minor improvements and bugfixes.
+
+Enhancements
+------------
+
+* [ENH] remove ``sklearn`` dependency in ``test_get_params`` (:pr:`212`) :user:`fkiraly`
+
+Documentation
+-------------
+
+* [DOC] landing page updates (:pr:`188`) :user:`fkiraly`
+
+Maintenance
+-----------
+
+* [MNT] separate windows CI element from unix based CI (:pr:`209`) :user:`fkiraly`
+* [MNT] convert ``black`` ``extend-exclude`` parameter to single string
+  (:pr:`207`) :user:`fkiraly`
+* [MNT] update ``__init__`` version (:pr:`210`) :user:`fkiraly`
+* [MNT] fix linting issue from newest pre-commit versions (:pr:`211`) :user:`fkiraly`
+
+Fixes
+-----
+
+* [BUG] fix for ``get_fitted_params`` in ``_HeterogenousMetaEstimator``
+  (:pr:`191`) :user:`fkiraly`
+
 
 [0.5.0] - 2023-06-21
 ====================
@@ -98,7 +318,7 @@ Dependency changes
 * ``scikit-learn``, ``typing-extensions``, and ``pytest`` are no longer
   core dependencies.
   ``pytest`` remains a dependency in ``dev`` and ``test`` dependency sets.
-* ``scikit-learn`` is now part of the ``dev`` and ``test`` depency sets,
+* ``scikit-learn`` is now part of the ``dev`` and ``test`` dependency sets,
   as it is required to test compatibility with ``scikit-learn``
 * a dependency conflict has been resolved in the ``docs`` dependency set for
   the docs build,
@@ -211,7 +431,7 @@ Highlights
 
 - Expanded test coverage of ``skbase.base`` and ``skbase.lookup`` modules and
   ``skbase`` exceptions (:pr:`62`, :pr:`80`, :pr:`91`) :user:`rnkuhns`
-- Add equality dunder to ``BaseObject`` to allow ``BaseObejct``-s to be compared based
+- Add equality dunder to ``BaseObject`` to allow ``BaseObject``-s to be compared based
   on parameter equality (:pr:`86`) :user:`fkiraly`
 - Add ``sktime``-like interface for retrieving fitted parameters to ``BaseEstimator``
   (:pr:`87`) :user:`fkiraly`

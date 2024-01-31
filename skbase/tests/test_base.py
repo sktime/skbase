@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
-# Elements of these tests re-use code developed in scikit-learn. These elements
+# Elements of these tests reuse code developed in scikit-learn. These elements
 # are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
 # conditions see https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
 """Tests for BaseObject universal base class.
@@ -33,6 +33,8 @@ __all__ = [
     "test_components",
     "test_components_raises_error_base_class_is_not_class",
     "test_components_raises_error_base_class_is_not_baseobject_subclass",
+    "test_param_alias",
+    "test_nested_set_params_and_alias",
     "test_reset",
     "test_reset_composite",
     "test_get_init_signature",
@@ -77,9 +79,9 @@ import pytest
 import scipy.sparse as sp
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.testing.utils._dependencies import _check_soft_dependencies
 from skbase.tests.conftest import Child, Parent
 from skbase.tests.mock_package.test_mock_package import CompositionDummy
+from skbase.utils.dependencies import _check_soft_dependencies
 
 
 # TODO: Determine if we need to add sklearn style test of
@@ -545,6 +547,101 @@ def test_components_raises_error_base_class_is_not_baseobject_subclass(
         composite._components(SomeClass)
 
 
+class AliasTester(BaseObject):
+    def __init__(self, a, bar=42):
+        self.a = a
+        self.bar = bar
+
+
+def test_param_alias():
+    """Tests parameter aliasing with parameter string shorthands.
+
+    Raises
+    ------
+    AssertionError if parameters that should be set via __ are not set
+    AssertionError if error that should be raised is not raised
+    """
+    non_composite = AliasTester(a=42, bar=4242)
+    composite = CompositionDummy(foo=non_composite)
+
+    # this should write to a of foo, because there is only one suffix called a
+    composite.set_params(**{"a": 424242})
+    assert composite.get_params()["foo__a"] == 424242
+
+    # this should write to bar of composite, because "bar" is a full parameter string
+    #   there is a suffix in foo, but if the full string is there, it writes to that
+    composite.set_params(**{"bar": 424243})
+    assert composite.get_params()["bar"] == 424243
+
+    # trying to write to bad_param should raise an exception
+    # since bad_param is neither a suffix nor a full parameter string
+    with pytest.raises(ValueError, match=r"Invalid parameter keys provided to"):
+        composite.set_params(**{"bad_param": 424242})
+
+    # new example: highly nested composite with identical suffixes
+    non_composite1 = composite
+    non_composite2 = AliasTester(a=42, bar=4242)
+    uber_composite = CompositionDummy(foo=non_composite1, bar=non_composite2)
+
+    # trying to write to a should raise an exception
+    # since there are two suffix a, and a is not a full parameter string
+    with pytest.raises(ValueError, match=r"does not uniquely determine parameter key"):
+        uber_composite.set_params(**{"a": 424242})
+
+    # same as above, should overwrite "bar" of uber_composite
+    uber_composite.set_params(**{"bar": 424243})
+    assert uber_composite.get_params()["bar"] == 424243
+
+
+def test_nested_set_params_and_alias():
+    """Tests that nested param setting works correctly.
+
+    This specifically tests that parameters of components can be provided,
+    even if that component is not present in the object that set_params is called on,
+    but is also being set in the same set_params call.
+
+    Also tests alias resolution, using recursive end state after set_params.
+
+    Raises
+    ------
+    AssertionError if parameters that should be set via __ are not set
+    AssertionError if error that should be raised is not raised
+    """
+    non_composite = AliasTester(a=42, bar=4242)
+    composite = CompositionDummy(foo=0)
+
+    # this should write to a of foo
+    # potential error here is that composite does not have foo__a to start with
+    # so error catching or writing foo__a to early could cause an exception
+    composite.set_params(**{"foo": non_composite, "foo__a": 424242})
+    assert composite.get_params()["foo__a"] == 424242
+
+    non_composite = AliasTester(a=42, bar=4242)
+    composite = CompositionDummy(foo=0)
+
+    # same, and recognizing that foo__a is the only matching suffix in the end state
+    composite.set_params(**{"foo": non_composite, "a": 424242})
+    assert composite.get_params()["foo__a"] == 424242
+
+    # new example: highly nested composite with identical suffixes
+    non_composite1 = composite
+    non_composite2 = AliasTester(a=42, bar=4242)
+    uber_composite = CompositionDummy(foo=42, bar=42)
+
+    # trying to write to a should raise an exception
+    # since there are two suffix a, and a is not a full parameter string
+    with pytest.raises(ValueError, match=r"does not uniquely determine parameter key"):
+        uber_composite.set_params(
+            **{"a": 424242, "foo": non_composite1, "bar": non_composite2}
+        )
+
+    uber_composite = CompositionDummy(foo=non_composite1, bar=42)
+
+    # same as above, should overwrite "bar" of uber_composite
+    uber_composite.set_params(**{"bar": 424243})
+    assert uber_composite.get_params()["bar"] == 424243
+
+
 # Test parameter interface (get_params, set_params, reset and related methods)
 # Some tests of get_params and set_params are adapted from sklearn tests
 def test_reset(fixture_reset_tester: Type[ResetTester]):
@@ -732,13 +829,13 @@ def test_set_params_raises_error_non_existent_param(
     # non-existing parameter in svc
     with pytest.raises(ValueError):
         fixture_class_parent_instance.set_params(
-            non_existant_param="updated param value"
+            non_existent_param="updated param value"
         )
 
     # non-existing parameter of composite
     composite = fixture_composition_dummy(foo=fixture_class_parent_instance, bar=84)
     with pytest.raises(ValueError):
-        composite.set_params(foo__non_existant_param=True)
+        composite.set_params(foo__non_existent_param=True)
 
 
 def test_set_params_raises_error_non_interface_composite(
@@ -832,6 +929,41 @@ def test_clone_raises_error_for_nonconforming_objects(
     # obj_that_modifies.set_config(**{"check_clone": True})
     # with pytest.raises(RuntimeError):
     #     obj_that_modifies.clone()
+
+
+@pytest.mark.parametrize("clone_config", [True, False])
+def test_config_after_clone_tags(clone_config):
+    """Test clone also clones config works as expected."""
+
+    class TestClass(BaseObject):
+        _tags = {"some_tag": True, "another_tag": 37}
+        _config = {"check_clone": 0}
+
+    test_obj = TestClass()
+    test_obj.set_config(**{"check_clone": 42, "foo": "bar"})
+
+    if not clone_config:
+        # if clone_config config is set to False:
+        # config key check_clone should be default, 0
+        # the new config key foo should not be present
+        test_obj.set_config(**{"clone_config": False})
+        expected = 0
+    else:
+        # if clone_config config is set to True:
+        # config key check_clone should be 42, as set above
+        # the new config key foo should be present, as it has non default
+        expected = 42
+
+    test_obj_clone = test_obj.clone()
+
+    assert "check_clone" in test_obj_clone.get_config().keys()
+    assert test_obj_clone.get_config()["check_clone"] == expected
+
+    if clone_config:
+        assert "foo" in test_obj_clone.get_config().keys()
+        assert test_obj_clone.get_config()["foo"] == "bar"
+    else:
+        assert "foo" not in test_obj_clone.get_config().keys()
 
 
 @pytest.mark.skipif(
@@ -1106,7 +1238,7 @@ def test_has_implementation_of(
     """Test _has_implementation_of detects methods in class with overrides in mro."""
     # When the class overrides a parent classes method should return True
     assert fixture_class_child_instance._has_implementation_of("some_method")
-    # When class implements method first time it shoudl return False
+    # When class implements method first time it should return False
     assert not fixture_class_child_instance._has_implementation_of("some_other_method")
 
     # If the method is defined the first time in the parent class it should not
@@ -1200,3 +1332,37 @@ def test_eq_dunder():
     assert composite == composite_2
     assert composite != composite_3
     assert composite_2 != composite_3
+
+
+def test_get_set_config():
+    """Tests get_config and set_config methods."""
+
+    class _TestConfig(BaseObject):
+        _config = {"foo_config": 42, "bar": "a"}
+
+        clsvar = 210
+
+        def __init__(self, a, b=42):
+            self.a = a
+            self.b = b
+            self.c = 84
+
+    test_obj = _TestConfig(7)
+
+    expected_config_orig = BaseObject._config.copy()
+    expected_config_orig.update({"foo_config": 42, "bar": "a"})
+
+    # Test get_config
+    assert test_obj.get_config() == expected_config_orig
+
+    expected_config = BaseObject._config.copy()
+    expected_config.update({"foo_config": 37, "bar": "a"})
+
+    # Test set_config
+    test_obj.set_config(foo_config=37)
+
+    assert test_obj.get_config() == expected_config
+
+    # test that reset does not reset config
+    test_obj.reset()
+    assert test_obj.get_config() == expected_config

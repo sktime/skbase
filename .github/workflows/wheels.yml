@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -22,7 +22,7 @@ jobs:
           python -m build --wheel --sdist --outdir wheelhouse
 
       - name: Store wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: wheels
           path: wheelhouse/*
@@ -34,15 +34,15 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04, macOS-11]
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: wheels
           path: wheelhouse
@@ -85,10 +85,15 @@ jobs:
             python-version: 3.11
             bitness: 64
             platform_id: win_amd64
+          - os: windows-2019
+            python: 312
+            python-version: 3.12
+            bitness: 64
+            platform_id: win_amd64
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: test
           auto-update-conda: true
@@ -98,7 +103,7 @@ jobs:
       - run: conda --version
       - run: which python
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: wheels
           path: wheelhouse
@@ -133,7 +138,7 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: wheels
           path: wheelhouse

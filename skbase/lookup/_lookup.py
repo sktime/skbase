@@ -115,8 +115,8 @@ def _is_ignored_module(
     returned for `module_name`-s `"bar.foo"`, `"foo"`, `"foo.bar"`,
     `"bar.foo.bar"`, etc.
 
-    Paramters
-    ---------
+    Parameters
+    ----------
     module_name : str
         Name of the module.
     modules_to_ignore : str, list[str] or tuple[str]
@@ -297,10 +297,14 @@ def _import_module(
         if isinstance(module, str):
             imported_mod = importlib.import_module(module)
         elif isinstance(module, importlib.machinery.SourceFileLoader):
-            imported_mod = module.load_module()
+            spec = importlib.util.spec_from_file_location(module.name, module.path)
+            imported_mod = importlib.util.module_from_spec(spec)
+
+            loader = spec.loader
+            loader.exec_module(imported_mod)
         exc = None
     except Exception as e:
-        # we store the exception so we can restore the stdout fisrt
+        # we store the exception so we can restore the stdout first
         exc = e
 
     # if we set up a text trap, restore it to the initial value
@@ -586,7 +590,7 @@ def get_package_metadata(
         following key:value pairs:
 
         - "path": str path to the submodule.
-        - "name": str name of hte submodule.
+        - "name": str name of the submodule.
         - "classes": dictionary with submodule's class names (keys) mapped to
           dictionaries with metadata about the class.
         - "functions": dictionary with function names (keys) mapped to
@@ -696,7 +700,7 @@ def all_objects(
 ):
     """Get a list of all objects in a package with name `package_name`.
 
-    This function crawls the package/module to retreive all classes
+    This function crawls the package/module to retrieve all classes
     that are descendents of BaseObject. By default it does this for the `skbase`
     package, but users can specify `package_name` or `path` to another project
     and `all_objects` will crawl and retrieve BaseObjects found in that project.

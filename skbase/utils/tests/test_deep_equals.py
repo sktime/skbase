@@ -2,11 +2,10 @@
 """Tests for deep_equals utility."""
 from copy import deepcopy
 
-import numpy as np
 import pytest
 
-from skbase.testing.utils._dependencies import _check_soft_dependencies
 from skbase.utils.deep_equals import deep_equals
+from skbase.utils.dependencies import _check_soft_dependencies
 
 # examples used for comparison below
 EXAMPLES = [
@@ -14,13 +13,25 @@ EXAMPLES = [
     [],
     ((((())))),
     [([([([()])])])],
-    np.array([2, 3, 4]),
-    np.array([2, 4, 5]),
     3.5,
     4.2,
-    np.nan,
 ]
 
+if _check_soft_dependencies("numpy", severity="none"):
+    import numpy as np
+
+    EXAMPLES += [
+        np.array([2, 3, 4]),
+        np.array([2, 4, 5]),
+        np.nan,
+        # these cases test that plugins are passed to recursions
+        # in this case, the numpy equality plugin
+        {"a": np.array([2, 3, 4]), "b": np.array([4, 3, 2])},
+        [np.array([2, 3, 4]), np.array([4, 3, 2])],
+        # test case to cover branch re dtype and equal_nan
+        np.array([0.1, 1], dtype="object"),
+        np.array([0.2, 1], dtype="object"),
+    ]
 
 if _check_soft_dependencies("pandas", severity="none"):
     import pandas as pd
@@ -28,10 +39,26 @@ if _check_soft_dependencies("pandas", severity="none"):
     EXAMPLES += [
         pd.DataFrame({"a": [4, 2]}),
         pd.DataFrame({"a": [4, 3]}),
+        pd.DataFrame({"a": ["4", "3"]}),
         (np.array([1, 2, 4]), [pd.DataFrame({"a": [4, 2]})]),
         {"foo": [42], "bar": pd.Series([1, 2])},
         {"bar": [42], "foo": pd.Series([1, 2])},
+        pd.Index([1, 2, 3]),
+        pd.Index([2, 3, 4]),
     ]
+
+    # nested DataFrame example
+    cols = [f"var_{i}" for i in range(2)]
+    X = pd.DataFrame(columns=cols, index=[0, 1, 2])
+    X["var_0"] = pd.Series(
+        [pd.Series([1, 2, 3]), pd.Series([1, 2, 3]), pd.Series([1, 2, 3])]
+    )
+
+    X["var_1"] = pd.Series(
+        [pd.Series([4, 5, 6]), pd.Series([4, 55, 6]), pd.Series([42, 5, 6])]
+    )
+
+    EXAMPLES += [X]
 
 
 @pytest.mark.parametrize("fixture", EXAMPLES)

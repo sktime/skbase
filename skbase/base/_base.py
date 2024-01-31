@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
-# Elements of BaseObject re-use code developed in scikit-learn. These elements
+# Elements of BaseObject reuse code developed in scikit-learn. These elements
 # are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
 # conditions see https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
 """Base class template for objects and fittable objects.
@@ -77,6 +77,7 @@ class BaseObject(_FlagManager):
         "display": "diagram",
         "print_changed_only": True,
         "check_clone": False,  # whether to execute validity checks in clone
+        "clone_config": True,  # clone config values (True) or use defaults (False)
     }
 
     def __init__(self):
@@ -127,6 +128,7 @@ class BaseObject(_FlagManager):
         """
         # retrieve parameters to copy them later
         params = self.get_params(deep=False)
+        config = self.get_config()
 
         # delete all object attributes in self
         attrs = [attr for attr in dir(self) if "__" not in attr]
@@ -137,6 +139,7 @@ class BaseObject(_FlagManager):
 
         # run init with a copy of parameters self had at the start
         self.__init__(**params)
+        self.set_config(**config)
 
         return self
 
@@ -156,6 +159,9 @@ class BaseObject(_FlagManager):
         """
         self_params = self.get_params(deep=False)
         self_clone = self._clone(self)
+
+        if self.get_config()["clone_config"]:
+            self_clone.set_config(**self.get_config())
 
         # if checking the clone is turned off, return now
         if not self.get_config()["check_clone"]:
@@ -258,7 +264,7 @@ class BaseObject(_FlagManager):
 
     @classmethod
     def _get_init_signature(cls):
-        """Get class init sigature.
+        """Get class init signature.
 
         Useful in parameter inspection.
 
@@ -371,48 +377,132 @@ class BaseObject(_FlagManager):
     def set_params(self, **params):
         """Set the parameters of this object.
 
-        The method works on simple estimators as well as on nested objects.
-        The latter have parameters of the form ``<component>__<parameter>`` so
-        that it's possible to update each component of a nested object.
+        The method works on simple estimators as well as on composite objects.
+        Parameter key strings ``<component>__<parameter>`` can be used for composites,
+        i.e., objects that contain other objects, to access ``<parameter>`` in
+        the component ``<component>``.
+        The string ``<parameter>``, without ``<component>__``, can also be used if
+        this makes the reference unambiguous, e.g., there are no two parameters of
+        components with the name ``<parameter>``.
 
         Parameters
         ----------
         **params : dict
-            BaseObject parameters.
+            BaseObject parameters, keys must be ``<component>__<parameter>`` strings.
+            __ suffixes can alias full strings, if unique among get_params keys.
 
         Returns
         -------
-        self
-            Reference to self (after parameters have been set).
+        self : reference to self (after parameters have been set)
         """
         if not params:
             # Simple optimization to gain speed (inspect is slow)
             return self
         valid_params = self.get_params(deep=True)
 
-        nested_params = defaultdict(dict)  # grouped by prefix
-        for key, value in params.items():
-            key, delim, sub_key = key.partition("__")
-            if key not in valid_params:
-                raise ValueError(
-                    "Invalid parameter %s for object %s. "
-                    "Check the list of available parameters "
-                    "with `object.get_params().keys()`." % (key, self)
-                )
+        unmatched_keys = []
 
-            if delim:
+        nested_params = defaultdict(dict)  # grouped by prefix
+        for full_key, value in params.items():
+            # split full_key by first occurrence of __, if contains __
+            # "key_without_dblunderscore" -> "key_without_dbl_underscore", None, None
+            # "key__with__dblunderscore" -> "key", "__", "with__dblunderscore"
+            key, delim, sub_key = full_key.partition("__")
+            # if key not recognized, remember for suffix matching
+            if key not in valid_params:
+                unmatched_keys += [key]
+            # if full_key contained __, collect suffix for component set_params
+            elif delim:
                 nested_params[key][sub_key] = value
+            # if key is found and did not contain __, set self.key to the value
             else:
                 setattr(self, key, value)
                 valid_params[key] = value
 
+        # all matched params have now been set
+        # reset estimator to clean post-init state with those params
         self.reset()
 
         # recurse in components
         for key, sub_params in nested_params.items():
             valid_params[key].set_params(**sub_params)
 
+        # for unmatched keys, resolve by aliasing via available __ suffixes, recurse
+        if len(unmatched_keys) > 0:
+            valid_params = self.get_params(deep=True)
+            unmatched_params = {key: params[key] for key in unmatched_keys}
+
+            # aliasing, syntactic sugar to access uniquely named params more easily
+            aliased_params = self._alias_params(unmatched_params, valid_params)
+
+            # if none of the parameter names change through aliasing, raise error
+            if set(aliased_params) == set(unmatched_params):
+                raise ValueError(
+                    f"Invalid parameter keys provided to set_params of object {self}. "
+                    "Check the list of available parameters "
+                    "with `object.get_params().keys()`. "
+                    f"Invalid keys provided: {unmatched_keys}"
+                )
+
+            # recurse: repeat matching and aliasing until no further matches found
+            #   termination condition is above, "no change in keys via aliasing"
+            self.set_params(**aliased_params)
+
         return self
+
+    def _alias_params(self, d, valid_params):
+        """Replace shorthands in d by full keys from valid_params.
+
+        Parameters
+        ----------
+        d: dict with str keys
+        valid_params: dict with str keys
+
+        Result
+        ------
+        alias_dict: dict with str keys, all keys in valid_params
+            values are as in d, with keys replaced by following rule:
+            If key is a __ suffix of exactly one key in valid_params,
+                it is replaced by that key. Otherwise an exception is raised.
+            A __ suffix of a str is any str obtained as suffix from partition by __.
+            Else, i.e., if key is in valid_params or not a __ suffix,
+            the key is replaced by itself, i.e., left unchanged.
+
+        Raises
+        ------
+        ValueError if at least one key of d is neither contained in valid_params,
+            nor is it a __ suffix of exactly one key in valid_params
+        """
+
+        def _is_suffix(x, y):
+            """Return whether x is a strict __ suffix of y."""
+            return y.endswith(x) and y.endswith("__" + x)
+
+        def _get_alias(x, d):
+            """Return alias of x in d."""
+            # if key is in valid_params, key is replaced by key (itself)
+            if any(x == y for y in d.keys()):
+                return x
+
+            suff_list = [y for y in d.keys() if _is_suffix(x, y)]
+
+            # if key is a __ suffix of exactly one key in valid_params,
+            #   it is replaced by that key
+            ns = len(suff_list)
+            if ns > 1:
+                raise ValueError(
+                    f"suffix {x} does not uniquely determine parameter key, of "
+                    f"{type(self).__name__} instance"
+                    f"the following parameter keys have the same suffix: {suff_list}"
+                )
+            if ns == 0:
+                return x
+            # if ns == 1
+            return suff_list[0]
+
+        alias_dict = {_get_alias(x, valid_params): d[x] for x in d.keys()}
+
+        return alias_dict
 
     @classmethod
     def get_class_tags(cls):
@@ -513,7 +603,7 @@ class BaseObject(_FlagManager):
 
         Notes
         -----
-        Changes object state by settting tag values in tag_dict as dynamic tags in self.
+        Changes object state by setting tag values in tag_dict as dynamic tags in self.
         """
         self._set_flags(flag_attr_name="_tags", **tag_dict)
 
@@ -1013,7 +1103,7 @@ class TagAliaserMixin:
 
         Notes
         -----
-        Changes object state by settting tag values in tag_dict as dynamic tags
+        Changes object state by setting tag values in tag_dict as dynamic tags
         in self.
         """
         self._deprecate_tag_warn(tag_dict.keys())

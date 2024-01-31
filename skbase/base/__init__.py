@@ -3,13 +3,18 @@
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """:mod:`skbase.base` contains base classes for creating parametric objects.
 
-The included functionality makes it easy to re-use scikit-learn and
+The included functionality makes it easy to reuse scikit-learn and
 sktime design principles in your project.
 """
 from typing import List
 
 from skbase.base._base import BaseEstimator, BaseObject
-from skbase.base._meta import BaseMetaEstimator, BaseMetaObject
+from skbase.base._meta import (
+    BaseMetaEstimator,
+    BaseMetaEstimatorMixin,
+    BaseMetaObject,
+    BaseMetaObjectMixin,
+)
 
 __author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
 __all__: List[str] = [
@@ -17,4 +22,6 @@ __all__: List[str] = [
     "BaseEstimator",
     "BaseMetaEstimator",
     "BaseMetaObject",
+    "BaseMetaEstimatorMixin",
+    "BaseMetaObjectMixin",
 ]

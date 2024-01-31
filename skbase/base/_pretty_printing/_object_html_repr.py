@@ -346,7 +346,7 @@ def _object_html_repr(base_object):
     Parameters
     ----------
     base_object : base object
-        The BaseObject or inheritting class to visualize.
+        The BaseObject or inheriting class to visualize.
 
     Returns
     -------

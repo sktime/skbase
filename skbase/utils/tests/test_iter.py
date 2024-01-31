@@ -8,7 +8,7 @@ tests in this module incdlue:
 - test_format_seq_to_str: verify that _format_seq_to_str outputs expected format.
 - test_format_seq_to_str_raises: verify _format_seq_to_str raises error on unexpected
   output.
-- test_scalar_to_seq_expected_output: verify that _scalar_to_seq returns exepcted
+- test_scalar_to_seq_expected_output: verify that _scalar_to_seq returns expected
   output.
 - test_scalar_to_seq_raises: verify that _scalar_to_seq raises error when an
   invalid value is provided for sequence_type parameter.

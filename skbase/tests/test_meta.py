@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
-"""Tests for BaseMetaObject and BaseMetaEstimator mixins.
+"""Tests for BaseMetaObject and BaseMetaEstimator mixins."""
 
-tests in this module:
-
-
-"""
-
-__author__ = ["RNKuhns"]
+__author__ = ["RNKuhns", "fkiraly"]
 import inspect
 
 import pytest
@@ -23,41 +18,55 @@ from skbase.base._meta import (
 
 
 class MetaObjectTester(BaseMetaObject):
-    """Class to test meta object functionality."""
+    """Class to test meta-object functionality."""
 
     def __init__(self, a=7, b="something", c=None, steps=None):
         self.a = a
         self.b = b
         self.c = c
         self.steps = steps
+        super().__init__()
 
 
 class MetaEstimatorTester(BaseMetaEstimator):
-    """Class to test meta estimator functionality."""
+    """Class to test meta-estimator functionality."""
 
     def __init__(self, a=7, b="something", c=None, steps=None):
         self.a = a
         self.b = b
         self.c = c
         self.steps = steps
+        super().__init__()
+
+
+class ComponentDummy(BaseObject):
+    """Class to use as components in meta-estimator."""
+
+    def __init__(self, a=7, b="something"):
+        self.a = a
+        self.b = b
+        super().__init__()
 
 
 @pytest.fixture
 def fixture_metaestimator_instance():
+    """BaseMetaEstimator instance fixture."""
     return BaseMetaEstimator()
 
 
 @pytest.fixture
 def fixture_meta_object():
+    """MetaObjectTester instance fixture."""
     return MetaObjectTester()
 
 
 @pytest.fixture
 def fixture_meta_estimator():
+    """MetaEstimatorTester instance fixture."""
     return MetaEstimatorTester()
 
 
-def test_is_composit_returns_true(fixture_meta_object, fixture_meta_estimator):
+def test_is_composite_returns_true(fixture_meta_object, fixture_meta_estimator):
     """Test that `is_composite` method returns True."""
     msg = "`is_composite` should always be True for subclasses of "
     assert fixture_meta_object.is_composite() is True, msg + "`BaseMetaObject`."
@@ -129,3 +138,33 @@ def test_basemetaestimator_check_is_fitted_raises_error_when_unfitted(
 
     fixture_metaestimator_instance._is_fitted = True
     assert fixture_metaestimator_instance.check_is_fitted() is None
+
+
+@pytest.mark.parametrize("long_steps", (True, False))
+def test_metaestimator_composite(long_steps):
+    """Test composite meta-estimator functionality."""
+    if long_steps:
+        steps = [("foo", ComponentDummy(42)), ("bar", ComponentDummy(24))]
+    else:
+        steps = [("foo", ComponentDummy(42), 123), ("bar", ComponentDummy(24), 321)]
+
+    meta_est = MetaEstimatorTester(steps=steps)
+
+    meta_est_params = meta_est.get_params()
+    assert isinstance(meta_est_params, dict)
+    expected_keys = [
+        "a",
+        "b",
+        "c",
+        "steps",
+        "foo",
+        "bar",
+        "foo__a",
+        "foo__b",
+        "bar__a",
+        "bar__b",
+    ]
+    assert set(meta_est_params.keys()) == set(expected_keys)
+
+    meta_est.set_params(bar__b="something else")
+    assert meta_est.get_params()["bar__b"] == "something else"

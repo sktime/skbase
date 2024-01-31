@@ -35,8 +35,6 @@ SKBASE_MODULES = (
     "skbase.testing.test_all_objects",
     "skbase.testing.utils",
     "skbase.testing.utils._conditional_fixtures",
-    "skbase.testing.utils._dependencies",
-    "skbase.testing.utils.deep_equals",
     "skbase.testing.utils.inspect",
     "skbase.testing.utils.tests",
     "skbase.testing.utils.tests.test_deep_equals",
@@ -51,6 +49,8 @@ SKBASE_MODULES = (
     "skbase.utils._nested_iter",
     "skbase.utils._utils",
     "skbase.utils.deep_equals",
+    "skbase.utils.deep_equals._common",
+    "skbase.utils.deep_equals._deep_equals",
     "skbase.utils.dependencies",
     "skbase.utils.dependencies._dependencies",
     "skbase.validate",
@@ -66,7 +66,6 @@ SKBASE_PUBLIC_MODULES = (
     "skbase.testing",
     "skbase.testing.test_all_objects",
     "skbase.testing.utils",
-    "skbase.testing.utils.deep_equals",
     "skbase.testing.utils.inspect",
     "skbase.testing.utils.tests",
     "skbase.testing.utils.tests.test_deep_equals",
@@ -85,11 +84,18 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
     "skbase.base": (
         "BaseEstimator",
         "BaseMetaEstimator",
+        "BaseMetaEstimatorMixin",
         "BaseMetaObject",
+        "BaseMetaObjectMixin",
         "BaseObject",
     ),
     "skbase.base._base": ("BaseEstimator", "BaseObject"),
-    "skbase.base._meta": ("BaseMetaObject", "BaseMetaEstimator"),
+    "skbase.base._meta": (
+        "BaseMetaObject",
+        "BaseMetaObjectMixin",
+        "BaseMetaEstimator",
+        "BaseMetaEstimatorMixin",
+    ),
     "skbase.base._pretty_printing._pprint": ("KeyValTuple", "KeyValTupleParam"),
     "skbase.lookup._lookup": (),
     "skbase.testing": ("BaseFixtureGenerator", "QuickTester", "TestAllObjects"),
@@ -104,7 +110,9 @@ SKBASE_CLASSES_BY_MODULE.update(
     {
         "skbase.base._meta": (
             "BaseMetaObject",
+            "BaseMetaObjectMixin",
             "BaseMetaEstimator",
+            "BaseMetaEstimatorMixin",
             "_MetaObjectMixin",
             "_MetaTagLogicMixin",
         ),
@@ -123,7 +131,6 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
     "skbase.testing.utils._conditional_fixtures": (
         "create_conditional_fixtures_and_names",
     ),
-    "skbase.testing.utils.deep_equals": ("deep_equals",),
     "skbase.validate": (
         "check_sequence_named_objects",
         "check_sequence",
@@ -155,6 +162,7 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
     ),
     "skbase.utils._utils": ("subset_dict_keys",),
     "skbase.utils.deep_equals": ("deep_equals",),
+    "skbase.utils.deep_equals._deep_equals": ("deep_equals", "deep_equals_custom"),
     "skbase.validate._types": ("check_sequence", "check_type", "is_sequence"),
 }
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
@@ -182,11 +190,6 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_check_object_types",
             "_get_module_info",
         ),
-        "skbase.testing.utils._dependencies": (
-            "_check_soft_dependencies",
-            "_check_python_version",
-        ),
-        "skbase.testing.utils.deep_equals": ("deep_equals",),
         "skbase.testing.utils.inspect": ("_get_args",),
         "skbase.utils._check": ("_is_scalar_nan",),
         "skbase.utils.dependencies": (
@@ -207,17 +210,22 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "unflatten",
         ),
         "skbase.utils._utils": ("subset_dict_keys",),
-        "skbase.utils.deep_equals": (
+        "skbase.utils.deep_equals": ("deep_equals",),
+        "skbase.utils.deep_equals._common": ("_make_ret", "_ret"),
+        "skbase.utils.deep_equals._deep_equals": (
             "_coerce_list",
             "_dict_equals",
-            "_fh_equals",
+            "_fh_equals_plugin",
             "_is_npnan",
             "_is_npndarray",
             "_is_pandas",
+            "_numpy_equals_plugin",
             "_pandas_equals",
+            "_pandas_equals_plugin",
             "_softdep_available",
             "_tuple_equals",
             "deep_equals",
+            "deep_equals_custom",
         ),
         "skbase.utils.dependencies._dependencies": (
             "_check_soft_dependencies",

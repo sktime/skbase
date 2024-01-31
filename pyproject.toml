@@ -1,6 +1,6 @@
 [project]
 name = "scikit-base"
-version = "0.5.0"
+version = "0.7.1"
 description = "Base classes for sklearn-like parametric objects"
 authors = [
     {name = "sktime developers", email = "sktime.toolbox@gmail.com"},
@@ -30,8 +30,9 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
-requires-python = ">=3.8,<3.12"
+requires-python = ">=3.8,<3.13"
 dependencies = []
 
 [project.optional-dependencies]
@@ -69,11 +70,11 @@ docs = [
     "nbsphinx>=0.8.6",
     "numpydoc",
     "pydata-sphinx-theme",
-    "sphinx_issues==1.2.0",
-    "sphinx-gallery==0.6.0",
+    "sphinx-issues<5.0.0",
+    "sphinx-gallery<0.16.0",
     "sphinx-panels",
-    "sphinx-design==0.3.0",
-    "sphinx==4.1.1",
+    "sphinx-design<0.6.0",
+    "Sphinx<8.0.0,!=7.2.0",
     "tabulate",
 ]
 
