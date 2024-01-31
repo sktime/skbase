@@ -67,6 +67,32 @@ __author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
 __all__: List[str] = ["BaseEstimator", "BaseObject"]
 
 
+def _check_clone(original, clone):
+    from skbase.utils.deep_equals import deep_equals
+
+    self_params = original.get_params(deep=False)
+
+    # check that all attributes are written to the clone
+    for attrname in self_params.keys():
+        if not hasattr(clone, attrname):
+            raise RuntimeError(
+                f"error in {original}.clone, __init__ must write all arguments "
+                f"to self and not mutate them, but {attrname} was not found. "
+                f"Please check __init__ of {original}."
+            )
+
+    clone_attrs = {attr: getattr(clone, attr) for attr in self_params.keys()}
+
+    # check equality of parameters post-clone and pre-clone
+    clone_attrs_valid, msg = deep_equals(self_params, clone_attrs, return_msg=True)
+    if not clone_attrs_valid:
+        raise RuntimeError(
+            f"error in {original}.clone, __init__ must write all arguments "
+            f"to self and not mutate them, but this is not the case. "
+            f"Error on equality check of arguments (x) vs parameters (y): {msg}"
+        )
+
+
 class BaseObject(_FlagManager):
     """Base class for parametric objects with sktime style tag interface.
 
@@ -157,35 +183,10 @@ class BaseObject(_FlagManager):
         -----
         If successful, equal in value to ``type(self)(**self.get_params(deep=False))``.
         """
-        self_params = self.get_params(deep=False)
         self_clone = self._clone(self)
-
-        # if checking the clone is turned off, return now
         if not self.get_config()["check_clone"]:
             return self_clone
-
-        from skbase.utils.deep_equals import deep_equals
-
-        # check that all attributes are written to the clone
-        for attrname in self_params.keys():
-            if not hasattr(self_clone, attrname):
-                raise RuntimeError(
-                    f"error in {self}.clone, __init__ must write all arguments "
-                    f"to self and not mutate them, but {attrname} was not found. "
-                    f"Please check __init__ of {self}."
-                )
-
-        clone_attrs = {attr: getattr(self_clone, attr) for attr in self_params.keys()}
-
-        # check equality of parameters post-clone and pre-clone
-        clone_attrs_valid, msg = deep_equals(self_params, clone_attrs, return_msg=True)
-        if not clone_attrs_valid:
-            raise RuntimeError(
-                f"error in {self}.clone, __init__ must write all arguments "
-                f"to self and not mutate them, but this is not the case. "
-                f"Error on equality check of arguments (x) vs parameters (y): {msg}"
-            )
-
+        _check_clone(original=self, clone=self_clone)
         return self_clone
 
     # copied from sklearn
