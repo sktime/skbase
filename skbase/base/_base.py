@@ -169,6 +169,8 @@ def _check_clone(original, clone):
             f"Error on equality check of arguments (x) vs parameters (y): {msg}"
         )
 
+    return clone
+
 
 class BaseObject(_FlagManager):
     """Base class for parametric objects with sktime style tag interface.
