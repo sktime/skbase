@@ -67,7 +67,7 @@ __author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
 __all__: List[str] = ["BaseEstimator", "BaseObject"]
 
 
-# copied from sklearn
+# Adapted from sklearn's `_clone_parametrized()`
 def _sklearn_clone(estimator, *, safe=True):
     """Construct a new unfitted estimator with the same parameters.
 
