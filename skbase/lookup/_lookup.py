@@ -693,7 +693,6 @@ def all_objects(
     object_types=None,
     filter_tags=None,
     exclude_objects=None,
-    exclude_estimators=None,
     return_names=True,
     as_dataframe=False,
     return_tags=None,
@@ -701,7 +700,6 @@ def all_objects(
     package_name="skbase",
     path: Optional[str] = None,
     modules_to_ignore=None,
-    ignore_modules=None,
     class_lookup=None,
 ):
     """Get a list of all objects in a package with name `package_name`.
@@ -825,9 +823,12 @@ def all_objects(
         return name.startswith("_") or name.startswith("Base")
 
     def _is_estimator(name, klass):
-        # Check if klass is subclass of base estimators, not an base class itself and
+        # Check if klass is subclass of base estimators, not a base class itself and
         # not an abstract class
-        return issubclass(klass, BaseObject) and not _is_base_class(name)
+        if object_types is None:
+            return issubclass(klass, BaseObject) and not _is_base_class(name)
+        else:
+            return not _is_base_class(name)
 
     # Ignore deprecation warnings triggered at import time and from walking packages
     with warnings.catch_warnings():
