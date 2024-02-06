@@ -276,7 +276,7 @@ def _check_python_version(obj, package=None, msg=None, severity="error"):
     else:
         raise RuntimeError(
             "Error in calling _check_python_version, severity "
-            f'argument must be "error", "warning", or "none", found "{severity}".'
+            f'argument must be "error", "warning", or "none", found {severity!r}.'
         )
     return True
 
