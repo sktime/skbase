@@ -794,7 +794,7 @@ class BaseObject(_FlagManager):
 
     @classmethod
     def _safe_init_test_params(cls, params):
-        """Safe init for testing.
+        """Safe init of cls with params for testing.
 
         Will raise informative error message if params are not valid.
         """
