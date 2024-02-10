@@ -687,16 +687,18 @@ class BaseObject(_FlagManager):
             `MyClass(**params)` or `MyClass(**params[i])` creates a valid test instance.
             `create_test_instance` uses the first (or only) dictionary in `params`
         """
+        params_with_defaults = set(cls.get_param_defaults().keys())
+        all_params = set(cls.get_param_names())
+        params_without_defaults = all_params - params_with_defaults
+
         # if non-default parameters are required, but none have been found, raise error
-        if hasattr(cls, "_required_parameters"):
-            required_parameters = getattr(cls, "_required_parameters", [])
-            if len(required_parameters) > 0:
-                raise ValueError(
-                    f"Estimator: {cls} requires "
-                    f"non-default parameters for construction, "
-                    f"but none were given. Please set them "
-                    f"as given in the extension template"
-                )
+        if len(params_without_defaults) > 0:
+            raise ValueError(
+                f"Estimator: {cls} has parameters without default values, "
+                f"but these are not set in get_test_params. "
+                f"Please set them in get_test_params, or provide default values. "
+                f"Also see the respective extension template, if applicable."
+            )
 
         # construct with parameter configuration for testing, otherwise construct with
         # default parameters (empty dict)
@@ -737,7 +739,7 @@ class BaseObject(_FlagManager):
                 "get_test_params should either return a dict or list of dict."
             )
 
-        return cls(**params)
+        return cls._safe_init_test_params(params)
 
     @classmethod
     def create_test_instances_and_names(cls, parameter_set="default"):
@@ -780,7 +782,7 @@ class BaseObject(_FlagManager):
                     f"Error in {cls.__name__}.get_test_params, "
                     "return must be param dict for class, or list thereof"
                 )
-            objs += [cls(**params)]
+            objs += [cls._safe_init_test_params(params)]
 
         num_instances = len(param_list)
         if num_instances > 1:
@@ -789,6 +791,22 @@ class BaseObject(_FlagManager):
             names = [cls.__name__]
 
         return objs, names
+
+    @classmethod
+    def _safe_init_test_params(cls, params):
+        """Safe init of cls with params for testing.
+
+        Will raise informative error message if params are not valid.
+        """
+        try:
+            return cls(**params)
+        except Exception as e:
+            raise ValueError(
+                f"Error in {cls.__name__}.get_test_params, "
+                "return must be valid param dict for class, or list thereof, "
+                "but attempted contsruction raised a exception. "
+                f"Problematic parameter set: {params}. Exception raised: {e}"
+            ) from e
 
     @classmethod
     def _has_implementation_of(cls, method):
