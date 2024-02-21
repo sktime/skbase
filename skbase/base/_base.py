@@ -1324,19 +1324,13 @@ class BaseEstimator(BaseObject):
         if not deep:
             return fitted_params
 
-        def sh(x):
-            """Shorthand to remove all underscores at end of a string."""
-            if x.endswith("_"):
-                return sh(x[:-1])
-            else:
-                return x
-
         # add all nested parameters from components that are skbase BaseEstimator
         c_dict = self._components()
         for c, comp in c_dict.items():
             if isinstance(comp, BaseEstimator) and comp._is_fitted:
                 c_f_params = comp.get_fitted_params(deep=deep)
-                c_f_params = {f"{sh(c)}__{k}": v for k, v in c_f_params.items()}
+                c = c.strip("_")
+                c_f_params = {f"{c}__{k}": v for k, v in c_f_params.items()}
                 fitted_params.update(c_f_params)
 
         # add all nested parameters from components that are sklearn estimators
@@ -1349,7 +1343,8 @@ class BaseEstimator(BaseObject):
             for c, comp in old_new_params.items():
                 if isinstance(comp, self.GET_FITTED_PARAMS_NESTING):
                     c_f_params = self._get_fitted_params_default(comp)
-                    c_f_params = {f"{sh(c)}__{k}": v for k, v in c_f_params.items()}
+                    c = c.strip("_")
+                    c_f_params = {f"{c}__{k}": v for k, v in c_f_params.items()}
                     new_params.update(c_f_params)
             fitted_params.update(new_params)
             old_new_params = new_params.copy()
