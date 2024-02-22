@@ -610,9 +610,13 @@ class BaseObject(_FlagManager):
         Changes object state by setting tag values in tag_dict as dynamic tags in self.
         """
         if tags_to_set is None:
-            tags_to_set = {}
-
-        merged_tag_dict = {**tags_to_set, **tag_dict}
+            # potentially interface breaking (see concern raised by @fkiraly in PR #289)
+            # no longer allows a tag named ``tags_to_set`` with value ``None``
+            merged_tag_dict = tag_dict
+        elif not isinstance(tags_to_set, dict):
+            merged_tag_dict = {"tags_to_set": tags_to_set, **tag_dict}
+        else:
+            merged_tag_dict = {**tags_to_set, **tag_dict}
 
         self._set_flags(flag_attr_name="_tags", **merged_tag_dict)
 

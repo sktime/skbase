@@ -406,6 +406,9 @@ def test_set_tags_by_dict_and_kwargs() -> None:
     assert dummy_object_instance.get_tag("foobar") == 4284
     assert dummy_object_instance.get_tag("barfoo") == 8442
 
+    dummy_object_instance.set_tags(tags_to_set=21)
+    assert dummy_object_instance.get_tag("tags_to_set") == 21
+
 
 def test_set_tags_works_with_missing_tags_dynamic_attribute(
     fixture_tag_class_object: Child,
