@@ -757,9 +757,6 @@ class BaseObject(_FlagManager):
             i-th element is name of i-th instance of obj in tests
             convention is {cls.__name__}-{i} if more than one instance
             otherwise {cls.__name__}
-        parameter_set : str, default="default"
-            Name of the set of test parameters to return, for use in tests. If no
-            special parameters are defined for a value, will return `"default"` set.
         """
         if "parameter_set" in inspect.getfullargspec(cls.get_test_params).args:
             param_list = cls.get_test_params(parameter_set=parameter_set)
