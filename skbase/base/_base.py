@@ -57,7 +57,7 @@ import re
 import warnings
 from collections import defaultdict
 from copy import deepcopy
-from typing import List
+from typing import Dict, List, Optional
 
 from skbase._exceptions import NotFittedError
 from skbase.base._pretty_printing._object_html_repr import _object_html_repr
@@ -590,13 +590,15 @@ class BaseObject(_FlagManager):
             flag_attr_name="_tags",
         )
 
-    def set_tags(self, **tag_dict):
+    def set_tags(self, tags_to_set: Optional[Dict] = None, **tag_dict):
         """Set dynamic tags to given values.
 
         Parameters
         ----------
+        tags_to_set : Dict, optional (default=None)
+            Dictionary of tag name: tag value pairs, passed as dictionary directly.
         **tag_dict : dict
-            Dictionary of tag name: tag value pairs.
+            Dictionary of tag name: tag value pairs, passed as **kwargs.
 
         Returns
         -------
@@ -607,7 +609,12 @@ class BaseObject(_FlagManager):
         -----
         Changes object state by setting tag values in tag_dict as dynamic tags in self.
         """
-        self._set_flags(flag_attr_name="_tags", **tag_dict)
+        if tags_to_set is None:
+            tags_to_set = {}
+
+        merged_tag_dict = {**tags_to_set, **tag_dict}
+
+        self._set_flags(flag_attr_name="_tags", **merged_tag_dict)
 
         return self
 
@@ -1156,11 +1163,13 @@ class TagAliaserMixin:
             raise_error=raise_error,
         )
 
-    def set_tags(self, **tag_dict):
+    def set_tags(self, tags_to_set: Optional[Dict] = None, **tag_dict):
         """Set dynamic tags to given values.
 
         Parameters
         ----------
+        tags_to_set : Dict, optional (default=None)
+            Dictionary of tag name : tag value pairs, passed as dictionary directly.
         tag_dict : dict
             Dictionary of tag name : tag value pairs.
 
@@ -1174,10 +1183,15 @@ class TagAliaserMixin:
         Changes object state by setting tag values in tag_dict as dynamic tags
         in self.
         """
-        self._deprecate_tag_warn(tag_dict.keys())
+        if tags_to_set is None:
+            tags_to_set = {}
 
-        tag_dict = self._complete_dict(tag_dict)
-        super(TagAliaserMixin, self).set_tags(**tag_dict)
+        merged_tag_dict = {**tags_to_set, **tag_dict}
+
+        self._deprecate_tag_warn(merged_tag_dict.keys())
+
+        merged_tag_dict = self._complete_dict(merged_tag_dict)
+        super(TagAliaserMixin, self).set_tags(**merged_tag_dict)
         return self
 
     @classmethod
