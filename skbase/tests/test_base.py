@@ -384,6 +384,29 @@ def test_set_tags(
     assert fixture_object_instance_set_tags.get_tags() == fixture_object_set_tags, msg
 
 
+def test_set_tags_by_dict_and_kwargs() -> None:
+    class DummyObjectClass(BaseObject):
+        """Define dummy class to test set_tags."""
+
+    dummy_object_instance = DummyObjectClass()
+
+    assert dummy_object_instance.get_tag("foo", raise_error=False) is None
+    assert dummy_object_instance.get_tag("bar", raise_error=False) is None
+
+    assert dummy_object_instance.get_tag("foobar", raise_error=False) is None
+    assert dummy_object_instance.get_tag("barfoo", raise_error=False) is None
+
+    dummy_object_instance.set_tags({"foo": 42})
+    assert dummy_object_instance.get_tag("foo") == 42
+
+    dummy_object_instance.set_tags(bar=84)
+    assert dummy_object_instance.get_tag("bar") == 84
+
+    dummy_object_instance.set_tags({"foobar": 4284}, barfoo=8442)
+    assert dummy_object_instance.get_tag("foobar") == 4284
+    assert dummy_object_instance.get_tag("barfoo") == 8442
+
+
 def test_set_tags_works_with_missing_tags_dynamic_attribute(
     fixture_tag_class_object: Child,
 ):
