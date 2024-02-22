@@ -483,8 +483,11 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
     # if the object x and y have a len() then compare of x and y lengths else continue
     if hasattr(x, "__len__") and hasattr(y, "__len__"):
         if len(x) != len(y):
-            return ret(False, f"Lengths must match to compare, "
-                              f"but x.len = {len(x)} != y.len = {len(y)}")
+            return ret(
+                False,
+                f"Lengths must match to compare, "
+                f"but x.len = {len(x)} != y.len = {len(y)}",
+            )
 
     # this if covers case where != is boolean
     # some types return a vector upon !=, this is covered in the next elif
