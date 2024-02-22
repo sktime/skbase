@@ -80,8 +80,9 @@
         "profile": "https://github.com/MBristle",
         "contributions": [
           "bug",
+          "code"
         ]
-      },
+      }
   ],
   "projectName": "skbase",
   "projectOwner": "sktime",

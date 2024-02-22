@@ -485,8 +485,7 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
         if len(x) != len(y):
             return ret(
                 False,
-                f"Lengths must match to compare, "
-                f"but x.len = {len(x)} != y.len = {len(y)}",
+                f".len, x.len = {len(x)} != y.len = {len(y)}",
             )
 
     # this if covers case where != is boolean
