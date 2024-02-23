@@ -31,8 +31,8 @@ Tag inspection and setter methods
     set/clone dynamic tags        - clone_tags(estimator, tag_names=None)
 
 Blueprinting: resetting and cloning, post-init state with same hyper-parameters
-    reset estimator to post-init  - reset()
-    cloneestimator (copy&reset)   - clone()
+    reset object to post-init  - reset()
+    clone object (copy&reset)  - clone()
 
 Testing with default parameters methods
     getting default parameters (all sets)         - get_test_params()
@@ -81,7 +81,7 @@ def _clone(obj, *, safe=True):
         The object or group of objects to clone.
     safe : bool, default=True
         If safe is False, clone will fall back to a deep copy on objects
-        that are not estimators.
+        that do not have a `get_params` method.
 
     Returns
     -------
@@ -111,13 +111,13 @@ def _clone(obj, *, safe=True):
                 raise TypeError(
                     "Cannot clone object. "
                     + "You should provide an instance of "
-                    + "scikit-learn estimator instead of a class."
+                    + "`BaseObject` instead of a class."
                 )
             else:
                 raise TypeError(
                     "Cannot clone object '%s' (type %s): "
-                    "it does not seem to be a scikit-learn "
-                    "estimator as it does not implement a "
+                    "it does not seem to be a BaseObject "
+                    "instance as it does not implement a "
                     "'get_params' method." % (repr(obj), type(obj))
                 )
 
@@ -300,7 +300,7 @@ class BaseObject(_FlagManager):
         for p in parameters:
             if p.kind == p.VAR_POSITIONAL:
                 raise RuntimeError(
-                    "scikit-learn compatible estimators should always "
+                    "BaseObject compatible classes should always "
                     "specify their parameters in the signature"
                     " of their __init__ (no varargs)."
                     " %s with constructor %s doesn't "
@@ -380,7 +380,7 @@ class BaseObject(_FlagManager):
     def set_params(self, **params):
         """Set the parameters of this object.
 
-        The method works on simple estimators as well as on composite objects.
+        The method works on simple base objects as well as on composite objects.
         Parameter key strings ``<component>__<parameter>`` can be used for composites,
         i.e., objects that contain other objects, to access ``<parameter>`` in
         the component ``<component>``.
@@ -423,7 +423,7 @@ class BaseObject(_FlagManager):
                 valid_params[key] = value
 
         # all matched params have now been set
-        # reset estimator to clean post-init state with those params
+        # reset object to clean post-init state with those params
         self.reset()
 
         # recurse in components
@@ -550,7 +550,7 @@ class BaseObject(_FlagManager):
         )
 
     def get_tags(self):
-        """Get tags from estimator class and dynamic tag overrides.
+        """Get tags from object class and dynamic tag overrides.
 
         Returns
         -------
@@ -562,7 +562,7 @@ class BaseObject(_FlagManager):
         return self._get_flags(flag_attr_name="_tags")
 
     def get_tag(self, tag_name, tag_value_default=None, raise_error=True):
-        """Get tag value from estimator class and dynamic tag overrides.
+        """Get tag value from object class and dynamic tag overrides.
 
         Parameters
         ----------
@@ -613,11 +613,11 @@ class BaseObject(_FlagManager):
         return self
 
     def clone_tags(self, estimator, tag_names=None):
-        """Clone tags from another estimator as dynamic override.
+        """Clone tags from another object as dynamic override.
 
         Parameters
         ----------
-        estimator : estimator inheriting from :class:BaseEstimator
+        estimator : An instance of :class:BaseObject or derived class
         tag_names : str or list of str, default = None
             Names of tags to clone. If None then all tags in estimator are used
             as `tag_names`.
@@ -672,7 +672,7 @@ class BaseObject(_FlagManager):
 
     @classmethod
     def get_test_params(cls, parameter_set="default"):
-        """Return testing parameter settings for the estimator.
+        """Return testing parameter settings for the object.
 
         Parameters
         ----------
@@ -695,7 +695,7 @@ class BaseObject(_FlagManager):
         # if non-default parameters are required, but none have been found, raise error
         if len(params_without_defaults) > 0:
             raise ValueError(
-                f"Estimator: {cls} has parameters without default values, "
+                f"{cls} has parameters without default values, "
                 f"but these are not set in get_test_params. "
                 f"Please set them in get_test_params, or provide default values. "
                 f"Also see the respective extension template, if applicable."
@@ -708,7 +708,7 @@ class BaseObject(_FlagManager):
 
     @classmethod
     def create_test_instance(cls, parameter_set="default"):
-        """Construct Estimator instance if possible.
+        """Construct a BaseObject instance if possible.
 
         Parameters
         ----------
@@ -994,18 +994,18 @@ class BaseObject(_FlagManager):
     def set_random_state(self, random_state=None, deep=True, self_policy="copy"):
         """Set random_state pseudo-random seed parameters for self.
 
-        Finds ``random_state`` named parameters via ``estimator.get_params``,
+        Finds ``random_state`` named parameters via ``self.get_params``,
         and sets them to integers derived from ``random_state`` via ``set_params``.
         These integers are sampled from chain hashing via ``sample_dependent_seed``,
         and guarantee pseudo-random independence of seeded random generators.
 
-        Applies to ``random_state`` parameters in ``estimator`` depending on
-        ``self_policy``, and remaining component estimators
+        Applies to ``random_state`` parameters in self depending on
+        ``self_policy``, and remaining component objects
         if and only if ``deep=True``.
 
         Note: calls ``set_params`` even if ``self`` does not have a ``random_state``,
         or none of the components have a ``random_state`` parameter.
-        Therefore, ``set_random_state`` will reset any ``scikit-base`` estimator,
+        Therefore, ``set_random_state`` will reset any ``scikit-base`` object,
         even those without a ``random_state`` parameter.
 
         Parameters
@@ -1015,15 +1015,15 @@ class BaseObject(_FlagManager):
             integers. Pass int for reproducible output across multiple function calls.
 
         deep : bool, default=True
-            Whether to set the random state in sub-estimators.
+            Whether to set the random state in sub-objects.
             If False, will set only ``self``'s ``random_state`` parameter, if exists.
-            If True, will set ``random_state`` parameters in sub-estimators as well.
+            If True, will set ``random_state`` parameters in sub-objects as well.
 
         self_policy : str, one of {"copy", "keep", "new"}, default="copy"
 
-            * "copy" : ``estimator.random_state`` is set to input ``random_state``
-            * "keep" : ``estimator.random_state`` is kept as is
-            * "new" : ``estimator.random_state`` is set to a new random state,
+            * "copy" : ``self.random_state`` is set to input ``random_state``
+            * "keep" : ``self.random_state`` is kept as is
+            * "new" : ``self.random_state`` is set to a new random state,
             derived from input ``random_state``, and in general different from it
 
         Returns
@@ -1075,7 +1075,7 @@ class TagAliaserMixin:
 
     @classmethod
     def get_class_tags(cls):
-        """Get class tags from estimator class and all its parent classes.
+        """Get class tags from a base object class and all its parent classes.
 
         Returns
         -------
@@ -1090,7 +1090,7 @@ class TagAliaserMixin:
 
     @classmethod
     def get_class_tag(cls, tag_name, tag_value_default=None):
-        """Get tag value from estimator class (only class tags).
+        """Get tag value from a base object class (only class tags).
 
         Parameters
         ----------
@@ -1111,7 +1111,7 @@ class TagAliaserMixin:
         )
 
     def get_tags(self):
-        """Get tags from estimator class and dynamic tag overrides.
+        """Get tags from a base object class and dynamic tag overrides.
 
         Returns
         -------
@@ -1125,7 +1125,7 @@ class TagAliaserMixin:
         return collected_tags
 
     def get_tag(self, tag_name, tag_value_default=None, raise_error=True):
-        """Get tag value from estimator class and dynamic tag overrides.
+        """Get tag value from a base object class and dynamic tag overrides.
 
         Parameters
         ----------
