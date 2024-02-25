@@ -178,6 +178,10 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
 SKBASE_FUNCTIONS_BY_MODULE.update(
     {
+        "skbase.base._base": (
+            "_clone",
+            "_check_clone",
+        ),
         "skbase.base._pretty_printing._object_html_repr": (
             "_get_visual_block",
             "_object_html_repr",
