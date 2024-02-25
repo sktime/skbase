@@ -72,6 +72,27 @@
           "maintenance",
           "test"
         ]
+      },
+      {
+        "login": "MBristle",
+        "name": "Mirko Bristle",
+        "avatar_url": "https://avatars.githubusercontent.com/MBristle",
+        "profile": "https://github.com/MBristle",
+        "contributions": [
+          "bug",
+          "code"
+        ]
+      },
+      {
+        "login": "yarnabrina",
+        "name": "Anirban Ray",
+        "avatar_url": "https://avatars.githubusercontent.com/u/39331844?v=4",
+        "profile": "https://github.com/yarnabrina",
+        "contributions": [
+          "code",
+          "maintenance",
+          "test"
+        ]
       }
   ],
   "projectName": "skbase",
