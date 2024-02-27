@@ -197,7 +197,7 @@ class BaseObject(_FlagManager):
         for p in parameters:
             if p.kind == p.VAR_POSITIONAL:
                 raise RuntimeError(
-                    "BaseObject compatible classes should always "
+                    "scikit-base compatible classes should always "
                     "specify their parameters in the signature"
                     " of their __init__ (no varargs)."
                     " %s with constructor %s doesn't "
@@ -277,7 +277,7 @@ class BaseObject(_FlagManager):
     def set_params(self, **params):
         """Set the parameters of this object.
 
-        The method works on simple base objects as well as on composite objects.
+        The method works on simple objects as well as on composite objects.
         Parameter key strings ``<component>__<parameter>`` can be used for composites,
         i.e., objects that contain other objects, to access ``<parameter>`` in
         the component ``<component>``.
