@@ -6,11 +6,9 @@ on:
       - 'docs/**'
     branches:
       - main
-      - 'release**'
   pull_request:
     branches:
       - main
-      - 'release**'
     paths-ignore:
       - 'docs/**'
     types: [opened, synchronize]
