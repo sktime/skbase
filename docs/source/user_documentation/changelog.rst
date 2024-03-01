@@ -14,10 +14,20 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.7.4] - 2024-03-01
+====================
+
+Small hotfix release.
+
+Contents
+--------
+
+* [BUG] preserve exception type raised by ``get_test_params``
+  (:pr:`300`) :user:`fkiraly`
+
 
 [0.7.3] - 2024-02-29
 ====================
-
 
 Feature and bugfix release.
 
