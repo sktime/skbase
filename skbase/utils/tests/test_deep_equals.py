@@ -76,8 +76,8 @@ if _check_soft_dependencies(
 @pytest.mark.parametrize("fixture", EXAMPLES)
 def test_deep_equals_positive(fixture):
     """Tests that deep_equals correctly identifies equal objects as equal."""
-    x = deepcopy(fixture)
-    y = deepcopy(fixture)
+    x = copy_except_if_sklearn(fixture)
+    y = copy_except_if_sklearn(fixture)
 
     msg = (
         f"deep_copy incorrectly returned False for two identical copies of "
@@ -95,11 +95,34 @@ DIFFERENT_PAIRS = [
 @pytest.mark.parametrize("fixture1,fixture2", DIFFERENT_PAIRS)
 def test_deep_equals_negative(fixture1, fixture2):
     """Tests that deep_equals correctly identifies unequal objects as unequal."""
-    x = deepcopy(fixture1)
-    y = deepcopy(fixture2)
+    x = copy_except_if_sklearn(fixture1)
+    y = copy_except_if_sklearn(fixture2)
 
     msg = (
         f"deep_copy incorrectly returned True when comparing "
         f"the following, different objects: x={x}, y={y}"
     )
     assert not deep_equals(x, y), msg
+
+
+def copy_except_if_sklearn(obj):
+    """Copy obj if it is not a scikit-learn estimator.
+
+    We use this functoin as deep_copy should return True for
+    identical sklearn estimators, but False for different copies.
+
+    This is the current status quo, possibly we want to change this in the future.
+    """
+    if not _check_soft_dependencies(
+        "scikit-learn",
+        package_import_alias={"scikit-learn": "sklearn"},
+        severity="none",
+    ):
+        return deepcopy(obj)
+    else:
+        from sklearn import BaseEstimator
+
+        if isinstance(obj, BaseEstimator):
+            return obj
+        else:
+            return deepcopy(obj)
