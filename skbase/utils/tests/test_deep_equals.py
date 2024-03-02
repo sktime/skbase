@@ -120,7 +120,7 @@ def copy_except_if_sklearn(obj):
     ):
         return deepcopy(obj)
     else:
-        from sklearn import BaseEstimator
+        from sklearn.base import BaseEstimator
 
         if isinstance(obj, BaseEstimator):
             return obj
