@@ -14,6 +14,18 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.7.5] - 2024-03-02
+====================
+
+Small hotfix release.
+
+Contents
+--------
+
+* [BUG] fix ``deep_equals`` on objects which have ``__len__`` but ``len(obj)``
+  causes exception (:pr:`303`) :user:`fkiraly`
+
+
 [0.7.4] - 2024-03-01
 ====================
 
