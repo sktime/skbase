@@ -64,6 +64,14 @@ if _check_soft_dependencies("pandas", severity="none"):
 
     EXAMPLES += [X]
 
+if _check_soft_dependencies(
+    "scikit-learn", package_import_alias={"scikit-learn": "sklearn"}, severity="none"
+):
+    from sklearn.ensemble import RandomForestRegressor
+
+    EXAMPLES += [RandomForestRegressor()]
+    EXAMPLES += [RandomForestRegressor(n_estimators=42)]
+
 
 @pytest.mark.parametrize("fixture", EXAMPLES)
 def test_deep_equals_positive(fixture):
