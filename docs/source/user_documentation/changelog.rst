@@ -14,8 +14,86 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.7.5] - 2024-03-02
+====================
 
-[0.7.2] - 2023-01-31
+Small hotfix release.
+
+Contents
+--------
+
+* [BUG] fix ``deep_equals`` on objects which have ``__len__`` but ``len(obj)``
+  causes exception (:pr:`303`) :user:`fkiraly`
+
+
+[0.7.4] - 2024-03-01
+====================
+
+Small hotfix release.
+
+Contents
+--------
+
+* [BUG] preserve exception type raised by ``get_test_params``
+  (:pr:`300`) :user:`fkiraly`
+
+
+[0.7.3] - 2024-02-29
+====================
+
+Feature and bugfix release.
+
+Core interface changes
+----------------------
+
+* ``all_objects`` now allows filtering for arbitrary parent classes, not just classes
+  inheriting from ``BaseObject``. This is useful for looking up objects in a third
+  party package that are not part of the ``skbase`` hierarchy.
+
+
+Enhancements
+------------
+
+* [ENH] allow arbitrary base class in ``all_objects`` (:pr:`284`) :user:`fkiraly`
+* [ENH] improved exception feedback for test instance generation methods
+  of ``BaseObject`` (:pr:`286`) :user:`fkiraly`
+* [ENH] estimator soft dependency check utilities (:pr:`285`) :user:`fkiraly`
+* [ENH] Refactor ``BaseObject.clone`` (:pr:`281`) :user:`tpvasconcelos`
+
+Fixes
+-----
+
+* [BUG] Fix ``deep_equals`` for ``pandas.Index`` of different length
+  (:pr:`290`) :user:`MBristle`
+
+Documentation
+-------------
+
+* [DOC] remove accidental duplicated section in ``get_test_params``
+  docstring (:pr:`292`) :user:`fkiraly`
+* [DOC] add yarnabrina to ``all-contributorsrc`` (:pr:`294`) :user:`fkiraly`
+
+Maintenance
+-----------
+
+* [MNT] add ``codecov` config ``yml``, remove CI failure condition
+  (:pr:`296`) :user:`fkiraly`
+* [MNT] remove unnecessary CI triggers for release branches (:pr:`298`) :user:`fkiraly`
+* [pre-commit.ci] pre-commit autoupdate by (:pr:`289`) :user:`@pre-commit-ci`
+* [MNT] [Dependabot](deps): Bump codecov/codecov-action from ``3`` to ``4``
+  (:pr:`283`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump pre-commit/action from ``3.0.0`` to ``3.0.1``
+  (:pr:`287`) :user:`dependabot`
+
+Contributors
+------------
+
+:user:`fkiraly`,
+:user:`MBristle`,
+:user:`tpvasconcelos`
+
+
+[0.7.2] - 2024-01-31
 ====================
 
 Feature and bugfix release.
