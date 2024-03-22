@@ -68,6 +68,7 @@
         "contributions": [
           "bug",
           "code",
+          "doc",
           "ideas",
           "maintenance",
           "test"
