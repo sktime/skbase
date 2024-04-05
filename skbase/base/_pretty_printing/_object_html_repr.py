@@ -120,6 +120,7 @@ def _get_visual_block(base_object):
         name_details=str(base_object),
     )
 
+
 def _write_base_object_html(
     out, base_object, base_object_label, base_object_label_details, first_call=False
 ):
