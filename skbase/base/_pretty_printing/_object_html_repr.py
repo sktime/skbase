@@ -22,35 +22,37 @@ class _VisualBlock:
     kind : {'serial', 'parallel', 'single'}
         kind of HTML block
 
-    objs : list of BaseObjects or `_VisualBlock`s or a single BaseObject
-        If kind != 'single', then `objs` is a list of
-        BaseObjects. If kind == 'single', then `objs` is a single BaseObject.
+    estimators : list of ``BaseObject``s or ``_VisualBlock`s or a single ``BaseObject``
+        If ``kind != 'single'``, then ``estimators`` is a list of ``BaseObjects``.
+        If ``kind == 'single'``, then ``estimators`` is a single ``BaseObject``.
 
     names : list of str, default=None
-        If kind != 'single', then `names` corresponds to BaseObjects.
-        If kind == 'single', then `names` is a single string corresponding to
-        the single BaseObject.
+        If ``kind != 'single'``, then ``names`` corresponds to ``BaseObjects``.
+        If ``kind == 'single'``, then ``names`` is a single string corresponding to
+        the single ``BaseObject``.
 
     name_details : list of str, str, or None, default=None
-        If kind != 'single', then `name_details` corresponds to `names`.
-        If kind == 'single', then `name_details` is a single string
-        corresponding to the single BaseObject.
+        If ``kind != 'single'``, then ``name_details`` corresponds to ``names``.
+        If ``kind == 'single'``, then ``name_details`` is a single string
+        corresponding to the single ``BaseObject``.
 
     dash_wrapped : bool, default=True
         If true, wrapped HTML element will be wrapped with a dashed border.
-        Only active when kind != 'single'.
+        Only active when ``kind != 'single'``.
     """
 
-    def __init__(self, kind, objs, *, names=None, name_details=None, dash_wrapped=True):
+    def __init__(
+        self, kind, estimators, *, names=None, name_details=None, dash_wrapped=True
+    ):
         self.kind = kind
-        self.objs = objs
+        self.estimators = estimators
         self.dash_wrapped = dash_wrapped
 
         if self.kind in ("parallel", "serial"):
             if names is None:
-                names = (None,) * len(objs)
+                names = (None,) * len(estimators)
             if name_details is None:
-                name_details = (None,) * len(objs)
+                name_details = (None,) * len(estimators)
 
         self.names = names
         self.name_details = name_details
@@ -118,7 +120,6 @@ def _get_visual_block(base_object):
         name_details=str(base_object),
     )
 
-
 def _write_base_object_html(
     out, base_object, base_object_label, base_object_label_details, first_call=False
 ):
@@ -135,7 +136,7 @@ def _write_base_object_html(
 
         kind = est_block.kind
         out.write(f'<div class="sk-{kind}">')
-        est_infos = zip(est_block.objs, est_block.names, est_block.name_details)
+        est_infos = zip(est_block.estimators, est_block.names, est_block.name_details)
 
         for est, name, name_details in est_infos:
             if kind == "serial":
