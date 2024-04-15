@@ -112,6 +112,12 @@ class BaseObject(_FlagManager):
         * colon by double underscore, i.e., ":": "__"
         * dash by single underscore, i.e., "-": "_"
         """
+        # early stop for reserved attributes to avoid infinite recursion
+        reserved_attr = attr.endswith("_dynamic")
+        if reserved_attr:
+            return object.__getattribute__(self, attr)
+
+        # get tags and normalized keys
         tag_dict = self.get_tags()
 
         # if attribute is in tag_dict, return tag value
