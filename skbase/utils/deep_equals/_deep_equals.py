@@ -132,10 +132,21 @@ def _numpy_equals_plugin(x, y, return_msg=False):
 
     ret = _make_ret(return_msg)
 
+    if x.ndim != y.ndim:
+        return ret(False, f".ndim, x.ndim = {x.ndim} != y.ndim = {y.ndim}")
+    if x.shape != y.shape:
+        return ret(False, f".shape, x.shape = {x.shape} != y.shape = {y.shape}")
     if x.dtype != y.dtype:
         return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
-    if x.dtype in ["object", "str"]:
+    if x.dtype == "str":
         return ret(np.array_equal(x, y), ".values")
+    elif x.dtype == "object":
+        x_flat = x.flatten()
+        y_flat = y.flatten()
+        for i in range(len(x_flat)):
+            is_equal, msg = deep_equals(x_flat[i], y_flat[i], return_msg=True)
+            if not is_equal:
+                return ret(False, f"[{i}]" + msg)
     else:
         return ret(np.array_equal(x, y, equal_nan=True), ".values")
 

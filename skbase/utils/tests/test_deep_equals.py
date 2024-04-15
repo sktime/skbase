@@ -35,6 +35,13 @@ if _check_soft_dependencies("numpy", severity="none"):
         np.array([0.2, 1, 4], dtype="object"),
     ]
 
+    # test cases with nested numpy arrays
+    a = np.array(["a", "b"], dtype="object")
+    a[0] = np.array([1, 2, 3])
+    b = np.array(["a", "b", 42], dtype="object")
+    b[1] = a
+    EXAMPLES += [a, b]
+
 if _check_soft_dependencies("pandas", severity="none"):
     import pandas as pd
 
