@@ -122,7 +122,7 @@ def _coerce_list(x):
     return x
 
 
-def _numpy_equals_plugin(x, y, return_msg=False):
+def _numpy_equals_plugin(x, y, return_msg=False, deep_equals=None):
     numpy_available = _softdep_available("numpy")
 
     if not numpy_available or not _is_npndarray(x):
@@ -145,8 +145,7 @@ def _numpy_equals_plugin(x, y, return_msg=False):
         y_flat = y.flatten()
         for i in range(len(x_flat)):
             is_equal, msg = deep_equals(x_flat[i], y_flat[i], return_msg=True)
-            if not is_equal:
-                return ret(False, f"[{i}]" + msg)
+            return ret(is_equal, f"[{i}]" + msg)
     else:
         return ret(np.array_equal(x, y, equal_nan=True), ".values")
 
