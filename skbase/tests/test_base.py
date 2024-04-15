@@ -365,6 +365,28 @@ def test_get_tag_raises(fixture_tag_class_object: Child):
         fixture_tag_class_object.get_tag("bar")
 
 
+def test_get_tag_attr(
+    fixture_tag_class_object: Child, fixture_object_tags: Dict[str, Any]
+):
+    """Test get_tag mapping on get_attr.
+
+    Raises
+    ------
+    AssertError if inheritance logic in get_tag is incorrect
+    AssertError if default override logic in get_tag is incorrect
+    """
+    object_tags = {}
+    object_tags_keys = fixture_object_tags.keys()
+
+    for key in object_tags_keys:
+        object_tags[key] = getattr(fixture_tag_class_object, key)
+
+    msg = "Inheritance logic in BaseObject.get_tag is incorrect"
+
+    for key in object_tags_keys:
+        assert object_tags[key] == fixture_object_tags[key], msg
+
+
 def test_set_tags(
     fixture_object_instance_set_tags: Any,
     fixture_object_set_tags: Dict[str, Any],
