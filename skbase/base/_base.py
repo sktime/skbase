@@ -128,7 +128,10 @@ class BaseObject(_FlagManager):
 
         def norm_key(k):
             """Replace colon by double underscore, dash by single underscore."""
-            return k.replace(":", "__", ).replace("-", "_")
+            return k.replace(
+                ":",
+                "__",
+            ).replace("-", "_")
 
         tag_dict_norm = {norm_key(k): v for k, v in tag_dict.items()}
 
