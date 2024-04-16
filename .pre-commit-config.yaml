@@ -41,7 +41,7 @@ repos:
     rev: 7.0.0
     hooks:
       - id: flake8
-        exclude: docs/source/conf.py, __pycache__
+        exclude: docs/source/conf.py, __pycache__, skbase/testing/utils/inspect.py
         additional_dependencies:
           [
             flake8-bugbear,
