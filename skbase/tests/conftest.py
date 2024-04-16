@@ -67,7 +67,6 @@ SKBASE_PUBLIC_MODULES = (
     "skbase.testing",
     "skbase.testing.test_all_objects",
     "skbase.testing.utils",
-    "skbase.testing.utils._inspect",
     "skbase.testing.utils.tests",
     "skbase.testing.utils.tests.test_deep_equals",
     "skbase.tests",
