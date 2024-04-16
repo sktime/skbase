@@ -14,6 +14,22 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.7.6] - 2024-03-02
+====================
+
+Minor feature and bugfix release.
+
+Contents
+--------
+
+* [ENH] ``deep_equals`` support for nested ``np.ndarray`` (:pr:`314`) :user:`fkiraly`
+* [BUG] fix ``sklearn`` compatibility of ``_VisualBlock`` (:pr:`310`) :user:`fkiraly`
+* [pre-commit.ci] pre-commit autoupdates
+  (:pr:`306`, :pr:`307`, :pr:`308`, :pr:`312`, :pr:`315`) :user:`pre-commit-ci`
+* [MNT] rename ``testing.utils.inspect`` to avoid shadowing of ``inspect``
+  (:pr:`316`) :user:`fkiraly`
+
+
 [0.7.5] - 2024-03-02
 ====================
 
