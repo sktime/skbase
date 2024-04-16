@@ -146,6 +146,7 @@ def _numpy_equals_plugin(x, y, return_msg=False, deep_equals=None):
         for i in range(len(x_flat)):
             is_equal, msg = deep_equals(x_flat[i], y_flat[i], return_msg=True)
             return ret(is_equal, f"[{i}]" + msg)
+        return ret(True, "")  # catches len(x_flat) == 0
     else:
         return ret(np.array_equal(x, y, equal_nan=True), ".values")
 
