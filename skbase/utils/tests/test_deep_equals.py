@@ -35,6 +35,13 @@ if _check_soft_dependencies("numpy", severity="none"):
         np.array([0.2, 1, 4], dtype="object"),
     ]
 
+    # test cases with nested numpy arrays
+    a = np.array(["a", "b"], dtype="object")
+    a[0] = np.array([1, 2, 3])
+    b = np.array(["a", "b", 42], dtype="object")
+    b[1] = a
+    EXAMPLES += [a, b]
+
 if _check_soft_dependencies("pandas", severity="none"):
     import pandas as pd
 
@@ -80,7 +87,7 @@ def test_deep_equals_positive(fixture):
     y = copy_except_if_sklearn(fixture)
 
     msg = (
-        f"deep_copy incorrectly returned False for two identical copies of "
+        f"deep_equals incorrectly returned False for two identical copies of "
         f"the following object: {x}"
     )
     assert deep_equals(x, y), msg
@@ -99,7 +106,7 @@ def test_deep_equals_negative(fixture1, fixture2):
     y = copy_except_if_sklearn(fixture2)
 
     msg = (
-        f"deep_copy incorrectly returned True when comparing "
+        f"deep_equals incorrectly returned True when comparing "
         f"the following, different objects: x={x}, y={y}"
     )
     assert not deep_equals(x, y), msg

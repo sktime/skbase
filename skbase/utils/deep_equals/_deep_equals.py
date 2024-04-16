@@ -122,7 +122,7 @@ def _coerce_list(x):
     return x
 
 
-def _numpy_equals_plugin(x, y, return_msg=False):
+def _numpy_equals_plugin(x, y, return_msg=False, deep_equals=None):
     numpy_available = _softdep_available("numpy")
 
     if not numpy_available or not _is_npndarray(x):
@@ -132,10 +132,21 @@ def _numpy_equals_plugin(x, y, return_msg=False):
 
     ret = _make_ret(return_msg)
 
+    if x.ndim != y.ndim:
+        return ret(False, f".ndim, x.ndim = {x.ndim} != y.ndim = {y.ndim}")
+    if x.shape != y.shape:
+        return ret(False, f".shape, x.shape = {x.shape} != y.shape = {y.shape}")
     if x.dtype != y.dtype:
         return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
-    if x.dtype in ["object", "str"]:
+    if x.dtype == "str":
         return ret(np.array_equal(x, y), ".values")
+    elif x.dtype == "object":
+        x_flat = x.flatten()
+        y_flat = y.flatten()
+        for i in range(len(x_flat)):
+            is_equal, msg = deep_equals(x_flat[i], y_flat[i], return_msg=True)
+            return ret(is_equal, f"[{i}]" + msg)
+        return ret(True, "")  # catches len(x_flat) == 0
     else:
         return ret(np.array_equal(x, y, equal_nan=True), ".values")
 
