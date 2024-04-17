@@ -14,6 +14,18 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.7.7] - 2024-03-02
+====================
+
+Small hotfix release.
+
+Contents
+--------
+
+* Revert "[MNT] rename ``testing.utils.inspect`` to avoid shadowing of ``inspect``"
+  (:pr:`319`) :user:`fkiraly`
+
+
 [0.7.6] - 2024-03-02
 ====================
 
