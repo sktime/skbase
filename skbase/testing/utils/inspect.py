@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# flake8: noqa A005
 """Utilities for inspection of function arguments."""
 
 
