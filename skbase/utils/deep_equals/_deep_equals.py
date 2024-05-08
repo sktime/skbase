@@ -503,16 +503,48 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
     if isinstance(x == y, bool):
         return ret(x == y, f" !=, {x} != {y}")
 
-    # check if numpy is available
-    numpy_available = _softdep_available("numpy")
-    if numpy_available:
-        import numpy as np
-
     # deal with the case where != returns a vector
-    if numpy_available and np.any(x != y) or np.any(_coerce_list(x != y)):
+    if _safe_any_unequal(x, y):
         return ret(False, f" !=, {x} != {y}")
 
     return ret(True, "")
+
+
+def _safe_any_unequal(x, y):
+    """Return whether any element of x != y, or False on exception.
+
+    Written very defensively to avoid exceptions, as exceptions may be raised
+    since any(x != y) or the safer np.any(x != y) may not be boolean,
+    e.g., in pathological cases of nested objects.
+    """
+    try:
+        unequal = x != y
+    except Exception:
+        return False
+
+    # check if numpy is available
+    numpy_available = _softdep_available("numpy")
+
+    if not numpy_available:
+        try:
+            any_un = any(unequal)
+            if isinstance(any_un, bool):
+                return any_un
+            else:
+                return False
+        except Exception:
+            return False
+
+    import numpy as np
+
+    try:
+        any_un = np.any(x != y) or np.any(_coerce_list(x != y))
+        if isinstance(any_un, bool):
+            return any_un
+        else:
+            return False
+    except Exception:
+        return False
 
 
 def _safe_len(x):
