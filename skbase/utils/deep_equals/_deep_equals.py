@@ -539,7 +539,7 @@ def _safe_any_unequal(x, y):
 
     try:
         any_un = np.any(x != y) or np.any(_coerce_list(x != y))
-        if isinstance(any_un, bool):
+        if isinstance(any_un, bool) or any_un.dtype == "bool":
             return any_un
         else:
             return False
