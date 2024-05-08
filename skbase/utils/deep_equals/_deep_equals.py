@@ -511,7 +511,7 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
 
 
 def _safe_any_unequal(x, y):
-    """Return whether any element of x != y, or False on exception.
+    """Return whether any of x != y, if != results in iterable, False on exception.
 
     Written very defensively to avoid exceptions, as exceptions may be raised
     since any(x != y) or the safer np.any(x != y) may not be boolean,
