@@ -19,7 +19,7 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 
 Regular bugfix and feature update release.
 
-[0.7.7] - 2024-03-02
+[0.7.7] - 2024-04-17
 ====================
 
 Small hotfix release.
