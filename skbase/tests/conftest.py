@@ -237,6 +237,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_numpy_equals_plugin",
             "_pandas_equals",
             "_pandas_equals_plugin",
+            "_safe_any_unequal",
             "_safe_len",
             "_softdep_available",
             "_tuple_equals",
