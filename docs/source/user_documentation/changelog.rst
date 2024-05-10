@@ -14,7 +14,22 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
-[0.7.7] - 2024-03-02
+[0.7.8] - 2024-05-10
+====================
+
+Regular bugfix and maintenance release.
+
+Contents
+--------
+
+* [BUG] safer comparison in ``deep_equals`` if ``np.any(x != y)`` does not result in
+  boolean (:pr:`323`) :user:`fkiraly`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`322`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Update ``sphinx-gallery`` requirement
+  from ``<0.16.0`` to ``<0.17.0`` (:pr:`321`) :user:`dependabot`
+
+
+[0.7.7] - 2024-04-17
 ====================
 
 Small hotfix release.
