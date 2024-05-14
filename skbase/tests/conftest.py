@@ -99,7 +99,7 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
         "BaseMetaEstimatorMixin",
     ),
     "skbase.base._pretty_printing._pprint": ("KeyValTuple", "KeyValTupleParam"),
-    "skbase.lookup._lookup": (),
+    "skbase.lookup._lookup": ("StdoutMute"),
     "skbase.testing": ("BaseFixtureGenerator", "QuickTester", "TestAllObjects"),
     "skbase.testing.test_all_objects": (
         "BaseFixtureGenerator",
