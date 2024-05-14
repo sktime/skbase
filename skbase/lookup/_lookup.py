@@ -1027,7 +1027,7 @@ class StdoutMute:
             self._stdout = sys.stdout
             sys.stdout = io.StringIO()
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, traceback):  # noqa: A002
         """Context manager exit point."""
         # restore stdout if active
         # if not active, nothing needs to be done, since stdout was not replaced
