@@ -1047,4 +1047,5 @@ class StdoutMute:
             # all other exceptions are raised
             return False
         # if no exception was raised, return True to indicate successful exit
+        # return statement not needed as type was None, but included for clarity
         return True
