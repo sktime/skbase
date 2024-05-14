@@ -1021,12 +1021,16 @@ class StdoutMute:
 
     def __enter__(self):
         """Context manager entry point."""
+        # capture stdout if active
+        # store the original stdout so it can be restored in __exit__
         if self.active:
             self._stdout = sys.stdout
             sys.stdout = io.StringIO()
 
     def __exit__(self, type, value, traceback):
         """Context manager exit point."""
+        # restore stdout if active
+        # if not active, nothing needs to be done, since stdout was not replaced
         if self.active:
             sys.stdout = self._stdout
 
