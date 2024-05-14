@@ -255,8 +255,9 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
         if not isinstance(search_value, list):
             search_value = [search_value]
 
-        search_value_re = [s for s in search_value if isinstance(s, re.Pattern)]
-        search_value_str = [s for s in search_value if not isinstance(s, re.Pattern)]
+        # split search_value into strings/other and re.Pattern
+        search_re = [s for s in search_value if isinstance(s, re.Pattern)]
+        search_str = [s for s in search_value if not isinstance(s, re.Pattern)]
 
         tag_value = obj.get_class_tag(key)
         if not isinstance(tag_value, list):
@@ -264,8 +265,8 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
 
         # search value matches tag value iff
         # at least one element of search value matches at least one element of tag value
-        str_match = len(set(search_value_str).intersection(tag_value)) > 0
-        re_match = any(s.fullmatch(tag) for s in search_value_re for tag in tag_value)
+        str_match = len(set(search_str).intersection(tag_value)) > 0
+        re_match = any(s.fullmatch(str(tag)) for s in search_re for tag in tag_value)
         match = str_match or re_match
 
         cond_sat = cond_sat and match
