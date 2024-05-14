@@ -295,11 +295,7 @@ def _import_module(
 
     # if suppress_import_stdout:
     # setup text trap, import
-    if suppress_import_stdout:
-        temp_stdout = sys.stdout
-        sys.stdout = io.StringIO()
-
-    try:
+    with StdoutMute(active=suppress_import_stdout):
         if isinstance(module, str):
             imported_mod = importlib.import_module(module)
         elif isinstance(module, importlib.machinery.SourceFileLoader):
@@ -308,18 +304,6 @@ def _import_module(
 
             loader = spec.loader
             loader.exec_module(imported_mod)
-        exc = None
-    except Exception as e:
-        # we store the exception so we can restore the stdout first
-        exc = e
-
-    # if we set up a text trap, restore it to the initial value
-    if suppress_import_stdout:
-        sys.stdout = temp_stdout
-
-    # if we encountered an exception, now raise it
-    if exc is not None:
-        raise exc
 
     return imported_mod
 
@@ -845,12 +829,10 @@ def all_objects(
             if _is_non_public_module(module_name):
                 continue
 
-            try:
+            # setup text trap, import, then restore
+            with StdoutMute(active=suppress_import_stdout):
                 if suppress_import_stdout:
-                    # setup text trap, import, then restore
-                    sys.stdout = io.StringIO()
                     module = importlib.import_module(module_name)
-                    sys.stdout = sys.__stdout__
                 else:
                     module = importlib.import_module(module_name)
                 classes = inspect.getmembers(module, inspect.isclass)
@@ -861,11 +843,6 @@ def all_objects(
                     if _is_estimator(klass.__name__, klass)
                 ]
                 all_estimators.extend(estimators)
-            except ModuleNotFoundError as e:
-                # Skip missing soft dependencies
-                if "soft dependency" not in str(e):
-                    raise e
-                warnings.warn(str(e), ImportWarning, stacklevel=2)
 
     # Drop duplicates
     all_estimators = set(all_estimators)
@@ -1020,3 +997,55 @@ def _make_dataframe(all_objects, columns):
     import pandas as pd
 
     return pd.DataFrame(all_objects, columns=columns)
+
+
+class StdoutMute:
+    """A context manager to suppress stdout.
+
+    This class is used to suppress stdout when importing modules.
+
+    Also downgrades any ModuleNotFoundError to a warning if the error message
+    contains the substring "soft dependency".
+
+    Parameters
+    ----------
+    active : bool, default=True
+        Whether to suppress stdout or not.
+        If True, stdout is suppressed.
+        If False, stdout is not suppressed, and the context manager does nothing
+        except catch and suppress ModuleNotFoundError.
+    """
+
+    def __init__(self, active=True):
+        self.active = active
+
+    def __enter__(self):
+        """Context manager entry point."""
+        # capture stdout if active
+        # store the original stdout so it can be restored in __exit__
+        if self.active:
+            self._stdout = sys.stdout
+            sys.stdout = io.StringIO()
+
+    def __exit__(self, type, value, traceback):  # noqa: A002
+        """Context manager exit point."""
+        # restore stdout if active
+        # if not active, nothing needs to be done, since stdout was not replaced
+        if self.active:
+            sys.stdout = self._stdout
+
+        if type is not None:
+            # if a ModuleNotFoundError is raised,
+            # we suppress to a warning if "soft dependency" is in the error message
+            # otherwise, raise
+            if type is ModuleNotFoundError:
+                if "soft dependency" not in str(value):
+                    return False
+                warnings.warn(str(value), ImportWarning, stacklevel=2)
+                return True
+
+            # all other exceptions are raised
+            return False
+        # if no exception was raised, return True to indicate successful exit
+        # return statement not needed as type was None, but included for clarity
+        return True

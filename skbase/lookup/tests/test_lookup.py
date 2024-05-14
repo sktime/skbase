@@ -6,6 +6,7 @@
 # conditions see https://github.com/sktime/sktime/blob/main/LICENSE
 import importlib
 import pathlib
+import sys
 from copy import deepcopy
 from types import ModuleType
 from typing import List
@@ -848,7 +849,14 @@ def test_all_objects_returns_expected_types(
     exclude_objects,
     suppress_import_stdout,
 ):
-    """Test that all_objects return argument has correct type."""
+    """Test that all_objects return argument has correct type.
+
+    Also tested: sys.stdout is unchanged after function call, see bug #327.
+    """
+    # we will check later that sys.stdout is unchanged
+    initial_stdout = sys.stdout
+
+    # call all_objects
     objs = all_objects(
         package_name="skbase",
         exclude_objects=exclude_objects,
@@ -858,6 +866,11 @@ def test_all_objects_returns_expected_types(
         modules_to_ignore=modules_to_ignore,
         suppress_import_stdout=suppress_import_stdout,
     )
+
+    # verify sys.stdout is unchanged
+    assert sys.stdout == initial_stdout
+
+    # verify output has expected types
     if isinstance(modules_to_ignore, str):
         modules_to_ignore = (modules_to_ignore,)
     if (
