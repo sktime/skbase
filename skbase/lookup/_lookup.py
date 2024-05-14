@@ -1014,7 +1014,7 @@ class StdoutMute:
             sys.stdout = io.StringIO()
 
     def __exit__(self, type, value, traceback):
-        if self. active:
+        if self.active:
             sys.stdout = self._stdout
 
         if type is not None:
