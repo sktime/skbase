@@ -727,6 +727,8 @@ def get_package_metadata(
     return module_info
 
 
+# todo 0.9.0: change docstring to reflect handling of filter_tags
+# in case of str or iterable of str
 def all_objects(
     object_types=None,
     filter_tags=None,
@@ -740,12 +742,15 @@ def all_objects(
     modules_to_ignore=None,
     class_lookup=None,
 ):
-    """Get a list of all objects in a package with name `package_name`.
+    """Get a list of all objects in a package, optionally filtered by type and tags.
 
     This function crawls the package/module to retrieve all classes
-    that are descendents of BaseObject. By default it does this for the `skbase`
-    package, but users can specify `package_name` or `path` to another project
-    and `all_objects` will crawl and retrieve BaseObjects found in that project.
+    that are descendents of ``BaseObject``, or another specified class,
+    from a module and all submodules, specified by  ``package_name`` oand``path``.
+
+    The retrieved objects can be filtered by type, tags, and excluded by name.
+
+    ``all_objects`` will crawl and return references to the retrieved classes.
 
     Parameters
     ----------
@@ -761,29 +766,40 @@ def all_objects(
 
     return_names: bool, default=True
 
-        - If True, estimator class name is included in the all_estimators()
+        - If True, estimator class name is included in the ``all_objects``
           return in the order: name, estimator class, optional tags, either as
-          a tuple or as pandas.DataFrame columns.
-        - If False, estimator class name is removed from the all_estimators()
-          return.
+          a tuple or as ``pandas.DataFrame`` columns.
+        - If False, estimator class name is removed from the ``all_objects`` return.
 
     filter_tags: str, list[str] or dict[str, Any], default=None
-        Filter used to determine if `klass` has tag or expected tag values.
+        Filter used to determine if ``klass`` has tag or expected tag values.
 
         - If a str or list of strings is provided, the return will be filtered
           to keep classes that have all the tag(s) specified by the strings.
-        - If a dict is provided, the return will be filtered to keep classes
-          that have all dict keys as tags. Tag values are also checked such that:
+        - If a dict is provided, the return will be filtered to keep exactly the classes
+          where tags satisfy all the filter conditions specified by ``filter_tags``.
+          Filter conditions are as follows, for ``tag_name: search_value`` pairs in
+          the ``filter_tags`` dict.
 
-          - If a dict key maps to a single value only classes with tag values equal
-            to the value are returned.
-          - If a dict key maps to multiple values (e.g., list) only classes with
-            tag values in these values are returned.
-          - If tag values are iterable,
-            condition is "at least one search value is contained in tag values".
+          - If ``klass`` does not have a tag with name ``tag_name``, it is excluded.
+            Otherwise, let ``tag_value`` be the value of the tag with name ``tag_name``.
+          - If ``search_value`` is a string, and ``tag_value`` is a string,
+            the filter condition is that ``search_value`` must match the tag value.
+          - If ``search_value`` is a string, and ``tag_value`` is a list,
+            the filter condition is that ``search_value`` is contained in ``tag_value``.
+          - If ``search_value`` is a ``re.Pattern``, and ``tag_value`` is a string,
+            the filter condition is that ``search_value.fullmatch(tag_value)``
+            is true, i.e., the regex matches the tag value.
+          - If ``search_value`` is a ``re.Pattern``, and ``tag_value`` is a list,
+            the filter condition is that at least one element of ``tag_value``
+            matches the regex.
+          - If ``search_value`` is iterable, then the filter condition is that
+            at least one element of ``search_value`` satisfies the above conditions,
+            applied to ``tag_value``.
 
     exclude_objects: str or list[str], default=None
         Names of estimators to exclude.
+
     as_dataframe: bool, default=False
 
         - If False, `all_objects` will return a list (either a list of
@@ -796,58 +812,62 @@ def all_objects(
         Names of tags to fetch and return each object's value of. The tag values
         named in return_tags will be fetched for each object and will be appended
         as either columns or tuple entries.
+
     package_name : str, default="skbase".
         Should be set to default to package or module name that objects will
-        be retrieved from. Objects will be searched inside `package_name`,
-        including in sub-modules (e.g., in package_name, package_name.module1,
-        package.module2, and package.module1.module3).
+        be retrieved from. Objects will be searched inside ``package_name``,
+        including in sub-modules (e.g., in ``package_name``, ``package_name.module1``,
+        ``package.module2``, and ``package.module1.module3``).
+
     path : str, default=None
         If provided, this should be the path that should be used as root
         to find `package_name` and start the search for any submodules/packages.
         This can be left at the default value (None) if searching in an installed
         package.
+
     modules_to_ignore : str or list[str], default=None
         The modules that should be ignored when searching across the modules to
-        gather objects. If passed, `all_objects` ignores modules or submodules
+        gather objects. If passed, ``all_objects`` ignores modules or submodules
         of a module whose name is in the provided string(s). E.g., if
-        `modules_to_ignore` contains the string `"foo"`, then `"bar.foo"`,
-        `"foo"`, `"foo.bar"`, `"bar.foo.bar"` are ignored.
+        ``modules_to_ignore`` contains the string ``"foo"``, then ``"bar.foo"``,
+        ``"foo"``, ``"foo.bar"``, ``"bar.foo.bar"`` are ignored.
 
     class_lookup : dict[str, class], default=None
         Dictionary of string aliases for classes used in object_types. If provided,
-        `object_types` can accept str values or a list of string values.
+        ``object_types`` can accept str values or a list of string values.
 
-    Other Parameters
-    ----------------
     suppress_import_stdout : bool, default=True
         Whether to suppress stdout printout upon import.
+        If True, ``all_objects`` will suppress any stdout printout internally.
+        If False, ``all_objects`` will not suppress any stdout printout arising
+        from crawling the package.
 
     Returns
     -------
-    all_estimators will return one of the following:
+    ``all_objects`` will return one of the following:
 
-    - a pandas.DataFrame if `as_dataframe=True`, with columns:
+    - a pandas.DataFrame if ``as_dataframe=True``, with columns:
 
-      - "names" with the returned class names if `return_name=True`
+      - "names" with the returned class names if ``return_name=True``
       - "objects" with returned classes.
-      - optional columns named based on tags passed in `return_tags`
-        if `return_tags is not None`.
+      - optional columns named based on tags passed in ``return_tags``
+        if ``return_tags is not None``.
 
-    - a list if `as_dataframe=False`, where list elements are:
+    - a list if ``as_dataframe=False``, where list elements are:
 
-      - classes (that inherit from BaseObject) in alphabetic order by class name
-        if `return_names=False` and `return_tags=None.
-      - (name, class) tuples in alphabetic order by name if `return_names=True`
-        and `return_tags=None`.
+      - classes (that inherit from ``BaseObject``) in alphabetic order by class name
+        if ``return_names=False`` and ``return_tags=None``.
+      - (name, class) tuples in alphabetic order by name if ``return_names=True``
+        and ``return_tags=None``.
       - (name, class, tag-value1, ..., tag-valueN) tuples in alphabetic order by name
-        if `return_names=True` and `return_tags is not None`.
+        if ``return_names=True`` and ``return_tags is not None``.
       - (class, tag-value1, ..., tag-valueN) tuples in alphabetic order by
-        class name if `return_names=False` and `return_tags is not None`.
+        class name if ``return_names=False`` and ``return_tags is not None``.
 
     References
     ----------
-    Modified version of scikit-learn's and sktime's `all_estimators()` to allow
-    users to find BaseObjects in `skbase` and other packages.
+    Modified version of ``scikit-learn``'s and sktime's ``all_estimators`` to allow
+    users to find ``BaseObject`` descendants in ``skbase`` and other packages.
     """
     module, root, _ = _determine_module_path(package_name, path)
     if modules_to_ignore is None:
