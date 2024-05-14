@@ -1026,6 +1026,7 @@ class StdoutMute:
             sys.stdout = io.StringIO()
 
     def __exit__(self, type, value, traceback):
+        """Context manager exit point."""
         if self.active:
             sys.stdout = self._stdout
 
