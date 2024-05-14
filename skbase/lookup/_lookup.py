@@ -226,7 +226,7 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
     # case: tag_filter is string
     if isinstance(tag_filter, str):
         # todo 0.9.0: reomove this warning
-        warnings.warn(warn_msg, FutureWarning)
+        warnings.warn(warn_msg, DeprecationWarning, stacklevel=2)
         # todo 0.9.0: replace this line
         return tag_filter in klass_tags
         # by this line
@@ -238,7 +238,7 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
         if not all(isinstance(t, str) for t in tag_filter):
             raise ValueError(f"{type_msg} {tag_filter}")
         # todo 0.9.0: reomove this warning
-        warnings.warn(warn_msg, FutureWarning)
+        warnings.warn(warn_msg, DeprecationWarning, stacklevel=2)
         # todo 0.9.0: replace this line
         return all(tag in klass_tags for tag in tag_filter)
         # by this line
