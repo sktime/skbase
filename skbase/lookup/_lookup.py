@@ -20,6 +20,7 @@ import io
 import os
 import pathlib
 import pkgutil
+import re
 import sys
 import warnings
 from collections.abc import Iterable
@@ -189,48 +190,85 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
     if tag_filter is None:
         return True
 
+    type_msg = (
+        "filter_tags argument of all_objects must be "
+        "a dict with str or re.Pattern keys, "
+        "str, or iterable of str, "
+        "but found"
+    )
+
     if not isinstance(tag_filter, (str, Iterable, dict)):
-        raise TypeError(
-            "tag_filter argument of _filter_by_tags must be "
-            "a dict with str keys, str, or iterable of str, "
-            f"but found tag_filter of type {type(tag_filter)}"
-        )
+        raise TypeError(f"{type_msg} type {type(tag_filter)}")
 
     if not hasattr(obj, "get_class_tag"):
         return False
 
     klass_tags = obj.get_class_tags().keys()
 
+    # todo 0.9.0: remove the warning message
+    # i.e., this message and all warnings referring to it
+    warn_msg = (
+        "The meaning of filter_tags arguments in all_objects of type str "
+        "and iterable of str will change from scikit-base 0.9.0. "
+        "Currently, str or iterable of str arguments select objects that possess the "
+        "tag(s) with the specified name, of any value. "
+        "From 0.9.0 onwards, str or iterable of str "
+        "will select objects that possess the tag with the specified name, "
+        "with the value True (boolean). See scikit-base issue #326 for the rationale "
+        "behind this change. "
+        "To retain previous behaviour, that is, "
+        "to select objects that possess the tag with the specified name, of any value, "
+        "use a dict with the tag name as key, and re.Pattern('*?') as value. "
+        "That is, from re import Pattern, and pass {tag_name: Pattern('*?')} "
+        "as filter_tags, and similarly with multiple tag names. "
+    )
+
     # case: tag_filter is string
     if isinstance(tag_filter, str):
+        # todo 0.9.0: reomove this warning
+        warnings.warn(warn_msg, FutureWarning)
+        # todo 0.9.0: replace this line
         return tag_filter in klass_tags
+        # by this line
+        # tag_filter = {tag_filter: True}
 
     # case: tag_filter is iterable of str but not dict
     # If a iterable of strings is provided, check that all are in the returned tag_dict
     if isinstance(tag_filter, Iterable) and not isinstance(tag_filter, dict):
         if not all(isinstance(t, str) for t in tag_filter):
-            raise ValueError(
-                "tag_filter argument of _filter_by_tags must be "
-                f"a dict with str keys, str, or iterable of str, but found {tag_filter}"
-            )
+            raise ValueError(f"{type_msg} {tag_filter}")
+        # todo 0.9.0: reomove this warning
+        warnings.warn(warn_msg, FutureWarning)
+        # todo 0.9.0: replace this line
         return all(tag in klass_tags for tag in tag_filter)
+        # by this line
+        # tag_filter = {tag: True for tag in tag_filter}
 
     # case: tag_filter is dict
+    # check that all keys are str
     if not all(isinstance(t, str) for t in tag_filter.keys()):
-        raise ValueError(
-            "tag_filter argument of _filter_by_tags must be "
-            f"a dict with str keys, str, or iterable of str, but found {tag_filter}"
-        )
+        raise ValueError(f"{type_msg} {tag_filter}")
 
     cond_sat = True
 
     for key, search_value in tag_filter.items():
         if not isinstance(search_value, list):
             search_value = [search_value]
+
+        search_value_re = [s for s in search_value if isinstance(s, re.Pattern)]
+        search_value_str = [s for s in search_value if not isinstance(s, re.Pattern)]
+
         tag_value = obj.get_class_tag(key)
         if not isinstance(tag_value, list):
             tag_value = [tag_value]
-        cond_sat = cond_sat and len(set(search_value).intersection(tag_value)) > 0
+
+        # search value matches tag value iff
+        # at least one element of search value matches at least one element of tag value
+        str_match = len(set(search_value_str).intersection(tag_value)) > 0
+        re_match = any(s.fullmatch(tag) for s in search_value_re for tag in tag_value)
+        match = str_match or re_match
+
+        cond_sat = cond_sat and match
 
     return cond_sat
 
