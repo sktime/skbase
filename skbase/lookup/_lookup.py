@@ -295,7 +295,7 @@ def _import_module(
 
     # if suppress_import_stdout:
     # setup text trap, import
-    with StdoutMutex(active=suppress_import_stdout):
+    with StdoutMute(active=suppress_import_stdout):
         if isinstance(module, str):
             imported_mod = importlib.import_module(module)
         elif isinstance(module, importlib.machinery.SourceFileLoader):
@@ -830,7 +830,7 @@ def all_objects(
                 continue
 
             # setup text trap, import, then restore
-            with StdoutMutex(active=suppress_import_stdout):
+            with StdoutMute(active=suppress_import_stdout):
                 if suppress_import_stdout:
                     module = importlib.import_module(module_name)
                 else:
@@ -999,7 +999,7 @@ def _make_dataframe(all_objects, columns):
     return pd.DataFrame(all_objects, columns=columns)
 
 
-class StdoutMutex:
+class StdoutMute:
     """A context manager to suppress stdout.
 
     This class is used to suppress stdout when importing modules.
