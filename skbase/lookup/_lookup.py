@@ -1003,6 +1003,17 @@ class StdoutMute:
     """A context manager to suppress stdout.
 
     This class is used to suppress stdout when importing modules.
+
+    Also downgrades any ModuleNotFoundError to a warning if the error message
+    contains the substring "soft dependency".
+
+    Parameters
+    ----------
+    active : bool, default=True
+        Whether to suppress stdout or not.
+        If True, stdout is suppressed.
+        If False, stdout is not suppressed, and the context manager does nothing
+        except catch and suppress ModuleNotFoundError.
     """
 
     def __init__(self, active=True):
