@@ -395,15 +395,15 @@ def test_filter_by_tags():
     assert _filter_by_tags(Parent, {"E": 1, "B": 2}) is False
 
     # Iterable tags should be all strings
-    with pytest.raises(ValueError, match=r"tag_filter"):
+    with pytest.raises(ValueError, match=r"filter_tags"):
         assert _filter_by_tags(Parent, ("A", "B", 3))
 
     # Tags that aren't iterable have to be strings
-    with pytest.raises(TypeError, match=r"tag_filter"):
+    with pytest.raises(TypeError, match=r"filter_tags"):
         assert _filter_by_tags(Parent, 7.0)
 
     # Dictionary tags should have string keys
-    with pytest.raises(ValueError, match=r"tag_filter"):
+    with pytest.raises(ValueError, match=r"filter_tags"):
         assert _filter_by_tags(Parent, {7: 11})
 
 
