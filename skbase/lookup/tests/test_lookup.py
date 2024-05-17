@@ -42,7 +42,7 @@ from skbase.tests.mock_package.test_mock_package import (
     NotABaseObject,
 )
 
-__author__: List[str] = ["RNKuhns"]
+__author__: List[str] = ["RNKuhns", "fkiraly"]
 __all__: List[str] = []
 
 
@@ -982,6 +982,43 @@ def test_all_object_tag_filter(tag_filter):
         assert unfiltered_classes == filtered_classes
     else:
         assert len(unfiltered_classes) > len(filtered_classes)
+
+
+def test_all_object_tag_filter_regex():
+    """Test all_objects filters by tag as expected, when using regex."""
+    import re
+
+    # search for class where "A" has at least one 1, and "C" has "23" in the tag value
+    # this sohuld find Parent but not Child
+    filter_tags = {"A": re.compile(r"^(?=.*1).*$"), "C": re.compile(r".+23.+")}
+
+    # Results applying filter
+    objs = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        return_tags=None,
+        filter_tags=filter_tags,
+    )
+    filtered_classes = objs.iloc[:, 1].tolist()
+    # Verify filtered results have right output type
+    _check_all_object_output_types(
+        objs, as_dataframe=True, return_names=True, return_tags=None
+    )
+
+    # Results without filter
+    objs = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        return_tags=None,
+    )
+    unfiltered_classes = objs.iloc[:, 1].tolist()
+
+    # as stated above, we should find only Parent (and not Child)
+    assert len(unfiltered_classes) > len(filtered_classes)
+    names = [kls.__name__ for kls in filtered_classes]
+    assert "Parent" in names
 
 
 @pytest.mark.parametrize("class_lookup", [{"base_object": BaseObject}])
