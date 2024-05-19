@@ -825,7 +825,7 @@ def all_objects(
     if exclude_objects:
         exclude_objects = check_sequence(
             exclude_objects,
-            sequence_type=list,
+            sequence_type=tuple,
             element_type=str,
             coerce_scalar_input=True,
             sequence_name="exclude_object",
