@@ -1055,7 +1055,7 @@ def _walk_and_retrieve_all_objs(root, package_name, modules_to_ignore):
 
     Returns
     -------
-    all_estimators : list of (str, class) tuples
+    all_estimators : tuple of (str, class) tuples
         List of all estimators found in the package.
     """
     prefix = f"{package_name}."
@@ -1082,4 +1082,5 @@ def _walk_and_retrieve_all_objs(root, package_name, modules_to_ignore):
 
     # Drop duplicates
     all_estimators = set(all_estimators)
+    all_estimators = tuple(all_estimators)
     return all_estimators
