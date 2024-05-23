@@ -203,6 +203,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_import_module",
             "_check_object_types",
             "_get_module_info",
+            "_coerce_to_tuple",
         ),
         "skbase.testing.utils.inspect": ("_get_args",),
         "skbase.utils._check": ("_is_scalar_nan",),

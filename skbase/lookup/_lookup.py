@@ -24,6 +24,7 @@ import sys
 import warnings
 from collections.abc import Iterable
 from copy import deepcopy
+from functools import lru_cache
 from operator import itemgetter
 from types import ModuleType
 from typing import Any, List, Mapping, MutableMapping, Optional, Sequence, Tuple, Union
@@ -695,7 +696,7 @@ def all_objects(
 
     Parameters
     ----------
-    object_types: class or list of classes, default=None
+    object_types: class or tuple, list of classes, default=None
 
         - If class_lookup is provided, can also be str or list of str
           which kind of objects should be returned.
@@ -795,70 +796,36 @@ def all_objects(
     Modified version of scikit-learn's and sktime's `all_estimators()` to allow
     users to find BaseObjects in `skbase` and other packages.
     """
-    module, root, _ = _determine_module_path(package_name, path)
-    if modules_to_ignore is None:
-        modules_to_ignore = []
-    if exclude_objects is None:
-        exclude_objects = []
+    _, root, _ = _determine_module_path(package_name, path)
+    modules_to_ignore = _coerce_to_tuple(modules_to_ignore)
+    exclude_objects = _coerce_to_tuple(exclude_objects)
 
-    all_estimators = []
-
-    def _is_base_class(name):
-        return name.startswith("_") or name.startswith("Base")
-
-    def _is_estimator(name, klass):
-        # Check if klass is subclass of base estimators, not a base class itself and
-        # not an abstract class
-        if object_types is None:
-            return issubclass(klass, BaseObject) and not _is_base_class(name)
-        else:
-            return not _is_base_class(name)
+    if object_types is None:
+        obj_types = BaseObject
+    else:
+        obj_types = _check_object_types(object_types, class_lookup)
 
     # Ignore deprecation warnings triggered at import time and from walking packages
-    with warnings.catch_warnings():
+    with warnings.catch_warnings(), StdoutMute(active=suppress_import_stdout):
         warnings.simplefilter("ignore", category=FutureWarning)
         warnings.simplefilter("module", category=ImportWarning)
         warnings.filterwarnings(
             "ignore", category=UserWarning, message=".*has been moved to.*"
         )
-        prefix = f"{package_name}."
-        for module_name, _, _ in _walk(
-            root=root, exclude=modules_to_ignore, prefix=prefix
-        ):
-            # Filter modules
-            if _is_non_public_module(module_name):
-                continue
-
-            # setup text trap, import, then restore
-            with StdoutMute(active=suppress_import_stdout):
-                if suppress_import_stdout:
-                    module = importlib.import_module(module_name)
-                else:
-                    module = importlib.import_module(module_name)
-                classes = inspect.getmembers(module, inspect.isclass)
-                # Filter classes
-                estimators = [
-                    (klass.__name__, klass)
-                    for _, klass in classes
-                    if _is_estimator(klass.__name__, klass)
-                ]
-                all_estimators.extend(estimators)
-
-    # Drop duplicates
-    all_estimators = set(all_estimators)
+        all_estimators = _walk_and_retrieve_all_objs(
+            root=root, package_name=package_name, modules_to_ignore=modules_to_ignore
+        )
 
     # Filter based on given estimator types
-    if object_types:
-        obj_types = _check_object_types(object_types, class_lookup)
-        all_estimators = [
-            (n, est) for (n, est) in all_estimators if _filter_by_class(est, obj_types)
-        ]
+    all_estimators = [
+        (n, est) for (n, est) in all_estimators if _filter_by_class(est, obj_types)
+    ]
 
     # Filter based on given exclude list
     if exclude_objects:
         exclude_objects = check_sequence(
             exclude_objects,
-            sequence_type=list,
+            sequence_type=tuple,
             element_type=str,
             coerce_scalar_input=True,
             sequence_name="exclude_object",
@@ -1049,3 +1016,71 @@ class StdoutMute:
         # if no exception was raised, return True to indicate successful exit
         # return statement not needed as type was None, but included for clarity
         return True
+
+
+def _coerce_to_tuple(x):
+    if x is None:
+        return ()
+    elif isinstance(x, tuple):
+        return x
+    elif isinstance(x, list):
+        return tuple(x)
+    else:
+        return (x,)
+
+
+@lru_cache(maxsize=100)
+def _walk_and_retrieve_all_objs(root, package_name, modules_to_ignore):
+    """Walk through the package and retrieve all BaseObject descendants.
+
+    Excludes objects:
+
+    * located in modules with a subpath starting with underscore
+    * located in modules with a subpath in ``modules_to_ignore``
+    * whose name starts with an underscore or ``"Base"``
+
+    Parameters
+    ----------
+    root : str or path-like
+        Root path in which to look for submodules. Can be a string path,
+        pathlib.Path or other path-like object.
+    package_name : str
+        The name of the package/module to return metadata for.
+    modules_to_ignore : tuple[str]
+        The modules that should be ignored when searching across the modules to
+        gather objects. If passed, `all_objects` ignores modules or submodules
+        of a module whose name is in the provided string(s). E.g., if
+        `modules_to_ignore` contains the string `"foo"`, then `"bar.foo"`,
+        `"foo"`, `"foo.bar"`, `"bar.foo.bar"` are ignored.
+
+    Returns
+    -------
+    all_estimators : tuple of (str, class) tuples
+        List of all estimators found in the package.
+    """
+    prefix = f"{package_name}."
+
+    def _is_base_class(name):
+        return name.startswith("_") or name.startswith("Base")
+
+    all_estimators = []
+
+    for module_name, _, _ in _walk(root=root, exclude=modules_to_ignore, prefix=prefix):
+        # Filter modules
+        if _is_non_public_module(module_name):
+            continue
+
+        module = importlib.import_module(module_name)
+        classes = inspect.getmembers(module, inspect.isclass)
+        # Filter classes
+        estimators = [
+            (klass.__name__, klass)
+            for _, klass in classes
+            if not _is_base_class(klass.__name__)
+        ]
+        all_estimators.extend(estimators)
+
+    # Drop duplicates
+    all_estimators = set(all_estimators)
+    all_estimators = tuple(all_estimators)
+    return all_estimators
