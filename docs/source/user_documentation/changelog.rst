@@ -14,6 +14,47 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.8.0] - 2024-05-25
+====================
+
+Feature update for ``all_objects``, bugfix and maintenance release.
+
+Core interface changes
+----------------------
+
+* ``all_objects`` now allows filtering tag values by ``re.Pattern`` regular expressions
+  passed as query values via ``filter_tags``.
+
+Deprecations and removals
+-------------------------
+
+* In ``all_objects``, the meaning of ``filter_tags`` arguments ot type ``str``,
+  and iterable of ``str``, will change from ``scikit-base 0.9.0``.
+  Currently, ``str`` or iterable of ``str`` arguments select objects that possess the
+  tag(s) with the specified name, of any value.
+  From 0.9.0 onwards, ``str`` or iterable of ``str``
+  will select objects that possess the tag with the specified name,
+  with the value ``True`` (boolean). See ``scikit-base`` issue #326 for the rationale
+  behind this change.
+  To retain previous behaviour, that is,
+  to select objects that possess the tag with the specified name, of any value,
+  use a ``dict`` with the tag name as key, and ``re.Pattern('*?')`` as value.
+  That is, ``from re import Pattern``, and pass ``{tag_name: Pattern('*?')}``
+  as ``filter_tags``, and similarly with multiple tag names.
+
+Contents
+--------
+
+* [BUG] fix permanently muted ``stdout`` after ``all_objects`` call
+  (:pr:`328`) :user:`fkiraly`
+* [ENH] refactor - simplify ``all_objects`` logic and add cache for efficient lookup
+  (:pr:`331`) :user:`fkiraly`
+* [ENH] ``all_objects`` retrieval filtered by regex applied to tag values, deprecation
+  of "has tag" condition in favour of "tag is True" (:pr:`329`) :user:`fkiraly`
+* [MNT] [Dependabot](deps): Update ``sphinx-design`` requirement
+  from ``<0.6.0`` to ``<0.7.0`` (:pr:`332`) :user:`dependabot`
+
+
 [0.7.8] - 2024-05-10
 ====================
 
