@@ -206,15 +206,15 @@ class BaseObject(_FlagManager):
                 )
         return parameters
 
-    # todo 0.10.0: changed sorted default to False
+    # todo 0.10.0: changed sort default to False
     # update docstring, and remove warning
     @classmethod
-    def get_param_names(cls, sorted=None):
+    def get_param_names(cls, sort=None):
         """Get object's parameter names.
 
         Parameters
         ----------
-        sorted : bool, default=True
+        sort : bool, default=True
             Whether to return the parameter names sorted in alphabetical order (True),
             or in the order they appear in the class ``__init__`` (False).
 
@@ -222,11 +222,11 @@ class BaseObject(_FlagManager):
         -------
         param_names: list[str]
             List of parameter names of cls.
-            If ``sorted=False``, in same order as they appear in the class ``__init__``.
-            If ``sorted=True``, alphabetically ordered.
+            If ``sort=False``, in same order as they appear in the class ``__init__``.
+            If ``sort=True``, alphabetically ordered.
         """
-        if sorted is None:
-            sorted = True
+        if sort is None:
+            sort = True
             warn(
                 "In scikit-base BaseObject.get_param_names, the default of parameter"
                 " 'sorted' will change from True to False in 0.10.0. "
@@ -234,7 +234,7 @@ class BaseObject(_FlagManager):
                 " in the order they appear in the class __init__, "
                 "rather than alphabetically ordered. "
                 "To retain previous behaviour in direct calls, "
-                "set 'sorted=True'. To silence this warning, set 'sorted' to "
+                "set 'sort=True'. To silence this warning, set 'sorted' to "
                 "either True or False.",
                 FutureWarning,
             )
@@ -613,7 +613,7 @@ class BaseObject(_FlagManager):
             `create_test_instance` uses the first (or only) dictionary in `params`
         """
         params_with_defaults = set(cls.get_param_defaults().keys())
-        all_params = set(cls.get_param_names(sorted=False))
+        all_params = set(cls.get_param_names(sort=False))
         params_without_defaults = all_params - params_with_defaults
 
         # if non-default parameters are required, but none have been found, raise error
