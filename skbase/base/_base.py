@@ -58,7 +58,6 @@ import warnings
 from collections import defaultdict
 from copy import deepcopy
 from typing import List
-from warnings import warn
 
 from skbase._exceptions import NotFittedError
 from skbase.base._pretty_printing._object_html_repr import _object_html_repr
@@ -227,21 +226,10 @@ class BaseObject(_FlagManager):
         """
         if sort is None:
             sort = True
-            warn(
-                "In scikit-base BaseObject.get_param_names, the default of parameter"
-                " 'sorted' will change from True to False in 0.10.0. "
-                "This will change the order of the output, returning the parameters"
-                " in the order they appear in the class __init__, "
-                "rather than alphabetically ordered. "
-                "To retain previous behaviour in direct calls, "
-                "set 'sort=True'. To silence this warning, set 'sorted' to "
-                "either True or False.",
-                FutureWarning,
-            )
 
         parameters = cls._get_init_signature()
         param_names = [p.name for p in parameters]
-        if sorted:
+        if sort:
             param_names = sorted(param_names)
         return param_names
 

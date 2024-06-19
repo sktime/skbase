@@ -715,7 +715,7 @@ def test_get_param_names(
 ):
     """Test that get_param_names returns list of string parameter names."""
     param_names = fixture_class_parent.get_param_names(sort=sort)
-    if sorted:
+    if sort:
         assert param_names == sorted([*fixture_class_parent_expected_params])
     else:
         assert param_names == [*fixture_class_parent_expected_params]
