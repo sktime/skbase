@@ -57,6 +57,10 @@ class StdoutMute:
         type : type
             The type of the exception raised.
             Known to be not-None and Exception subtype when this method is called.
+        value : Exception
+            The exception instance raised.
+        traceback : traceback
+            The traceback object associated with the exception.
         """
         # by default, all exceptions are raised
         return False
