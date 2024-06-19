@@ -5,7 +5,6 @@ __author__ = ["fkiraly"]
 
 import io
 import sys
-import warnings
 
 
 class StdoutMute:
@@ -59,14 +58,5 @@ class StdoutMute:
             The type of the exception raised.
             Known to be not-None and Exception subtype when this method is called.
         """
-        # if a ModuleNotFoundError is raised,
-        # we suppress to a warning if "soft dependency" is in the error message
-        # otherwise, raise
-        if type is ModuleNotFoundError:
-            if "soft dependency" not in str(value):
-                return False
-            warnings.warn(str(value), ImportWarning, stacklevel=2)
-            return True
-
-        # all other exceptions are raised
+        # by default, all exceptions are raised
         return False
