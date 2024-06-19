@@ -1041,7 +1041,7 @@ class StdoutMuteNCatchMNF(StdoutMute):
         except catch and suppress ModuleNotFoundError.
     """
 
-    def _handle_exit_exceptions(self, type, value, traceback):
+    def _handle_exit_exceptions(self, type, value, traceback):  # noqa: A002
         """Handle exceptions raised during __exit__.
 
         Parameters

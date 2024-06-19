@@ -49,7 +49,7 @@ class StdoutMute:
         # return statement not needed as type was None, but included for clarity
         return True
 
-    def _handle_exit_exceptions(self, type, value, traceback):
+    def _handle_exit_exceptions(self, type, value, traceback):  # noqa: A002
         """Handle exceptions raised during __exit__.
 
         Parameters
