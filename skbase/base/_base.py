@@ -206,7 +206,7 @@ class BaseObject(_FlagManager):
         return parameters
 
     @classmethod
-    def get_param_names(cls, sort=None):
+    def get_param_names(cls, sort=True):
         """Get object's parameter names.
 
         Parameters
