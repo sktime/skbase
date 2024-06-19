@@ -334,7 +334,7 @@ def _import_module(
 
     # if suppress_import_stdout:
     # setup text trap, import
-    with StdoutMute(active=suppress_import_stdout):
+    with StdoutMuteNCatchMNF(active=suppress_import_stdout):
         if isinstance(module, str):
             imported_mod = importlib.import_module(module)
         elif isinstance(module, importlib.machinery.SourceFileLoader):
@@ -864,7 +864,7 @@ def all_objects(
         obj_types = _check_object_types(object_types, class_lookup)
 
     # Ignore deprecation warnings triggered at import time and from walking packages
-    with warnings.catch_warnings(), StdoutMute(active=suppress_import_stdout):
+    with warnings.catch_warnings(), StdoutMuteNCatchMNF(active=suppress_import_stdout):
         warnings.simplefilter("ignore", category=FutureWarning)
         warnings.simplefilter("module", category=ImportWarning)
         warnings.filterwarnings(
@@ -1022,6 +1022,45 @@ def _make_dataframe(all_objects, columns):
     import pandas as pd
 
     return pd.DataFrame(all_objects, columns=columns)
+
+
+class StdoutMuteNCatchMNF(StdoutMute):
+    """A context manager to suppress stdout.
+
+    This class is used to suppress stdout when importing modules.
+
+    Also downgrades any ModuleNotFoundError to a warning if the error message
+    contains the substring "soft dependency".
+
+    Parameters
+    ----------
+    active : bool, default=True
+        Whether to suppress stdout or not.
+        If True, stdout is suppressed.
+        If False, stdout is not suppressed, and the context manager does nothing
+        except catch and suppress ModuleNotFoundError.
+    """
+
+    def _handle_exit_exceptions(self, type, value, traceback):
+        """Handle exceptions raised during __exit__.
+
+        Parameters
+        ----------
+        type : type
+            The type of the exception raised.
+            Known to be not-None and Exception subtype when this method is called.
+        """
+        # if a ModuleNotFoundError is raised,
+        # we suppress to a warning if "soft dependency" is in the error message
+        # otherwise, raise
+        if type is ModuleNotFoundError:
+            if "soft dependency" not in str(value):
+                return False
+            warnings.warn(str(value), ImportWarning, stacklevel=2)
+            return True
+
+        # all other exceptions are raised
+        return False
 
 
 def _coerce_to_tuple(x):

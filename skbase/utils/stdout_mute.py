@@ -13,8 +13,8 @@ class StdoutMute:
 
     This class is used to suppress stdout when importing modules.
 
-    Also downgrades any ModuleNotFoundError to a warning if the error message
-    contains the substring "soft dependency".
+    Exception handling on exit can be customized by overriding
+    the ``_handle_exit_exceptions`` method.
 
     Parameters
     ----------
@@ -44,17 +44,29 @@ class StdoutMute:
             sys.stdout = self._stdout
 
         if type is not None:
-            # if a ModuleNotFoundError is raised,
-            # we suppress to a warning if "soft dependency" is in the error message
-            # otherwise, raise
-            if type is ModuleNotFoundError:
-                if "soft dependency" not in str(value):
-                    return False
-                warnings.warn(str(value), ImportWarning, stacklevel=2)
-                return True
+            return self._handle_exit_exceptions(type, value, traceback)
 
-            # all other exceptions are raised
-            return False
         # if no exception was raised, return True to indicate successful exit
         # return statement not needed as type was None, but included for clarity
         return True
+
+    def _handle_exit_exceptions(self, type, value, traceback):
+        """Handle exceptions raised during __exit__.
+
+        Parameters
+        ----------
+        type : type
+            The type of the exception raised.
+            Known to be not-None and Exception subtype when this method is called.
+        """
+        # if a ModuleNotFoundError is raised,
+        # we suppress to a warning if "soft dependency" is in the error message
+        # otherwise, raise
+        if type is ModuleNotFoundError:
+            if "soft dependency" not in str(value):
+                return False
+            warnings.warn(str(value), ImportWarning, stacklevel=2)
+            return True
+
+        # all other exceptions are raised
+        return False
