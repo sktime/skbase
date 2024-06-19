@@ -54,6 +54,7 @@ SKBASE_MODULES = (
     "skbase.utils.dependencies",
     "skbase.utils.dependencies._dependencies",
     "skbase.utils.random_state",
+    "skbase.utils.stdout_mute",
     "skbase.validate",
     "skbase.validate._named_objects",
     "skbase.validate._types",
@@ -79,6 +80,7 @@ SKBASE_PUBLIC_MODULES = (
     "skbase.utils.deep_equals",
     "skbase.utils.dependencies",
     "skbase.utils.random_state",
+    "skbase.utils.stdout_mute",
     "skbase.validate",
 )
 SKBASE_PUBLIC_CLASSES_BY_MODULE = {
@@ -99,13 +101,14 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
         "BaseMetaEstimatorMixin",
     ),
     "skbase.base._pretty_printing._pprint": ("KeyValTuple", "KeyValTupleParam"),
-    "skbase.lookup._lookup": ("StdoutMute",),
+    "skbase.lookup._lookup": ("StdoutMuteNCatchMNF",),
     "skbase.testing": ("BaseFixtureGenerator", "QuickTester", "TestAllObjects"),
     "skbase.testing.test_all_objects": (
         "BaseFixtureGenerator",
         "QuickTester",
         "TestAllObjects",
     ),
+    "skbase.utils.stdout_mute": ("StdoutMute",),
 }
 SKBASE_CLASSES_BY_MODULE = SKBASE_PUBLIC_CLASSES_BY_MODULE.copy()
 SKBASE_CLASSES_BY_MODULE.update(
