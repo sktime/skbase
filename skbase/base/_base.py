@@ -205,8 +205,6 @@ class BaseObject(_FlagManager):
                 )
         return parameters
 
-    # todo 0.10.0: changed sort default to False
-    # update docstring, and remove warning
     @classmethod
     def get_param_names(cls, sort=None):
         """Get object's parameter names.
