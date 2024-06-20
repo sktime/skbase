@@ -29,8 +29,10 @@ Core interface changes
 Contents
 --------
 
-* [ENH] option to return ``BaseObject.get_param_names`` in the same order as in the ``__init__`` (:pr:`335`) :user:`fkiraly`
-* [ENH] refactor - move ``StdoutMute`` context manager to ``utils`` (:pr:`338`) :user:`fkiraly`
+* [ENH] option to return ``BaseObject.get_param_names`` in the same order as in the
+  ``__init__`` (:pr:`335`) :user:`fkiraly`
+* [ENH] refactor - move ``StdoutMute`` context manager to ``utils``
+  (:pr:`338`) :user:`fkiraly`
 * [MNT] ``numpy 2`` compatibility of some tests (:pr:`337`) :user:`fkiraly`
 * [pre-commit.ci] pre-commit autoupdate  (:pr:`336`) :user:`pre-commit-ci`
 
