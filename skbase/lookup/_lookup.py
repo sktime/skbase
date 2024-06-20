@@ -16,12 +16,10 @@ all_objects(object_types, filter_tags)
 # https://github.com/sktime/sktime/blob/main/LICENSE
 import importlib
 import inspect
-import io
 import os
 import pathlib
 import pkgutil
 import re
-import sys
 import warnings
 from collections.abc import Iterable
 from copy import deepcopy
@@ -31,6 +29,7 @@ from types import ModuleType
 from typing import Any, List, Mapping, MutableMapping, Optional, Sequence, Tuple, Union
 
 from skbase.base import BaseObject
+from skbase.utils.stdout_mute import StdoutMute
 from skbase.validate import check_sequence
 
 __all__: List[str] = ["all_objects", "get_package_metadata"]
@@ -335,7 +334,7 @@ def _import_module(
 
     # if suppress_import_stdout:
     # setup text trap, import
-    with StdoutMute(active=suppress_import_stdout):
+    with StdoutMuteNCatchMNF(active=suppress_import_stdout):
         if isinstance(module, str):
             imported_mod = importlib.import_module(module)
         elif isinstance(module, importlib.machinery.SourceFileLoader):
@@ -865,7 +864,7 @@ def all_objects(
         obj_types = _check_object_types(object_types, class_lookup)
 
     # Ignore deprecation warnings triggered at import time and from walking packages
-    with warnings.catch_warnings(), StdoutMute(active=suppress_import_stdout):
+    with warnings.catch_warnings(), StdoutMuteNCatchMNF(active=suppress_import_stdout):
         warnings.simplefilter("ignore", category=FutureWarning)
         warnings.simplefilter("module", category=ImportWarning)
         warnings.filterwarnings(
@@ -1025,7 +1024,7 @@ def _make_dataframe(all_objects, columns):
     return pd.DataFrame(all_objects, columns=columns)
 
 
-class StdoutMute:
+class StdoutMuteNCatchMNF(StdoutMute):
     """A context manager to suppress stdout.
 
     This class is used to suppress stdout when importing modules.
@@ -1042,39 +1041,26 @@ class StdoutMute:
         except catch and suppress ModuleNotFoundError.
     """
 
-    def __init__(self, active=True):
-        self.active = active
+    def _handle_exit_exceptions(self, type, value, traceback):  # noqa: A002
+        """Handle exceptions raised during __exit__.
 
-    def __enter__(self):
-        """Context manager entry point."""
-        # capture stdout if active
-        # store the original stdout so it can be restored in __exit__
-        if self.active:
-            self._stdout = sys.stdout
-            sys.stdout = io.StringIO()
+        Parameters
+        ----------
+        type : type
+            The type of the exception raised.
+            Known to be not-None and Exception subtype when this method is called.
+        """
+        # if a ModuleNotFoundError is raised,
+        # we suppress to a warning if "soft dependency" is in the error message
+        # otherwise, raise
+        if type is ModuleNotFoundError:
+            if "soft dependency" not in str(value):
+                return False
+            warnings.warn(str(value), ImportWarning, stacklevel=2)
+            return True
 
-    def __exit__(self, type, value, traceback):  # noqa: A002
-        """Context manager exit point."""
-        # restore stdout if active
-        # if not active, nothing needs to be done, since stdout was not replaced
-        if self.active:
-            sys.stdout = self._stdout
-
-        if type is not None:
-            # if a ModuleNotFoundError is raised,
-            # we suppress to a warning if "soft dependency" is in the error message
-            # otherwise, raise
-            if type is ModuleNotFoundError:
-                if "soft dependency" not in str(value):
-                    return False
-                warnings.warn(str(value), ImportWarning, stacklevel=2)
-                return True
-
-            # all other exceptions are raised
-            return False
-        # if no exception was raised, return True to indicate successful exit
-        # return statement not needed as type was None, but included for clarity
-        return True
+        # all other exceptions are raised
+        return False
 
 
 def _coerce_to_tuple(x):
