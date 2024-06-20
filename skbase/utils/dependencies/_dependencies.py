@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Utility to check soft dependency imports, and raise warnings or errors."""
-import io
 import sys
 import warnings
 from importlib import import_module
@@ -9,6 +8,8 @@ from typing import List
 
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
+
+from skbase.utils.stdout_mute import StdoutMute
 
 __author__: List[str] = ["fkiraly", "mloning"]
 
@@ -130,12 +131,7 @@ def _check_soft_dependencies(
             package_import_name = package_name
         # attempt import - if not possible, we know we need to raise warning/exception
         try:
-            if suppress_import_stdout:
-                # setup text trap, import, then restore
-                sys.stdout = io.StringIO()
-                pkg_ref = import_module(package_import_name)
-                sys.stdout = sys.__stdout__
-            else:
+            with StdoutMute(active=suppress_import_stdout):
                 pkg_ref = import_module(package_import_name)
         # if package cannot be imported, make the user aware of installation requirement
         except ModuleNotFoundError as e:
