@@ -14,6 +14,27 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+
+[0.8.1] - 2024-06-20
+====================
+
+Regular bugfix and maintenance release.
+
+Core interface changes
+----------------------
+
+* ``get_param_names`` now allows users to return the parameter names in the same order
+  as in the`` ``__init__`` method, by passing the argument ``sort=False``.
+
+Contents
+--------
+
+* [ENH] option to return ``BaseObject.get_param_names`` in the same order as in the ``__init__`` (:pr:`335`) :user:`fkiraly`
+* [ENH] refactor - move ``StdoutMute`` context manager to ``utils`` (:pr:`338`) :user:`fkiraly`
+* [MNT] ``numpy 2`` compatibility of some tests (:pr:`337`) :user:`fkiraly`
+* [pre-commit.ci] pre-commit autoupdate  (:pr:`336`) :user:`pre-commit-ci`
+
+
 [0.8.0] - 2024-05-25
 ====================
 
