@@ -206,16 +206,29 @@ class BaseObject(_FlagManager):
         return parameters
 
     @classmethod
-    def get_param_names(cls):
+    def get_param_names(cls, sort=True):
         """Get object's parameter names.
+
+        Parameters
+        ----------
+        sort : bool, default=True
+            Whether to return the parameter names sorted in alphabetical order (True),
+            or in the order they appear in the class ``__init__`` (False).
 
         Returns
         -------
         param_names: list[str]
-            Alphabetically sorted list of parameter names of cls.
+            List of parameter names of cls.
+            If ``sort=False``, in same order as they appear in the class ``__init__``.
+            If ``sort=True``, alphabetically ordered.
         """
+        if sort is None:
+            sort = True
+
         parameters = cls._get_init_signature()
-        param_names = sorted([p.name for p in parameters])
+        param_names = [p.name for p in parameters]
+        if sort:
+            param_names = sorted(param_names)
         return param_names
 
     @classmethod
@@ -586,7 +599,7 @@ class BaseObject(_FlagManager):
             `create_test_instance` uses the first (or only) dictionary in `params`
         """
         params_with_defaults = set(cls.get_param_defaults().keys())
-        all_params = set(cls.get_param_names())
+        all_params = set(cls.get_param_names(sort=False))
         params_without_defaults = all_params - params_with_defaults
 
         # if non-default parameters are required, but none have been found, raise error

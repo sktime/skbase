@@ -706,16 +706,21 @@ def test_get_init_signature_raises_error_for_invalid_signature(
         fixture_invalid_init._get_init_signature()
 
 
+@pytest.mark.parametrize("sort", [True, False])
 def test_get_param_names(
     fixture_object: Type[BaseObject],
     fixture_class_parent: Type[Parent],
     fixture_class_parent_expected_params: Dict[str, Any],
+    sort: bool,
 ):
     """Test that get_param_names returns list of string parameter names."""
-    param_names = fixture_class_parent.get_param_names()
-    assert param_names == sorted([*fixture_class_parent_expected_params])
+    param_names = fixture_class_parent.get_param_names(sort=sort)
+    if sort:
+        assert param_names == sorted([*fixture_class_parent_expected_params])
+    else:
+        assert param_names == [*fixture_class_parent_expected_params]
 
-    param_names = fixture_object.get_param_names()
+    param_names = fixture_object.get_param_names(sort=sort)
     assert param_names == []
 
 
