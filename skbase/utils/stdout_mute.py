@@ -10,8 +10,6 @@ import sys
 class StdoutMute:
     """A context manager to suppress stdout.
 
-    This class is used to suppress stdout when importing modules.
-
     Exception handling on exit can be customized by overriding
     the ``_handle_exit_exceptions`` method.
 
