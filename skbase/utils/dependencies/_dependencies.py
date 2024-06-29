@@ -172,16 +172,6 @@ def _check_soft_dependencies(
                     f"Please run: `pip install {package}` to "
                     f"install the {package} package. "
                 )
-            elif msg is None:  # obj is not None, msg is None
-                msg = (
-                    f"{class_name} requires package '{package}' to be present "
-                    f"in the python environment, but '{package}' was not found. "
-                    f"'{package}' is a soft dependency and not included in the base "
-                    f"sktime installation. Please run: `pip install {package}` to "
-                    f"install the {package} package. "
-                    f"To install all soft dependencies, run: `pip install "
-                    f"sktime[all_extras]`"
-                )
             # if msg is not None, none of the above is executed,
             # so if msg is passed it overrides the default messages
 
