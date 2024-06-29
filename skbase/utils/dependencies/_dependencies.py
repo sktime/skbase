@@ -160,12 +160,17 @@ def _check_soft_dependencies(
         if pkg_spec is None:
             if obj is None and msg is None:
                 msg = (
-                    f"'{package}' not found. "
-                    f"'{package}' is a soft dependency and not included in the "
-                    f"base sktime installation. Please run: `pip install {package}` to "
+                    f"{class_name} requires package {package!r} to be present "
+                    f"in the python environment, but {package!r} was not found. "
+                )
+                if obj is not None:
+                    msg = msg + (
+                        f"{package!r} is a dependency of {class_name} and required "
+                        f"to construct it. "
+                    )
+                msg = msg + (
+                    f"Please run: `pip install {package}` to "
                     f"install the {package} package. "
-                    f"To install all soft dependencies, run: `pip install "
-                    f"sktime[all_extras]`"
                 )
             elif msg is None:  # obj is not None, msg is None
                 msg = (
