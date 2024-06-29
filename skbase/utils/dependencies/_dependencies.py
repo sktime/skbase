@@ -2,14 +2,14 @@
 """Utility to check soft dependency imports, and raise warnings or errors."""
 import sys
 import warnings
-from importlib import import_module
+from importlib.metadata import PackageNotFoundError, version
+from importlib.util import find_spec
 from inspect import isclass
 from typing import List
 
 from packaging.requirements import InvalidRequirement, Requirement
-from packaging.specifiers import InvalidSpecifier, SpecifierSet
-
-from skbase.utils.stdout_mute import StdoutMute
+from packaging.specifiers import InvalidSpecifier, Specifier, SpecifierSet
+from packaging.version import InvalidVersion, Version
 
 __author__: List[str] = ["fkiraly", "mloning"]
 
@@ -129,32 +129,44 @@ def _check_soft_dependencies(
             package_import_name = package_import_alias[package_name]
         else:
             package_import_name = package_name
-        # attempt import - if not possible, we know we need to raise warning/exception
-        try:
-            with StdoutMute(active=suppress_import_stdout):
-                pkg_ref = import_module(package_import_name)
-        # if package cannot be imported, make the user aware of installation requirement
-        except ModuleNotFoundError as e:
-            if msg is None:
+
+        # optimized branching to check presence of import
+        # and presence of package distribution
+        # first we check import, then we check distribution
+        # because try/except consumes more runtime
+        pkg_spec = find_spec(package_import_name)
+        if pkg_spec is not None:
+            try:
+                pkg_env_version = Version(version(package_name))
+            except (InvalidVersion, PackageNotFoundError):
+                pkg_spec = None
+
+        # if package not present, make the user aware of installation reqs
+        if pkg_spec is None:
+            if obj is None and msg is None:
                 msg = (
-                    f"{e}. "
-                    f"{class_name} requires package {package!r} to be present "
-                    f"in the python environment, but {package!r} was not found. "
-                )
-                if obj is not None:
-                    msg = msg + (
-                        f"{package!r} is a dependency of {class_name} and required "
-                        f"to construct it. "
-                    )
-                msg = msg + (
-                    f"Please run: `pip install {package}` to "
+                    f"'{package}' not found. "
+                    f"'{package}' is a soft dependency and not included in the "
+                    f"base sktime installation. Please run: `pip install {package}` to "
                     f"install the {package} package. "
+                    f"To install all soft dependencies, run: `pip install "
+                    f"sktime[all_extras]`"
+                )
+            elif msg is None:  # obj is not None, msg is None
+                msg = (
+                    f"{class_name} requires package '{package}' to be present "
+                    f"in the python environment, but '{package}' was not found. "
+                    f"'{package}' is a soft dependency and not included in the base "
+                    f"sktime installation. Please run: `pip install {package}` to "
+                    f"install the {package} package. "
+                    f"To install all soft dependencies, run: `pip install "
+                    f"sktime[all_extras]`"
                 )
             # if msg is not None, none of the above is executed,
             # so if msg is passed it overrides the default messages
 
             if severity == "error":
-                raise ModuleNotFoundError(msg) from e
+                raise ModuleNotFoundError(msg)
             elif severity == "warning":
                 warnings.warn(msg, stacklevel=2)
                 return False
@@ -165,12 +177,10 @@ def _check_soft_dependencies(
                     "Error in calling _check_soft_dependencies, severity "
                     'argument must be "error", "warning", or "none",'
                     f"found {severity!r}."
-                ) from e
+                )
 
         # now we check compatibility with the version specifier if non-empty
         if package_version_req != SpecifierSet(""):
-            pkg_env_version = pkg_ref.__version__
-
             msg = (
                 f"{class_name} requires package {package!r} to be present "
                 f"in the python environment, with version {package_version_req}, "
@@ -339,3 +349,37 @@ def _check_estimator_deps(obj, msg=None, severity="error"):
         compatible = compatible and pkg_deps_ok
 
     return compatible
+
+
+def _normalize_requirement(req):
+    """Normalize packaging Requirement by removing build metadata from versions.
+
+    Parameters
+    ----------
+    req : packaging.requirements.Requirement
+        requirement string to normalize, e.g., Requirement("pandas>1.2.3+foobar")
+
+    Returns
+    -------
+    normalized_req : packaging.requirements.Requirement
+        normalized requirement object with build metadata removed from versions,
+        e.g., Requirement("pandas>1.2.3")
+    """
+    # Process each specifier in the requirement
+    normalized_specs = []
+    for spec in req.specifier:
+        # Parse the version and remove the build metadata
+        spec_v = Version(spec.version)
+        version_wo_build_metadata = f"{spec_v.major}.{spec_v.minor}.{spec_v.micro}"
+
+        # Create a new specifier without the build metadata
+        normalized_spec = Specifier(f"{spec.operator}{version_wo_build_metadata}")
+        normalized_specs.append(normalized_spec)
+
+    # Reconstruct the specifier set
+    normalized_specifier_set = SpecifierSet(",".join(str(s) for s in normalized_specs))
+
+    # Create a new Requirement object with the normalized specifiers
+    normalized_req = Requirement(f"{req.name}{normalized_specifier_set}")
+
+    return normalized_req
