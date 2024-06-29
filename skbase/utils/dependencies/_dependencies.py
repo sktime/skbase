@@ -127,6 +127,7 @@ def _check_soft_dependencies(
     for package in packages:
         try:
             req = Requirement(package)
+            req = _normalize_requirement(req)
         except InvalidRequirement:
             msg_version = (
                 f"wrong format for package requirement string, "
