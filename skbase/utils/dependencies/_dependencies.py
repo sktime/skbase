@@ -182,19 +182,12 @@ def _check_soft_dependencies(
             # if msg is not None, none of the above is executed,
             # so if msg is passed it overrides the default messages
 
-            if severity == "error":
-                raise ModuleNotFoundError(msg)
-            elif severity == "warning":
-                warnings.warn(msg, stacklevel=2)
-                return False
-            elif severity == "none":
-                return False
-            else:
-                raise ValueError(
-                    "Error in calling _check_soft_dependencies, severity "
-                    'argument must be "error", "warning", or "none",'
-                    f"found {severity!r}."
-                )
+            _raise_at_severity(
+                msg,
+                severity=severity,
+                caller="_check_soft_dependencies",
+            )
+            return False
 
         # now we check compatibility with the version specifier if non-empty
         if package_version_req != SpecifierSet(""):
@@ -211,17 +204,12 @@ def _check_soft_dependencies(
 
             # raise error/warning or return False if version is incompatible
             if pkg_env_version not in package_version_req:
-                if severity == "error":
-                    raise ModuleNotFoundError(msg)
-                elif severity == "warning":
-                    warnings.warn(msg, stacklevel=2)
-                elif severity == "none":
-                    return False
-                else:
-                    raise ValueError(
-                        "Error in calling _check_soft_dependencies, severity argument"
-                        f' must be "error", "warning", or "none", found {severity!r}.'
-                    )
+                _raise_at_severity(
+                    msg,
+                    severity=severity,
+                    caller="_check_soft_dependencies",
+                )
+                return False
 
     # if package can be imported and no version issue was caught for any string,
     # then obj is compatible with the requirements and we should return True
@@ -333,18 +321,8 @@ def _check_python_version(obj, package=None, msg=None, severity="error"):
                 f" This is due to python version requirements of the {package} package."
             )
 
-    if severity == "error":
-        raise ModuleNotFoundError(msg)
-    elif severity == "warning":
-        warnings.warn(msg, stacklevel=2)
-    elif severity == "none":
-        return False
-    else:
-        raise RuntimeError(
-            "Error in calling _check_python_version, severity "
-            f'argument must be "error", "warning", or "none", found {severity!r}.'
-        )
-    return True
+    _raise_at_severity(msg, severity=severity, caller="_check_python_version")
+    return False
 
 
 def _check_estimator_deps(obj, msg=None, severity="error"):
@@ -443,3 +421,55 @@ def _normalize_requirement(req):
     normalized_req = Requirement(f"{req.name}{normalized_specifier_set}")
 
     return normalized_req
+
+
+def _raise_at_severity(
+    msg,
+    severity,
+    exception_type=None,
+    warning_type=None,
+    stacklevel=2,
+    caller="_raise_at_severity",
+):
+    """Raise exception or warning or take no action, based on severity.
+
+    Parameters
+    ----------
+    msg : str
+        message to raise or warn
+    severity : str, "error", "warning", or "none"
+        behaviour for raising errors or warnings
+    exception_type : Exception, default=ModuleNotFoundError
+        exception type to raise if severity="severity"
+    warning_type : warning, default=Warning
+        warning type to raise if severity="warning"
+    stacklevel : int, default=2
+        stacklevel for warnings, if severity="warning"
+    caller : str, default="_raise_at_severity"
+        caller name, used in exception if severity not in ["error", "warning", "none"]
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    exception : exception_type, if severity="error"
+    warning : warning+type, if severity="warning"
+    ValueError : if severity not in ["error", "warning", "none"]
+    """
+    if exception_type is None:
+        exception_type = ModuleNotFoundError
+
+    if severity == "error":
+        raise exception_type(msg)
+    elif severity == "warning":
+        warnings.warn(msg, category=warning_type, stacklevel=stacklevel)
+    elif severity == "none":
+        return None
+    else:
+        raise ValueError(
+            f"Error in calling {caller}, severity "
+            f'argument must be "error", "warning", or "none", found {severity!r}.'
+        )
+    return None
