@@ -125,7 +125,7 @@ def _check_soft_dependencies(
                 f'must be PEP 440 compatible requirement string, e.g., "pandas"'
                 f' or "pandas>1.1", but found {package!r}'
             )
-            raise InvalidRequirement(msg_version)
+            raise InvalidRequirement(msg_version) from None
 
         package_name = req.name
         package_version_req = req.specifier
@@ -279,7 +279,7 @@ def _check_python_version(obj, package=None, msg=None, severity="error"):
             f'must be PEP 440 compatible specifier string, e.g., "<3.9, >= 3.6.3",'
             f" but found {est_specifier_tag!r}"
         )
-        raise InvalidSpecifier(msg_version)
+        raise InvalidSpecifier(msg_version) from None
 
     # python sys version, e.g., "3.8.12"
     sys_version = sys.version.split(" ")[0]
@@ -354,9 +354,9 @@ def _check_env_marker(obj, package=None, msg=None, severity="error"):
         msg_version = (
             f"wrong format for env_marker tag, "
             f"must be PEP 508 compatible specifier string, e.g., "
-            f'platform_system!="windows", but found "{est_marker_tag}"'
+            f'platform_system!="windows", but found {est_marker_tag!r}'
         )
-        raise InvalidMarker(msg_version)
+        raise InvalidMarker(msg_version) from None
 
     if est_marker.evaluate():
         return True
