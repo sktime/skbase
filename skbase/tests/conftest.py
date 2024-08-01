@@ -251,7 +251,10 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
         "skbase.utils.dependencies._dependencies": (
             "_check_soft_dependencies",
             "_check_python_version",
+            "_check_env_marker",
             "_check_estimator_deps",
+            "_get_pkg_version",
+            "_get_installed_packages",
             "_normalize_requirement",
             "_raise_at_severity",
         ),
