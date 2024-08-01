@@ -58,8 +58,12 @@ def _check_soft_dependencies(
 
     Raises
     ------
+    InvalidRequirement
+        if package requirement strings are not PEP 440 compatible
     ModuleNotFoundError
         error with informative message, asking to install required soft dependencies
+    TypeError, ValueError
+        on invalid arguments
 
     Returns
     -------
@@ -116,7 +120,7 @@ def _check_soft_dependencies(
             req = _normalize_requirement(req)
         except InvalidRequirement:
             msg_version = (
-                f"wrong format for package requirement string "
+                f"wrong format for package requirement string, "
                 f"passed via packages argument of _check_soft_dependencies, "
                 f'must be PEP 440 compatible requirement string, e.g., "pandas"'
                 f' or "pandas>1.1", but found {package!r}'
