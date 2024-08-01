@@ -4,7 +4,6 @@ import sys
 import warnings
 from functools import lru_cache
 from importlib.metadata import distributions
-from importlib.util import find_spec
 from inspect import isclass
 
 from packaging.markers import InvalidMarker, Marker
