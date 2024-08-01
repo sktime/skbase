@@ -71,10 +71,10 @@ docs = [
     "numpydoc",
     "pydata-sphinx-theme",
     "sphinx-issues<5.0.0",
-    "sphinx-gallery<0.17.0",
+    "sphinx-gallery<0.18.0",
     "sphinx-panels",
     "sphinx-design<0.7.0",
-    "Sphinx<8.0.0,!=7.2.0",
+    "Sphinx!=7.2.0,<9.0.0",
     "tabulate",
 ]
 

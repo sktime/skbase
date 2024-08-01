@@ -252,6 +252,8 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_check_soft_dependencies",
             "_check_python_version",
             "_check_estimator_deps",
+            "_normalize_requirement",
+            "_raise_at_severity",
         ),
         "skbase.utils.random_state": (
             "check_random_state",
