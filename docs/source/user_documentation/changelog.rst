@@ -23,11 +23,14 @@ Regular maintenance release.
 Contents
 --------
 
-* [ENH] prevent imports in ``_check_soft_dependencies`` (:pr:`340`) :user:`fkiraly`, :user:`yarnabrina`
+* [ENH] prevent imports in ``_check_soft_dependencies``
+  (:pr:`340`) :user:`fkiraly`, :user:`yarnabrina`
 * [ENH] sync dependency checkers with ``sktime`` (:pr:`345`) :user:`fkiraly`
 * [pre-commit.ci] pre-commit autoupdate (:pr:`342`) :user:`pre-commit-ci`
-* [MNT] [Dependabot](deps): Update ``sphinx-gallery`` requirement from ``<0.17.0`` to ``<0.18.0`` (:pr:`343`) :user:`dependabot`
-* [MNT] [Dependabot](deps): Update ``sphinx`` requirement from ``!=7.2.0,<8.0.0`` to ``!=7.2.0,<9.0.0`` (:pr:`344`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Update ``sphinx-gallery`` requirement
+  from ``<0.17.0`` to ``<0.18.0`` (:pr:`343`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Update ``sphinx`` requirement
+  from ``!=7.2.0,<8.0.0`` to ``!=7.2.0,<9.0.0`` (:pr:`344`) :user:`dependabot`
 
 
 [0.8.1] - 2024-06-20
