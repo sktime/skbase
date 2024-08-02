@@ -31,6 +31,14 @@ Contents
   from ``<0.17.0`` to ``<0.18.0`` (:pr:`343`) :user:`dependabot`
 * [MNT] [Dependabot](deps): Update ``sphinx`` requirement
   from ``!=7.2.0,<8.0.0`` to ``!=7.2.0,<9.0.0`` (:pr:`344`) :user:`dependabot`
+* [MNT] Move release CI to macos-12 image (:pr:`347`) :user:`szepeviktor`
+
+Contributors
+------------
+
+:user:`fkiraly`,
+:user:`szepeviktor`,
+:user:`yarnabrina`
 
 
 [0.8.1] - 2024-06-20
