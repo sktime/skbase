@@ -54,6 +54,7 @@ SKBASE_MODULES = (
     "skbase.utils.dependencies",
     "skbase.utils.dependencies._dependencies",
     "skbase.utils.random_state",
+    "skbase.utils.stderr_mute",
     "skbase.utils.stdout_mute",
     "skbase.validate",
     "skbase.validate._named_objects",
@@ -80,6 +81,7 @@ SKBASE_PUBLIC_MODULES = (
     "skbase.utils.deep_equals",
     "skbase.utils.dependencies",
     "skbase.utils.random_state",
+    "skbase.utils.stderr_mute",
     "skbase.utils.stdout_mute",
     "skbase.validate",
 )
@@ -108,6 +110,7 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
         "QuickTester",
         "TestAllObjects",
     ),
+    "skbase.utils.stderr_mute": ("StderrMute",),
     "skbase.utils.stdout_mute": ("StdoutMute",),
 }
 SKBASE_CLASSES_BY_MODULE = SKBASE_PUBLIC_CLASSES_BY_MODULE.copy()
