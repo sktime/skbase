@@ -187,6 +187,15 @@ def _get_installed_packages_private():
     by accident.
     """
     dists = distributions()
+    # we reverse the list to deal with the case where multiple distributions
+    # of the same package are installed, for instance in deployment setups
+    # with a base environment that has a certain version, that is overridden
+    # by a more recent version in a virtual environment, e.g., on databricks
+    #
+    # in this case, the *first* occurrence of the package in the list is the one
+    # that gets imported, not the last. Thus, for correct version checking,
+    # we need to reverse the list.
+    dists = reversed(list(dists))  # cast to list because chain is not reversible
     packages = {dist.metadata["Name"]: dist.version for dist in dists}
     return packages
 
