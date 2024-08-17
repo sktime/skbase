@@ -1293,18 +1293,22 @@ class BaseEstimator(BaseObject):
             attr for attr in dir(obj) if attr.endswith("_") and not attr.startswith("_")
         ]
 
-        def hasattr_safe(obj, attr):
+        def getattr_safe(obj, attr):
             try:
                 if hasattr(obj, attr):
-                    getattr(obj, attr)
-                    return True
+                    attr = getattr(obj, attr)
+                    return attr, True
             except Exception:
-                return False
+                return None, False
 
-        # remove the "_" at the end
-        fitted_param_dict = {
-            p[:-1]: getattr(obj, p) for p in fitted_params if hasattr_safe(obj, p)
-        }
+        fitted_param_dict = {}
+
+        for p in fitted_params:
+            attr, success = getattr_safe(obj, p)
+            if not success:
+                continue
+            p_name = p[:-1]  # remove the "_" at the end to get the parameter name
+            fitted_param_dict[p_name] = attr
 
         return fitted_param_dict
 
