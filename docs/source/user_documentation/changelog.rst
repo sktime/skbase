@@ -22,11 +22,14 @@ Regular maintenance release.
 Contents
 --------
 
-* [MNT] release workflow: Upgrade deprecated pypa action parameter (:pr:`349`) :user:`szepeviktor`
+* [MNT] release workflow: Upgrade deprecated pypa action parameter
+  (:pr:`349`) :user:`szepeviktor`
 * [MNT] pre-commit autoupdate by (:pr:`353`) :user:`pre-commit-ci`
 * [ENH] StderrMute context manager (:pr:`350`) :user:`XinyuWuu`
-* [BUG] fix dependency checkers in case of multiple distributions available in environment, e.g., on databricks (:pr:`352`) :user:`fkiraly`, :user:`toandaominh1997`
-* [ENH] safer ``get_fitted_params`` default functionality to avoid exception on ``getattr`` (:pr:`353`) :user:`fkiraly`
+* [BUG] fix dependency checkers in case of multiple distributions available in
+  environment, e.g., on databricks (:pr:`352`) :user:`fkiraly`, :user:`toandaominh1997`
+* [ENH] safer ``get_fitted_params`` default functionality to avoid exception
+  on ``getattr`` (:pr:`353`) :user:`fkiraly`
 
 Contributors
 ------------
