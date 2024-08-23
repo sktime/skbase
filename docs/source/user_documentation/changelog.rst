@@ -41,6 +41,7 @@ Deprecations and removals
 Contents
 --------
 
+* [MNT] 0.9.0 deprecations and change actions (:pr:`355`) :user:`fkiraly`
 
 
 [0.8.3] - 2024-08-23
