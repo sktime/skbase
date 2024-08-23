@@ -14,6 +14,36 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+
+[0.9.0] - 2024-08-23
+====================
+
+Maintenance release with scheduled changes and deprecations.
+
+Deprecations and removals
+-------------------------
+
+* In ``all_objects``, the meaning of ``filter_tags`` arguments ot type ``str``,
+  and iterable of ``str``, has changed as scheduled.
+  Prior to 0.9.0, ``str`` or iterable of ``str`` arguments
+  selected objects that possess the
+  tag(s) with the specified name, of any value.
+  From 0.9.0 onwards, ``str`` or iterable of ``str``
+  will select objects that possess the tag with the specified name,
+  with the value ``True`` (boolean). See ``scikit-base`` issue #326 for the rationale
+  behind this change.
+  To retain previous behaviour, that is,
+  to select objects that possess the tag with the specified name, of any value,
+  use a ``dict`` with the tag name as key, and ``re.Pattern('*?')`` as value.
+  That is, ``from re import Pattern``, and pass ``{tag_name: Pattern('*?')}``
+  as ``filter_tags``, and similarly with multiple tag names.
+
+Contents
+--------
+
+* [MNT] 0.9.0 deprecations and change actions (:pr:`355`) :user:`fkiraly`
+
+
 [0.8.3] - 2024-08-23
 ====================
 
