@@ -1292,10 +1292,47 @@ class BaseEstimator(BaseObject):
         fitted_params = [
             attr for attr in dir(obj) if attr.endswith("_") and not attr.startswith("_")
         ]
-        # remove the "_" at the end
-        fitted_param_dict = {
-            p[:-1]: getattr(obj, p) for p in fitted_params if hasattr(obj, p)
-        }
+
+        def getattr_safe(obj, attr):
+            """Get attribute of object, safely.
+
+            Safe version of getattr, that returns None if attribute does not exist,
+            or if an exception is raised during getattr.
+            Also returns a boolean indicating whether the attribute was successfully
+            retrieved, to distinguish between None value and non-existent attribute,
+            or exception during getattr.
+
+            Parameters
+            ----------
+            obj : any object
+                object to get attribute from
+            attr : str
+                attribute name to get from obj
+
+            Returns
+            -------
+            attr : Any
+                attribute of obj, if it exists and does not raise on getattr;
+                otherwise None
+            success : bool
+                whether the attribute was successfully retrieved
+            """
+            try:
+                if hasattr(obj, attr):
+                    attr = getattr(obj, attr)
+                    return attr, True
+                else:
+                    return None, False
+            except Exception:
+                return None, False
+
+        fitted_param_dict = {}
+
+        for p in fitted_params:
+            attr, success = getattr_safe(obj, p)
+            if success:
+                p_name = p[:-1]  # remove the "_" at the end to get the parameter name
+                fitted_param_dict[p_name] = attr
 
         return fitted_param_dict
 
