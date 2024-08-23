@@ -203,46 +203,16 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
     if not hasattr(obj, "get_class_tag"):
         return False
 
-    klass_tags = obj.get_class_tags().keys()
-
-    # todo 0.9.0: remove the warning message
-    # i.e., this message and all warnings referring to it
-    warn_msg = (
-        "The meaning of filter_tags arguments in all_objects of type str "
-        "and iterable of str will change from scikit-base 0.9.0. "
-        "Currently, str or iterable of str arguments select objects that possess the "
-        "tag(s) with the specified name, of any value. "
-        "From 0.9.0 onwards, str or iterable of str "
-        "will select objects that possess the tag with the specified name, "
-        "with the value True (boolean). See scikit-base issue #326 for the rationale "
-        "behind this change. "
-        "To retain previous behaviour, that is, "
-        "to select objects that possess the tag with the specified name, of any value, "
-        "use a dict with the tag name as key, and re.Pattern('*?') as value. "
-        "That is, from re import Pattern, and pass {tag_name: Pattern('*?')} "
-        "as filter_tags, and similarly with multiple tag names. "
-    )
-
     # case: tag_filter is string
     if isinstance(tag_filter, str):
-        # todo 0.9.0: reomove this warning
-        warnings.warn(warn_msg, DeprecationWarning, stacklevel=2)
-        # todo 0.9.0: replace this line
-        return tag_filter in klass_tags
-        # by this line
-        # tag_filter = {tag_filter: True}
+        tag_filter = {tag_filter: True}
 
     # case: tag_filter is iterable of str but not dict
     # If a iterable of strings is provided, check that all are in the returned tag_dict
     if isinstance(tag_filter, Iterable) and not isinstance(tag_filter, dict):
         if not all(isinstance(t, str) for t in tag_filter):
             raise ValueError(f"{type_msg} {tag_filter}")
-        # todo 0.9.0: reomove this warning
-        warnings.warn(warn_msg, DeprecationWarning, stacklevel=2)
-        # todo 0.9.0: replace this line
-        return all(tag in klass_tags for tag in tag_filter)
-        # by this line
-        # tag_filter = {tag: True for tag in tag_filter}
+        tag_filter = dict.fromkeys(tag_filter, True)
 
     # case: tag_filter is dict
     # check that all keys are str
@@ -712,8 +682,6 @@ def get_package_metadata(
     return module_info
 
 
-# todo 0.9.0: change docstring to reflect handling of filter_tags
-# in case of str or iterable of str
 def all_objects(
     object_types=None,
     filter_tags=None,
@@ -760,7 +728,9 @@ def all_objects(
         Filter used to determine if ``klass`` has tag or expected tag values.
 
         - If a str or list of strings is provided, the return will be filtered
-          to keep classes that have all the tag(s) specified by the strings.
+          to keep classes that have all the tag(s) specified by the strings,
+          with the tag value being True.
+
         - If a dict is provided, the return will be filtered to keep exactly the classes
           where tags satisfy all the filter conditions specified by ``filter_tags``.
           Filter conditions are as follows, for ``tag_name: search_value`` pairs in
