@@ -314,3 +314,19 @@ class Child(Parent):
     def some_other_method(self):
         """To be implemented in the child class."""
         pass
+
+
+# Fixture class for testing tag system, child overrides tags
+class ClassWithABTrue(Parent):
+    """Child class that sets A, B tags to True."""
+
+    _tags = {"A": True, "B": True}
+    __author__ = ["fkiraly", "RNKuhns"]
+
+    def some_method(self):
+        """Child class' implementation."""
+        pass
+
+    def some_other_method(self):
+        """To be implemented in the child class."""
+        pass

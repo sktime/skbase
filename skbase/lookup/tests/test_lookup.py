@@ -35,6 +35,7 @@ from skbase.tests.conftest import (
     SKBASE_PUBLIC_CLASSES_BY_MODULE,
     SKBASE_PUBLIC_FUNCTIONS_BY_MODULE,
     SKBASE_PUBLIC_MODULES,
+    ClassWithABTrue,
     Parent,
 )
 from skbase.tests.mock_package.test_mock_package import (
@@ -374,18 +375,18 @@ def test_filter_by_tags():
     assert _filter_by_tags(NotABaseObject) is True
 
     # Check when tag_filter is a str and present in the class
-    assert _filter_by_tags(Parent, tag_filter="A") is True
+    assert _filter_by_tags(ClassWithABTrue, tag_filter="A") is True
     # Check when tag_filter is str and not present in the class
-    assert _filter_by_tags(BaseObject, tag_filter="A") is False
+    assert _filter_by_tags(Parent, tag_filter="A") is False
 
     # Test functionality when tag present and object doesn't have tag interface
     assert _filter_by_tags(NotABaseObject, tag_filter="A") is False
 
     # Test functionality where tag_filter is Iterable of str
     # all tags in iterable are in the class
-    assert _filter_by_tags(Parent, ("A", "B", "C")) is True
+    assert _filter_by_tags(ClassWithABTrue, ("A", "B")) is True
     # Some tags in iterable are in class and others aren't
-    assert _filter_by_tags(Parent, ("A", "B", "C", "D", "E")) is False
+    assert _filter_by_tags(ClassWithABTrue, ("A", "B", "C", "D", "E")) is False
 
     # Test functionality where tag_filter is Dict[str, Any]
     # All keys in dict are in tag_filter and values all match
