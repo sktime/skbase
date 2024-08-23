@@ -212,7 +212,7 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
     if isinstance(tag_filter, Iterable) and not isinstance(tag_filter, dict):
         if not all(isinstance(t, str) for t in tag_filter):
             raise ValueError(f"{type_msg} {tag_filter}")
-        tag_filter = {tag: True for tag in tag_filter}
+        tag_filter = dict.fromkeys(tag_filter, True)
 
     # case: tag_filter is dict
     # check that all keys are str
