@@ -1,6 +1,6 @@
 [project]
 name = "scikit-base"
-version = "0.8.3"
+version = "0.9.0"
 description = "Base classes for sklearn-like parametric objects"
 authors = [
     {name = "sktime developers", email = "sktime.toolbox@gmail.com"},
