@@ -81,7 +81,7 @@ repos:
         additional_dependencies: ["bandit[toml]"]
 
   - repo: https://github.com/PyCQA/doc8
-    rev: v1.1.1
+    rev: v1.1.2
     hooks:
       - id: doc8
         args: ["--max-line-length=88", "--config=pyproject.toml", "docs"]
