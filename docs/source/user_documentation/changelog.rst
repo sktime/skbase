@@ -23,7 +23,19 @@ Maintenance release with scheduled changes and deprecations.
 Contents
 --------
 
+* [pre-commit.ci] pre-commit autoupdate (:pr:`358`) :user:`pre-commit-ci`
+* [ENH] add test that html repr of objects does not crash (:pr:`359`) :user:`fkiraly`
+* [ENH] ``clone`` method to handle nested ``dict`` (:pr:`362`) :user:`fkiraly`
+* [DOC] Replace use of "estimator" term in base object interfaces
+  with more general references (:pr:`293`) :user:`tpvasconcelos`
 * [MNT] 0.10.0 deprecations and change actions (:pr:`360`) :user:`fkiraly`
+
+Contributors
+------------
+
+:user:`fkiraly`,
+:user:`tpvasconcelos`
+
 
 [0.9.0] - 2024-08-23
 ====================
