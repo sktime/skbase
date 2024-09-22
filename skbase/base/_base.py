@@ -144,10 +144,10 @@ class BaseObject(_FlagManager):
         return self
 
     def clone(self):
-        """Obtain a clone of the object with same parameters and config.
+        """Obtain a clone of the object with same hyper-parameters and config.
 
         A clone is a different object without shared references, in post-init state.
-        This function behaves similarly to returning a sklearn clone of self.
+        This function is equivalent to returning ``sklearn.clone`` of ``self``.
 
         Raises
         ------
@@ -277,7 +277,7 @@ class BaseObject(_FlagManager):
     def set_params(self, **params):
         """Set the parameters of this object.
 
-        The method works on simple objects as well as on composite objects.
+        The method works on simple skbase objects as well as on composite objects.
         Parameter key strings ``<component>__<parameter>`` can be used for composites,
         i.e., objects that contain other objects, to access ``<parameter>`` in
         the component ``<component>``.
@@ -447,7 +447,7 @@ class BaseObject(_FlagManager):
         )
 
     def get_tags(self):
-        """Get tags from object class and dynamic tag overrides.
+        """Get tags from skbase class and dynamic tag overrides.
 
         Returns
         -------
@@ -569,7 +569,7 @@ class BaseObject(_FlagManager):
 
     @classmethod
     def get_test_params(cls, parameter_set="default"):
-        """Return testing parameter settings for the object.
+        """Return testing parameter settings for the skbase object.
 
         Parameters
         ----------
@@ -592,7 +592,7 @@ class BaseObject(_FlagManager):
         # if non-default parameters are required, but none have been found, raise error
         if len(params_without_defaults) > 0:
             raise ValueError(
-                f"{cls} has parameters without default values, "
+                f"skbase object {cls} has parameters without default values, "
                 f"but these are not set in get_test_params. "
                 f"Please set them in get_test_params, or provide default values. "
                 f"Also see the respective extension template, if applicable."
@@ -605,7 +605,7 @@ class BaseObject(_FlagManager):
 
     @classmethod
     def create_test_instance(cls, parameter_set="default"):
-        """Construct a BaseObject instance if possible.
+        """Construct an instance of the class, using first test parameter set.
 
         Parameters
         ----------
@@ -896,7 +896,7 @@ class BaseObject(_FlagManager):
         These integers are sampled from chain hashing via ``sample_dependent_seed``,
         and guarantee pseudo-random independence of seeded random generators.
 
-        Applies to ``random_state`` parameters in self depending on
+        Applies to ``random_state`` parameters in ``self``, depending on
         ``self_policy``, and remaining component objects
         if and only if ``deep=True``.
 
@@ -912,9 +912,12 @@ class BaseObject(_FlagManager):
             integers. Pass int for reproducible output across multiple function calls.
 
         deep : bool, default=True
-            Whether to set the random state in sub-objects.
-            If False, will set only ``self``'s ``random_state`` parameter, if exists.
-            If True, will set ``random_state`` parameters in sub-objects as well.
+            Whether to set the random state in skbase object valued parameters, i.e.,
+            component estimators.
+
+            * If False, will set only ``self``'s ``random_state`` parameter, if exists.
+            * If True, will set ``random_state`` parameters in component objects
+              as well.
 
         self_policy : str, one of {"copy", "keep", "new"}, default="copy"
 
@@ -972,7 +975,21 @@ class TagAliaserMixin:
 
     @classmethod
     def get_class_tags(cls):
-        """Get class tags from a base object class and all its parent classes.
+        """Get class tags from class, with tag level inheritance from parent classes.
+
+        Every ``scikit-base`` compatible class has a set of tags,
+        which are used to store metadata about the object.
+
+        This is a class method, and retrieves tags applicable to the class,
+        with tag level overrides in the following order of decreasing priority:
+
+        1. class tags of the class, of which the object is an instance
+        2. class tags of all parent classes, in method resolution order
+
+        Instances can override these tags depending on hyper-parameters.
+
+        To retrieve tags with potential instance overrides, use
+        the ``get_tags`` method instead.
 
         Returns
         -------
@@ -987,7 +1004,22 @@ class TagAliaserMixin:
 
     @classmethod
     def get_class_tag(cls, tag_name, tag_value_default=None):
-        """Get tag value from a base object class (only class tags).
+        """Get class tag value from class, with tag level inheritance from parents.
+
+        Every ``scikit-base`` compatible class has a set of tags,
+        which are used to store metadata about the object.
+
+        This is a class method, and retrieves the value of a tag applicable
+        to the class,
+        with tag level overrides in the following order of decreasing priority:
+
+        1. class tags of the class, of which the object is an instance
+        2. class tags of all parent classes, in method resolution order
+
+        Instances can override these tags depending on hyper-parameters.
+
+        To retrieve tag values with potential instance overrides, use
+        the ``get_tag`` method instead.
 
         Parameters
         ----------
@@ -1008,7 +1040,17 @@ class TagAliaserMixin:
         )
 
     def get_tags(self):
-        """Get tags from a base object class and dynamic tag overrides.
+        """Get tags from instance, with tag level inheritance and overrides.
+
+        Every ``scikit-base`` compatible object has a set of tags,
+        which are used to store metadata about the object.
+
+        This method retrieves all tags as a dictionary, with tag level overrides in the
+        following order of decreasing priority:
+
+        1. dynamic tags set at construction, e.g., dependent on hyper-parameters
+        2. class tags of the class, of which the object is an instance
+        3. class tags of all parent classes, in method resolution order
 
         Returns
         -------
@@ -1022,7 +1064,17 @@ class TagAliaserMixin:
         return collected_tags
 
     def get_tag(self, tag_name, tag_value_default=None, raise_error=True):
-        """Get tag value from a base object class and dynamic tag overrides.
+        """Get tag value from instance, with tag level inheritance and overrides.
+
+        Every ``scikit-base`` compatible object has a set of tags,
+        which are used to store metadata about the object.
+
+        This method retrieves the value of a single tag, with tag level overrides in the
+        following order of decreasing priority:
+
+        1. dynamic tags set at construction, e.g., dependent on hyper-parameters
+        2. class tags of the class, of which the object is an instance
+        3. class tags of all parent classes, in method resolution order
 
         Parameters
         ----------
