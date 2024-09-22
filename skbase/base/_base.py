@@ -696,10 +696,10 @@ class BaseObject(_FlagManager):
         try:
             return cls(**params)
         except Exception as e:
-            raise ValueError(
+            raise type(e)(
                 f"Error in {cls.__name__}.get_test_params, "
                 "return must be valid param dict for class, or list thereof, "
-                "but attempted contsruction raised a exception. "
+                "but attempted construction raised a exception. "
                 f"Problematic parameter set: {params}. Exception raised: {e}"
             ) from e
 
