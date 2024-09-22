@@ -16,7 +16,7 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 
 
 [0.10.0] - 2024-09-22
-====================
+=====================
 
 Maintenance release with scheduled changes and deprecations.
 
