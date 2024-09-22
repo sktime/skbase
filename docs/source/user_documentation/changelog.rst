@@ -15,6 +15,16 @@ You can also subscribe to ``skbase``'s
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
 
+[0.10.0] - 2024-09-22
+=====================
+
+Maintenance release with scheduled changes and deprecations.
+
+Contents
+--------
+
+* [MNT] 0.10.0 deprecations and change actions (:pr:`360`) :user:`fkiraly`
+
 [0.9.0] - 2024-08-23
 ====================
 
