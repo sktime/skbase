@@ -1350,61 +1350,60 @@ class BaseEstimator(BaseObject):
 
 
 # Adapted from sklearn's `_clone_parametrized()`
-def _clone(obj, *, safe=True):
-    """Construct a new object with the same parameters and config.
+def _clone(estimator, *, safe=True):
+    """Construct a new unfitted estimator with the same parameters.
 
-    Clone does a deep copy of the parameters and config values in
-    a base object instance.
+    Clone does a deep copy of the model in an estimator
+    without actually copying attached data. It returns a new estimator
+    with the same parameters that has not been fitted on any data.
 
     Parameters
     ----------
-    obj : {list, tuple, set} instances of base objects or a single \
-            base object instance
-        The object or group of objects to clone.
+    estimator : {list, tuple, set} of estimator instance or a single \
+            estimator instance
+        The estimator or group of estimators to be cloned.
     safe : bool, default=True
         If safe is False, clone will fall back to a deep copy on objects
-        that do not have a `get_params` method.
+        that are not estimators.
 
     Returns
     -------
-    cloned_obj : {list, tuple, set} instances of base objects or a single \
-            base object instance
-        The object or group of objects with the same parameters and config
-        as the original object.
+    estimator : object
+        The deep copy of the input, an estimator if input is an estimator.
 
     Notes
     -----
-    If the object's `random_state` parameter is an integer (or if the
-    object doesn't have a `random_state` parameter), an *exact clone* is
-    returned: the clone and the original object will give the exact same
+    If the estimator's `random_state` parameter is an integer (or if the
+    estimator doesn't have a `random_state` parameter), an *exact clone* is
+    returned: the clone and the original estimator will give the exact same
     results. Otherwise, *statistical clone* is returned: the clone might
-    return different results from the original object. More details can be
+    return different results from the original estimator. More details can be
     found in :ref:`randomness`.
     """
-    obj_type = type(obj)
+    estimator_type = type(estimator)
     # XXX: not handling dictionaries
-    if obj_type in (list, tuple, set, frozenset):
-        return obj_type(_clone(e, safe=safe) for e in obj)
-    if not hasattr(obj, "get_params") or isinstance(obj, type):
+    if estimator_type in (list, tuple, set, frozenset):
+        return estimator_type([_clone(e, safe=safe) for e in estimator])
+    elif not hasattr(estimator, "get_params") or isinstance(estimator, type):
         if not safe:
-            return deepcopy(obj)
+            return deepcopy(estimator)
         else:
-            if isinstance(obj, type):
+            if isinstance(estimator, type):
                 raise TypeError(
                     "Cannot clone object. "
                     + "You should provide an instance of "
-                    + "`BaseObject` instead of a class."
+                    + "scikit-learn estimator instead of a class."
                 )
             else:
                 raise TypeError(
                     "Cannot clone object '%s' (type %s): "
-                    "it does not seem to be a BaseObject "
-                    "instance as it does not implement a "
-                    "'get_params' method." % (repr(obj), type(obj))
+                    "it does not seem to be a scikit-learn "
+                    "estimator as it does not implement a "
+                    "'get_params' method." % (repr(estimator), type(estimator))
                 )
 
-    klass = obj.__class__
-    new_object_params = obj.get_params(deep=False)
+    klass = estimator.__class__
+    new_object_params = estimator.get_params(deep=False)
     for name, param in new_object_params.items():
         new_object_params[name] = _clone(param, safe=False)
     new_object = klass(**new_object_params)
@@ -1417,12 +1416,12 @@ def _clone(obj, *, safe=True):
         if param1 is not param2:
             raise RuntimeError(
                 "Cannot clone object %s, as the constructor "
-                "either does not set or modifies parameter %s" % (obj, name)
+                "either does not set or modifies parameter %s" % (estimator, name)
             )
 
     # This is an extension to the original sklearn implementation
-    if isinstance(obj, BaseObject) and obj.get_config()["clone_config"]:
-        new_object.set_config(**obj.get_config())
+    if isinstance(estimator, BaseObject) and estimator.get_config()["clone_config"]:
+        new_object.set_config(**estimator.get_config())
 
     return new_object
 
@@ -1430,20 +1429,21 @@ def _clone(obj, *, safe=True):
 def _check_clone(original, clone):
     from skbase.utils.deep_equals import deep_equals
 
-    original_params = original.get_params(deep=False)
+    self_params = original.get_params(deep=False)
 
     # check that all attributes are written to the clone
-    for attrname in original_params.keys():
+    for attrname in self_params.keys():
         if not hasattr(clone, attrname):
             raise RuntimeError(
                 f"error in {original}.clone, __init__ must write all arguments "
                 f"to self and not mutate them, but {attrname} was not found. "
                 f"Please check __init__ of {original}."
             )
-    clone_params = {attr: getattr(clone, attr) for attr in original_params.keys()}
+
+    clone_attrs = {attr: getattr(clone, attr) for attr in self_params.keys()}
 
     # check equality of parameters post-clone and pre-clone
-    clone_attrs_valid, msg = deep_equals(original_params, clone_params, return_msg=True)
+    clone_attrs_valid, msg = deep_equals(self_params, clone_attrs, return_msg=True)
     if not clone_attrs_valid:
         raise RuntimeError(
             f"error in {original}.clone, __init__ must write all arguments "
