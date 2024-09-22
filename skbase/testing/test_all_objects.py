@@ -736,8 +736,12 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             assert not obj_clone.is_fitted
 
     def test_repr(self, object_instance):
-        """Check we can call repr."""
+        """Check that __repr__ call to instance does not raise exceptions."""
         repr(object_instance)
+
+    def test_repr_html(self, object_instance):
+        """Check that _repr_html_ call to instance does not raise exceptions."""
+        object_instance._repr_html_()
 
     def test_constructor(self, object_class):
         """Check that the constructor has sklearn compatible signature and behaviour.
