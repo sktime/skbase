@@ -87,7 +87,7 @@ test = [
     "numpy",
     "scipy",
     "pandas",
-    "scikit-learn>=0.24.0",
+    'scikit-learn>=0.24.0; python_version < "3.13" or sys_platform != "win32"',
 ]
 
 [project.urls]
