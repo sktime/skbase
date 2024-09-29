@@ -14,6 +14,21 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.10.1] - 2024-09-29
+=====================
+
+Maintenance release with experimental python 3.13 wheels.
+Full 3.13 support will be added with ``scikit-base 0.11.0``.
+
+Contents
+--------
+
+* [pre-commit.ci] pre-commit autoupdate (:pr:`364`) :user:`pre-commit-ci`
+* [MNT] updates ``scikit-learn`` soft dependency checks to use PEP 440 name
+  (:pr:`366`) :user:`fkiraly`
+* [MNT] experimental python ``3.13`` wheels and ``3.13-rc.2`` testing
+  (:pr:`365`) :user:`fkiraly`
+
 
 [0.10.0] - 2024-09-22
 =====================
