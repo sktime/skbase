@@ -71,9 +71,7 @@ if _check_soft_dependencies("pandas", severity="none"):
 
     EXAMPLES += [X]
 
-if _check_soft_dependencies(
-    "scikit-learn", package_import_alias={"scikit-learn": "sklearn"}, severity="none"
-):
+if _check_soft_dependencies("scikit-learn", severity="none"):
     from sklearn.ensemble import RandomForestRegressor
 
     EXAMPLES += [RandomForestRegressor()]
@@ -115,16 +113,12 @@ def test_deep_equals_negative(fixture1, fixture2):
 def copy_except_if_sklearn(obj):
     """Copy obj if it is not a scikit-learn estimator.
 
-    We use this functoin as deep_copy should return True for
+    We use this function as deep_copy should return True for
     identical sklearn estimators, but False for different copies.
 
     This is the current status quo, possibly we want to change this in the future.
     """
-    if not _check_soft_dependencies(
-        "scikit-learn",
-        package_import_alias={"scikit-learn": "sklearn"},
-        severity="none",
-    ):
+    if not _check_soft_dependencies("scikit-learn", severity="none"):
         return deepcopy(obj)
     else:
         from sklearn.base import BaseEstimator
