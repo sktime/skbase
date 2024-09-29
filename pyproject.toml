@@ -31,15 +31,16 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
-requires-python = ">=3.8,<3.13"
+requires-python = ">=3.8,<3.14"
 dependencies = []
 
 [project.optional-dependencies]
 all_extras = ["numpy", "pandas"]
 
 dev = [
-    "scikit-learn>=0.24.0",
+    'scikit-learn>=0.24.0; python_version < "3.13" or sys_platform != "win32"',  # todo 0.11.0 - check if windows 3.13 works, if yes, remove markers
     "pre-commit",
     "pytest",
     "pytest-cov"
@@ -86,7 +87,7 @@ test = [
     "numpy",
     "scipy",
     "pandas",
-    "scikit-learn>=0.24.0",
+    'scikit-learn>=0.24.0; python_version < "3.13" or sys_platform != "win32"',  # todo 0.11.0 - check if windows 3.13 works, if yes, remove markers
 ]
 
 [project.urls]
