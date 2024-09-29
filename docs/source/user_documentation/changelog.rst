@@ -17,7 +17,8 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 [0.10.1] - 2024-09-29
 =====================
 
-Maintenance release with experimental python 3.13 support.
+Maintenance release with experimental python 3.13 wheels.
+Full 3.13 support will be added with ``scikit-base 0.11.0``.
 
 Contents
 --------
