@@ -1022,7 +1022,7 @@ def test_nested_config_after_clone_tags(clone_config):
 
 
 @pytest.mark.skipif(
-    not _check_soft_dependencies("sklearn", severity="none"),
+    not _check_soft_dependencies("scikit-learn", severity="none"),
     reason="skip test if sklearn is not available",
 )  # sklearn is part of the dev dependency set, test should be executed with that
 def test_clone_param_is_none(fixture_class_parent: Type[Parent]):
@@ -1037,7 +1037,7 @@ def test_clone_param_is_none(fixture_class_parent: Type[Parent]):
 
 
 @pytest.mark.skipif(
-    not _check_soft_dependencies("sklearn", severity="none"),
+    not _check_soft_dependencies("scikit-learn", severity="none"),
     reason="skip test if sklearn is not available",
 )  # sklearn is part of the dev dependency set, test should be executed with that
 def test_clone_empty_array(fixture_class_parent: Type[Parent]):
@@ -1057,7 +1057,7 @@ def test_clone_empty_array(fixture_class_parent: Type[Parent]):
 
 
 @pytest.mark.skipif(
-    not _check_soft_dependencies("sklearn", severity="none"),
+    not _check_soft_dependencies("scikit-learn", severity="none"),
     reason="skip test if sklearn is not available",
 )  # sklearn is part of the dev dependency set, test should be executed with that
 def test_clone_sparse_matrix(fixture_class_parent: Type[Parent]):
@@ -1076,7 +1076,7 @@ def test_clone_sparse_matrix(fixture_class_parent: Type[Parent]):
 
 
 @pytest.mark.skipif(
-    not _check_soft_dependencies("sklearn", severity="none"),
+    not _check_soft_dependencies("scikit-learn", severity="none"),
     reason="skip test if sklearn is not available",
 )  # sklearn is part of the dev dependency set, test should be executed with that
 def test_clone_nan(fixture_class_parent: Type[Parent]):
@@ -1105,7 +1105,7 @@ def test_clone_estimator_types(fixture_class_parent: Type[Parent]):
 
 
 @pytest.mark.skipif(
-    not _check_soft_dependencies("sklearn", severity="none"),
+    not _check_soft_dependencies("scikit-learn", severity="none"),
     reason="skip test if sklearn is not available",
 )  # sklearn is part of the dev dependency set, test should be executed with that
 def test_clone_class_rather_than_instance_raises_error(
@@ -1120,7 +1120,7 @@ def test_clone_class_rather_than_instance_raises_error(
 
 
 @pytest.mark.skipif(
-    not _check_soft_dependencies("sklearn", severity="none"),
+    not _check_soft_dependencies("scikit-learn", severity="none"),
     reason="skip test if sklearn is not available",
 )  # sklearn is part of the dev dependency set, test should be executed with that
 def test_clone_sklearn_composite(fixture_class_parent: Type[Parent]):

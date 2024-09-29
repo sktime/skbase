@@ -2,7 +2,10 @@
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tests for skbase pretty printing functionality."""
 
+import pytest
+
 from skbase.base import BaseObject
+from skbase.utils.dependencies import _check_soft_dependencies
 
 
 class CompositionDummy(BaseObject):
@@ -15,6 +18,10 @@ class CompositionDummy(BaseObject):
         super(CompositionDummy, self).__init__()
 
 
+@pytest.mark.skipif(
+    not _check_soft_dependencies("scikit-learn", severity="none"),
+    reason="skip test if sklearn is not available",
+)  # sklearn is part of the dev dependency set, test should be executed with that
 def test_sklearn_compatibility():
     """Test that the pretty printing functions are compatible with sklearn."""
     from sklearn.ensemble import RandomForestRegressor
