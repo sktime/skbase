@@ -160,7 +160,7 @@ class BaseObject(_FlagManager):
         This function is equivalent to returning ``sklearn.clone`` of ``self``.
 
         Equivalent to constructing a new instance of ``type(self)``, with
-        parameters of ``self``, that is, 
+        parameters of ``self``, that is,
         ``type(self)(**self.get_params(deep=False))``.
 
         If configs were set on ``self``, the clone will also have the same configs
@@ -643,7 +643,7 @@ class BaseObject(_FlagManager):
         typically used as transient flags for controlling behaviour.
 
         ``get_config`` returns dynamic configs, which override the default configs.
-        
+
         Default configs are set in the class attribute ``_config`` of
         the class or its parent classes,
         and are overridden by dynamic configs set via ``set_config``.
