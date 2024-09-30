@@ -442,18 +442,34 @@ class BaseObject(_FlagManager):
 
     @classmethod
     def get_class_tags(cls):
-        """Get class tags from the class and all its parent classes.
+        """Get class tags from class, with tag level inheritance from parent classes.
 
-        Returns a dictionary with keys being keys of any attribute of ``_tags``
-        set in the class or any of its parent classes, or tags set via ``set_tags``
-        or ``clone_tags``.
+        Every ``scikit-base`` compatible object has a dictionary of tags.
+        Tags may be used to store metadata about the object,
+        or to control behaviour of the object.
+
+        Tags are key-value pairs specific to an instance ``self``,
+        they are static flags that are not changed after construction
+        of the object.
+
+        The ``get_class_tags`` method is a class method,
+        and retrieves the value of a tag
+        taking into account only class-level tag values and overrides.
+
+        It returns a dictionary with keys being keys of any attribute of ``_tags``
+        set in the class or any of its parent classes.
 
         Values are the corresponding tag values, with overrides in the following
         order of descending priority:
 
-        1. Tags set via ``set_tags`` or ``clone_tags`` on the instance.
-        2. Tags set via ``_tags`` in the class.
-        3. Tags set via ``_tags`` in parent classes, in order of inheritance.
+        1. Tags set in the ``_tags`` attribute of the class.
+        2. Tags set in the ``_tags`` attribute of parent classes,
+          in order of inheritance.
+
+        Instances can override these tags depending on hyper-parameters.
+
+        To retrieve tags with potential instance overrides, use
+        the ``get_tags`` method instead.
 
         Does not take into account dynamic tag overrides on instances,
         set via ``set_tags`` or ``clone_tags``,
@@ -464,39 +480,53 @@ class BaseObject(_FlagManager):
         Returns
         -------
         collected_tags : dict
-            Dictionary of class tag name: tag value pairs. Collected from _tags
-            class attribute via nested inheritance.
+            Dictionary of tag name : tag value pairs. Collected from ``_tags``
+            class attribute via nested inheritance. NOT overridden by dynamic
+            tags set by ``set_tags`` or ``clone_tags``.
         """
         return cls._get_class_flags(flag_attr_name="_tags")
 
     @classmethod
     def get_class_tag(cls, tag_name, tag_value_default=None):
-        """Get a class tag's value.
+        """Get class tag value from class, with tag level inheritance from parents.
 
-        Returns the value of the tag with name ``tag_name`` from the object,
+        Every ``scikit-base`` compatible object has a dictionary of tags.
+        Tags may be used to store metadata about the object,
+        or to control behaviour of the object.
+
+        Tags are key-value pairs specific to an instance ``self``,
+        they are static flags that are not changed after construction
+        of the object.
+
+        The ``get_class_tag`` method is a class method, and retrieves the value of a tag
+        taking into account only class-level tag values and overrides.
+
+        It returns the value of the tag with name ``tag_name`` from the object,
         taking into account tag overrides, in the following
         order of descending priority:
 
-        1. Tags set via ``_tags`` in the class.
-        2. Tags set via ``_tags`` in parent classes, in order of inheritance.
+        1. Tags set in the ``_tags`` attribute of the class.
+        2. Tags set in the ``_tags`` attribute of parent classes,
+          in order of inheritance.
 
         Does not take into account dynamic tag overrides on instances,
         set via ``set_tags`` or ``clone_tags``,
         that are defined on instances.
 
-        For including overrides from dynamic tags, use ``get_tag``.
+        To retrieve tag values with potential instance overrides, use
+        the ``get_tag`` method instead.
 
         Parameters
         ----------
         tag_name : str
             Name of tag value.
-        tag_value_default : any
+        tag_value_default : any type
             Default/fallback value if tag is not found.
 
         Returns
         -------
         tag_value :
-            Value of the ``tag_name`` tag in self.
+            Value of the ``tag_name`` tag in ``self``.
             If not found, returns ``tag_value_default``.
         """
         return cls._get_class_flag(
@@ -506,18 +536,29 @@ class BaseObject(_FlagManager):
         )
 
     def get_tags(self):
-        """Get tags from skbase class and dynamic tag overrides.
+        """Get tags from instance, with tag level inheritance and overrides.
 
-        Returns a dictionary with keys being keys of any attribute of ``_tags``
+        Every ``scikit-base`` compatible object has a dictionary of tags.
+        Tags may be used to store metadata about the object,
+        or to control behaviour of the object.
+
+        Tags are key-value pairs specific to an instance ``self``,
+        they are static flags that are not changed after construction
+        of the object.
+
+        The ``get_tags`` method returns a dictionary of tags,
+        with keys being keys of any attribute of ``_tags``
         set in the class or any of its parent classes, or tags set via ``set_tags``
         or ``clone_tags``.
 
         Values are the corresponding tag values, with overrides in the following
         order of descending priority:
 
-        1. Tags set via ``set_tags`` or ``clone_tags`` on the instance.
-        2. Tags set via ``_tags`` in the class.
-        3. Tags set via ``_tags`` in parent classes, in order of inheritance.
+        1. Tags set via ``set_tags`` or ``clone_tags`` on the instance,
+          at construction of the instance.
+        2. Tags set in the ``_tags`` attribute of the class.
+        3. Tags set in the ``_tags`` attribute of parent classes,
+          in order of inheritance.
 
         Returns
         -------
@@ -529,15 +570,26 @@ class BaseObject(_FlagManager):
         return self._get_flags(flag_attr_name="_tags")
 
     def get_tag(self, tag_name, tag_value_default=None, raise_error=True):
-        """Get tag value from object class and dynamic tag overrides.
+        """Get tag value from instance, with tag level inheritance and overrides.
 
-        Returns the value of the tag with name ``tag_name`` from the object,
+        Every ``scikit-base`` compatible object has a dictionary of tags.
+        Tags may be used to store metadata about the object,
+        or to control behaviour of the object.
+
+        Tags are key-value pairs specific to an instance ``self``,
+        they are static flags that are not changed after construction
+        of the object.
+
+        The ``get_tag`` method retrieves the value of a single tag
+        with name ``tag_name`` from the instance,
         taking into account tag overrides, in the following
         order of descending priority:
 
-        1. Tags set via ``set_tags`` or ``clone_tags`` on the instance.
-        2. Tags set via ``_tags`` in the class.
-        3. Tags set via ``_tags`` in parent classes, in order of inheritance.
+        1. Tags set via ``set_tags`` or ``clone_tags`` on the instance,
+          at construction of the instance.
+        2. Tags set in the ``_tags`` attribute of the class.
+        3. Tags set in the ``_tags`` attribute of parent classes,
+          in order of inheritance.
 
         Parameters
         ----------
@@ -546,12 +598,13 @@ class BaseObject(_FlagManager):
         tag_value_default : any type, optional; default=None
             Default/fallback value if tag is not found
         raise_error : bool
-            whether a ValueError is raised when the tag is not found
+            whether a ``ValueError`` is raised when the tag is not found
 
         Returns
         -------
         tag_value : Any
-            Value of the ``tag_name`` tag in self. If not found, returns an error if
+            Value of the ``tag_name`` tag in ``self``.
+            If not found, raises an error if
             ``raise_error`` is True, otherwise it returns ``tag_value_default``.
 
         Raises
@@ -568,18 +621,22 @@ class BaseObject(_FlagManager):
         )
 
     def set_tags(self, **tag_dict):
-        """Set dynamic tags to given values.
+        """Set instance level tag overrides to given values.
+
+        Every ``scikit-base`` compatible object has a dictionary of tags.
+        Tags may be used to store metadata about the object,
+        or to control behaviour of the object.
 
         Tags are key-value pairs specific to an instance ``self``,
         they are static flags that are not changed after construction
-        of the object. They may be used for metadata inspection,
-        or for controlling behaviour of the object.
+        of the object.
 
         ``set_tags`` sets dynamic tag overrides
-        to the values
-        as specified in ``tag_dict``, with keys being the tag name,
+        to the values as specified in ``tag_dict``, with keys being the tag name,
         and dict values being the value to set the tag to.
-        It should be called only in the ``__init__`` method of an object,
+
+        The ``set_tags`` method
+        should be called only in the ``__init__`` method of an object,
         during construction, or directly after construction via ``__init__``.
 
         Current tag values can be inspected by ``get_tags`` or ``get_tag``.
@@ -601,14 +658,19 @@ class BaseObject(_FlagManager):
     def clone_tags(self, estimator, tag_names=None):
         """Clone tags from another object as dynamic override.
 
+        Every ``scikit-base`` compatible object has a dictionary of tags.
+        Tags may be used to store metadata about the object,
+        or to control behaviour of the object.
+
         Tags are key-value pairs specific to an instance ``self``,
         they are static flags that are not changed after construction
-        of the object. They may be used for metadata inspection,
-        or for controlling behaviour of the object.
+        of the object.
 
         ``clone_tags`` sets dynamic tag overrides
         from another object, ``estimator``.
-        It should be called only in the ``__init__`` method of an object,
+
+        The ``clone_tags`` method
+        should be called only in the ``__init__`` method of an object,
         during construction, or directly after construction via ``__init__``.
 
         The dynamic tags are set to the values of the tags in ``estimator``,
@@ -1110,26 +1172,43 @@ class TagAliaserMixin:
     def get_class_tags(cls):
         """Get class tags from class, with tag level inheritance from parent classes.
 
-        Every ``scikit-base`` compatible class has a set of tags,
-        which are used to store metadata about the object.
+        Every ``scikit-base`` compatible object has a dictionary of tags.
+        Tags may be used to store metadata about the object,
+        or to control behaviour of the object.
 
-        This is a class method, and retrieves tags applicable to the class,
-        with tag level overrides in the following order of decreasing priority:
+        Tags are key-value pairs specific to an instance ``self``,
+        they are static flags that are not changed after construction
+        of the object.
 
-        1. class tags of the class, of which the object is an instance
-        2. class tags of all parent classes, in method resolution order
+        The ``get_class_tags`` method is a class method,
+        and retrieves the value of a tag
+        taking into account only class-level tag values and overrides.
+
+        It returns a dictionary with keys being keys of any attribute of ``_tags``
+        set in the class or any of its parent classes.
+
+        Values are the corresponding tag values, with overrides in the following
+        order of descending priority:
+
+        1. Tags set in the ``_tags`` attribute of the class.
+        2. Tags set in the ``_tags`` attribute of parent classes,
+          in order of inheritance.
 
         Instances can override these tags depending on hyper-parameters.
 
         To retrieve tags with potential instance overrides, use
         the ``get_tags`` method instead.
 
-        Returns
-        -------
+        Does not take into account dynamic tag overrides on instances,
+        set via ``set_tags`` or ``clone_tags``,
+        that are defined on instances.
+
+        For including overrides from dynamic tags, use ``get_tags``.
+
         collected_tags : dict
-            Dictionary of tag name : tag value pairs. Collected from _tags
+            Dictionary of tag name : tag value pairs. Collected from ``_tags``
             class attribute via nested inheritance. NOT overridden by dynamic
-            tags set by set_tags or mirror_tags.
+            tags set by ``set_tags`` or ``clone_tags``.
         """
         collected_tags = super(TagAliaserMixin, cls).get_class_tags()
         collected_tags = cls._complete_dict(collected_tags)
@@ -1139,17 +1218,24 @@ class TagAliaserMixin:
     def get_class_tag(cls, tag_name, tag_value_default=None):
         """Get class tag value from class, with tag level inheritance from parents.
 
-        Every ``scikit-base`` compatible class has a set of tags,
+        Every ``scikit-base`` compatible object has a dictionary of tags,
         which are used to store metadata about the object.
 
-        This is a class method, and retrieves the value of a tag applicable
-        to the class,
-        with tag level overrides in the following order of decreasing priority:
+        The ``get_class_tag`` method is a class method,
+        and retrieves the value of a tag
+        taking into account only class-level tag values and overrides.
 
-        1. class tags of the class, of which the object is an instance
-        2. class tags of all parent classes, in method resolution order
+        It returns the value of the tag with name ``tag_name`` from the object,
+        taking into account tag overrides, in the following
+        order of descending priority:
 
-        Instances can override these tags depending on hyper-parameters.
+        1. Tags set in the ``_tags`` attribute of the class.
+        2. Tags set in the ``_tags`` attribute of parent classes,
+          in order of inheritance.
+
+        Does not take into account dynamic tag overrides on instances,
+        set via ``set_tags`` or ``clone_tags``,
+        that are defined on instances.
 
         To retrieve tag values with potential instance overrides, use
         the ``get_tag`` method instead.
@@ -1164,8 +1250,8 @@ class TagAliaserMixin:
         Returns
         -------
         tag_value :
-            Value of the `tag_name` tag in self. If not found, returns
-            `tag_value_default`.
+            Value of the ``tag_name`` tag in ``self``.
+            If not found, returns ``tag_value_default``.
         """
         cls._deprecate_tag_warn([tag_name])
         return super(TagAliaserMixin, cls).get_class_tag(
@@ -1175,22 +1261,34 @@ class TagAliaserMixin:
     def get_tags(self):
         """Get tags from instance, with tag level inheritance and overrides.
 
-        Every ``scikit-base`` compatible object has a set of tags,
-        which are used to store metadata about the object.
+        Every ``scikit-base`` compatible object has a dictionary of tags.
+        Tags may be used to store metadata about the object,
+        or to control behaviour of the object.
 
-        This method retrieves all tags as a dictionary, with tag level overrides in the
-        following order of decreasing priority:
+        Tags are key-value pairs specific to an instance ``self``,
+        they are static flags that are not changed after construction
+        of the object.
 
-        1. dynamic tags set at construction, e.g., dependent on hyper-parameters
-        2. class tags of the class, of which the object is an instance
-        3. class tags of all parent classes, in method resolution order
+        The ``get_tags`` method returns a dictionary of tags,
+        with keys being keys of any attribute of ``_tags``
+        set in the class or any of its parent classes, or tags set via ``set_tags``
+        or ``clone_tags``.
+
+        Values are the corresponding tag values, with overrides in the following
+        order of descending priority:
+
+        1. Tags set via ``set_tags`` or ``clone_tags`` on the instance,
+          at construction of the instance.
+        2. Tags set in the ``_tags`` attribute of the class.
+        3. Tags set in the ``_tags`` attribute of parent classes,
+          in order of inheritance.
 
         Returns
         -------
         collected_tags : dict
-            Dictionary of tag name : tag value pairs. Collected from _tags
+            Dictionary of tag name : tag value pairs. Collected from ``_tags``
             class attribute via nested inheritance and then any overrides
-            and new tags from _tags_dynamic object attribute.
+            and new tags from ``_tags_dynamic`` object attribute.
         """
         collected_tags = super(TagAliaserMixin, self).get_tags()
         collected_tags = self._complete_dict(collected_tags)
@@ -1199,15 +1297,24 @@ class TagAliaserMixin:
     def get_tag(self, tag_name, tag_value_default=None, raise_error=True):
         """Get tag value from instance, with tag level inheritance and overrides.
 
-        Every ``scikit-base`` compatible object has a set of tags,
-        which are used to store metadata about the object.
+        Every ``scikit-base`` compatible object has a dictionary of tags.
+        Tags may be used to store metadata about the object,
+        or to control behaviour of the object.
 
-        This method retrieves the value of a single tag, with tag level overrides in the
-        following order of decreasing priority:
+        Tags are key-value pairs specific to an instance ``self``,
+        they are static flags that are not changed after construction
+        of the object.
 
-        1. dynamic tags set at construction, e.g., dependent on hyper-parameters
-        2. class tags of the class, of which the object is an instance
-        3. class tags of all parent classes, in method resolution order
+        The ``get_tag`` method retrieves the value of a single tag
+        with name ``tag_name`` from the instance,
+        taking into account tag overrides, in the following
+        order of descending priority:
+
+        1. Tags set via ``set_tags`` or ``clone_tags`` on the instance,
+          at construction of the instance.
+        2. Tags set in the ``_tags`` attribute of the class.
+        3. Tags set in the ``_tags`` attribute of parent classes,
+          in order of inheritance.
 
         Parameters
         ----------
@@ -1216,18 +1323,20 @@ class TagAliaserMixin:
         tag_value_default : any type, optional; default=None
             Default/fallback value if tag is not found
         raise_error : bool
-            whether a ValueError is raised when the tag is not found
+            whether a ``ValueError`` is raised when the tag is not found
 
         Returns
         -------
-        tag_value :
-            Value of the `tag_name` tag in self. If not found, returns an error if
-            raise_error is True, otherwise it returns `tag_value_default`.
+        tag_value : Any
+            Value of the ``tag_name`` tag in ``self``.
+            If not found, raises an error if
+            ``raise_error`` is True, otherwise it returns ``tag_value_default``.
 
         Raises
         ------
-        ValueError if raise_error is True i.e. if tag_name is not in self.get_tags(
-        ).keys()
+        ValueError, if ``raise_error`` is ``True``.
+            The ``ValueError`` is then raised if ``tag_name`` is
+            not in ``self.get_tags().keys()``.
         """
         self._deprecate_tag_warn([tag_name])
         return super(TagAliaserMixin, self).get_tag(
@@ -1237,22 +1346,35 @@ class TagAliaserMixin:
         )
 
     def set_tags(self, **tag_dict):
-        """Set dynamic tags to given values.
+        """Set instance level tag overrides to given values.
+
+        Every ``scikit-base`` compatible object has a dictionary of tags,
+        which are used to store metadata about the object.
+
+        Tags are key-value pairs specific to an instance ``self``,
+        they are static flags that are not changed after construction
+        of the object. They may be used for metadata inspection,
+        or for controlling behaviour of the object.
+
+        ``set_tags`` sets dynamic tag overrides
+        to the values as specified in ``tag_dict``, with keys being the tag name,
+        and dict values being the value to set the tag to.
+
+        The ``set_tags`` method
+        should be called only in the ``__init__`` method of an object,
+        during construction, or directly after construction via ``__init__``.
+
+        Current tag values can be inspected by ``get_tags`` or ``get_tag``.
 
         Parameters
         ----------
-        tag_dict : dict
-            Dictionary of tag name : tag value pairs.
+        **tag_dict : dict
+            Dictionary of tag name: tag value pairs.
 
         Returns
         -------
-        Self :
+        Self
             Reference to self.
-
-        Notes
-        -----
-        Changes object state by setting tag values in tag_dict as dynamic tags
-        in self.
         """
         self._deprecate_tag_warn(tag_dict.keys())
 
