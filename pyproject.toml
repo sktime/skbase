@@ -40,7 +40,7 @@ dependencies = []
 all_extras = ["numpy", "pandas"]
 
 dev = [
-    'scikit-learn>=0.24.0; python_version < "3.13" or sys_platform != "win32"',  # todo 0.11.0 - check if windows 3.13 works, if yes, remove markers
+    'scikit-learn>=0.24.0W
     "pre-commit",
     "pytest",
     "pytest-cov"
@@ -87,7 +87,7 @@ test = [
     "numpy",
     "scipy",
     "pandas",
-    'scikit-learn>=0.24.0; python_version < "3.13" or sys_platform != "win32"',  # todo 0.11.0 - check if windows 3.13 works, if yes, remove markers
+    'scikit-learn>=0.24.0
 ]
 
 [project.urls]
