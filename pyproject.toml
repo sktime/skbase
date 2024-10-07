@@ -40,10 +40,10 @@ dependencies = []
 all_extras = ["numpy", "pandas"]
 
 dev = [
-    'scikit-learn>=0.24.0W
+    "scikit-learn>=0.24.0"
     "pre-commit",
     "pytest",
-    "pytest-cov"
+    "pytest-cov",
 ]
 
 linters = [
@@ -87,7 +87,7 @@ test = [
     "numpy",
     "scipy",
     "pandas",
-    'scikit-learn>=0.24.0
+    "scikit-learn>=0.24.0",
 ]
 
 [project.urls]
