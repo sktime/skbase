@@ -14,10 +14,20 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.11.0] - 2024-10-07
+=====================
+
+Maintenance release with full support for ``python 3.13``.
+
+Contents
+--------
+
+
+
 [0.10.1] - 2024-09-29
 =====================
 
-Maintenance release with experimental python 3.13 wheels.
+Maintenance release with experimental ``python 3.13`` wheels.
 Full 3.13 support will be added with ``scikit-base 0.11.0``.
 
 Contents
