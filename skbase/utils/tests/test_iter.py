@@ -17,8 +17,7 @@ tests in this module include:
 import pytest
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.utils._iter import (_format_seq_to_str, _scalar_to_seq,
-                                make_strings_unique)
+from skbase.utils._iter import _format_seq_to_str, _scalar_to_seq, make_strings_unique
 
 __author__ = ["RNKuhns"]
 

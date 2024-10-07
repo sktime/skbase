@@ -9,6 +9,7 @@ import pprint
 from collections import OrderedDict
 
 from skbase.base import BaseObject
+
 # from skbase.config import get_config
 from skbase.utils._check import _is_scalar_nan
 

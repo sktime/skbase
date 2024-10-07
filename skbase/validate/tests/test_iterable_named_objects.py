@@ -13,8 +13,11 @@ __author__ = ["RNKuhns"]
 import pytest
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.validate import (check_sequence_named_objects,
-                             is_named_object_tuple, is_sequence_named_objects)
+from skbase.validate import (
+    check_sequence_named_objects,
+    is_named_object_tuple,
+    is_sequence_named_objects,
+)
 
 
 @pytest.fixture

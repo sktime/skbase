@@ -4,9 +4,11 @@
 """Tools for validating and comparing BaseObjects and collections of BaseObjects."""
 from typing import List
 
-from skbase.validate._named_objects import (check_sequence_named_objects,
-                                            is_named_object_tuple,
-                                            is_sequence_named_objects)
+from skbase.validate._named_objects import (
+    check_sequence_named_objects,
+    is_named_object_tuple,
+    is_sequence_named_objects,
+)
 from skbase.validate._types import check_sequence, check_type, is_sequence
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]

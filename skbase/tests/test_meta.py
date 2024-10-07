@@ -9,8 +9,12 @@ import pytest
 
 from skbase._exceptions import NotFittedError
 from skbase.base import BaseEstimator, BaseObject
-from skbase.base._meta import (BaseMetaEstimator, BaseMetaObject,
-                               _MetaObjectMixin, _MetaTagLogicMixin)
+from skbase.base._meta import (
+    BaseMetaEstimator,
+    BaseMetaObject,
+    _MetaObjectMixin,
+    _MetaTagLogicMixin,
+)
 
 
 class MetaObjectTester(BaseMetaObject):
