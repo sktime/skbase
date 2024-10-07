@@ -9,12 +9,8 @@ sktime design principles in your project.
 from typing import List
 
 from skbase.base._base import BaseEstimator, BaseObject
-from skbase.base._meta import (
-    BaseMetaEstimator,
-    BaseMetaEstimatorMixin,
-    BaseMetaObject,
-    BaseMetaObjectMixin,
-)
+from skbase.base._meta import (BaseMetaEstimator, BaseMetaEstimatorMixin,
+                               BaseMetaObject, BaseMetaObjectMixin)
 
 __author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
 __all__: List[str] = [

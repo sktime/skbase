@@ -8,11 +8,8 @@ from skbase.utils._iter import make_strings_unique
 from skbase.utils._nested_iter import flatten, is_flat, unflat_len, unflatten
 from skbase.utils._utils import subset_dict_keys
 from skbase.utils.deep_equals import deep_equals
-from skbase.utils.random_state import (
-    check_random_state,
-    sample_dependent_seed,
-    set_random_state,
-)
+from skbase.utils.random_state import (check_random_state,
+                                       sample_dependent_seed, set_random_state)
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]
 __all__: List[str] = [

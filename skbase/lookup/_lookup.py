@@ -26,7 +26,8 @@ from copy import deepcopy
 from functools import lru_cache
 from operator import itemgetter
 from types import ModuleType
-from typing import Any, List, Mapping, MutableMapping, Optional, Sequence, Tuple, Union
+from typing import (Any, List, Mapping, MutableMapping, Optional, Sequence,
+                    Tuple, Union)
 
 from skbase.base import BaseObject
 from skbase.utils.stdout_mute import StdoutMute

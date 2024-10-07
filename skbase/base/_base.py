@@ -1003,7 +1003,8 @@ class BaseObject(_FlagManager):
             Maximum (approximate) number of non-blank characters to render. This
             can be useful in testing.
         """
-        from skbase.base._pretty_printing._pprint import _BaseObjectPrettyPrinter
+        from skbase.base._pretty_printing._pprint import \
+            _BaseObjectPrettyPrinter
 
         n_max_elements_to_show = 30  # number of elements to show in sequences
         # use ellipsis for sequences with a lot of elements

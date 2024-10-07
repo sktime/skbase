@@ -6,7 +6,8 @@ import collections
 import inspect
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
-from skbase.utils._iter import _format_seq_to_str, _remove_type_text, _scalar_to_seq
+from skbase.utils._iter import (_format_seq_to_str, _remove_type_text,
+                                _scalar_to_seq)
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]
 __all__: List[str] = ["check_sequence", "check_type", "is_sequence"]
