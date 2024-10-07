@@ -6,7 +6,8 @@ import collections
 import re
 from collections.abc import Sequence
 
-from skbase.utils._nested_iter import _remove_single, flatten, is_flat, unflatten
+from skbase.utils._nested_iter import (_remove_single, flatten, is_flat,
+                                       unflatten)
 
 __author__ = ["fkiraly", "RNKuhns"]
 __all__ = [

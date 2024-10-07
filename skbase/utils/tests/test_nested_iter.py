@@ -14,13 +14,8 @@ tests in this module include:
 # import pytest
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.utils._nested_iter import (
-    _remove_single,
-    flatten,
-    is_flat,
-    unflat_len,
-    unflatten,
-)
+from skbase.utils._nested_iter import (_remove_single, flatten, is_flat,
+                                       unflat_len, unflatten)
 
 __author__ = ["RNKuhns"]
 

@@ -17,32 +17,20 @@ import pytest
 from skbase.base import BaseEstimator, BaseObject
 from skbase.base._base import TagAliaserMixin
 from skbase.lookup import all_objects, get_package_metadata
-from skbase.lookup._lookup import (
-    _determine_module_path,
-    _filter_by_class,
-    _filter_by_tags,
-    _get_return_tags,
-    _import_module,
-    _is_ignored_module,
-    _is_non_public_module,
-    _walk,
-)
-from skbase.tests.conftest import (
-    SKBASE_BASE_CLASSES,
-    SKBASE_CLASSES_BY_MODULE,
-    SKBASE_FUNCTIONS_BY_MODULE,
-    SKBASE_MODULES,
-    SKBASE_PUBLIC_CLASSES_BY_MODULE,
-    SKBASE_PUBLIC_FUNCTIONS_BY_MODULE,
-    SKBASE_PUBLIC_MODULES,
-    ClassWithABTrue,
-    Parent,
-)
-from skbase.tests.mock_package.test_mock_package import (
-    MOCK_PACKAGE_OBJECTS,
-    CompositionDummy,
-    NotABaseObject,
-)
+from skbase.lookup._lookup import (_determine_module_path, _filter_by_class,
+                                   _filter_by_tags, _get_return_tags,
+                                   _import_module, _is_ignored_module,
+                                   _is_non_public_module, _walk)
+from skbase.tests.conftest import (SKBASE_BASE_CLASSES,
+                                   SKBASE_CLASSES_BY_MODULE,
+                                   SKBASE_FUNCTIONS_BY_MODULE, SKBASE_MODULES,
+                                   SKBASE_PUBLIC_CLASSES_BY_MODULE,
+                                   SKBASE_PUBLIC_FUNCTIONS_BY_MODULE,
+                                   SKBASE_PUBLIC_MODULES, ClassWithABTrue,
+                                   Parent)
+from skbase.tests.mock_package.test_mock_package import (MOCK_PACKAGE_OBJECTS,
+                                                         CompositionDummy,
+                                                         NotABaseObject)
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]
 __all__: List[str] = []
