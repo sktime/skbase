@@ -17,11 +17,19 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 [0.11.0] - 2024-10-07
 =====================
 
-Maintenance release with full support for ``python 3.13``.
+Maintenance release with full support for ``python 3.13``,
+and other minor improvements.
 
 Contents
 --------
 
+* [MNT] full support for ``python 3.13`` (:pr:`372`) :user:`fkiraly`
+* [DOC] improved docstrings for ``BaseObject`` (:pr:`369`) :user:`fkiraly`
+* [DOC] merge docstring of ``NotFittedError`` with ``sktime``
+  (:pr:`371`) :user:`fkiraly`
+* [ENH] merge ``sktime`` ``BaseEstimator` into ``skbase`` ``BaseEstimator``
+  (:pr:`370`) :user:`fkiraly`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`374`) :user:`pre-commit-ci`
 
 
 [0.10.1] - 2024-09-29
@@ -36,7 +44,7 @@ Contents
 * [pre-commit.ci] pre-commit autoupdate (:pr:`364`) :user:`pre-commit-ci`
 * [MNT] updates ``scikit-learn`` soft dependency checks to use PEP 440 name
   (:pr:`366`) :user:`fkiraly`
-* [MNT] experimental python ``3.13`` wheels and ``3.13-rc.2`` testing
+* [MNT] experimental ``python 3.13`` wheels and ``3.13-rc.2`` testing
   (:pr:`365`) :user:`fkiraly`
 
 
