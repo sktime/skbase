@@ -78,7 +78,7 @@ class BaseObject(_FlagManager):
         "print_changed_only": True,
         "check_clone": False,  # whether to execute validity checks in clone
         "clone_config": True,  # clone config values (True) or use defaults (False)
-        "clone_attrs": None  # list of str, additional attributes to clone
+        "clone_attrs": None,  # list of str, additional attributes to clone
     }
 
     def __init__(self):
