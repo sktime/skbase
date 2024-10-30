@@ -78,6 +78,7 @@ class BaseObject(_FlagManager):
         "print_changed_only": True,
         "check_clone": False,  # whether to execute validity checks in clone
         "clone_config": True,  # clone config values (True) or use defaults (False)
+        "clone_attrs": None  # list of str, additional attributes to clone
     }
 
     def __init__(self):
@@ -175,7 +176,7 @@ class BaseObject(_FlagManager):
         ------
         RuntimeError if the clone is non-conforming, due to faulty ``__init__``.
         """
-        self_clone = _clone(self)
+        self_clone = _clone(self, clone_attrs=self.get_config()["clone_attrs"])
         if self.get_config()["check_clone"]:
             _check_clone(original=self, clone=self_clone)
         return self_clone
@@ -1656,7 +1657,7 @@ class BaseEstimator(BaseObject):
 
 
 # Adapted from sklearn's `_clone_parametrized()`
-def _clone(estimator, *, safe=True):
+def _clone(estimator, *, safe=True, clone_attrs=None):
     """Construct a new unfitted estimator with the same parameters.
 
     Clone does a deep copy of the model in an estimator
@@ -1665,12 +1666,14 @@ def _clone(estimator, *, safe=True):
 
     Parameters
     ----------
-    estimator : {list, tuple, set} of estimator instance or a single \
-            estimator instance
+    estimator : {list, tuple, set} of estimator instance or a single estimator instance
         The estimator or group of estimators to be cloned.
-    safe : bool, default=True
+    safe : bool, optional, default=True
         If safe is False, clone will fall back to a deep copy on objects
         that are not estimators.
+    clone_attrs : None or list of str, optional, default=None
+        list of attributes to retain in the clone additionally to
+        configs and init parameters. If None, no additional attributese are retained.
 
     Returns
     -------
@@ -1729,6 +1732,11 @@ def _clone(estimator, *, safe=True):
     # This is an extension to the original sklearn implementation
     if isinstance(estimator, BaseObject) and estimator.get_config()["clone_config"]:
         new_object.set_config(**estimator.get_config())
+
+    if clone_attrs is not None:
+        for attr in clone_attrs:
+            if hasattr(estimator, attr):
+                setattr(new_object, attr, getattr(estimator, attr))
 
     return new_object
 
