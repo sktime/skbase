@@ -1715,8 +1715,8 @@ def _clone(estimator, *, safe=True, clone_attrs=None):
     klass = estimator.__class__
     new_object_params = estimator.get_params(deep=False)
     for name, param in new_object_params.items():
-        if isinstance(estimator, BaseObject) and hasattr(estimator, "clone"):
-            new_object_params[name] = estimator.clone()
+        if isinstance(param, BaseObject) and hasattr(param, "clone"):
+            new_object_params[name] = param.clone()
         else:
             new_object_params[name] = _clone(param, safe=False)
     new_object = klass(**new_object_params)
