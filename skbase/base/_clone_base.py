@@ -98,6 +98,11 @@ def _clone(estimator, *, safe=True, clone_plugins=None):
     if isinstance(estimator, BaseObject) and estimator.get_config()["clone_config"]:
         new_object.set_config(**estimator.get_config())
 
+    if clone_attrs is not None:
+        for attr in clone_attrs:
+            if hasattr(estimator, attr):
+                setattr(new_object, attr, getattr(estimator, attr))
+
     return new_object
 
 
