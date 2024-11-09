@@ -24,7 +24,6 @@ from inspect import isclass
 def _is_sklearn_present():
     """Check whether scikit-learn is present."""
     from skbase.utils.dependencies import _check_soft_dependencies
-    from skbase.utils.dependencies._import import _safe_import
 
     return _check_soft_dependencies("scikit-learn")
 
