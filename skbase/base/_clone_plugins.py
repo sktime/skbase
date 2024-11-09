@@ -64,7 +64,7 @@ class BaseCloner:
             "base_cls": self.base_cls,
         }
         return _clone(obj, **recursion_kwargs)
-        
+
 
 class _CloneClass(BaseCloner):
     """Clone plugin for classes. Returns the class."""
@@ -136,7 +136,7 @@ class _CloneSkbase(BaseCloner):
     def _clone(self, obj):
         """Return a clone of obj."""
         new_object = _default_clone(estimator=obj)
-    
+
         # Ensure that configs are retained in the new object
         if obj.get_config()["clone_config"]:
             new_object.set_config(**obj.get_config())

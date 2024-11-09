@@ -21,7 +21,7 @@ Each element of DEFAULT_CLONE_PLUGINS inherits from BaseCloner, with methods:
 """
 __all__ = ["_clone", "_check_clone"]
 
-from skbase.base._clone_plugins import _CloneCatchAll, DEFAULT_CLONE_PLUGINS
+from skbase.base._clone_plugins import DEFAULT_CLONE_PLUGINS, _CloneCatchAll
 
 
 # Adapted from sklearn's `_clone_parametrized()`
