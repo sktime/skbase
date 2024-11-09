@@ -20,11 +20,11 @@ from skbase.utils.dependencies import _check_soft_dependencies
 
 SKLEARN_PRESENT = _check_soft_dependencies("scikit-learn")
 
-# sklearn_clone is imported at module level for speed
+# _sklearn_clone is imported at module level for speed
 # we wrap this in try/except to avoid exceptions on skbase init
 if SKLEARN_PRESENT:
     try:
-        from sklearn import clone as sklearn_clone
+        from sklearn import clone as _sklearn_clone
     except Exception:
         pass
 
@@ -64,7 +64,7 @@ class BaseCloner:
             "base_cls": self.base_cls,
         }
         return _clone(obj, **recursion_kwargs)
-        
+
 
 class _CloneClass(BaseCloner):
     """Clone plugin for classes. Returns the class."""
@@ -136,7 +136,7 @@ class _CloneSkbase(BaseCloner):
     def _clone(self, obj):
         """Return a clone of obj."""
         new_object = _default_clone(estimator=obj)
-    
+
         # Ensure that configs are retained in the new object
         if obj.get_config()["clone_config"]:
             new_object.set_config(**obj.get_config())
@@ -158,7 +158,7 @@ class _CloneSklearn(BaseCloner):
 
     def _clone(self, obj):
         """Return a clone of obj."""
-        return sklearn_clone(obj)
+        return _sklearn_clone(obj)
 
 
 class _CloneGetParams(BaseCloner):
