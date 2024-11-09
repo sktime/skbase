@@ -98,7 +98,7 @@ def _check_clone(original, clone):
 
     Called from BaseObject.clone to validate the clone, if
     the config flag check_clone is set to True.
-    
+
     Parameters
     ----------
     original : object
