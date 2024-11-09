@@ -102,7 +102,7 @@ class _CloneListTupleSet(BaseCloner):
 
 
 def _default_clone(estimator, recursive_clone):
-    """Default clone routinge used in skbase native and generic get_params clone."""
+    """Clone estimator. Default used in skbase native and generic get_params clone."""
     klass = estimator.__class__
     new_object_params = estimator.get_params(deep=False)
     for name, param in new_object_params.items():

@@ -94,6 +94,23 @@ def _clone(estimator, *, safe=True, clone_plugins=None, base_cls=None):
 
 
 def _check_clone(original, clone):
+    """Check that clone is a valid clone of original.
+
+    Called from BaseObject.clone to validate the clone, if
+    the config flag check_clone is set to True.
+    
+    Parameters
+    ----------
+    original : object
+        The original object.
+    clone : object
+        The cloned object.
+
+    Raises
+    ------
+    RuntimeError
+        If the clone is not a valid clone of the original.
+    """
     from skbase.utils.deep_equals import deep_equals
 
     self_params = original.get_params(deep=False)
