@@ -143,7 +143,7 @@ class _CloneSkbase(BaseCloner):
 
     def _clone(self, obj):
         """Return a clone of obj."""
-        new_object = _default_clone(estimator=obj)
+        new_object = _default_clone(estimator=obj, recursive_clone=self.recursive_clone)
 
         # Ensure that configs are retained in the new object
         if obj.get_config()["clone_config"]:
@@ -179,7 +179,7 @@ class _CloneGetParams(BaseCloner):
 
     def _clone(self, obj):
         """Return a clone of obj."""
-        return _default_clone(estimator=obj)
+        return _default_clone(estimator=obj, recursive_clone=self.recursive_clone)
 
 
 class _CloneCatchAll(BaseCloner):
