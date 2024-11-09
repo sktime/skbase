@@ -19,13 +19,13 @@ Each element of DEFAULT_CLONE_PLUGINS inherits from BaseCloner, with methods:
 * check(obj) -> boolean - fast checker whether plugin applies
 * clone(obj) -> type(obj) - method to clone obj
 """
-from copy import deepcopy
+__all__ = ["_clone", "_check_clone"]
 
-from skbase.base._clone_plugins import DEFAULT_CLONE_PLUGINS
+from skbase.base._clone_plugins import _CloneCatchAll, DEFAULT_CLONE_PLUGINS
 
 
 # Adapted from sklearn's `_clone_parametrized()`
-def _clone(estimator, *, safe=True, clone_plugins=None):
+def _clone(estimator, *, safe=True, clone_plugins=None, base_cls=None):
     """Construct a new unfitted estimator with the same parameters.
 
     Clone does a deep copy of the model in an estimator
@@ -45,6 +45,9 @@ def _clone(estimator, *, safe=True, clone_plugins=None):
         before working through ``DEFAULT_CLONE_PLUGINS``. To override
         a cloner in ``DEAULT_CLONE_PLUGINS``, simply ensure a cloner with
         the same ``_check`` logis is present in ``clone_plugins``.
+    base_cls : reference to BaseObject
+        Reference to the BaseObject class from skbase.base._base.
+        Present for easy reference, fast imports, and potential extensions.
 
     Returns
     -------
@@ -64,46 +67,30 @@ def _clone(estimator, *, safe=True, clone_plugins=None):
     # if no plugins provided by user, work through the DEFAULT_CLONE_PLUGINS
     # if provided by user, work through user provided plugins first, then defaults
     if clone_plugins is not None:
-        clone_plugins = clone_plugins.copy()
-        clone_plugins.append(DEFAULT_CLONE_PLUGINS.copy())
+        all_plugins = clone_plugins.copy()
+        all_plugins.append(DEFAULT_CLONE_PLUGINS.copy())
     else:
-        clone_plugins = DEFAULT_CLONE_PLUGINS
+        all_plugins = DEFAULT_CLONE_PLUGINS
 
-    for cloner_plugin in clone_plugins:
-        cloner = cloner_plugin(safe=safe, clone_plugins=clone_plugins)
+    for cloner_plugin in all_plugins:
+        cloner = cloner_plugin(safe=safe, clone_plugins=all_plugins, base_cls=base_cls)
+        # we clone with the first plugin in the list that:
+        # 1. claims it is applicable, via check
+        # 2. does not produce an Exception when cloning
         if cloner.check(obj=estimator):
-            return cloner.clone(obj=estimator)
+            try:
+                return cloner.clone(obj=estimator)
+            # only if we are at the last cloner, we raise the exception
+            except Exception as e:
+                if type(cloner) is _CloneCatchAll:
+                    raise e
+                else:
+                    pass
 
-
-    estimator_type = type(estimator)
-
-    klass = estimator.__class__
-    new_object_params = estimator.get_params(deep=False)
-    for name, param in new_object_params.items():
-        new_object_params[name] = _clone(param, safe=False)
-    new_object = klass(**new_object_params)
-    params_set = new_object.get_params(deep=False)
-
-    # quick sanity check of the parameters of the clone
-    for name in new_object_params:
-        param1 = new_object_params[name]
-        param2 = params_set[name]
-        if param1 is not param2:
-            raise RuntimeError(
-                "Cannot clone object %s, as the constructor "
-                "either does not set or modifies parameter %s" % (estimator, name)
-            )
-
-    # This is an extension to the original sklearn implementation
-    if isinstance(estimator, BaseObject) and estimator.get_config()["clone_config"]:
-        new_object.set_config(**estimator.get_config())
-
-    if clone_attrs is not None:
-        for attr in clone_attrs:
-            if hasattr(estimator, attr):
-                setattr(new_object, attr, getattr(estimator, attr))
-
-    return new_object
+    raise RuntimeError(
+        "Error in skbase _clone, catch-all plugin did not catch all "
+        "remaining cases. This is likely due to custom modification of the module."
+    )
 
 
 def _check_clone(original, clone):
@@ -130,4 +117,3 @@ def _check_clone(original, clone):
             f"to self and not mutate them, but this is not the case. "
             f"Error on equality check of arguments (x) vs parameters (y): {msg}"
         )
-

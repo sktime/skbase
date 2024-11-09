@@ -176,7 +176,7 @@ class BaseObject(_FlagManager):
         ------
         RuntimeError if the clone is non-conforming, due to faulty ``__init__``.
         """
-        self_clone = _clone(self)
+        self_clone = _clone(self, base_cls=BaseObject)
         if self.get_config()["check_clone"]:
             _check_clone(original=self, clone=self_clone)
         return self_clone
