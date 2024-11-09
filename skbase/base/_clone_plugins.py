@@ -61,7 +61,7 @@ class BaseCloner:
         """Return a clone of obj."""
         return self._clone(obj)
 
-    def recursive_clone(self, obj):
+    def recursive_clone(self, obj, **kwargs):
         """Recursive call to _clone, for explicit code and to avoid circular imports."""
         from skbase.base._clone_base import _clone
 
@@ -70,6 +70,7 @@ class BaseCloner:
             "clone_plugins": self.clone_plugins,
             "base_cls": self.base_cls,
         }
+        recursion_kwargs.update(kwargs)
         return _clone(obj, **recursion_kwargs)
 
 
@@ -116,7 +117,7 @@ def _default_clone(estimator, recursive_clone):
     klass = estimator.__class__
     new_object_params = estimator.get_params(deep=False)
     for name, param in new_object_params.items():
-        new_object_params[name] = recursive_clone(param)
+        new_object_params[name] = recursive_clone(param, safe=False)
     new_object = klass(**new_object_params)
     params_set = new_object.get_params(deep=False)
 
