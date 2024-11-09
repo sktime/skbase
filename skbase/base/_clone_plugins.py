@@ -14,16 +14,27 @@ Each element of DEFAULT_CLONE_PLUGINS inherits from BaseCloner, with methods:
 * check(obj) -> boolean - fast checker whether plugin applies
 * clone(obj) -> type(obj) - method to clone obj
 """
+from functools import lru_cache
 from inspect import isclass
 
-from skbase.utils.dependencies import _check_soft_dependencies
-from skbase.utils.dependencies._import import _safe_import
 
-SKLEARN_PRESENT = _check_soft_dependencies("scikit-learn")
-
-# _sklearn_clone is imported at module level for speed
+# imports wrapped in functions to avoid exceptions on skbase init
 # wrapped in _safe_import to avoid exceptions on skbase init
-_sklearn_clone = _safe_import("sklearn.base:clone", condition=SKLEARN_PRESENT)
+@lru_cache(maxsize=None)
+def _is_sklearn_present():
+    """Check whether scikit-learn is present."""
+    from skbase.utils.dependencies import _check_soft_dependencies
+    from skbase.utils.dependencies._import import _safe_import
+
+    return _check_soft_dependencies("scikit-learn")
+
+
+@lru_cache(maxsize=None)
+def _get_sklearn_clone():
+    """Get sklearn's clone function."""
+    from skbase.utils.dependencies._import import _safe_import
+
+    return _safe_import("sklearn.base:clone", condition=_is_sklearn_present())
 
 
 class BaseCloner:
@@ -146,7 +157,7 @@ class _CloneSklearn(BaseCloner):
 
     def _check(self, obj):
         """Check whether the plugin applies to obj."""
-        if not SKLEARN_PRESENT:
+        if not _is_sklearn_present():
             return False
 
         from sklearn.base import BaseEstimator
@@ -155,6 +166,7 @@ class _CloneSklearn(BaseCloner):
 
     def _clone(self, obj):
         """Return a clone of obj."""
+        _sklearn_clone = _get_sklearn_clone()
         return _sklearn_clone(obj)
 
 
