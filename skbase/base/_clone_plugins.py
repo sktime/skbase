@@ -17,16 +17,13 @@ Each element of DEFAULT_CLONE_PLUGINS inherits from BaseCloner, with methods:
 from inspect import isclass
 
 from skbase.utils.dependencies import _check_soft_dependencies
+from skbase.utils.dependencies._import import _safe_import
 
 SKLEARN_PRESENT = _check_soft_dependencies("scikit-learn")
 
 # _sklearn_clone is imported at module level for speed
-# we wrap this in try/except to avoid exceptions on skbase init
-if SKLEARN_PRESENT:
-    try:
-        from sklearn import clone as _sklearn_clone
-    except Exception:
-        pass
+# wrapped in _safe_import to avoid exceptions on skbase init
+_sklearn_clone = _safe_import("sklearn.base:clone", condition=SKLEARN_PRESENT)
 
 
 class BaseCloner:
