@@ -99,6 +99,7 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
         "BaseObject",
     ),
     "skbase.base._base": ("BaseEstimator", "BaseObject"),
+    "skbase.base._clone_plugins": ("BaseCloner",),
     "skbase.base._meta": (
         "BaseMetaObject",
         "BaseMetaObjectMixin",
@@ -187,10 +188,6 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
 SKBASE_FUNCTIONS_BY_MODULE.update(
     {
-        "skbase.base._base": (
-            "_clone",
-            "_check_clone",
-        ),
         "skbase.base._pretty_printing._object_html_repr": (
             "_get_visual_block",
             "_object_html_repr",
