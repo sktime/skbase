@@ -78,14 +78,7 @@ def _clone(estimator, *, safe=True, clone_plugins=None, base_cls=None):
         # 1. claims it is applicable, via check
         # 2. does not produce an Exception when cloning
         if cloner.check(obj=estimator):
-            try:
-                return cloner.clone(obj=estimator)
-            # only if we are at the last cloner, we raise the exception
-            except Exception as e:
-                if type(cloner) is _CloneCatchAll:
-                    raise e
-                else:
-                    pass
+            return cloner.clone(obj=estimator)
 
     raise RuntimeError(
         "Error in skbase _clone, catch-all plugin did not catch all "
