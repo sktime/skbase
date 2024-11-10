@@ -230,6 +230,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_check_python_version",
             "_check_estimator_deps",
         ),
+        "skbase.utils.dependencies._import": ("_safe_import",),
         "skbase.utils._iter": (
             "_format_seq_to_str",
             "_remove_type_text",
