@@ -120,6 +120,16 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
 SKBASE_CLASSES_BY_MODULE = SKBASE_PUBLIC_CLASSES_BY_MODULE.copy()
 SKBASE_CLASSES_BY_MODULE.update(
     {
+        "skbase.base._clone_plugins": (
+            "BaseCloner",
+            "_CloneClass",
+            "_CloneSkbase",
+            "_CloneSklearn",
+            "_CloneDict",
+            "_CloneListTupleSet",
+            "_CloneGetParams",
+            "_CloneCatchAll",
+        ),
         "skbase.base._meta": (
             "BaseMetaObject",
             "BaseMetaObjectMixin",
