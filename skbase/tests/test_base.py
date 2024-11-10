@@ -1147,8 +1147,8 @@ def test_clone_sklearn_composite_retains_config():
     composite = ResetTester(a=sklearn_obj_w_config)
     composite_clone = composite.clone()
 
-    assert hasattr(composite_clone, "_sklearn_output_config")
-    assert composite_clone._sklearn_output_config.get("transform", None) == "pandas"
+    assert hasattr(composite_clone.a, "_sklearn_output_config")
+    assert composite_clone.a._sklearn_output_config.get("transform", None) == "pandas"
 
 
 # Tests of BaseObject pretty printing representation inspired by sklearn
