@@ -31,8 +31,24 @@ Core interface changes
   ``_get_clone_plugins`` method, which can return a list of ``BaseCloner`` classes,
   functioning as plugins.
 
-Contents
---------
+Enhancements
+------------
+
+* [ENH] refactor ``_clone`` to a plugin structure (:pr:`381`) :user:`fkiraly`
+* [ENH] add ``_get_clone_plugins`` to allow packages to customize clone plugins
+  (:pr:`383`) :user:`fkiraly`
+
+Maintenance
+-----------
+
+* [MNT] manage ``python 3.8`` end-of-life (:pr:`378`) :user:`fkiraly`
+* [MNT] fix failing ``code-quality`` CI step (:pr:`377`) :user:`fkiraly`
+* [MNT] [Dependabot](deps): Update sphinx-gallery requirement
+  from ``<0.18.0`` to ``<0.19.0`` (:pr:`375`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Update ``sphinx-issues`` requirement
+  from ``<5.0.0`` to ``<6.0.0`` (:pr:`376`) :user:`dependabot`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`379`) :user:`pre-commit-ci`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`382`) :user:`pre-commit-ci`
 
 
 [0.11.0] - 2024-10-07
