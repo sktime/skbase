@@ -176,10 +176,36 @@ class BaseObject(_FlagManager):
         ------
         RuntimeError if the clone is non-conforming, due to faulty ``__init__``.
         """
-        self_clone = _clone(self, base_cls=BaseObject)
+        # get plugins for cloning, if present (empty by default)
+        clone_plugins = self._get_clone_plugins()
+
+        # clone the object
+        self_clone = _clone(self, base_cls=BaseObject, clone_plugins=clone_plugins)
+
+        # check the clone, if check_clone is set (False by default)
         if self.get_config()["check_clone"]:
             _check_clone(original=self, clone=self_clone)
+
+        # return the clone
         return self_clone
+
+    @classmethod
+    def _get_clone_plugins(cls):
+        """Get clone plugins for BaseObject.
+
+        Can be overridden in subclasses to add custom clone plugins.
+
+        If implemented, must return a list of clone plugins for descendants.
+
+        Returns
+        -------
+        list of str
+            List of clone plugins for descendants.
+            Each plugin must inherit from ``BaseCloner``
+            in ``skbase.base._clone_plugins``, and implement
+            the methods ``_check`` and ``_clone``.
+        """
+        return None
 
     @classmethod
     def _get_init_signature(cls):
