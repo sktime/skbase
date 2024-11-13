@@ -22,6 +22,8 @@ SKBASE_MODULES = (
     "skbase._nopytest_tests",
     "skbase.base",
     "skbase.base._base",
+    "skbase.base._clone_base",
+    "skbase.base._clone_plugins",
     "skbase.base._meta",
     "skbase.base._pretty_printing",
     "skbase.base._pretty_printing._object_html_repr",
@@ -53,6 +55,7 @@ SKBASE_MODULES = (
     "skbase.utils.deep_equals._deep_equals",
     "skbase.utils.dependencies",
     "skbase.utils.dependencies._dependencies",
+    "skbase.utils.dependencies._import",
     "skbase.utils.random_state",
     "skbase.utils.stderr_mute",
     "skbase.utils.stdout_mute",
@@ -96,6 +99,7 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
         "BaseObject",
     ),
     "skbase.base._base": ("BaseEstimator", "BaseObject"),
+    "skbase.base._clone_plugins": ("BaseCloner",),
     "skbase.base._meta": (
         "BaseMetaObject",
         "BaseMetaObjectMixin",
@@ -116,6 +120,16 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
 SKBASE_CLASSES_BY_MODULE = SKBASE_PUBLIC_CLASSES_BY_MODULE.copy()
 SKBASE_CLASSES_BY_MODULE.update(
     {
+        "skbase.base._clone_plugins": (
+            "BaseCloner",
+            "_CloneClass",
+            "_CloneSkbase",
+            "_CloneSklearn",
+            "_CloneDict",
+            "_CloneListTupleSet",
+            "_CloneGetParams",
+            "_CloneCatchAll",
+        ),
         "skbase.base._meta": (
             "BaseMetaObject",
             "BaseMetaObjectMixin",
@@ -184,10 +198,8 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
 SKBASE_FUNCTIONS_BY_MODULE.update(
     {
-        "skbase.base._base": (
-            "_clone",
-            "_check_clone",
-        ),
+        "skbase.base._clone_base": {"_check_clone", "_clone"},
+        "skbase.base._clone_plugins": ("_default_clone",),
         "skbase.base._pretty_printing._object_html_repr": (
             "_get_visual_block",
             "_object_html_repr",
@@ -218,6 +230,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_check_python_version",
             "_check_estimator_deps",
         ),
+        "skbase.utils.dependencies._import": ("_safe_import",),
         "skbase.utils._iter": (
             "_format_seq_to_str",
             "_remove_type_text",
