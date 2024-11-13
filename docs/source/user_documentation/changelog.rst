@@ -14,6 +14,27 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.12.0] - 2024-11-13
+=====================
+
+Feature release.
+
+Core interface changes
+----------------------
+
+* the logic of ``clone`` has been refactored to a type-based plugin architecture,
+  with plugins inheriting from ``BaseCloner``. The default behaviour of ``clone``
+  remains unchanged, and a new plugin for ``scikit-learn`` estimators has been added,
+  dispatching to ``sklearn`` ``clone``. This change is not breaking, and it fixes
+  some reported bugs around ``sklearn`` config handling.
+* ``clone`` plugins can be customized by extenders by overriding the
+  ``_get_clone_plugins`` method, which can return a list of ``BaseCloner`` classes,
+  functioning as plugins.
+
+Contents
+--------
+
+
 [0.11.0] - 2024-10-07
 =====================
 
