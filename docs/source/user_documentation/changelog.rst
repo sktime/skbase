@@ -17,7 +17,7 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 [0.12.0] - 2024-11-13
 =====================
 
-Feature release.
+Feature release, and python 3.8 End-of-Life update.
 
 Core interface changes
 ----------------------
