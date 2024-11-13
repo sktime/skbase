@@ -197,6 +197,10 @@ class BaseObject(_FlagManager):
 
         If implemented, must return a list of clone plugins for descendants.
 
+        Plugins are loaded ahead of the default plugins, and are used in the order
+        they are returned.
+        This allows extenders to override the default behaviours, if desired.
+
         Returns
         -------
         list of str
