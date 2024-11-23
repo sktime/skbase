@@ -427,8 +427,7 @@ class _MetaObjectMixin:
         if (
             objs is None
             or (not allow_empty and len(objs) == 0)
-            or not (isinstance(objs, list)
-            or (allow_dict and isinstance(objs, dict)))
+            or not (isinstance(objs, list) or (allow_dict and isinstance(objs, dict)))
         ):
             raise TypeError(msg)
 
