@@ -360,6 +360,7 @@ class _MetaObjectMixin:
         cls_type=None,
         allow_dict=False,
         allow_mix=True,
+        allow_empty=False,
         clone=True,
     ):
         """Check that objects is a list of objects or sequence of named objects.
@@ -373,10 +374,14 @@ class _MetaObjectMixin:
             Name of checked attribute in error messages.
         cls_type : class or tuple of classes, default=BaseEstimator.
             class(es) that all objects are checked to be an instance of.
+        allow_dict : bool, default=False
+            Whether ``objs`` can be a dictionary mapping str names to objects.
         allow_mix : bool, default=True
-            Whether mix of objects and (str, objects) is allowed in `objs.`
+            Whether mix of objects and (str, objects) is allowed in ``objs``.
+        allow_empty : bool, default=False
+            Whether ``objs`` can be empty.
         clone : bool, default=True
-            Whether objects or named objects in `objs` are returned as clones
+            Whether objects or named objects in ``objs`` are returned as clones
             (True) or references (False).
 
         Returns
@@ -421,7 +426,7 @@ class _MetaObjectMixin:
 
         if (
             objs is None
-            or len(objs) == 0
+            or (not allow_empty and len(objs) == 0)
             or not (isinstance(objs, list) or (allow_dict and isinstance(objs, dict)))
         ):
             raise TypeError(msg)
