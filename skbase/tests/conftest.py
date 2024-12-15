@@ -272,6 +272,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_get_pkg_version",
             "_get_installed_packages",
             "_normalize_requirement",
+            "_normalize_version",
             "_raise_at_severity",
         ),
         "skbase.utils.random_state": (

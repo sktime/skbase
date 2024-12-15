@@ -13,10 +13,10 @@ from packaging.version import InvalidVersion, Version
 
 def _check_soft_dependencies(
     *packages,
-    package_import_alias="deprecated",
     severity="error",
     obj=None,
     msg=None,
+    normalize_reqs=True,
 ):
     """Check if required soft dependencies are installed and raise error or warning.
 
@@ -52,6 +52,16 @@ def _check_soft_dependencies(
 
     msg : str, or None, default=None
         if str, will override the error message or warning shown with msg
+
+    normalize_reqs : bool, default=True
+        whether to normalize the requirement strings before checking them,
+        by removing build metadata from versions.
+        If set True, pre, post, and dev versions are removed from all version strings.
+
+        Example if True:
+        requirement "my_pkg==2.3.4.post1" will be normalized to "my_pkg==2.3.4";
+        an actual version "my_pkg==2.3.4.post1" will be considered compatible with
+        "my_pkg==2.3.4". If False, the this situation would raise an error.
 
     Raises
     ------
@@ -98,7 +108,8 @@ def _check_soft_dependencies(
     for package in packages:
         try:
             req = Requirement(package)
-            req = _normalize_requirement(req)
+            if normalize_reqs:
+                req = _normalize_requirement(req)
         except InvalidRequirement:
             msg_version = (
                 f"wrong format for package requirement string, "
@@ -112,6 +123,8 @@ def _check_soft_dependencies(
         package_version_req = req.specifier
 
         pkg_env_version = _get_pkg_version(package_name)
+        if normalize_reqs:
+            pkg_env_version = _normalize_version(pkg_env_version)
 
         # if package not present, make the user aware of installation reqs
         if pkg_env_version is None:
@@ -129,7 +142,7 @@ def _check_soft_dependencies(
                 )
             msg = msg + (
                 f"Please run: `pip install {package}` to "
-                f"install the {package} package. "
+                f"install the {package!r} package. "
             )
             # if msg is not None, none of the above is executed,
             # so if msg is passed it overrides the default messages
@@ -309,7 +322,7 @@ def _check_env_marker(obj, package=None, msg=None, severity="error"):
     package : str, default = None
         if given, will be used in error message as package name
     msg : str, optional, default = default message (msg below)
-        error message to be returned in the `ModuleNotFoundError`, overrides default
+        error message to be returned in the ``ModuleNotFoundError``, overrides default
 
     severity : str, "error" (default), "warning", "none"
         whether the check should raise an error, a warning, or nothing
@@ -427,13 +440,10 @@ def _check_estimator_deps(obj, msg=None, severity="error"):
     compatible = compatible and _check_env_marker(obj, severity=severity)
 
     pkg_deps = obj.get_class_tag("python_dependencies", None)
-    pck_alias = obj.get_class_tag("python_dependencies_alias", None)
     if pkg_deps is not None and not isinstance(pkg_deps, list):
         pkg_deps = [pkg_deps]
     if pkg_deps is not None:
-        pkg_deps_ok = _check_soft_dependencies(
-            *pkg_deps, severity=severity, obj=obj, package_import_alias=pck_alias
-        )
+        pkg_deps_ok = _check_soft_dependencies(*pkg_deps, severity=severity, obj=obj)
         compatible = compatible and pkg_deps_ok
 
     return compatible
@@ -456,12 +466,9 @@ def _normalize_requirement(req):
     # Process each specifier in the requirement
     normalized_specs = []
     for spec in req.specifier:
-        # Parse the version and remove the build metadata
-        spec_v = Version(spec.version)
-        version_wo_build_metadata = f"{spec_v.major}.{spec_v.minor}.{spec_v.micro}"
-
         # Create a new specifier without the build metadata
-        normalized_spec = Specifier(f"{spec.operator}{version_wo_build_metadata}")
+        normalized_version = _normalize_version(spec.version)
+        normalized_spec = Specifier(f"{spec.operator}{normalized_version}")
         normalized_specs.append(normalized_spec)
 
     # Reconstruct the specifier set
@@ -471,6 +478,29 @@ def _normalize_requirement(req):
     normalized_req = Requirement(f"{req.name}{normalized_specifier_set}")
 
     return normalized_req
+
+
+def _normalize_version(version):
+    """Normalize version string by removing build metadata.
+
+    Parameters
+    ----------
+    version : packaging.version.Version
+        version object to normalize, e.g., Version("1.2.3+foobar")
+
+    Returns
+    -------
+    normalized_version : packaging.version.Version
+        normalized version object with build metadata removed, e.g., Version("1.2.3")
+    """
+    if version is None:
+        return None
+    if not isinstance(version, Version):
+        version_obj = Version(version)
+    else:
+        version_obj = version
+    normalized_version = f"{version_obj.major}.{version_obj.minor}.{version_obj.micro}"
+    return normalized_version
 
 
 def _raise_at_severity(
