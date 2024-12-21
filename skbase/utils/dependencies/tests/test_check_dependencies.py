@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """Tests for _check_soft_dependencies utility."""
-import pytest
 from unittest.mock import patch
+
+import pytest
 from packaging.requirements import InvalidRequirement
 
-from skbase.utils.dependencies import _check_soft_dependencies, _check_python_version
+from skbase.utils.dependencies import _check_python_version, _check_soft_dependencies
 
 
 def test_check_soft_deps():
@@ -48,6 +49,7 @@ def test_check_soft_deps():
         assert _check_soft_dependencies(
             ("pytest", "!!numpy<~><>0.1.0"), severity="none"
         )
+
 
 @patch("sktime.utils.dependencies._dependencies.sys")
 @pytest.mark.parametrize(
@@ -97,4 +99,3 @@ def test_check_python_version(
                 f"\n\t - prereleases: {prereleases},",
                 f"\nERROR MESSAGE: {exception.msg}",
             )
-
