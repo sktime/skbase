@@ -98,4 +98,4 @@ def test_check_python_version(
                 f"\n\t - mock_release_version: {mock_release_version},",
                 f"\n\t - prereleases: {prereleases},",
                 f"\nERROR MESSAGE: {exception.msg}",
-            )
+            ) from exception
