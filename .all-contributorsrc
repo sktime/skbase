@@ -103,6 +103,15 @@
         "contributions": [
           "maintenance"
         ]
+      },
+      {
+        "login": "Abelarm",
+        "name": "Luigi Giugliano",
+        "avatar_url": "https://avatars.githubusercontent.com/u/6976921?v=4",
+        "profile": "https://github.com/Abelarm",
+        "contributions": [
+          "code"
+        ]
       }
   ],
   "projectName": "skbase",
