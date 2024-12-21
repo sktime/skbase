@@ -93,7 +93,7 @@ def test_check_python_version(
 
         if not expect_exception or not exception.msg == expected_msg:
             # Throw Error since exception is not expected or has not the correct message
-            assert False, (
+            raise AssertionError(
                 "ModuleNotFoundError should be NOT raised by:",
                 f"\n\t - mock_release_version: {mock_release_version},",
                 f"\n\t - prereleases: {prereleases},",
