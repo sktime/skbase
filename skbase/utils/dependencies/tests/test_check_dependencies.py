@@ -51,7 +51,7 @@ def test_check_soft_deps():
         )
 
 
-@patch("sktime.utils.dependencies._dependencies.sys")
+@patch("skbase.utils.dependencies._dependencies.sys")
 @pytest.mark.parametrize(
     "mock_release_version, prereleases, expect_exception",
     [
