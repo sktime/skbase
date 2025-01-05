@@ -33,8 +33,8 @@ Contents
 Contributors
 ------------
 
-:user:`fkiraly`,
-:user:`Abelarm`
+:user:`Abelarm`,
+:user:`fkiraly`
 
 
 [0.12.0] - 2024-11-13
