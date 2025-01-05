@@ -17,6 +17,25 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 [0.12.1] - 2025-01-05
 =====================
 
+Minor release with maintenance updates, features, and bugfixes.
+
+Contents
+--------
+
+* [ENH] ``allow_empty`` option in ``_MetaObjectMixin._check_objects``
+  (:pr:`386`) :user:`fkiraly`
+* [ENH] sync dependency checker utilities with ``sktime`` (:pr:`388`) :user:`fkiraly`
+* [BUG] Accepting prereleases as valid python version (:pr:`389`) :user:`Abelarm`
+* [MNT] [Dependabot](deps): Bump ``codecov/codecov-action`` from ``4`` to ``5``
+  (:pr:`385`) :user:`dependabot`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`387`) :user:`pre-commit-ci`
+
+Contributors
+------------
+
+:user:`fkiraly`,
+:user:`Abelarm`
+
 
 [0.12.0] - 2024-11-13
 =====================
