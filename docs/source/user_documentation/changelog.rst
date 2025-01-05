@@ -14,6 +14,10 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.12.1] - 2025-01-05
+=====================
+
+
 [0.12.0] - 2024-11-13
 =====================
 
