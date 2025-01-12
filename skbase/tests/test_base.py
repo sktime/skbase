@@ -80,6 +80,8 @@ from skbase.base import BaseEstimator, BaseObject
 from skbase.tests.conftest import Child, Parent
 from skbase.tests.mock_package.test_mock_package import CompositionDummy
 from skbase.utils.dependencies import _check_soft_dependencies
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.preprocessing import StandardScaler
 
 
 # TODO: Determine if we need to add sklearn style test of
@@ -1082,10 +1084,6 @@ def test_clone_class_rather_than_instance_raises_error(
     msg = "You should provide an instance of scikit-learn estimator"
     with pytest.raises(TypeError, match=msg):
         clone(fixture_class_parent)
-
-
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.preprocessing import StandardScaler
 
 
 @pytest.mark.skipif(
