@@ -1028,9 +1028,9 @@ def test_nested_config_after_clone_tags(clone_config):
     [
         None,
         np.array([]),
-    ]
+    ],
 )
-def test_clone_none_and_empty_array(fixture_class_parent: Type[Parent],c_value):
+def test_clone_none_and_empty_array(fixture_class_parent: Type[Parent], c_value):
     from sklearn.base import clone
 
     base_obj = fixture_class_parent(c_value)
@@ -1053,12 +1053,12 @@ def test_clone_none_and_empty_array(fixture_class_parent: Type[Parent],c_value):
 )
 def test_clone_nan_sparse_matrix(fixture_class_parent: Type[Parent], c_value):
     from sklearn.base import clone
+
     base_obj = fixture_class_parent(c=c_value)
     new_base_obj = clone(base_obj)
     new_base_obj2 = base_obj.clone()
     np.testing.assert_array_equal(base_obj.c, new_base_obj.c)
     np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
-    
 
 
 def test_clone_estimator_types(fixture_class_parent: Type[Parent]):
@@ -1067,6 +1067,7 @@ def test_clone_estimator_types(fixture_class_parent: Type[Parent]):
     new_base_obj = base_obj.clone()
 
     assert base_obj.c == new_base_obj.c
+
 
 @pytest.mark.skipif(
     not _check_soft_dependencies("scikit-learn", severity="none"),
@@ -1082,8 +1083,10 @@ def test_clone_class_rather_than_instance_raises_error(
     with pytest.raises(TypeError, match=msg):
         clone(fixture_class_parent)
 
+
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.preprocessing import StandardScaler
+
 
 @pytest.mark.skipif(
     not _check_soft_dependencies("scikit-learn", severity="none"),
@@ -1106,7 +1109,8 @@ from sklearn.preprocessing import StandardScaler
             None,
             lambda composite, composite_clone: [
                 hasattr(composite_clone.a, "_sklearn_output_config"),
-                composite_clone.a._sklearn_output_config.get("transform", None) == "pandas",
+                composite_clone.a._sklearn_output_config.get("transform", None)
+                == "pandas",
             ],
             "Test that clone retains sklearn config if inside skbase composite.",
         ),
@@ -1117,7 +1121,7 @@ def test_clone_sklearn_composites_retains_config(
 ):
     """Test cloning behavior with various sklearn composites."""
     composite = ResetTester(a=sklearn_obj)
-    
+
     if param_updates:
         composite_set = composite.clone().set_params(**param_updates)
         results = assertions(composite, composite_set)
