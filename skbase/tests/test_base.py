@@ -51,11 +51,10 @@ __all__ = [
     "test_clone",
     "test_clone_2",
     "test_clone_raises_error_for_nonconforming_objects",
-    "test_clone_none_and_empty_array",
-    "test_clone_nan_sparse_matrix",
+    "test_clone_none_and_empty_array_nan_sparse_matrix",
     "test_clone_estimator_types",
     "test_clone_class_rather_than_instance_raises_error",
-    "test_clone_sklearn_composites_retains_config",
+    "test_clone_sklearn_composite",
     "test_baseobject_repr",
     "test_baseobject_str",
     "test_baseobject_repr_mimebundle_",
@@ -75,8 +74,6 @@ from typing import Any, Dict, Type
 import numpy as np
 import pytest
 import scipy.sparse as sp
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.preprocessing import StandardScaler
 
 from skbase.base import BaseEstimator, BaseObject
 from skbase.tests.conftest import Child, Parent
@@ -1020,45 +1017,26 @@ def test_nested_config_after_clone_tags(clone_config):
         assert "foo" not in test_obj_clone.get_config().keys()
         assert "foo" not in test_obj_iterable_clone.get_config().keys()
 
-
 @pytest.mark.skipif(
     not _check_soft_dependencies("scikit-learn", severity="none"),
-    reason="skip test if sklearn is not available",
-)  # sklearn is part of the dev dependency set, test should be executed with that
+    reason="skip test if sklearn is not available",  
+)# sklearn is part of the dev dependency set, test should be executed with that
 @pytest.mark.parametrize(
     "c_value",
     [
         None,
         np.array([]),
-    ],
-)
-def test_clone_none_and_empty_array(fixture_class_parent: Type[Parent], c_value):
-    from sklearn.base import clone
-
-    base_obj = fixture_class_parent(c_value)
-    new_base_obj = clone(base_obj)
-    new_base_obj2 = base_obj.clone()
-    np.testing.assert_array_equal(base_obj.c, new_base_obj.c)
-    np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
-
-
-@pytest.mark.skipif(
-    not _check_soft_dependencies("scikit-learn", severity="none"),
-    reason="skip test if sklearn is not available",
-)
-@pytest.mark.parametrize(
-    "c_value",
-    [
         sp.csr_matrix(np.array([[0]])),
         np.nan,
-    ],
+    ]
 )
-def test_clone_nan_sparse_matrix(fixture_class_parent: Type[Parent], c_value):
-    from sklearn.base import clone
 
+def test_clone_none_and_empty_array_nan_sparse_matrix(fixture_class_parent: Type[Parent], c_value):
+    from sklearn.base import clone
     base_obj = fixture_class_parent(c=c_value)
     new_base_obj = clone(base_obj)
     new_base_obj2 = base_obj.clone()
+
     np.testing.assert_array_equal(base_obj.c, new_base_obj.c)
     np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
 
@@ -1086,49 +1064,37 @@ def test_clone_class_rather_than_instance_raises_error(
         clone(fixture_class_parent)
 
 
+
 @pytest.mark.skipif(
     not _check_soft_dependencies("scikit-learn", severity="none"),
     reason="skip test if sklearn is not available",
-)
-@pytest.mark.parametrize(
-    "sklearn_obj, param_updates, assertions, description",
-    [
-        (
-            GradientBoostingRegressor(random_state=5, learning_rate=0.02),
-            {"a__random_state": 42},
-            lambda composite, composite_set: [
-                composite.get_params()["a__random_state"] == 5,
-                composite_set.get_params()["a__random_state"] == 42,
-            ],
-            "Test clone with a composite of sklearn and skbase.",
-        ),
-        (
-            StandardScaler().set_output(transform="pandas"),
-            None,
-            lambda composite, composite_clone: [
-                hasattr(composite_clone.a, "_sklearn_output_config"),
-                composite_clone.a._sklearn_output_config.get("transform", None)
-                == "pandas",
-            ],
-            "Test that clone retains sklearn config if inside skbase composite.",
-        ),
-    ],
-)
-def test_clone_sklearn_composites_retains_config(
-    sklearn_obj, param_updates, assertions, description
-):
-    """Test cloning behavior with various sklearn composites."""
+)  # sklearn is part of the dev dependency set, test should be executed with that
+def test_clone_sklearn_composite():
+    """Test clone with a composite of sklearn and skbase."""
+    from sklearn.ensemble import GradientBoostingRegressor
+
+    sklearn_obj = GradientBoostingRegressor(random_state=5, learning_rate=0.02)
     composite = ResetTester(a=sklearn_obj)
+    composite_set = composite.clone().set_params(a__random_state=42)
+    assert composite.get_params()["a__random_state"] == 5
+    assert composite_set.get_params()["a__random_state"] == 42
 
-    if param_updates:
-        composite_set = composite.clone().set_params(**param_updates)
-        results = assertions(composite, composite_set)
-    else:
-        composite_clone = composite.clone()
-        results = assertions(composite, composite_clone)
 
-    for result in results:
-        assert result
+@pytest.mark.skipif(
+    not _check_soft_dependencies("scikit-learn", severity="none"),
+    reason="skip test if sklearn is not available",
+)  # sklearn is part of the dev dependency set, test should be executed with that
+def test_clone_sklearn_composite_retains_config():
+    """Test that clone retains sklearn config if inside skbase composite."""
+    from sklearn.preprocessing import StandardScaler
+
+    sklearn_obj_w_config = StandardScaler().set_output(transform="pandas")
+
+    composite = ResetTester(a=sklearn_obj_w_config)
+    composite_clone = composite.clone()
+
+    assert hasattr(composite_clone.a, "_sklearn_output_config")
+    assert composite_clone.a._sklearn_output_config.get("transform", None) == "pandas"
 
 
 # Tests of BaseObject pretty printing representation inspired by sklearn
