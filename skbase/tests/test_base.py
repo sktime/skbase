@@ -1017,10 +1017,11 @@ def test_nested_config_after_clone_tags(clone_config):
         assert "foo" not in test_obj_clone.get_config().keys()
         assert "foo" not in test_obj_iterable_clone.get_config().keys()
 
+
 @pytest.mark.skipif(
     not _check_soft_dependencies("scikit-learn", severity="none"),
-    reason="skip test if sklearn is not available",  
-)# sklearn is part of the dev dependency set, test should be executed with that
+    reason="skip test if sklearn is not available",
+)  # sklearn is part of the dev dependency set, test should be executed with that
 @pytest.mark.parametrize(
     "c_value",
     [
@@ -1028,11 +1029,13 @@ def test_nested_config_after_clone_tags(clone_config):
         np.array([]),
         sp.csr_matrix(np.array([[0]])),
         np.nan,
-    ]
+    ],
 )
-
-def test_clone_none_and_empty_array_nan_sparse_matrix(fixture_class_parent: Type[Parent], c_value):
+def test_clone_none_and_empty_array_nan_sparse_matrix(
+    fixture_class_parent: Type[Parent], c_value
+):
     from sklearn.base import clone
+
     base_obj = fixture_class_parent(c=c_value)
     new_base_obj = clone(base_obj)
     new_base_obj2 = base_obj.clone()
@@ -1062,7 +1065,6 @@ def test_clone_class_rather_than_instance_raises_error(
     msg = "You should provide an instance of scikit-learn estimator"
     with pytest.raises(TypeError, match=msg):
         clone(fixture_class_parent)
-
 
 
 @pytest.mark.skipif(
