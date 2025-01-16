@@ -29,7 +29,7 @@
     },
     {
       "login": "mloning",
-      "name": "Markus Löning",
+      "name": "Markus L\u00f6ning",
       "avatar_url": "https://avatars3.githubusercontent.com/u/21020482?v=4",
       "profile": "https://github.com/mloning",
       "contributions": [
@@ -43,95 +43,119 @@
       ]
     },
     {
-        "login": "RNKuhns",
-        "name": "Ryan Kuhns",
-        "avatar_url": "https://avatars0.githubusercontent.com/u/26907244?v=4",
-        "profile": "https://github.com/rnkuhns",
-        "contributions": [
-          "bug",
-          "code",
-          "doc",
-          "design",
-          "example",
-          "ideas",
-          "maintenance",
-          "projectManagement",
-          "review",
-          "test"
-        ]
-      },
-      {
-        "login": "tpvasconcelos",
-        "name": "Tomas P. de Vasconcelos",
-        "avatar_url": "https://avatars.githubusercontent.com/u/17701527?v=4",
-        "profile": "https://github.com/tpvasconcelos",
-        "contributions": [
-          "bug",
-          "code",
-          "doc",
-          "ideas",
-          "maintenance",
-          "test"
-        ]
-      },
-      {
-        "login": "MBristle",
-        "name": "Mirko Bristle",
-        "avatar_url": "https://avatars.githubusercontent.com/MBristle",
-        "profile": "https://github.com/MBristle",
-        "contributions": [
-          "bug",
-          "code"
-        ]
-      },
-      {
-        "login": "yarnabrina",
-        "name": "Anirban Ray",
-        "avatar_url": "https://avatars.githubusercontent.com/u/39331844?v=4",
-        "profile": "https://github.com/yarnabrina",
-        "contributions": [
-          "code",
-          "maintenance",
-          "test"
-        ]
-      },
-      {
-        "login": "achieveordie",
-        "name": "Sagar Mishra",
-        "avatar_url": "https://avatars.githubusercontent.com/u/54197164?v=4",
-        "profile": "https://github.com/achieveordie",
-        "contributions": [
-          "doc"
-        ]
-      },
-      {
-        "login": "XinyuWuu",
-        "name": "Xinyu Wu",
-        "avatar_url": "https://avatars.githubusercontent.com/u/57612792?v=4",
-        "profile": "https://github.com/XinyuWuu",
-        "contributions": [
-          "code"
-        ]
-      },
-      {
-        "login": "szepeviktor",
-        "name": "Viktor Szépe",
-        "avatar_url": "https://avatars.githubusercontent.com/u/952007?v=4",
-        "profile": "https://github.com/szepeviktor",
-        "contributions": [
-          "maintenance"
-        ]
-      },
-      {
-        "login": "Abelarm",
-        "name": "Luigi Giugliano",
-        "avatar_url": "https://avatars.githubusercontent.com/u/6976921?v=4",
-        "profile": "https://github.com/Abelarm",
-        "contributions": [
-          "bug",
-          "code"
-        ]
-      }
+      "login": "RNKuhns",
+      "name": "Ryan Kuhns",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/26907244?v=4",
+      "profile": "https://github.com/rnkuhns",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "design",
+        "example",
+        "ideas",
+        "maintenance",
+        "projectManagement",
+        "review",
+        "test"
+      ]
+    },
+    {
+      "login": "tpvasconcelos",
+      "name": "Tomas P. de Vasconcelos",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17701527?v=4",
+      "profile": "https://github.com/tpvasconcelos",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "ideas",
+        "maintenance",
+        "test"
+      ]
+    },
+    {
+      "login": "MBristle",
+      "name": "Mirko Bristle",
+      "avatar_url": "https://avatars.githubusercontent.com/MBristle",
+      "profile": "https://github.com/MBristle",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    },
+    {
+      "login": "yarnabrina",
+      "name": "Anirban Ray",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39331844?v=4",
+      "profile": "https://github.com/yarnabrina",
+      "contributions": [
+        "code",
+        "maintenance",
+        "test"
+      ]
+    },
+    {
+      "login": "achieveordie",
+      "name": "Sagar Mishra",
+      "avatar_url": "https://avatars.githubusercontent.com/u/54197164?v=4",
+      "profile": "https://github.com/achieveordie",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "XinyuWuu",
+      "name": "Xinyu Wu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/57612792?v=4",
+      "profile": "https://github.com/XinyuWuu",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "szepeviktor",
+      "name": "Viktor Sz\u00e9pe",
+      "avatar_url": "https://avatars.githubusercontent.com/u/952007?v=4",
+      "profile": "https://github.com/szepeviktor",
+      "contributions": [
+        "maintenance"
+      ]
+    },
+    {
+      "login": "Abelarm",
+      "name": "Luigi Giugliano",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6976921?v=4",
+      "profile": "https://github.com/Abelarm",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    },
+    {
+      "login": "pre-commit-ci[bot]",
+      "name": "pre-commit-ci[bot]",
+      "avatar_url": "https://avatars.githubusercontent.com/in/68672?v=4",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "dependabot[bot]",
+      "name": "dependabot[bot]",
+      "avatar_url": "https://avatars.githubusercontent.com/in/29110?v=4",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "lgtm-migrator",
+      "name": "lgtm-migrator",
+      "avatar_url": "https://avatars.githubusercontent.com/u/116650770?v=4",
+      "contributions": [
+        "code"
+      ]
+    }
   ],
   "projectName": "skbase",
   "projectOwner": "sktime",

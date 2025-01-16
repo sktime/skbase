@@ -53,3 +53,35 @@ or, if you want to install with the maximum set of dependencies, use:
 ```bash
 pip install scikit-base[all_extras]
 ```
+
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+
+This project follows the
+[all-contributors](https://github.com/all-contributors/all-contributors) specification.
+Contributions of any kind welcome!
+
+Thanks goes to these wonderful people
+([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START -->
+- [RNKuhns](https://github.com/RNKuhns) ![code](https://img.shields.io/badge/CONTRIBUTIONS-502-orange)
+- [fkiraly](https://github.com/fkiraly) ![code](https://img.shields.io/badge/CONTRIBUTIONS-320-orange)
+- [pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci) ![bot](https://img.shields.io/badge/CONTRIBUTIONS-57-orange)
+- [dependabot[bot]](https://github.com/apps/dependabot) ![bot](https://img.shields.io/badge/CONTRIBUTIONS-23-orange)
+- [tpvasconcelos](https://github.com/tpvasconcelos) ![code](https://img.shields.io/badge/CONTRIBUTIONS-4-orange)
+- [yarnabrina](https://github.com/yarnabrina) ![code](https://img.shields.io/badge/CONTRIBUTIONS-2-orange)
+- [szepeviktor](https://github.com/szepeviktor) ![code](https://img.shields.io/badge/CONTRIBUTIONS-2-orange)
+- [lgtm-migrator](https://github.com/lgtm-migrator) ![bot](https://img.shields.io/badge/CONTRIBUTIONS-1-orange)
+- [Abelarm](https://github.com/Abelarm) ![code](https://img.shields.io/badge/CONTRIBUTIONS-1-orange)
+- [MBristle](https://github.com/MBristle) ![code](https://img.shields.io/badge/CONTRIBUTIONS-1-orange)
+- [achieveordie](https://github.com/achieveordie) ![code](https://img.shields.io/badge/CONTRIBUTIONS-1-orange)
+- [XinyuWuu](https://github.com/XinyuWuu) ![code](https://img.shields.io/badge/CONTRIBUTIONS-1-orange)
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://allcontributors.org) specification.
