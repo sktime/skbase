@@ -31,3 +31,4 @@ jobs:
       - name: Echo Results
         if: steps.candp.outputs.changes_detected == 'true'
         run: echo "changes detected and committed."
+        
