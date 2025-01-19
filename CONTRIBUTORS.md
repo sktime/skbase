@@ -1,5 +1,5 @@
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors)
+[![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 This project follows the
@@ -32,9 +32,6 @@ Thanks goes to these wonderful people
     </tr>
     <tr>
       <td align="center" valign="top" width="11.11%"><a href="https://github.com/XinyuWuu"><img src="https://avatars.githubusercontent.com/u/57612792?v=4" width="100px;" alt=""/><br /><sub><b>Xinyu Wu</b></sub></a></td>
-      <td align="center" valign="top" width="11.11%"><a href=""><img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100px;" alt=""/><br /><sub><b>dependabot[bot]</b></sub></a></td>
-      <td align="center" valign="top" width="11.11%"><a href=""><img src="https://avatars.githubusercontent.com/u/116650770?v=4" width="100px;" alt=""/><br /><sub><b>lgtm-migrator</b></sub></a></td>
-      <td align="center" valign="top" width="11.11%"><a href=""><img src="https://avatars.githubusercontent.com/in/68672?v=4" width="100px;" alt=""/><br /><sub><b>pre-commit-ci[bot]</b></sub></a></td>
     </tr>
   </tbody>
 </table>
