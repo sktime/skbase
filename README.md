@@ -53,3 +53,13 @@ or, if you want to install with the maximum set of dependencies, use:
 ```bash
 pip install scikit-base[all_extras]
 ```
+
+## Contributors ✨
+
+This project follows the
+[all-contributors](https://github.com/all-contributors/all-contributors) specification.
+Contributions of any kind welcome!
+
+Thanks go to these wonderful people:
+
+[skbase contributors](https://github.com/sktime/skbase/graphs/contributors)

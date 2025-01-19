@@ -43,95 +43,95 @@
       ]
     },
     {
-        "login": "RNKuhns",
-        "name": "Ryan Kuhns",
-        "avatar_url": "https://avatars0.githubusercontent.com/u/26907244?v=4",
-        "profile": "https://github.com/rnkuhns",
-        "contributions": [
-          "bug",
-          "code",
-          "doc",
-          "design",
-          "example",
-          "ideas",
-          "maintenance",
-          "projectManagement",
-          "review",
-          "test"
-        ]
-      },
-      {
-        "login": "tpvasconcelos",
-        "name": "Tomas P. de Vasconcelos",
-        "avatar_url": "https://avatars.githubusercontent.com/u/17701527?v=4",
-        "profile": "https://github.com/tpvasconcelos",
-        "contributions": [
-          "bug",
-          "code",
-          "doc",
-          "ideas",
-          "maintenance",
-          "test"
-        ]
-      },
-      {
-        "login": "MBristle",
-        "name": "Mirko Bristle",
-        "avatar_url": "https://avatars.githubusercontent.com/MBristle",
-        "profile": "https://github.com/MBristle",
-        "contributions": [
-          "bug",
-          "code"
-        ]
-      },
-      {
-        "login": "yarnabrina",
-        "name": "Anirban Ray",
-        "avatar_url": "https://avatars.githubusercontent.com/u/39331844?v=4",
-        "profile": "https://github.com/yarnabrina",
-        "contributions": [
-          "code",
-          "maintenance",
-          "test"
-        ]
-      },
-      {
-        "login": "achieveordie",
-        "name": "Sagar Mishra",
-        "avatar_url": "https://avatars.githubusercontent.com/u/54197164?v=4",
-        "profile": "https://github.com/achieveordie",
-        "contributions": [
-          "doc"
-        ]
-      },
-      {
-        "login": "XinyuWuu",
-        "name": "Xinyu Wu",
-        "avatar_url": "https://avatars.githubusercontent.com/u/57612792?v=4",
-        "profile": "https://github.com/XinyuWuu",
-        "contributions": [
-          "code"
-        ]
-      },
-      {
-        "login": "szepeviktor",
-        "name": "Viktor Szépe",
-        "avatar_url": "https://avatars.githubusercontent.com/u/952007?v=4",
-        "profile": "https://github.com/szepeviktor",
-        "contributions": [
-          "maintenance"
-        ]
-      },
-      {
-        "login": "Abelarm",
-        "name": "Luigi Giugliano",
-        "avatar_url": "https://avatars.githubusercontent.com/u/6976921?v=4",
-        "profile": "https://github.com/Abelarm",
-        "contributions": [
-          "bug",
-          "code"
-        ]
-      }
+      "login": "RNKuhns",
+      "name": "Ryan Kuhns",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/26907244?v=4",
+      "profile": "https://github.com/rnkuhns",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "design",
+        "example",
+        "ideas",
+        "maintenance",
+        "projectManagement",
+        "review",
+        "test"
+      ]
+    },
+    {
+      "login": "tpvasconcelos",
+      "name": "Tomas P. de Vasconcelos",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17701527?v=4",
+      "profile": "https://github.com/tpvasconcelos",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "ideas",
+        "maintenance",
+        "test"
+      ]
+    },
+    {
+      "login": "MBristle",
+      "name": "Mirko Bristle",
+      "avatar_url": "https://avatars.githubusercontent.com/MBristle",
+      "profile": "https://github.com/MBristle",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    },
+    {
+      "login": "yarnabrina",
+      "name": "Anirban Ray",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39331844?v=4",
+      "profile": "https://github.com/yarnabrina",
+      "contributions": [
+        "code",
+        "maintenance",
+        "test"
+      ]
+    },
+    {
+      "login": "achieveordie",
+      "name": "Sagar Mishra",
+      "avatar_url": "https://avatars.githubusercontent.com/u/54197164?v=4",
+      "profile": "https://github.com/achieveordie",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "XinyuWuu",
+      "name": "Xinyu Wu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/57612792?v=4",
+      "profile": "https://github.com/XinyuWuu",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "szepeviktor",
+      "name": "Viktor Szépe",
+      "avatar_url": "https://avatars.githubusercontent.com/u/952007?v=4",
+      "profile": "https://github.com/szepeviktor",
+      "contributions": [
+        "maintenance"
+      ]
+    },
+    {
+      "login": "Abelarm",
+      "name": "Luigi Giugliano",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6976921?v=4",
+      "profile": "https://github.com/Abelarm",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    }
   ],
   "projectName": "skbase",
   "projectOwner": "sktime",
