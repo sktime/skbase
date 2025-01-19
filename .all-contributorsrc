@@ -29,7 +29,7 @@
     },
     {
       "login": "mloning",
-      "name": "Markus L\u00f6ning",
+      "name": "Markus Löning",
       "avatar_url": "https://avatars3.githubusercontent.com/u/21020482?v=4",
       "profile": "https://github.com/mloning",
       "contributions": [
@@ -115,7 +115,7 @@
     },
     {
       "login": "szepeviktor",
-      "name": "Viktor Sz\u00e9pe",
+      "name": "Viktor Szépe",
       "avatar_url": "https://avatars.githubusercontent.com/u/952007?v=4",
       "profile": "https://github.com/szepeviktor",
       "contributions": [
@@ -129,30 +129,6 @@
       "profile": "https://github.com/Abelarm",
       "contributions": [
         "bug",
-        "code"
-      ]
-    },
-    {
-      "login": "pre-commit-ci[bot]",
-      "name": "pre-commit-ci[bot]",
-      "avatar_url": "https://avatars.githubusercontent.com/in/68672?v=4",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
-      "login": "dependabot[bot]",
-      "name": "dependabot[bot]",
-      "avatar_url": "https://avatars.githubusercontent.com/in/29110?v=4",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
-      "login": "lgtm-migrator",
-      "name": "lgtm-migrator",
-      "avatar_url": "https://avatars.githubusercontent.com/u/116650770?v=4",
-      "contributions": [
         "code"
       ]
     }
