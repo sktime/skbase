@@ -131,30 +131,6 @@
         "bug",
         "code"
       ]
-    },
-    {
-      "login": "pre-commit-ci[bot]",
-      "name": "pre-commit-ci[bot]",
-      "avatar_url": "https://avatars.githubusercontent.com/in/68672?v=4",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
-      "login": "dependabot[bot]",
-      "name": "dependabot[bot]",
-      "avatar_url": "https://avatars.githubusercontent.com/in/29110?v=4",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
-      "login": "lgtm-migrator",
-      "name": "lgtm-migrator",
-      "avatar_url": "https://avatars.githubusercontent.com/u/116650770?v=4",
-      "contributions": [
-        "code"
-      ]
     }
   ],
   "projectName": "skbase",
