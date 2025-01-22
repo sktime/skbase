@@ -1040,8 +1040,12 @@ def test_clone_none_and_empty_array_nan_sparse_matrix(
     new_base_obj = clone(base_obj)
     new_base_obj2 = base_obj.clone()
 
-    np.testing.assert_array_equal(base_obj.c, new_base_obj.c)
-    np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
+    if isinstance(base_obj.c, np.ndarray):
+        np.testing.assert_array_equal(base_obj.c, new_base_obj.c)
+        np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
+    else:
+        assert base_obj.c is new_base_obj.c
+        assert base_obj.c is new_base_obj2.c
 
 
 def test_clone_estimator_types(fixture_class_parent: Type[Parent]):
