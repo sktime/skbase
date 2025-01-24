@@ -51,10 +51,7 @@ __all__ = [
     "test_clone",
     "test_clone_2",
     "test_clone_raises_error_for_nonconforming_objects",
-    "test_clone_param_is_none",
-    "test_clone_empty_array",
-    "test_clone_sparse_matrix",
-    "test_clone_nan",
+    "test_clone_none_and_empty_array_nan_sparse_matrix",
     "test_clone_estimator_types",
     "test_clone_class_rather_than_instance_raises_error",
     "test_clone_sklearn_composite",
@@ -1025,75 +1022,30 @@ def test_nested_config_after_clone_tags(clone_config):
     not _check_soft_dependencies("scikit-learn", severity="none"),
     reason="skip test if sklearn is not available",
 )  # sklearn is part of the dev dependency set, test should be executed with that
-def test_clone_param_is_none(fixture_class_parent: Type[Parent]):
-    """Test clone with keyword parameter set to None."""
+@pytest.mark.parametrize(
+    "c_value",
+    [
+        None,
+        np.array([]),
+        sp.csr_matrix(np.array([[0]])),
+        np.nan,
+    ],
+)
+def test_clone_none_and_empty_array_nan_sparse_matrix(
+    fixture_class_parent: Type[Parent], c_value
+):
     from sklearn.base import clone
 
-    base_obj = fixture_class_parent(c=None)
-    new_base_obj = clone(base_obj)
-    new_base_obj2 = base_obj.clone()
-    assert base_obj.c is new_base_obj.c
-    assert base_obj.c is new_base_obj2.c
-
-
-@pytest.mark.skipif(
-    not _check_soft_dependencies("scikit-learn", severity="none"),
-    reason="skip test if sklearn is not available",
-)  # sklearn is part of the dev dependency set, test should be executed with that
-def test_clone_empty_array(fixture_class_parent: Type[Parent]):
-    """Test clone with keyword parameter is scipy sparse matrix.
-
-    This test is based on scikit-learn regression test to make sure clone
-    works with default parameter set to scipy sparse matrix.
-    """
-    from sklearn.base import clone
-
-    # Regression test for cloning estimators with empty arrays
-    base_obj = fixture_class_parent(c=np.array([]))
-    new_base_obj = clone(base_obj)
-    new_base_obj2 = base_obj.clone()
-    np.testing.assert_array_equal(base_obj.c, new_base_obj.c)
-    np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
-
-
-@pytest.mark.skipif(
-    not _check_soft_dependencies("scikit-learn", severity="none"),
-    reason="skip test if sklearn is not available",
-)  # sklearn is part of the dev dependency set, test should be executed with that
-def test_clone_sparse_matrix(fixture_class_parent: Type[Parent]):
-    """Test clone with keyword parameter is scipy sparse matrix.
-
-    This test is based on scikit-learn regression test to make sure clone
-    works with default parameter set to scipy sparse matrix.
-    """
-    from sklearn.base import clone
-
-    base_obj = fixture_class_parent(c=sp.csr_matrix(np.array([[0]])))
-    new_base_obj = clone(base_obj)
-    new_base_obj2 = base_obj.clone()
-    np.testing.assert_array_equal(base_obj.c, new_base_obj.c)
-    np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
-
-
-@pytest.mark.skipif(
-    not _check_soft_dependencies("scikit-learn", severity="none"),
-    reason="skip test if sklearn is not available",
-)  # sklearn is part of the dev dependency set, test should be executed with that
-def test_clone_nan(fixture_class_parent: Type[Parent]):
-    """Test clone with keyword parameter is np.nan.
-
-    This test is based on scikit-learn regression test to make sure clone
-    works with default parameter set to np.nan.
-    """
-    from sklearn.base import clone
-
-    # Regression test for cloning estimators with default parameter as np.nan
-    base_obj = fixture_class_parent(c=np.nan)
+    base_obj = fixture_class_parent(c=c_value)
     new_base_obj = clone(base_obj)
     new_base_obj2 = base_obj.clone()
 
-    assert base_obj.c is new_base_obj.c
-    assert base_obj.c is new_base_obj2.c
+    if isinstance(base_obj.c, (np.ndarray, type(sp.csr_matrix(np.array([[0]]))))):
+        np.testing.assert_array_equal(base_obj.c, new_base_obj.c)
+        np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
+    else:
+        assert base_obj.c is new_base_obj.c
+        assert base_obj.c is new_base_obj2.c
 
 
 def test_clone_estimator_types(fixture_class_parent: Type[Parent]):
