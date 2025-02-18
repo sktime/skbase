@@ -141,11 +141,21 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "Spinachboul",
+      "name": "Mridul Jain",
+      "avatar_url": "https://avatars.githubusercontent.com/u/105979087?v=4",
+      "profile": "https://github.com/Spinachboul",
+      "contributions": [
+        "maintenance"
+      ]
     }
   ],
   "projectName": "skbase",
   "projectOwner": "sktime",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "commitConvention": "none"
+  "commitConvention": "none",
+  "commitType": "docs"
 }
