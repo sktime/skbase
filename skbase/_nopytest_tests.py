@@ -7,7 +7,7 @@ from skbase.lookup import all_objects
 
 MODULES_TO_IGNORE = ("tests", "testing", "dependencies", "all")
 
-# all_objectscrawls all modules excepting pytest test files
+# all_objects crawls all modules excepting pytest test files
 # if it encounters an unisolated import, it will throw an exception
 results = all_objects(modules_to_ignore=MODULES_TO_IGNORE)
 
