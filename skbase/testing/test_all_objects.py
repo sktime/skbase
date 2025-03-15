@@ -226,7 +226,7 @@ class BaseFixtureGenerator:
     @pytest.fixture(scope="function")
     def object_instance(self, request):
         """object_instance fixture definition for indirect use."""
-        # esetimator_instance is cloned at the start of every test
+        # estimator_instance is cloned at the start of every test
         return request.param.clone()
 
 
