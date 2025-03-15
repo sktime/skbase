@@ -1690,4 +1690,3 @@ class BaseEstimator(BaseObject):
             fitted parameters, keyed by names of fitted parameter
         """
         return self._get_fitted_params_default()
-test foo
