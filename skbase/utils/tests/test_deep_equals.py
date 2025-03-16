@@ -56,6 +56,7 @@ if _check_soft_dependencies("pandas", severity="none"):
         pd.Index([1, 2, 3]),
         pd.Index([2, 3, 4]),
         pd.Index([2, 3, 4, 6]),
+        pd.Index([None]),
     ]
 
     # nested DataFrame example
