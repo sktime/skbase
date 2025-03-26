@@ -267,6 +267,7 @@ def _pandas_equals(x, y, return_msg=False, deep_equals=None):
                 return ret(
                     False, f".dtypes, x.dtypes = {x.dtypes} != y.dtypes = {y.dtypes}"
                 )
+        return ret(x.equals(y), "index.equals, x = {} != y = {}", [x, y])
     else:
         raise RuntimeError(
             f"Unexpected type of pandas object in _pandas_equals: type(x)={type(x)},"
