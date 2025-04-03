@@ -22,7 +22,7 @@ Minor release with maintenance updates, features, and bugfixes.
 Contents
 --------
 
-* [ENH] refactor repetitive clone tests with pytest.mark.parametrize, fixes #170 
+* [ENH] refactor repetitive clone tests with pytest.mark.parametrize, fixes #170
   (:pr:`392`) :user:`JahnaviDhanaSri`
 * [pre-commit.ci] pre-commit autoupdate
   (:pr:`393`, :pr:`397`, :pr:`398`, :pr:`401`, :pr:`403`, :pr:`408`)
