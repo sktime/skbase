@@ -22,13 +22,16 @@ Minor release with maintenance updates, features, and bugfixes.
 Contents
 --------
 
-* [ENH] refactor repetitive clone tests with pytest.mark.parametrize, fixes #170  (:pr:`392`) :user:`JahnaviDhanaSri`
-* [pre-commit.ci] pre-commit autoupdate (:pr:`393`, :pr:`397`, :pr:`398`, :pr:`401`, :pr:`403`, :pr:`408`) :user:`pre-commit-ci`
-* [MNT] [Dependabot](deps): Update ``sphinx-gallery`` requirement from ``<0.19.0`` to ``<0.20.0`` (:pr:`400`) :user:`dependabot`
+* [ENH] refactor repetitive clone tests with pytest.mark.parametrize, fixes #170 
+  (:pr:`392`) :user:`JahnaviDhanaSri`
+* [pre-commit.ci] pre-commit autoupdate
+  (:pr:`393`, :pr:`397`, :pr:`398`, :pr:`401`, :pr:`403`, :pr:`408`)
+  :user:`pre-commit-ci`
+* [MNT] [Dependabot](deps): Update ``sphinx-gallery`` requirement
+  from ``<0.19.0`` to ``<0.20.0`` (:pr:`400`) :user:`dependabot`
 * [MNT] Add CI for updating contributors (:pr:`395`) :user:`Spinachboul`
 * [MNT] remove ``tj-actions`` from CI (:pr:`404`) :user:`fkiraly`
-* [DOC] Update Contributors List and Badge (:pr:`394`) :user:`Spinachboul`
-* [DOC] add Spinachboul as a contributor for maintenance (:pr:`399`) :user:`allcontributors`
+* [DOC] Update Contributors List and Badge (:pr:`394`, :pr:`399`) :user:`Spinachboul`
 * [DOC] minor typo fix in code comment (:pr:`402`) :user:`fkiraly`
 * [DOC] minor documentation fixes (:pr:`405`) :user:`fkiraly`
 * [BUG] fix ``deep_equals`` for ``pandas.Index`` (:pr:`407`) :user:`XinyuWuu`
