@@ -168,3 +168,21 @@ def test_metaestimator_composite(long_steps):
 
     meta_est.set_params(bar__b="something else")
     assert meta_est.get_params()["bar__b"] == "something else"
+
+def test_basemetaobject_set_params_calls_reset():
+    """Test that BaseMetaObject.set_params calls reset."""
+
+    class ResetCheckMetaObject(BaseMetaObject):
+        def __init__(self, a=1, steps=[]):  # ✅ change None → []
+            self.a = a
+            self.steps = steps
+            self.was_reset = False
+            super().__init__()
+
+        def reset(self):
+            self.was_reset = True
+
+    obj = ResetCheckMetaObject()
+    obj.set_params(a=42)
+    assert obj.a == 42
+    assert obj.was_reset is True, "`reset` should be called in set_params for BaseMetaObject"
