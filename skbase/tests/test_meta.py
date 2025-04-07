@@ -169,6 +169,7 @@ def test_metaestimator_composite(long_steps):
     meta_est.set_params(bar__b="something else")
     assert meta_est.get_params()["bar__b"] == "something else"
 
+
 def test_basemetaobject_set_params_calls_reset():
     """Test that BaseMetaObject.set_params calls reset."""
 
@@ -185,4 +186,6 @@ def test_basemetaobject_set_params_calls_reset():
     obj = ResetCheckMetaObject()
     obj.set_params(a=42)
     assert obj.a == 42
-    assert obj.was_reset is True, "`reset` should be called in set_params for BaseMetaObject"
+    assert (
+        obj.was_reset is True
+    ), "`reset` should be called in set_params for BaseMetaObject"
