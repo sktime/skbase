@@ -171,7 +171,8 @@ def test_metaestimator_composite(long_steps):
 
 
 def test_basemetaobject_set_params_calls_reset():
-    """Test that BaseMetaObject.set_params calls reset and updates dependent attributes."""
+    """Test that BaseMetaObject.set_params calls
+    reset and updates dependent attributes."""
 
     class ResetCheckMetaObject(BaseMetaObject):
         def __init__(self, a=1, steps=None):
