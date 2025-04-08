@@ -171,21 +171,21 @@ def test_metaestimator_composite(long_steps):
 
 
 def test_basemetaobject_set_params_calls_reset():
-    """Test that BaseMetaObject.set_params calls reset."""
+    """Test that BaseMetaObject.set_params calls reset and updates dependent attributes."""
 
     class ResetCheckMetaObject(BaseMetaObject):
-        def __init__(self, a=1, steps=[]):  # ✅ change None → []
+        def __init__(self, a=1, steps=None):
             self.a = a
-            self.steps = steps
-            self.was_reset = False
+            self.steps = steps if steps is not None else []
+            self.b_ = 2 * a  # Dependent variable
             super().__init__()
 
         def reset(self):
-            self.was_reset = True
+            self.b_ = 2 * self.a  # Simulate logic that depends on 'a'
 
     obj = ResetCheckMetaObject()
-    obj.set_params(a=42)
-    assert obj.a == 42
-    assert (
-        obj.was_reset is True
-    ), "`reset` should be called in set_params for BaseMetaObject"
+    assert obj.b_ == 2  # 2 * default a
+
+    obj.set_params(a=5)
+    assert obj.a == 5
+    assert obj.b_ == 10, "`reset` should update b_ after a is changed"
