@@ -190,6 +190,7 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
     "skbase.utils._utils": ("subset_dict_keys",),
     "skbase.utils.deep_equals": ("deep_equals",),
     "skbase.utils.deep_equals._deep_equals": ("deep_equals", "deep_equals_custom"),
+    "skbase.utils.doctest_run": ("run_doctest",),
     "skbase.utils.random_state": (
         "check_random_state",
         "sample_dependent_seed",
@@ -233,7 +234,6 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_check_estimator_deps",
         ),
         "skbase.utils.dependencies._import": ("_safe_import",),
-        "skbase.utils.doctest_run": ("run_doctest",),
         "skbase.utils._iter": (
             "_format_seq_to_str",
             "_remove_type_text",
