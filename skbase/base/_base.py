@@ -1201,6 +1201,9 @@ class TagAliaserMixin:
     # key = old tag; value = version in which tag will be removed, as string
     deprecate_dict = {"old_tag": "0.12.0", "tag_to_remove": "99.99.99"}
 
+    # package name used for deprecation warnings
+    _package_name = ""
+
     def __init__(self):
         """Construct TagAliaserMixin."""
         super(TagAliaserMixin, self).__init__()
@@ -1248,6 +1251,7 @@ class TagAliaserMixin:
             tags set by ``set_tags`` or ``clone_tags``.
         """
         collected_tags = super(TagAliaserMixin, cls).get_class_tags()
+        cls._deprecate_tag_warn(collected_tags)
         collected_tags = cls._complete_dict(collected_tags)
         return collected_tags
 
@@ -1328,6 +1332,7 @@ class TagAliaserMixin:
             and new tags from ``_tags_dynamic`` object attribute.
         """
         collected_tags = super(TagAliaserMixin, self).get_tags()
+        self._deprecate_tag_warn(collected_tags)
         collected_tags = self._complete_dict(collected_tags)
         return collected_tags
 
@@ -1458,14 +1463,19 @@ class TagAliaserMixin:
             if tag_name in cls.alias_dict.keys():
                 version = cls.deprecate_dict[tag_name]
                 new_tag = cls.alias_dict[tag_name]
-                msg = f"tag {tag_name!r} will be removed in sktime version {version}"
+                pkg_name = cls._package_name
+                if pkg_name != "":
+                    pkg_name = f"{pkg_name} "
+                msg = (
+                    f"tag {tag_name!r} will be removed in {pkg_name} version {version}"
+                )
                 if new_tag != "":
                     msg += (
                         f" and replaced by {new_tag!r}, please use {new_tag!r} instead"
                     )
                 else:
                     msg += ", please remove code that access or sets {tag_name!r}"
-                warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+                warnings.warn(msg, category=FutureWarning, stacklevel=2)
 
 
 class BaseEstimator(BaseObject):
