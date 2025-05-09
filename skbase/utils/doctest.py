@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Doctest utilities."""
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 
