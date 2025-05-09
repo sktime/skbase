@@ -56,6 +56,7 @@ SKBASE_MODULES = (
     "skbase.utils.dependencies",
     "skbase.utils.dependencies._dependencies",
     "skbase.utils.dependencies._import",
+    "skbase.utils.doctest_run",
     "skbase.utils.random_state",
     "skbase.utils.stderr_mute",
     "skbase.utils.stdout_mute",
@@ -83,6 +84,7 @@ SKBASE_PUBLIC_MODULES = (
     "skbase.utils",
     "skbase.utils.deep_equals",
     "skbase.utils.dependencies",
+    "skbase.utils.doctest_run",
     "skbase.utils.random_state",
     "skbase.utils.stderr_mute",
     "skbase.utils.stdout_mute",
@@ -231,6 +233,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_check_estimator_deps",
         ),
         "skbase.utils.dependencies._import": ("_safe_import",),
+        "skbase.utils.doctest_run": ("doctest_run",),
         "skbase.utils._iter": (
             "_format_seq_to_str",
             "_remove_type_text",
