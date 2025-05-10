@@ -440,7 +440,9 @@ def _get_module_info(
         ):
             continue
         # Otherwise, store info about the class
-        if klass.__module__ == module.__name__ or name in designed_imports:
+        uw_klass = inspect.unwrap(klass)  # unwrap any decorators
+        klassname = uw_klass.__name__
+        if uw_klass.__module__ == module.__name__ or name in designed_imports:
             klass_authors = getattr(klass, "__author__", authors)
             if isinstance(klass_authors, (list, tuple)):
                 klass_authors = ", ".join(klass_authors)
@@ -453,9 +455,9 @@ def _get_module_info(
                 )
             module_classes[name] = {
                 "klass": klass,
-                "name": klass.__name__,
+                "name": klassname,
                 "description": (
-                    "" if klass.__doc__ is None else klass.__doc__.split("\n")[0]
+                    "" if uw_klass.__doc__ is None else uw_klass.__doc__.split("\n")[0]
                 ),
                 "tags": (
                     klass.get_class_tags() if hasattr(klass, "get_class_tags") else None
@@ -464,23 +466,25 @@ def _get_module_info(
                 "is_base_class": klass in package_base_classes,
                 "is_base_object": issubclass(klass, BaseObject),
                 "authors": klass_authors,
-                "module_name": module.__name__,
+                "module_name": uw_klass.__module__,
             }
 
     module_functions: MutableMapping = {}  # of FunctionInfo type
     for name, func in inspect.getmembers(module, inspect.isfunction):
-        if func.__module__ == module.__name__ or name in designed_imports:
+        uw_func = inspect.unwrap(func)  # unwrap any decorators
+        funcname = uw_func.__name__
+        if uw_func.__module__ == module.__name__ or name in designed_imports:
             # Skip a class if non-public items should be excluded and it starts with "_"
-            if exclude_non_public_items and func.__name__.startswith("_"):
+            if exclude_non_public_items and funcname.startswith("_"):
                 continue
             # Otherwise, store info about the class
             module_functions[name] = {
                 "func": func,
-                "name": func.__name__,
+                "name": funcname,
                 "description": (
-                    "" if func.__doc__ is None else func.__doc__.split("\n")[0]
+                    "" if uw_func.__doc__ is None else uw_func.__doc__.split("\n")[0]
                 ),
-                "module_name": module.__name__,
+                "module_name": uw_func.__module__,
             }
 
     # Combine all the information on the module together
@@ -876,7 +880,7 @@ def all_objects(
 
     # remove names if return_names=False
     if not return_names:
-        all_estimators = [estimator for (name, estimator) in all_estimators]
+        all_estimators = [estimator for (_, estimator) in all_estimators]
         columns = ["object"]
     else:
         columns = ["name", "object"]
