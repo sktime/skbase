@@ -440,6 +440,7 @@ def _get_module_info(
         ):
             continue
         # Otherwise, store info about the class
+        klass = inspect.unwrap(klass)  # unwrap any decorators
         if klass.__module__ == module.__name__ or name in designed_imports:
             klass_authors = getattr(klass, "__author__", authors)
             if isinstance(klass_authors, (list, tuple)):
@@ -469,6 +470,7 @@ def _get_module_info(
 
     module_functions: MutableMapping = {}  # of FunctionInfo type
     for name, func in inspect.getmembers(module, inspect.isfunction):
+        func = inspect.unwrap(func)  # unwrap any decorators
         if func.__module__ == module.__name__ or name in designed_imports:
             # Skip a class if non-public items should be excluded and it starts with "_"
             if exclude_non_public_items and func.__name__.startswith("_"):
@@ -876,7 +878,7 @@ def all_objects(
 
     # remove names if return_names=False
     if not return_names:
-        all_estimators = [estimator for (name, estimator) in all_estimators]
+        all_estimators = [estimator for (_, estimator) in all_estimators]
         columns = ["object"]
     else:
         columns = ["name", "object"]
