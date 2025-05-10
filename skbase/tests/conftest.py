@@ -227,6 +227,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_is_non_public_module",
             "_make_dataframe",
             "_walk",
+            "_walk_and_retrieve_all_objs",
         ),
         "skbase.testing.utils.inspect": ("_get_args",),
         "skbase.utils._check": ("_is_scalar_nan",),
