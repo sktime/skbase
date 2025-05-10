@@ -510,7 +510,7 @@ def _get_module_info(
 
 
 def _get_members_uw(module, predicate=None):
-    """Same as inspect.getmembers, but robust to decorators."""
+    """Get members of a module. Same as inspect.getmembers, but robust to decorators."""
     for name, obj in vars(module).items():
         if not callable(obj):
             continue
