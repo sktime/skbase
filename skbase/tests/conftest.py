@@ -203,7 +203,6 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_default_clone",
             "'_get_sklearn_clone",
             "_is_sklearn_present",
-
         ),
         "skbase.base._pretty_printing._object_html_repr": (
             "_get_visual_block",
