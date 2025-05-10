@@ -215,10 +215,7 @@ def _check_soft_dependencies(
             nontrivital_bound.append(pkg_version_req != SpecifierSet(""))
             req_sat.append(_is_version_req_satisfied(pkg_env_version, pkg_version_req))
 
-        def _quote(x):
-            return f"'{x}'"
-
-        package_req_strs = [_quote(x) for x in package_req]
+        package_req_strs = [f"{x!r}" for x in package_req]
         # example: ["'scipy<1.7.0'"] or ["'scipy<1.7.0'", "'numpy'"]
 
         package_str_q = " or ".join(package_req_strs)
