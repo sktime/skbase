@@ -5,7 +5,10 @@ from unittest.mock import patch
 import pytest
 from packaging.requirements import InvalidRequirement
 
-from skbase.utils.dependencies import _check_python_version, _check_soft_dependencies
+from skbase.utils.dependencies import (
+    _check_python_version,
+    _check_soft_dependencies,
+)
 
 
 def test_check_soft_deps():
@@ -48,6 +51,74 @@ def test_check_soft_deps():
     with pytest.raises(InvalidRequirement):
         assert _check_soft_dependencies(
             ("pytest", "!!numpy<~><>0.1.0"), severity="none"
+        )
+
+
+def test_check_soft_dependencies_nested():
+    """Test check_soft_dependencies with ."""
+    ALWAYS_INSTALLED = "pytest"  # noqa: N806
+    ALWAYS_INSTALLED2 = "numpy"  # noqa: N806
+    ALWAYS_INSTALLED_W_V = "pytest>=0.5.0"  # noqa: N806
+    ALWAYS_INSTALLED_W_V2 = "numpy>=0.1.0"  # noqa: N806
+    NEVER_INSTALLED = "nonexistent__package_foo_bar"  # noqa: N806
+    NEVER_INSTALLED_W_V = "pytest<0.1.0"  # noqa: N806
+
+    # Test that the function does not raise an error when all dependencies are installed
+    _check_soft_dependencies(ALWAYS_INSTALLED)
+    _check_soft_dependencies(ALWAYS_INSTALLED, ALWAYS_INSTALLED2)
+    _check_soft_dependencies(ALWAYS_INSTALLED_W_V)
+    _check_soft_dependencies(ALWAYS_INSTALLED_W_V, ALWAYS_INSTALLED_W_V2)
+    _check_soft_dependencies(ALWAYS_INSTALLED, ALWAYS_INSTALLED2, ALWAYS_INSTALLED_W_V2)
+    _check_soft_dependencies([ALWAYS_INSTALLED, ALWAYS_INSTALLED2])
+
+    # Test that error is raised when a dependency is not installed
+    with pytest.raises(ModuleNotFoundError):
+        _check_soft_dependencies(NEVER_INSTALLED)
+    with pytest.raises(ModuleNotFoundError):
+        _check_soft_dependencies(NEVER_INSTALLED, ALWAYS_INSTALLED)
+    with pytest.raises(ModuleNotFoundError):
+        _check_soft_dependencies([ALWAYS_INSTALLED, NEVER_INSTALLED])
+    with pytest.raises(ModuleNotFoundError):
+        _check_soft_dependencies(ALWAYS_INSTALLED, NEVER_INSTALLED_W_V)
+    with pytest.raises(ModuleNotFoundError):
+        _check_soft_dependencies([ALWAYS_INSTALLED, NEVER_INSTALLED_W_V])
+
+    # disjunction cases, "or" - positive cases
+    _check_soft_dependencies([[ALWAYS_INSTALLED, NEVER_INSTALLED]])
+    _check_soft_dependencies(
+        [
+            [ALWAYS_INSTALLED, NEVER_INSTALLED],
+            [ALWAYS_INSTALLED_W_V, NEVER_INSTALLED_W_V],
+            ALWAYS_INSTALLED2,
+        ]
+    )
+
+    # disjunction cases, "or" - negative cases
+    with pytest.raises(ModuleNotFoundError):
+        _check_soft_dependencies([[NEVER_INSTALLED, NEVER_INSTALLED_W_V]])
+    with pytest.raises(ModuleNotFoundError):
+        _check_soft_dependencies(
+            [
+                [NEVER_INSTALLED, NEVER_INSTALLED_W_V],
+                [ALWAYS_INSTALLED, NEVER_INSTALLED],
+                ALWAYS_INSTALLED2,
+            ]
+        )
+    with pytest.raises(ModuleNotFoundError):
+        _check_soft_dependencies(
+            [
+                ALWAYS_INSTALLED2,
+                [ALWAYS_INSTALLED, NEVER_INSTALLED],
+                NEVER_INSTALLED_W_V,
+            ]
+        )
+    with pytest.raises(ModuleNotFoundError):
+        _check_soft_dependencies(
+            [
+                [ALWAYS_INSTALLED, ALWAYS_INSTALLED2],
+                NEVER_INSTALLED,
+                ALWAYS_INSTALLED2,
+            ]
         )
 
 
