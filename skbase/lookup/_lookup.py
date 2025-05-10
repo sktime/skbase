@@ -521,7 +521,7 @@ def _get_members_uw(module, predicate=None):
             continue  # skip circular wrappers or broken decorators
 
         if predicate is not None and not predicate(unwrapped):
-            continue    
+            continue
         yield name, obj
 
 
