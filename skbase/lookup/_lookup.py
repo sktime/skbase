@@ -430,7 +430,7 @@ def _get_module_info(
         authors = ", ".join(authors)
     # Compile information on classes in the module
     module_classes: MutableMapping = {}  # of ClassInfo type
-    for name, klass in inspect.getmembers(module, inspect.isclass):
+    for name, klass in _get_members_uw(module, inspect.isclass):
         # Skip a class if non-public items should be excluded and it starts with "_"
         if (
             (exclude_non_public_items and klass.__name__.startswith("_"))
@@ -470,7 +470,7 @@ def _get_module_info(
             }
 
     module_functions: MutableMapping = {}  # of FunctionInfo type
-    for name, func in inspect.getmembers(module, inspect.isfunction):
+    for name, func in _get_members_uw(module, inspect.isfunction):
         uw_func = inspect.unwrap(func)  # unwrap any decorators
         funcname = uw_func.__name__
         if uw_func.__module__ == module.__name__ or name in designed_imports:
@@ -507,6 +507,22 @@ def _get_module_info(
         ),
     }
     return module_info
+
+
+def _get_members_uw(module, predicate=None):
+    """Same as inspect.getmembers, but robust to decorators."""
+    for name, obj in vars(module).items():
+        if not callable(obj):
+            continue
+
+        try:
+            unwrapped = inspect.unwrap(obj)
+        except ValueError:
+            continue  # skip circular wrappers or broken decorators
+
+        if predicate is not None and not predicate(unwrapped):
+            continue    
+        yield name, obj
 
 
 def get_package_metadata(
