@@ -201,7 +201,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
         "skbase.base._clone_base": {"_check_clone", "_clone"},
         "skbase.base._clone_plugins": (
             "_default_clone",
-            "'_get_sklearn_clone",
+            "_get_sklearn_clone",
             "_is_sklearn_present",
 
         ),
