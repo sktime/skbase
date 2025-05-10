@@ -466,7 +466,7 @@ def _get_module_info(
                 "is_base_class": klass in package_base_classes,
                 "is_base_object": issubclass(klass, BaseObject),
                 "authors": klass_authors,
-                "module_name": uw_klass.__module__.__name__,
+                "module_name": uw_klass.__module__,
             }
 
     module_functions: MutableMapping = {}  # of FunctionInfo type
@@ -484,7 +484,7 @@ def _get_module_info(
                 "description": (
                     "" if uw_func.__doc__ is None else uw_func.__doc__.split("\n")[0]
                 ),
-                "module_name": uw_func.__module__.__name__,
+                "module_name": uw_func.__module__,
             }
 
     # Combine all the information on the module together
