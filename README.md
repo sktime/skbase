@@ -32,7 +32,7 @@ To learn more about the package check out:
 For trouble shooting or more information, see our
 [detailed installation instructions](https://skbase.readthedocs.io/en/latest/user_documentation/installation.html).
 
-- **Operating system**: macOS X · Linux · Windows 8.1 or higher
+- **Operating system**: macOS · Linux · Windows 8.1 or higher
 - **Python version**: Python 3.9, 3.10, 3.11, 3.12, and 3.13
 - **Package managers**: [pip]
 
