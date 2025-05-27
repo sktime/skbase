@@ -22,6 +22,15 @@ Minor release with maintenance updates, features, and bugfixes.
 Contents
 --------
 
+* [ENH] doctest run utility (:pr:`415`) :user:`fkiraly`
+* [ENH] improved ``_check_soft_dependencies`` utility: case sensitivity, disjunction
+  (:pr:`417`) :user:`fkiraly`
+* [MNT] use ``macos-latest`` and ``ubuntu-latest`` in release workflow
+(:pr:`411`) :user:`fkiraly`
+* [MNT] update ``nodevdeps`` runner to latest ``ubuntu`` (:pr:`416`) :user:`fkiraly`
+* [BUG] ensure ``all_objects`` handles decorators properly (:pr:`418`) :user:`fkiraly`
+* [BUG] fix ``TagAliaserMixin`` missing warnings (:pr:`414`) :user:`fkiraly`
+
 
 [0.12.2] - 2025-04-03
 =====================
