@@ -14,7 +14,7 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
-[0.12.3] - 2025-05-27
+[0.12.3] - 2025-05-28
 =====================
 
 Minor release with maintenance updates, features, and bugfixes.
