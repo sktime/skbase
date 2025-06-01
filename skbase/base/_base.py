@@ -106,6 +106,43 @@ class BaseObject(_FlagManager):
 
         return deep_equals(self_params, other_params)
 
+    def __getattr__(self, attr):
+        """Get attribute dunder, defaults to object tags if no attribute found.
+
+        In tag names, the following characters are replaced:
+
+        * colon by double underscore, i.e., ":": "__"
+        * dash by single underscore, i.e., "-": "_"
+        """
+        # early stop for reserved attributes to avoid infinite recursion
+        reserved_attr = attr.endswith("_dynamic")
+        if reserved_attr:
+            return object.__getattribute__(self, attr)
+
+        # get tags and normalized keys
+        tag_dict = self.get_tags()
+
+        # if attribute is in tag_dict, return tag value
+        if attr in tag_dict:
+            return tag_dict[attr]
+
+        # not found, now try normalized keys
+
+        def norm_key(k):
+            """Replace colon by double underscore, dash by single underscore."""
+            return k.replace(
+                ":",
+                "__",
+            ).replace("-", "_")
+
+        tag_dict_norm = {norm_key(k): v for k, v in tag_dict.items()}
+
+        if attr in tag_dict_norm:
+            return tag_dict_norm[attr]
+
+        # otherwise raise the default AttributeError
+        return object.__getattribute__(self, attr)
+
     def reset(self):
         """Reset the object to a clean post-init state.
 
