@@ -190,34 +190,21 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
     if tag_filter is None:
         return True
 
-    type_msg = (
-        "filter_tags argument of all_objects must be "
-        "a dict with str or re.Pattern keys, "
-        "str, or iterable of str, "
-        "but found"
-    )
-
-    if not isinstance(tag_filter, (str, Iterable, dict)):
-        raise TypeError(f"{type_msg} type {type(tag_filter)}")
+    if not isinstance(tag_filter, dict):
+        raise TypeError(
+            "tag_filter argument must be a dict with str keys, "
+            f"but found type {type(tag_filter)}"
+        )
 
     if not hasattr(obj, "get_class_tag"):
         return False
 
-    # case: tag_filter is string
-    if isinstance(tag_filter, str):
-        tag_filter = {tag_filter: True}
-
-    # case: tag_filter is iterable of str but not dict
-    # If a iterable of strings is provided, check that all are in the returned tag_dict
-    if isinstance(tag_filter, Iterable) and not isinstance(tag_filter, dict):
-        if not all(isinstance(t, str) for t in tag_filter):
-            raise ValueError(f"{type_msg} {tag_filter}")
-        tag_filter = dict.fromkeys(tag_filter, True)
-
-    # case: tag_filter is dict
     # check that all keys are str
     if not all(isinstance(t, str) for t in tag_filter.keys()):
-        raise ValueError(f"{type_msg} {tag_filter}")
+        raise ValueError(
+            "tag_filter argument must be a dict with str keys, "
+            f"but found keys: {tag_filter.keys()}"
+        )
 
     cond_sat = True
 
@@ -625,6 +612,19 @@ def get_package_metadata(
         - "contains_base_objects": whether any module classes that
           inherit from ``BaseObject``.
     """
+    # Handle tag_filter conversion from str or list of str to dict
+    if tag_filter is not None:
+        if isinstance(tag_filter, str):
+            tag_filter = {tag_filter: True}
+        elif isinstance(tag_filter, (list, tuple)) and all(
+            isinstance(tag, str) for tag in tag_filter
+        ):
+            tag_filter = dict.fromkeys(tag_filter, True)
+        elif not isinstance(tag_filter, dict):
+            raise TypeError("tag_filter must be a str, list of str, or dict")
+        else:
+            tag_filter = tag_filter.copy()
+
     module, path, loader = _determine_module_path(package_name, path)
     module_info: MutableMapping = {}  # of ModuleInfo type
     # Get any metadata at the top-level of the provided package
@@ -844,6 +844,19 @@ def all_objects(
     Modified version of ``scikit-learn``'s and sktime's ``all_estimators`` to allow
     users to find ``BaseObject`` descendants in ``skbase`` and other packages.
     """
+    # Handle filter_tags conversion from str or list of str to dict
+    if filter_tags is not None:
+        if isinstance(filter_tags, str):
+            filter_tags = {filter_tags: True}
+        elif isinstance(filter_tags, (list, tuple)) and all(
+            isinstance(tag, str) for tag in filter_tags
+        ):
+            filter_tags = dict.fromkeys(filter_tags, True)
+        elif not isinstance(filter_tags, dict):
+            raise TypeError("filter_tags must be a str, list of str, or dict")
+        else:
+            filter_tags = filter_tags.copy()
+
     _, root, _ = _determine_module_path(package_name, path)
     modules_to_ignore = _coerce_to_tuple(modules_to_ignore)
     exclude_objects = _coerce_to_tuple(exclude_objects)

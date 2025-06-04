@@ -374,19 +374,13 @@ def test_filter_by_tags():
     # Even if the class isn't a BaseObject
     assert _filter_by_tags(NotABaseObject) is True
 
-    # Check when tag_filter is a str and present in the class
-    assert _filter_by_tags(ClassWithABTrue, tag_filter="A") is True
-    # Check when tag_filter is str and not present in the class
-    assert _filter_by_tags(Parent, tag_filter="A") is False
+    # Check when tag_filter is a dict with single tag present in the class
+    assert _filter_by_tags(ClassWithABTrue, tag_filter={"A": True}) is True
+    # Check when tag_filter is dict with tag not present in the class
+    assert _filter_by_tags(Parent, tag_filter={"A": True}) is False
 
     # Test functionality when tag present and object doesn't have tag interface
-    assert _filter_by_tags(NotABaseObject, tag_filter="A") is False
-
-    # Test functionality where tag_filter is Iterable of str
-    # all tags in iterable are in the class
-    assert _filter_by_tags(ClassWithABTrue, ("A", "B")) is True
-    # Some tags in iterable are in class and others aren't
-    assert _filter_by_tags(ClassWithABTrue, ("A", "B", "C", "D", "E")) is False
+    assert _filter_by_tags(NotABaseObject, tag_filter={"A": True}) is False
 
     # Test functionality where tag_filter is Dict[str, Any]
     # All keys in dict are in tag_filter and values all match
@@ -396,17 +390,21 @@ def test_filter_by_tags():
     # At least 1 key in dict is not in tag_filter
     assert _filter_by_tags(Parent, {"E": 1, "B": 2}) is False
 
-    # Iterable tags should be all strings
-    with pytest.raises(ValueError, match=r"filter_tags"):
-        assert _filter_by_tags(Parent, ("A", "B", 3))
+    # Tags that aren't dict should raise TypeError
+    with pytest.raises(TypeError, match=r"tag_filter argument must be a dict"):
+        _filter_by_tags(Parent, "A")
 
-    # Tags that aren't iterable have to be strings
-    with pytest.raises(TypeError, match=r"filter_tags"):
-        assert _filter_by_tags(Parent, 7.0)
+    with pytest.raises(TypeError, match=r"tag_filter argument must be a dict"):
+        _filter_by_tags(Parent, ["A", "B"])
+
+    with pytest.raises(TypeError, match=r"tag_filter argument must be a dict"):
+        _filter_by_tags(Parent, 7.0)
 
     # Dictionary tags should have string keys
-    with pytest.raises(ValueError, match=r"filter_tags"):
-        assert _filter_by_tags(Parent, {7: 11})
+    with pytest.raises(
+        ValueError, match=r"tag_filter argument must be a dict with str keys"
+    ):
+        _filter_by_tags(Parent, {7: 11})
 
 
 def test_walk_returns_expected_format(fixture_skbase_root_path):
@@ -996,6 +994,109 @@ def test_all_object_tag_filter(tag_filter):
         assert unfiltered_classes == filtered_classes
     else:
         assert len(unfiltered_classes) > len(filtered_classes)
+
+
+def test_all_objects_filter_tags_preprocessing():
+    """Test filter_tags preprocessing in all_objects function."""
+    # Test string input conversion
+    objs_str = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        filter_tags="A",
+    )
+
+    objs_dict = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        filter_tags={"A": True},
+    )
+
+    # Results should be identical
+    assert objs_str.equals(
+        objs_dict
+    ), "String and dict filter should return same results"
+
+    # Test list of strings input conversion
+    objs_list = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        filter_tags=["A", "B"],
+    )
+
+    objs_dict_multi = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        filter_tags={"A": True, "B": True},
+    )
+
+    # Results should be identical
+    assert objs_list.equals(
+        objs_dict_multi
+    ), "List and dict filter should return same results"
+
+
+@pytest.mark.parametrize(
+    "invalid_filter",
+    [
+        123,  # int
+        12.5,  # float
+        object(),  # object
+        ["A", 123],  # list with non-string
+        ("A", 123),  # tuple with non-string
+    ],
+)
+def test_all_objects_filter_tags_invalid_types(invalid_filter):
+    """Test that invalid filter_tags types raise TypeError."""
+    with pytest.raises(
+        TypeError, match="filter_tags must be a str, list of str, or dict"
+    ):
+        all_objects(
+            package_name="skbase",
+            filter_tags=invalid_filter,
+        )
+
+
+def test_all_objects_filter_tags_empty_list():
+    """Test that empty list filter_tags works correctly."""
+    objs_empty_list = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        filter_tags=[],
+    )
+
+    objs_empty_dict = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        filter_tags={},
+    )
+
+    # Results should be identical
+    assert objs_empty_list.equals(
+        objs_empty_dict
+    ), "Empty list and empty dict should return same results"
+
+
+def test_all_objects_filter_tags_copy_behavior():
+    """Test that filter_tags dict is copied and not modified in place."""
+    original_filter = {"A": "1"}
+    original_copy = original_filter.copy()
+
+    # Call all_objects with the filter
+    all_objects(
+        package_name="skbase",
+        filter_tags=original_filter,
+    )
+
+    # Original dict should be unchanged
+    assert (
+        original_filter == original_copy
+    ), "Original filter_tags dict should not be modified"
 
 
 def test_all_object_tag_filter_regex():
