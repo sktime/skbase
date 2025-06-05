@@ -171,7 +171,7 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
     Parameters
     ----------
     obj : BaseObject, an sktime estimator
-    tag_filter : dict of (str or list of str), default=None
+    tag_filter : str, list[str] or dict of (str or list of str), default=None
         subsets the returned estimators as follows:
         each key/value pair is statement in "and"/conjunction
 
@@ -190,21 +190,23 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
     if tag_filter is None:
         return True
 
-    if not isinstance(tag_filter, dict):
-        raise TypeError(
-            "tag_filter argument must be a dict with str keys, "
-            f"but found type {type(tag_filter)}"
-        )
+    # Handle backward compatibility - convert str/list/tuple to dict
+    if isinstance(tag_filter, str):
+        tag_filter = {tag_filter: True}
+    elif isinstance(tag_filter, (list, tuple)):
+        # Check if all elements are strings (original error handling)
+        if not all(isinstance(tag, str) for tag in tag_filter):
+            raise ValueError("filter_tags")
+        tag_filter = dict.fromkeys(tag_filter, True)
+    elif not isinstance(tag_filter, dict):
+        raise TypeError("filter_tags")
 
     if not hasattr(obj, "get_class_tag"):
         return False
 
     # check that all keys are str
     if not all(isinstance(t, str) for t in tag_filter.keys()):
-        raise ValueError(
-            "tag_filter argument must be a dict with str keys, "
-            f"but found keys: {tag_filter.keys()}"
-        )
+        raise ValueError("filter_tags")
 
     cond_sat = True
 
