@@ -1096,7 +1096,9 @@ def test_all_objects_filter_tags_string_preprocessing():
     )
 
     # Results should be identical
-    assert objs_str.equals(objs_dict), "String and dict filter should return same results"
+    assert objs_str.equals(
+        objs_dict
+    ), "String and dict filter should return same results"
 
 
 def test_all_objects_filter_tags_list_preprocessing():
@@ -1117,7 +1119,9 @@ def test_all_objects_filter_tags_list_preprocessing():
     )
 
     # Results should be identical
-    assert objs_list.equals(objs_dict), "List and dict filter should return same results"
+    assert objs_list.equals(
+        objs_dict
+    ), "List and dict filter should return same results"
 
 
 def test_all_objects_filter_tags_tuple_preprocessing():
@@ -1138,7 +1142,9 @@ def test_all_objects_filter_tags_tuple_preprocessing():
     )
 
     # Results should be identical
-    assert objs_tuple.equals(objs_dict), "Tuple and dict filter should return same results"
+    assert objs_tuple.equals(
+        objs_dict
+    ), "Tuple and dict filter should return same results"
 
 
 def test_get_package_metadata_filter_tags_string_preprocessing():
@@ -1149,14 +1155,14 @@ def test_get_package_metadata_filter_tags_string_preprocessing():
         tag_filter="A",
         classes_to_exclude=TagAliaserMixin,
     )
-    
+
     result_dict = get_package_metadata(
         "skbase",
-        modules_to_ignore="skbase", 
+        modules_to_ignore="skbase",
         tag_filter={"A": True},
         classes_to_exclude=TagAliaserMixin,
     )
-    
+
     # Results should be identical
     assert result_str.keys() == result_dict.keys()
 
@@ -1169,14 +1175,14 @@ def test_get_package_metadata_filter_tags_list_preprocessing():
         tag_filter=["A", "B"],
         classes_to_exclude=TagAliaserMixin,
     )
-    
+
     result_dict = get_package_metadata(
         "skbase",
-        modules_to_ignore="skbase", 
+        modules_to_ignore="skbase",
         tag_filter={"A": True, "B": True},
         classes_to_exclude=TagAliaserMixin,
     )
-    
+
     # Results should be identical
     assert result_list.keys() == result_dict.keys()
 
@@ -1193,7 +1199,9 @@ def test_get_package_metadata_filter_tags_list_preprocessing():
 )
 def test_all_objects_filter_tags_invalid_types_preprocessing(invalid_filter):
     """Test that invalid filter_tags types raise TypeError in all_objects."""
-    with pytest.raises(TypeError, match="filter_tags must be a str, list of str, or dict"):
+    with pytest.raises(
+        TypeError, match="filter_tags must be a str, list of str, or dict"
+    ):
         all_objects(
             package_name="skbase",
             filter_tags=invalid_filter,
@@ -1212,7 +1220,9 @@ def test_all_objects_filter_tags_invalid_types_preprocessing(invalid_filter):
 )
 def test_get_package_metadata_filter_tags_invalid_types_preprocessing(invalid_filter):
     """Test that invalid tag_filter types raise TypeError in get_package_metadata."""
-    with pytest.raises(TypeError, match="tag_filter must be a str, list of str, or dict"):
+    with pytest.raises(
+        TypeError, match="tag_filter must be a str, list of str, or dict"
+    ):
         get_package_metadata(
             "skbase",
             tag_filter=invalid_filter,
@@ -1253,7 +1263,9 @@ def test_filter_by_tags_dict_not_modified():
     )
 
     # Original dict should be unchanged
-    assert original_filter == original_copy, "Original filter_tags dict should not be modified"
+    assert (
+        original_filter == original_copy
+    ), "Original filter_tags dict should not be modified"
 
 
 def test_get_package_metadata_filter_tags_dict_copy_behavior():
@@ -1269,5 +1281,6 @@ def test_get_package_metadata_filter_tags_dict_copy_behavior():
     )
 
     # Original dict should be unchanged
-    assert original_filter == original_copy, "Original tag_filter dict should not be modified"
-
+    assert (
+        original_filter == original_copy
+    ), "Original tag_filter dict should not be modified"
