@@ -1078,6 +1078,109 @@ def test_all_object_class_lookup_invalid_object_types_raises(
 # ==============================================================================
 
 
+def test_all_objects_filter_tags_string_preprocessing():
+    """Test all_objects converts string filter_tags to dict correctly."""
+    # Test string input conversion
+    objs_str = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        filter_tags="A",
+    )
+
+    objs_dict = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        filter_tags={"A": True},
+    )
+
+    # Results should be identical
+    assert objs_str.equals(objs_dict), "String and dict filter should return same results"
+
+
+def test_all_objects_filter_tags_list_preprocessing():
+    """Test all_objects converts list filter_tags to dict correctly."""
+    # Test list of strings input conversion
+    objs_list = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        filter_tags=["A", "B"],
+    )
+
+    objs_dict = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        filter_tags={"A": True, "B": True},
+    )
+
+    # Results should be identical
+    assert objs_list.equals(objs_dict), "List and dict filter should return same results"
+
+
+def test_all_objects_filter_tags_tuple_preprocessing():
+    """Test all_objects converts tuple filter_tags to dict correctly."""
+    # Test tuple of strings input conversion
+    objs_tuple = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        filter_tags=("A", "B"),
+    )
+
+    objs_dict = all_objects(
+        package_name="skbase",
+        return_names=True,
+        as_dataframe=True,
+        filter_tags={"A": True, "B": True},
+    )
+
+    # Results should be identical
+    assert objs_tuple.equals(objs_dict), "Tuple and dict filter should return same results"
+
+
+def test_get_package_metadata_filter_tags_string_preprocessing():
+    """Test get_package_metadata converts string tag_filter to dict correctly."""
+    result_str = get_package_metadata(
+        "skbase",
+        modules_to_ignore="skbase",
+        tag_filter="A",
+        classes_to_exclude=TagAliaserMixin,
+    )
+    
+    result_dict = get_package_metadata(
+        "skbase",
+        modules_to_ignore="skbase", 
+        tag_filter={"A": True},
+        classes_to_exclude=TagAliaserMixin,
+    )
+    
+    # Results should be identical
+    assert result_str.keys() == result_dict.keys()
+
+
+def test_get_package_metadata_filter_tags_list_preprocessing():
+    """Test get_package_metadata converts list tag_filter to dict correctly."""
+    result_list = get_package_metadata(
+        "skbase",
+        modules_to_ignore="skbase",
+        tag_filter=["A", "B"],
+        classes_to_exclude=TagAliaserMixin,
+    )
+    
+    result_dict = get_package_metadata(
+        "skbase",
+        modules_to_ignore="skbase", 
+        tag_filter={"A": True, "B": True},
+        classes_to_exclude=TagAliaserMixin,
+    )
+    
+    # Results should be identical
+    assert result_list.keys() == result_dict.keys()
+
+
 @pytest.mark.parametrize(
     "invalid_filter",
     [
@@ -1088,10 +1191,9 @@ def test_all_object_class_lookup_invalid_object_types_raises(
         ("A", 123),  # tuple with non-string
     ],
 )
-def test_all_objects_filter_tags_invalid_types(invalid_filter):
-    """Test that invalid filter_tags types raise appropriate errors in all_objects."""
-    # The error is raised by _filter_by_tags, but we test through all_objects
-    with pytest.raises((TypeError, ValueError)):
+def test_all_objects_filter_tags_invalid_types_preprocessing(invalid_filter):
+    """Test that invalid filter_tags types raise TypeError in all_objects."""
+    with pytest.raises(TypeError, match="filter_tags must be a str, list of str, or dict"):
         all_objects(
             package_name="skbase",
             filter_tags=invalid_filter,
@@ -1108,14 +1210,9 @@ def test_all_objects_filter_tags_invalid_types(invalid_filter):
         ("A", 123),  # tuple with non-string
     ],
 )
-def test_get_package_metadata_filter_tags_invalid_types(invalid_filter):
-    """Test that invalid tag_filter types raise appropriate errors.
-
-    Tests get_package_metadata function specifically.
-    """
-    # The error is raised by _filter_by_tags, but we test through
-    # get_package_metadata
-    with pytest.raises((TypeError, ValueError)):
+def test_get_package_metadata_filter_tags_invalid_types_preprocessing(invalid_filter):
+    """Test that invalid tag_filter types raise TypeError in get_package_metadata."""
+    with pytest.raises(TypeError, match="tag_filter must be a str, list of str, or dict"):
         get_package_metadata(
             "skbase",
             tag_filter=invalid_filter,
@@ -1149,13 +1246,28 @@ def test_filter_by_tags_dict_not_modified():
     original_filter = {"A": "1"}
     original_copy = original_filter.copy()
 
-    # Call _filter_by_tags with the filter - this happens inside
-    # all_objects/get_package_metadata
-    from skbase.tests.conftest import Parent
-
-    _filter_by_tags(Parent, tag_filter=original_filter)
+    # Call all_objects with the filter
+    all_objects(
+        package_name="skbase",
+        filter_tags=original_filter,
+    )
 
     # Original dict should be unchanged
-    assert (
-        original_filter == original_copy
-    ), "Original filter_tags dict should not be modified"
+    assert original_filter == original_copy, "Original filter_tags dict should not be modified"
+
+
+def test_get_package_metadata_filter_tags_dict_copy_behavior():
+    """Test that tag_filter dict is copied and not modified in place."""
+    original_filter = {"A": "1"}
+    original_copy = original_filter.copy()
+
+    # Call get_package_metadata with the filter
+    get_package_metadata(
+        "skbase",
+        tag_filter=original_filter,
+        classes_to_exclude=TagAliaserMixin,
+    )
+
+    # Original dict should be unchanged
+    assert original_filter == original_copy, "Original tag_filter dict should not be modified"
+
