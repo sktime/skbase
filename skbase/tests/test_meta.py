@@ -171,7 +171,7 @@ def test_metaestimator_composite(long_steps):
 
 
 def test_meta_object_reset_consistency():
-    """Test that BaseMetaObject resets 
+    """Test that BaseMetaObject resets
     consistently with BaseObject during set_params."""
     # Test that BaseMetaObject resets on set_params call like BaseObject
     meta_obj = MetaObjectTester(a=1, b="test", steps=[])
@@ -193,7 +193,7 @@ def test_meta_object_reset_consistency():
 
 
 def test_meta_object_reset_with_steps():
-    """Test that BaseMetaObject resets correctly 
+    """Test that BaseMetaObject resets correctly
     when setting steps and step parameters."""
     step1 = ComponentDummy(a=100, b="step1")
     step2 = ComponentDummy(a=300, b="step2")
@@ -227,7 +227,7 @@ def test_meta_object_reset_with_steps():
 
 
 def test_meta_estimator_reset_consistency():
-    """Test that BaseMetaEstimator resets 
+    """Test that BaseMetaEstimator resets
     consistently with BaseObject during set_params."""
     # Test that BaseMetaEstimator resets on set_params call like BaseObject
     meta_est = MetaEstimatorTester(a=1, b="test", steps=[])
