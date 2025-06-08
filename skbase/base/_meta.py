@@ -233,6 +233,10 @@ class _MetaObjectMixin:
         Self
             Instance of self.
         """
+        if not params:
+            # Simple optimization to gain speed (inspect is slow)
+            return self
+
         # Ensure strict ordering of parameter setting:
         # 1. All steps
         if attr in params:
@@ -245,7 +249,10 @@ class _MetaObjectMixin:
         for name in list(params.keys()):
             if "__" not in name and name in names:
                 self._replace_object(attr, name, params.pop(name))
-        # 3. Step parameters and other initialisation arguments
+
+        # 3. Process remaining parameters and apply reset consistently with BaseObject
+        # Call super().set_params() which will handle reset and nested parameter
+        #  processing
         super().set_params(**params)  # type: ignore
         return self
 

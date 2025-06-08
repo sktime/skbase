@@ -168,3 +168,81 @@ def test_metaestimator_composite(long_steps):
 
     meta_est.set_params(bar__b="something else")
     assert meta_est.get_params()["bar__b"] == "something else"
+
+
+def test_meta_object_reset_consistency():
+    """Test that BaseMetaObject resets 
+    consistently with BaseObject during set_params."""
+    # Test that BaseMetaObject resets on set_params call like BaseObject
+    meta_obj = MetaObjectTester(a=1, b="test", steps=[])
+
+    # Add attributes that should be removed by reset
+    meta_obj.some_attribute = "test"
+    meta_obj.fitted_attribute_ = "fitted"
+
+    assert hasattr(meta_obj, "some_attribute")
+    assert hasattr(meta_obj, "fitted_attribute_")
+
+    # Set parameters - this should trigger reset
+    meta_obj.set_params(a=3)
+
+    # Check that reset occurred
+    assert not hasattr(meta_obj, "some_attribute")
+    assert not hasattr(meta_obj, "fitted_attribute_")
+    assert meta_obj.a == 3
+
+
+def test_meta_object_reset_with_steps():
+    """Test that BaseMetaObject resets correctly 
+    when setting steps and step parameters."""
+    step1 = ComponentDummy(a=100, b="step1")
+    step2 = ComponentDummy(a=300, b="step2")
+
+    meta_obj = MetaObjectTester(
+        a=1, b="main", steps=[("old_step", ComponentDummy(a=999, b="old"))]
+    )
+
+    # Add attributes that should be removed by reset
+    meta_obj.some_attribute = "test"
+    meta_obj.fitted_attribute_ = "fitted"
+
+    assert hasattr(meta_obj, "some_attribute")
+    assert hasattr(meta_obj, "fitted_attribute_")
+
+    # Set both steps parameter and step-specific parameters
+    new_steps = [("step1", step1), ("step2", step2)]
+    meta_obj.set_params(steps=new_steps, step1__a=500)
+
+    # Check that reset occurred
+    assert not hasattr(meta_obj, "some_attribute")
+    assert not hasattr(meta_obj, "fitted_attribute_")
+
+    # Check that parameters were set correctly
+    assert meta_obj.a == 1  # Should remain unchanged
+    assert len(meta_obj.steps) == 2
+    assert meta_obj.steps[0][0] == "step1"
+    assert meta_obj.steps[0][1].a == 500  # Should be modified by step1__a parameter
+    assert meta_obj.steps[1][0] == "step2"
+    assert meta_obj.steps[1][1].a == 300  # Should remain unchanged
+
+
+def test_meta_estimator_reset_consistency():
+    """Test that BaseMetaEstimator resets 
+    consistently with BaseObject during set_params."""
+    # Test that BaseMetaEstimator resets on set_params call like BaseObject
+    meta_est = MetaEstimatorTester(a=1, b="test", steps=[])
+
+    # Add attributes that should be removed by reset
+    meta_est.some_attribute = "test"
+    meta_est.fitted_attribute_ = "fitted"
+
+    assert hasattr(meta_est, "some_attribute")
+    assert hasattr(meta_est, "fitted_attribute_")
+
+    # Set parameters - this should trigger reset
+    meta_est.set_params(a=3)
+
+    # Check that reset occurred
+    assert not hasattr(meta_est, "some_attribute")
+    assert not hasattr(meta_est, "fitted_attribute_")
+    assert meta_est.a == 3
