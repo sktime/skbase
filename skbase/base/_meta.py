@@ -221,7 +221,8 @@ class _MetaObjectMixin:
     def _set_params(self, attr: str, **params):
         """Logic for setting parameters on meta objects/estimators.
 
-        Separates out logic for parameter setting on meta objects from public API point.
+        Optimized for performance, memory, maintainability, and robustness.
+        Uses single-pass processing with lazy evaluation and minimal allocations.
 
         Parameters
         ----------
@@ -234,27 +235,106 @@ class _MetaObjectMixin:
             Instance of self.
         """
         if not params:
-            # Simple optimization to gain speed (inspect is slow)
             return self
 
-        # Ensure strict ordering of parameter setting:
-        # 1. All steps
-        if attr in params:
-            setattr(self, attr, params.pop(attr))
-        # 2. Step replacement
-        items = getattr(self, attr)
-        names = []
-        if items and isinstance(items, (list, tuple)):
-            names = list(zip(*items))[0]
-        for name in list(params.keys()):
-            if "__" not in name and name in names:
-                self._replace_object(attr, name, params.pop(name))
+        items = getattr(self, attr, None)
+        current_names = None
+        reset_params = {}
+        deferred_ops = []
 
-        # 3. Process remaining parameters and apply reset consistently with BaseObject
-        # Call super().set_params() which will handle reset and nested parameter
-        #  processing
-        super().set_params(**params)  # type: ignore
+        for param_name, param_value in params.items():
+            if param_name == attr:
+                deferred_ops.append(
+                    (1, param_name, param_value)
+                )  # op_type=1: container
+            elif "__" in param_name:
+                deferred_ops.append((3, param_name, param_value))  # op_type=3: nested
+            else:
+                if current_names is None and items and isinstance(items, (list, tuple)):
+                    current_names = [
+                        (
+                            item[0]
+                            if isinstance(item, tuple) and len(item) >= 1
+                            else str(item)
+                        )
+                        for item in items
+                    ]
+
+                if current_names and param_name in current_names:
+                    deferred_ops.append(
+                        (2, param_name, param_value)
+                    )  # op_type=2: replacement
+                else:
+                    reset_params[param_name] = param_value
+
+        if reset_params:
+            super().set_params(**reset_params)  # type: ignore
+
+        if deferred_ops:
+            self._execute_deferred_ops_optimized(attr, deferred_ops)
+
         return self
+
+    def _execute_deferred_ops_optimized(self, attr: str, ops):
+        """Execute deferred operations in optimal order with minimal overhead.
+
+        Parameters
+        ----------
+        attr : str
+            Named object attribute name
+        ops : list
+            List of (op_type, name, value) tuples where:
+            - op_type=1: container operations
+            - op_type=2: replacement operations
+            - op_type=3: nested operations
+        """
+        ops.sort(key=lambda x: x[0])
+
+        cached_names = None
+        nested_ops = {}
+
+        for op_type, name, value in ops:
+            if op_type == 1:
+                setattr(self, name, value)
+                cached_names = None
+
+            elif op_type == 2:  # Replacement operations
+                if cached_names is None:
+                    items = getattr(self, attr, None)
+                    if items and isinstance(items, (list, tuple)):
+                        cached_names = [
+                            (
+                                item[0]
+                                if isinstance(item, tuple) and len(item) >= 1
+                                else str(item)
+                            )
+                            for item in items
+                        ]
+                    else:
+                        cached_names = []
+
+                if name in cached_names:
+                    self._replace_object(attr, name, value)
+
+            elif op_type == 3:  # Nested operations
+                component_name, _, sub_key = name.partition("__")
+                if sub_key:  # Valid nested parameter
+                    if component_name not in nested_ops:
+                        nested_ops[component_name] = {}
+                    nested_ops[component_name][sub_key] = value
+
+        if nested_ops:
+            items = getattr(self, attr, None)
+            if items and isinstance(items, (list, tuple)):
+                component_lookup = {}
+                for _i, item in enumerate(items):
+                    if isinstance(item, tuple) and len(item) >= 2:
+                        component_lookup[item[0]] = item[1]
+
+                for component_name, component_params in nested_ops.items():
+                    component = component_lookup.get(component_name)
+                    if component and hasattr(component, "set_params"):
+                        component.set_params(**component_params)
 
     def _replace_object(self, attr, name, new_val) -> None:
         """Replace an object in attribute that contains named objects.

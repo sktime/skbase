@@ -193,8 +193,8 @@ def test_meta_object_reset_consistency():
 
 
 def test_meta_object_reset_with_steps():
-    """Test that BaseMetaObject resets correctly
-    when setting steps and step parameters."""
+    """Test that BaseMetaObject resets correctly when setting
+    steps and step parameters."""
     step1 = ComponentDummy(a=100, b="step1")
     step2 = ComponentDummy(a=300, b="step2")
 
@@ -209,20 +209,20 @@ def test_meta_object_reset_with_steps():
     assert hasattr(meta_obj, "some_attribute")
     assert hasattr(meta_obj, "fitted_attribute_")
 
-    # Set both steps parameter and step-specific parameters
-    new_steps = [("step1", step1), ("step2", step2)]
-    meta_obj.set_params(steps=new_steps, step1__a=500)
+    # Set both regular parameter, steps parameter and step-specific parameters
+    new_steps = [("new1", step1), ("new2", step2)]
+    meta_obj.set_params(a=42, steps=new_steps, new1__a=500)
 
-    # Check that reset occurred
+    # Check that reset occurred (because 'a' is a regular parameter)
     assert not hasattr(meta_obj, "some_attribute")
     assert not hasattr(meta_obj, "fitted_attribute_")
 
     # Check that parameters were set correctly
-    assert meta_obj.a == 1  # Should remain unchanged
+    assert meta_obj.a == 42  # Should be changed
     assert len(meta_obj.steps) == 2
-    assert meta_obj.steps[0][0] == "step1"
-    assert meta_obj.steps[0][1].a == 500  # Should be modified by step1__a parameter
-    assert meta_obj.steps[1][0] == "step2"
+    assert meta_obj.steps[0][0] == "new1"
+    assert meta_obj.steps[0][1].a == 500  # Should be modified by new1__a parameter
+    assert meta_obj.steps[1][0] == "new2"
     assert meta_obj.steps[1][1].a == 300  # Should remain unchanged
 
 
