@@ -12,6 +12,7 @@ from typing import List
 
 import numpy as np
 import pytest
+from _pytest.outcomes import Skipped
 
 from skbase.base import BaseObject
 from skbase.lookup import all_objects
@@ -83,7 +84,7 @@ class BaseFixtureGenerator:
 
     # list of tests to exclude
     # expected type: dict of lists, key:str, value: List[str]
-    # keys are class names of estimators, values are lists of test names to exclude
+    # keys are class names of objects, values are lists of test names to exclude
     excluded_tests = None
 
     # list of valid tags
@@ -226,7 +227,7 @@ class BaseFixtureGenerator:
     @pytest.fixture(scope="function")
     def object_instance(self, request):
         """object_instance fixture definition for indirect use."""
-        # estimator_instance is cloned at the start of every test
+        # object_instance is cloned at the start of every test
         return request.param.clone()
 
 
@@ -241,6 +242,7 @@ class QuickTester:
         fixtures_to_run=None,
         tests_to_exclude=None,
         fixtures_to_exclude=None,
+        verbose=False,
     ):
         """Run all tests on one single object.
 
@@ -403,6 +405,10 @@ class QuickTester:
                         pytest_fixture_names,
                     )
 
+            def print_if_verbose(msg):
+                if verbose:
+                    print(msg)  # noqa: T001, T201
+
             # loop B: for each test, we loop over all fixtures
             for params, fixt_name in zip(fixture_prod, fixture_names):
                 # this is needed because pytest unwraps 1-tuples automatically
@@ -419,15 +425,20 @@ class QuickTester:
                 if fixtures_to_exclude is not None and key in fixtures_to_exclude:
                     continue
 
-                if not raise_exceptions:
-                    try:
-                        test_fun(**deepcopy(args))
-                        results[key] = "PASSED"
-                    except Exception as err:
-                        results[key] = err
-                else:
+                print_if_verbose(f"{key}")
+
+                try:
                     test_fun(**deepcopy(args))
                     results[key] = "PASSED"
+                    print_if_verbose("PASSED")
+                except Skipped as err:
+                    results[key] = f"SKIPPED: {err.msg}"
+                    print_if_verbose(f"SKIPPED: {err.msg}")
+                except Exception as err:
+                    results[key] = err
+                    print_if_verbose(f"FAILED: {err}")
+                    if raise_exceptions:
+                        raise err
 
         return results
 
@@ -531,7 +542,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
 
         Tests that:
 
-        * create_test_instance results in an instance of estimator_class
+        * create_test_instance results in an instance of object_class
         * `__init__` calls `super.__init__`
         * `_tags_dynamic` attribute for tag inspection is present after construction
         """
@@ -779,7 +790,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         # Ensure that init does nothing but set parameters
         # No logic/interaction with other parameters
         def param_filter(p):
-            """Identify hyper parameters of an estimator."""
+            """Identify hyper parameters of an object."""
             return p.name != "self" and p.kind not in [p.VAR_KEYWORD, p.VAR_POSITIONAL]
 
         init_params = [
