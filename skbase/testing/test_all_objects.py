@@ -258,23 +258,31 @@ class QuickTester:
         Parameters
         ----------
         obj : object class or object instance
+
         raise_exceptions : bool, optional, default=False
             whether to return exceptions/failures in the results dict, or raise them
                 if False: returns exceptions in returned `results` dict
                 if True: raises exceptions as they occur
+
         tests_to_run : str or list of str, names of tests to run. default = all tests
             sub-sets tests that are run to the tests given here.
+
         fixtures_to_run : str or list of str, pytest test-fixture combination codes.
             which test-fixture combinations to run. Default = run all of them.
             sub-sets tests and fixtures to run to the list given here.
             If both tests_to_run and fixtures_to_run are provided, runs the *union*,
             i.e., all test-fixture combinations for tests in tests_to_run,
                 plus all test-fixture combinations in fixtures_to_run.
+
         tests_to_exclude : str or list of str, names of tests to exclude. default = None
             removes tests that should not be run, after subsetting via tests_to_run.
+
         fixtures_to_exclude : str or list of str, fixtures to exclude. default = None
             removes test-fixture combinations that should not be run.
             This is done after subsetting via fixtures_to_run.
+
+        verbose : bool, optional, default=False
+            whether to print the results of the tests as they are run
 
         Returns
         -------
