@@ -50,6 +50,8 @@ Contents
 * [MNT] use ``macos-latest`` and ``ubuntu-latest`` in release workflow
   (:pr:`411`, :pr:`420`) :user:`fkiraly`
 * [MNT] update ``nodevdeps`` runner to latest ``ubuntu`` (:pr:`416`) :user:`fkiraly`
+* [MNT] replace deprecated ``windows-2019`` runner with ``windows-latest`` in ``wheels``
+  release workflow (:pr:`432`) :user:`fkiraly`
 * [BUG] ensure ``all_objects`` handles decorators properly (:pr:`418`) :user:`fkiraly`
 * [BUG] fix ``TagAliaserMixin`` missing warnings (:pr:`414`) :user:`fkiraly`
 
