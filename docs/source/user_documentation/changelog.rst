@@ -23,13 +23,17 @@ Minor release with maintenance updates, features, and bugfixes.
 Contents
 --------
 
-* [ENH] ``QuickTester`` verbose output on passed and failed tests if ``raise_exceptions=True`` (:pr:`428`) :user:`fkiraly`
-* [MNT] remove ``stefanzweifel/git-auto-commit-action`` from all-contributors workflow (:pr:`426`) :user:`fkiraly`
+* [ENH] ``QuickTester`` verbose output on passed and failed tests
+  if ``raise_exceptions=True`` (:pr:`428`) :user:`fkiraly`
+* [MNT] remove ``stefanzweifel/git-auto-commit-action`` from all-contributors workflow
+  (:pr:`426`) :user:`fkiraly`
 * [pre-commit.ci] pre-commit autoupdate (:pr:`425`) :user:`pre-commit-ci[bot]`
 * [pre-commit.ci] pre-commit autoupdate (:pr:`429`) :user:`pre-commit-ci[bot]`
 * [DOC] correct macOS reference in README (:pr:`421`) :user:`fkiraly`
-* [DOC] add missing docstring argument for ``QuickTester.run_tests`` (:pr:`430`) :user:`fkiraly`
-* [BUG] fix ``_check_soft_dependencies`` error message if version is wrong (:pr:`427`) :user:`fkiraly`
+* [DOC] add missing docstring argument for ``QuickTester.run_tests``
+  (:pr:`430`) :user:`fkiraly`
+* [BUG] fix ``_check_soft_dependencies`` error message if version is wrong
+  (:pr:`427`) :user:`fkiraly`
 
 
 [0.12.3] - 2025-05-28
