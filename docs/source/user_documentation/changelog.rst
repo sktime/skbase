@@ -24,6 +24,8 @@ Contents
 
 * [ENH] ensure ``_get_installed_packages`` does not break in case of
   incomplete or corrupted package metadata (:pr:`433`) :user:`fkiraly`
+* [MNT] remove deprecated ``fix-encoding-pragma`` hook from ``pre-commit``
+  (:pr:`438`) :user:`fkiraly`
 * [MNT] [Dependabot](deps): Bump ``actions/download-artifact``
    from 4 to 5 (:pr:`434`) :user:`dependabot`
 * [MNT] [Dependabot](deps): Bump ``actions/checkout``
