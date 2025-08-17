@@ -14,6 +14,24 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.12.5] - 2025-08-17
+=====================
+
+Minor release with maintenance updates.
+
+Contents
+--------
+
+* [ENH] ensure ``_get_installed_packages`` does not break in case of
+  incomplete or corrupted package metadata (:pr:`433`) :user:`fkiraly`
+* [MNT] remove deprecated ``fix-encoding-pragma`` hook from ``pre-commit``
+  (:pr:`438`) :user:`fkiraly`
+* [MNT] [Dependabot](deps): Bump ``actions/download-artifact``
+   from 4 to 5 (:pr:`434`) :user:`dependabot`
+* [MNT] [Dependabot](deps): Bump ``actions/checkout``
+  from 4 to 5 (:pr:`436`) :user:`dependabot`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`435`) :user:`pre-commit-ci[bot]`
+
 
 [0.12.4] - 2025-07-23
 =====================
