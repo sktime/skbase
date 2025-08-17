@@ -12,7 +12,6 @@ repos:
       - id: check-toml
       - id: debug-statements
       - id: end-of-file-fixer
-      - id: fix-encoding-pragma
       - id: requirements-txt-fixer
       - id: trailing-whitespace
       - id: check-docstring-first
