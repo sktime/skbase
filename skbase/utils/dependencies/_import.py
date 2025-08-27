@@ -18,6 +18,11 @@ def _safe_import(import_path, pkg_name=None, condition=True, return_object="Magi
     - Nested module: ``"torch.nn"`` -> same as``from torch import nn``
     - Class/function: ``"torch.nn.Linear"`` -> same as ``from torch.nn import Linear``
 
+    If import name and package name differ, the ``pkg_name`` argument should be set,
+    to make the import location unambiguous.
+
+    Example: ``clone = _safe_import("sklearn.clone", pkg_name="scikit-learn")``.
+
     Parameters
     ----------
     import_path : str
