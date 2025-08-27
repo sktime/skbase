@@ -64,7 +64,7 @@ def _safe_import(import_path, pkg_name=None, condition=True, return_object="Magi
 
     Examples
     --------
-    >>> from pytorch_forecasting.utils._dependencies._safe_import import _safe_import
+    >>> from skbase.utils.dependencies import _safe_import
 
     >>> # Import a top-level module
     >>> torch = _safe_import("torch")
