@@ -17,7 +17,7 @@ __all__: List[str] = [
 __author__: List[str] = ["fkiraly", "RNKuhns"]
 
 # workaround for bug 442 where metaclasses do not get discovered in python <=3.10
-if _check_python_version(">3.10", severity="none"):
+if _check_python_version(">=3.11", severity="none"):
     IMPORT_CLS = ("CommonMagicMeta", "MagicAttribute")
 else:
     IMPORT_CLS = ("CommonMagicMeta",)
