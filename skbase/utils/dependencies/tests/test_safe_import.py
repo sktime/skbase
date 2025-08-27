@@ -62,8 +62,8 @@ def test_import_existing_object():
 
 def test_multiple_inheritance_from_mock():
     """Test multiple inheritance from dynamic MagicMock."""
-    Class1 = _safe_import("foobar.foo.FooBar")
-    Class2 = _safe_import("barfoobar.BarFooBar")
+    Class1 = _safe_import("foobar.foo.FooBar")  # noqa: N806
+    Class2 = _safe_import("barfoobar.BarFooBar")  # noqa: N806
 
     class NewClass(Class1, Class2):
         """This should not trigger an error.
