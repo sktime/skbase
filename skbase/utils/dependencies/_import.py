@@ -9,7 +9,7 @@ __all__ = ["_safe_import"]
 
 
 def _safe_import(import_path, pkg_name=None, condition=True, return_object="MagicMock"):
-    """Import a module/class, return a Mock object if import fails.
+    """Import a module/class, return a Mock object or None if import fails.
 
     Idiomatic usage is ``obj = _safe_import("a.b.c.obj")``.
     The function supports importing both top-level modules and nested attributes:
