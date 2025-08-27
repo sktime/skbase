@@ -33,7 +33,7 @@ def _get_sklearn_clone():
     """Get sklearn's clone function."""
     from skbase.utils.dependencies._import import _safe_import
 
-    return _safe_import("sklearn.base:clone", condition=_is_sklearn_present())
+    return _safe_import("sklearn.base.clone", condition=_is_sklearn_present())
 
 
 class BaseCloner:
