@@ -370,8 +370,12 @@ def _check_python_version(
 
     Parameters
     ----------
-    obj : BaseObject descendant
-        used to check python version
+    obj : BaseObject descendant class, instance, or str
+        python version constraint to check about environment.
+
+        * If str, must be PEP 440 compatible specifier string, e.g., "<3.9, >= 3.6.3"
+        * If BaseObject descendant, must have "python_version" tag containing such a
+          str, or None.
 
     package : str, default = None
         if given, will be used in error message as package name
@@ -407,17 +411,23 @@ def _check_python_version(
         incompatible with the system python version. If package is given,
         error message gives package as the reason for incompatibility.
     """
-    est_specifier_tag = obj.get_class_tag("python_version", tag_value_default="None")
-    if est_specifier_tag in ["None", None]:
+    if isinstance(obj, str):
+        specifier_tag = obj
+    elif hasattr(obj, "get_class_tag"):
+        specifier_tag = obj.get_class_tag("python_version", tag_value_default="None")
+    else:
+        return True
+
+    if specifier_tag in ["None", None]:
         return True
 
     try:
-        est_specifier = SpecifierSet(est_specifier_tag, prereleases=prereleases)
+        est_specifier = SpecifierSet(specifier_tag, prereleases=prereleases)
     except InvalidSpecifier:
         msg_version = (
             f"wrong format for python_version tag, "
             f'must be PEP 440 compatible specifier string, e.g., "<3.9, >= 3.6.3",'
-            f" but found {est_specifier_tag!r}"
+            f" but found {specifier_tag!r}"
         )
         raise InvalidSpecifier(msg_version) from None
 
