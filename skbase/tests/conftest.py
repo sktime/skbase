@@ -116,7 +116,6 @@ SKBASE_PUBLIC_CLASSES_BY_MODULE = {
         "QuickTester",
         "TestAllObjects",
     ),
-    "skbase.utils.dependencies._import": ("CommonMagicMeta"),
     "skbase.utils.stderr_mute": ("StderrMute",),
     "skbase.utils.stdout_mute": ("StdoutMute",),
 }
