@@ -126,6 +126,7 @@ def _create_mock_class(name: str, bases=()):
     a new class that behaves like MagicMock, with name ``name``.
         Forwards all attribute access to a MagicMock object stored in the instance.
     """
+
     class CommonMagicMeta(type):
         def __getattr__(cls, name):
             return MagicMock()
