@@ -92,7 +92,7 @@ def _safe_import(import_path, pkg_name=None, condition=True, return_object="Magi
     if pkg_name in _get_installed_packages() and condition:
         try:
             if len(path_list) == 1:
-                return importlib.import_module(pkg_name)
+                return importlib.import_module(obj_name)
             module_name, attr_name = import_path.rsplit(".", 1)
             module = importlib.import_module(module_name)
             return getattr(module, attr_name)
