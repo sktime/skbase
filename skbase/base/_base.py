@@ -1295,6 +1295,13 @@ class TagAliaserMixin:
             If not found, returns ``tag_value_default``.
         """
         cls._deprecate_tag_warn([tag_name])
+        alias_dict = cls.alias_dict
+        old_tags = alias_dict.keys()
+        new_tags = alias_dict.values()
+
+        if tag_name in old_tags or tag_name in new_tags:
+            return cls.get_class_tags().get(tag_name, tag_value_default)
+
         return super(TagAliaserMixin, cls).get_class_tag(
             tag_name=tag_name, tag_value_default=tag_value_default
         )
@@ -1381,6 +1388,13 @@ class TagAliaserMixin:
             not in ``self.get_tags().keys()``.
         """
         self._deprecate_tag_warn([tag_name])
+        alias_dict = self.alias_dict
+        old_tags = alias_dict.keys()
+        new_tags = alias_dict.values()
+
+        if tag_name in old_tags or tag_name in new_tags:
+            return self.get_tags().get(tag_name, tag_value_default)
+
         return super(TagAliaserMixin, self).get_tag(
             tag_name=tag_name,
             tag_value_default=tag_value_default,
@@ -1467,7 +1481,7 @@ class TagAliaserMixin:
                 if pkg_name != "":
                     pkg_name = f"{pkg_name} "
                 msg = (
-                    f"tag {tag_name!r} will be removed in {pkg_name} version {version}"
+                    f"tag {tag_name!r} will be removed in {pkg_name}version {version}"
                 )
                 if new_tag != "":
                     msg += (
