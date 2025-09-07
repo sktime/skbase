@@ -279,7 +279,7 @@ class QuickTester:
         ----------
         obj : subclass of scikit-base BaseObject, or instance thereof
             scikit-base object class or scikit-base object instance
-            
+
         raise_exceptions : bool, optional, default=False
             whether to return exceptions/failures in the results dict, or raise them
 
@@ -341,6 +341,7 @@ class QuickTester:
         {'test_repr[CompositionDummy-1]': 'PASSED'}
         """
         from _pytest.outcomes import Skipped
+
         from skbase.utils.stdout_mute import StdoutMute
 
         tests_to_run = self._check_none_str_or_list_of_str(
@@ -578,8 +579,8 @@ def _make_builtin_fixture_equivalents(name):
     """Utility for QuickTester, creates equivalent fixtures for pytest runs."""
     import io
     import logging
-    from pathlib import Path
     import tempfile
+    from pathlib import Path
 
     values = {}
     if "tmp_path" == name:
