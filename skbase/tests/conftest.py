@@ -232,7 +232,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_walk",
             "_walk_and_retrieve_all_objs",
         ),
-        "skbase.testing.test_all_objects": ("_make_builtin_fixture_equivalents"),
+        "skbase.testing.test_all_objects": ("_make_builtin_fixture_equivalents",),
         "skbase.testing.utils.inspect": ("_get_args",),
         "skbase.utils._check": ("_is_scalar_nan",),
         "skbase.utils.dependencies": (
