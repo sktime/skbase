@@ -1480,9 +1480,7 @@ class TagAliaserMixin:
                 pkg_name = cls._package_name
                 if pkg_name != "":
                     pkg_name = f"{pkg_name} "
-                msg = (
-                    f"tag {tag_name!r} will be removed in {pkg_name}version {version}"
-                )
+                msg = f"tag {tag_name!r} will be removed in {pkg_name}version {version}"
                 if new_tag != "":
                     msg += (
                         f" and replaced by {new_tag!r}, please use {new_tag!r} instead"
