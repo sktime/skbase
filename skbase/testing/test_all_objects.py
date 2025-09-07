@@ -12,7 +12,6 @@ from typing import List
 
 import numpy as np
 import pytest
-from _pytest.outcomes import Skipped
 
 from skbase.base import BaseObject
 from skbase.lookup import all_objects
