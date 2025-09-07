@@ -360,31 +360,11 @@ class QuickTester:
         test_names = [attr for attr in dir(self) if attr.startswith("test")]
 
         # we override the generator_dict, by replacing it with temp_generator_dict:
+        #  the method _get_generator_dict subsets the collected fixtures to obj
+        # default behaviour:
         #  the only object (class or instance) is est, this is overridden
         #  the remaining fixtures are generated conditionally, without change
-        temp_generator_dict = deepcopy(self.generator_dict())
-
-        if isclass(obj):
-            object_class = obj
-        else:
-            object_class = type(obj)
-
-        def _generate_object_class(test_name, **kwargs):
-            return [object_class], [object_class.__name__]
-
-        def _generate_object_instance(test_name, **kwargs):
-            return [obj.clone()], [object_class.__name__]
-
-        def _generate_object_instance_cls(test_name, **kwargs):
-            return object_class.create_test_instances_and_names()
-
-        temp_generator_dict["object_class"] = _generate_object_class
-
-        if not isclass(obj):
-            temp_generator_dict["object_instance"] = _generate_object_instance
-        else:
-            temp_generator_dict["object_instance"] = _generate_object_instance_cls
-        # override of generator_dict end, temp_generator_dict is now prepared
+        temp_generator_dict = self._get_generator_dict(deepcopy(self.generator_dict()))
 
         # sub-setting to specific tests to run, if tests or fixtures were speified
         if tests_to_run is None and fixtures_to_run is None:
@@ -487,6 +467,59 @@ class QuickTester:
                         raise err
 
         return results
+
+    @staticmethod
+    def _get_generator_dict(obj, generator_dict):
+        """Subset generator dictionary for a specific object.
+
+        This method can be overridden by subclasses, and is called from ``run_tests``.
+
+        This method should create a generator dictionary for the given object,
+        which generates conditional fixtures only for the object ``obj``.
+        The default ``generator_dict`` generates fixture combinations for all
+        objects retrieved by the fixture generator;
+        this method should subset this dictionary to only include fixtures
+        relevant to the specific object ``obj``.
+
+        Parameters
+        ----------
+        obj: any
+            The object to create the generator dictionary for.
+        generator_dict: dict, optional
+            Always a deepcopy of the generator_dict obtained from self,
+            i.e., ``deepcopy(self.generator_dict())``.
+            The method can ignore this, or mutate this.
+
+        Returns
+        -------
+        dict
+            Generator dictionary, subset to test fixtures pertaining to obj.
+            For use with ``BaseFixtureGenerator`` descendants.
+        """
+        obj_generator_dict = generator_dict
+
+        if isclass(obj):
+            object_class = obj
+        else:
+            object_class = type(obj)
+
+        def _generate_object_class(test_name, **kwargs):
+            return [object_class], [object_class.__name__]
+
+        def _generate_object_instance(test_name, **kwargs):
+            return [obj.clone()], [object_class.__name__]
+
+        def _generate_object_instance_cls(test_name, **kwargs):
+            return object_class.create_test_instances_and_names()
+
+        obj_generator_dict["object_class"] = _generate_object_class
+
+        if not isclass(obj):
+            obj_generator_dict["object_instance"] = _generate_object_instance
+        else:
+            obj_generator_dict["object_instance"] = _generate_object_instance_cls
+
+        return generator_dict
 
     @staticmethod
     def _check_none_str_or_list_of_str(obj, var_name="obj"):
