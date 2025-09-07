@@ -359,14 +359,22 @@ class QuickTester:
         # retrieve tests from self
         test_names = [attr for attr in dir(self) if attr.startswith("test")]
 
+        # retrieving fixtures
+        # -------------------
+        all_fixture_generator = deepcopy(self.generator_dict())
+        # sub-setting to fixtures involving obj
+        # -------------------------------------------------------------
         # we override the generator_dict, by replacing it with temp_generator_dict:
         #  the method _get_generator_dict subsets the collected fixtures to obj
         # default behaviour:
         #  the only object (class or instance) is est, this is overridden
         #  the remaining fixtures are generated conditionally, without change
-        temp_generator_dict = self._get_generator_dict(deepcopy(self.generator_dict()))
+        generator_dict_for_obj = self._subset_generator_dict(obj, all_fixture_generator)
 
-        # sub-setting to specific tests to run, if tests or fixtures were speified
+        # sub-setting to specific tests to run
+        # ------------------------------------
+        # subsets to tests_to_run or fixture_to_run, if these were passed
+        # excludes tests_to_exclude, if these were passed
         if tests_to_run is None and fixtures_to_run is None:
             test_names_subset = test_names
         else:
@@ -385,6 +393,8 @@ class QuickTester:
                 set(test_names_subset).difference(tests_to_exclude)
             )
 
+        # run all the tests and collect results
+        # -------------------------------------
         # the below loops run all the tests and collect the results here:
         results = {}
         # loop A: we loop over all the tests
@@ -401,7 +411,7 @@ class QuickTester:
             _, fixture_prod, fixture_names = create_conditional_fixtures_and_names(
                 test_name=test_name,
                 fixture_vars=fixture_vars,
-                generator_dict=temp_generator_dict,
+                generator_dict=generator_dict_for_obj,
                 fixture_sequence=fixture_sequence,
                 raise_exceptions=raise_exceptions,
             )
@@ -469,7 +479,7 @@ class QuickTester:
         return results
 
     @staticmethod
-    def _get_generator_dict(obj, generator_dict):
+    def _subset_generator_dict(obj, generator_dict):
         """Subset generator dictionary for a specific object.
 
         This method can be overridden by subclasses, and is called from ``run_tests``.
