@@ -451,7 +451,7 @@ class QuickTester:
 
                 for f in test_fun_vars:
                     if f not in args:
-                        args[f] = _make_builtin_fixture_equivalents(f)
+                        args[f] = self._make_builtin_fixture_equivalents(f)
 
                 # we subset to test-fixtures to run by this, if given
                 #  key is identical to the pytest test-fixture string identifier
@@ -616,49 +616,48 @@ class QuickTester:
 
         return fixture_vars_return, fixture_prod_return, fixture_names_return
 
+    def _make_builtin_fixture_equivalents(self, name):
+        """Utility for QuickTester, creates equivalent fixtures for pytest runs."""
+        import io
+        import logging
+        import tempfile
+        from pathlib import Path
 
-def _make_builtin_fixture_equivalents(name):
-    """Utility for QuickTester, creates equivalent fixtures for pytest runs."""
-    import io
-    import logging
-    import tempfile
-    from pathlib import Path
+        values = {}
+        if "tmp_path" == name:
+            return Path(tempfile.mkdtemp())
+        if "capsys" == name:
+            # crude emulation using StringIO
+            return type(
+                "Capsys",
+                (),
+                {
+                    "out": io.StringIO(),
+                    "err": io.StringIO(),
+                    "readouterr": lambda x: (x.out.getvalue(), x.err.getvalue()),
+                },
+            )()
 
-    values = {}
-    if "tmp_path" == name:
-        return Path(tempfile.mkdtemp())
-    if "capsys" == name:
-        # crude emulation using StringIO
-        return type(
-            "Capsys",
-            (),
-            {
-                "out": io.StringIO(),
-                "err": io.StringIO(),
-                "readouterr": lambda x: (x.out.getvalue(), x.err.getvalue()),
-            },
-        )()
+        if "monkeypatch" == name:
+            from _pytest.monkeypatch import MonkeyPatch
 
-    if "monkeypatch" == name:
-        from _pytest.monkeypatch import MonkeyPatch
+            return MonkeyPatch()
 
-        return MonkeyPatch()
+        if "caplog" == name:
 
-    if "caplog" == name:
+            class Caplog:
+                def __init__(self):
+                    self.records = []
+                    self.handler = logging.Handler()
+                    self.handler.emit = self.records.append
+                    logging.getLogger().addHandler(self.handler)
 
-        class Caplog:
-            def __init__(self):
-                self.records = []
-                self.handler = logging.Handler()
-                self.handler.emit = self.records.append
-                logging.getLogger().addHandler(self.handler)
+                def clear(self):
+                    self.records.clear()
 
-            def clear(self):
-                self.records.clear()
+            return Caplog()
 
-        return Caplog()
-
-    return values
+        return values
 
 
 class TestAllObjects(BaseFixtureGenerator, QuickTester):
