@@ -17,11 +17,23 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 [0.12.6] - 2025-09-18
 =====================
 
-Minor release with maintenance updates.
+Minor release with feature, bugfix, and maintenance updates.
 
 Contents
 --------
 
+* [ENH] update ``_safe_import`` to state in ``sktime`` and ``pytorch_forecasting``
+  (:pr:`441`) :user:`fkiraly`
+* [ENH] improved `QuickTester`: verbosity levels, plugin structure for fixture
+  generation handling (:pr:`446`) :user:`fkiraly`
+* [BUG] fix ``TagAliaserMixin`` ``get_tag``
+  and ``get_class_tag`` (:pr:`445`) :user:`fkiraly`
+* [MNT] Check versions in wheels workflow (:pr:`440`) :user:`szepeviktor`
+* [MNT] [Dependabot](deps): Bump ``actions/setup-node`` from ``4`` to ``5``
+  (:pr:`443`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump ``actions/setup-python`` from ``5`` to ``6``
+  (:pr:`444`) :user:`dependabot[bot]`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`447`) :user:`pre-commit-ci[bot]`
 
 
 [0.12.5] - 2025-08-17
