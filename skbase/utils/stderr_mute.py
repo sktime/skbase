@@ -17,9 +17,11 @@ class StderrMute:
     ----------
     active : bool, default=True
         Whether to suppress stderr or not.
-        If True, stderr is suppressed.
-        If False, stderr is not suppressed, and the context manager does nothing
-        except catch and suppress ModuleNotFoundError.
+
+        * If True, stderr is suppressed.
+        * If False, stderr is not suppressed, and the context manager does nothing.
+
+        Use this parameter for easy toggling.
     """
 
     def __init__(self, active=True):

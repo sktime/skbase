@@ -17,9 +17,11 @@ class StdoutMute:
     ----------
     active : bool, default=True
         Whether to suppress stdout or not.
-        If True, stdout is suppressed.
-        If False, stdout is not suppressed, and the context manager does nothing
-        except catch and suppress ModuleNotFoundError.
+
+        * If True, stderr is suppressed.
+        * If False, stderr is not suppressed, and the context manager does nothing.
+
+        Use this parameter for easy toggling.
     """
 
     def __init__(self, active=True):
