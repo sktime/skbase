@@ -35,6 +35,12 @@ Contents
   (:pr:`444`) :user:`dependabot[bot]`
 * [pre-commit.ci] pre-commit autoupdate (:pr:`447`) :user:`pre-commit-ci[bot]`
 
+Contributors
+------------
+
+:user:`fkiraly`,
+:user:`szepeviktor`
+
 
 [0.12.5] - 2025-08-17
 =====================
