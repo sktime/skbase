@@ -292,7 +292,7 @@ class _BaseObjectPrettyPrinter(pprint.PrettyPrinter):
 
     # Follow what scikit-learn did here and copy _dispatch to prevent instances
     # of the builtin PrettyPrinter class to call methods of
-    # _BaseObjectPrettyPrinter (see scikit-learn Github issue 12906)
+    # _BaseObjectPrettyPrinter (see scikit-learn GitHub issue 12906)
     # mypy error: "Type[PrettyPrinter]" has no attribute "_dispatch"
     _dispatch = pprint.PrettyPrinter._dispatch.copy()  # type: ignore
     _dispatch[BaseObject.__repr__] = _pprint_object

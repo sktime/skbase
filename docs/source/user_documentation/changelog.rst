@@ -256,7 +256,7 @@ Maintenance release with scheduled changes and deprecations.
 Deprecations and removals
 -------------------------
 
-* In ``all_objects``, the meaning of ``filter_tags`` arguments ot type ``str``,
+* In ``all_objects``, the meaning of ``filter_tags`` arguments of type ``str``,
   and iterable of ``str``, has changed as scheduled.
   Prior to 0.9.0, ``str`` or iterable of ``str`` arguments
   selected objects that possess the
@@ -365,7 +365,7 @@ Core interface changes
 Deprecations and removals
 -------------------------
 
-* In ``all_objects``, the meaning of ``filter_tags`` arguments ot type ``str``,
+* In ``all_objects``, the meaning of ``filter_tags`` arguments of type ``str``,
   and iterable of ``str``, will change from ``scikit-base 0.9.0``.
   Currently, ``str`` or iterable of ``str`` arguments select objects that possess the
   tag(s) with the specified name, of any value.
@@ -1017,8 +1017,8 @@ Documentation
 Maintenance
 -----------
 
-- Updated Github Action versions (:pr:`60`) :user:`rnkuhns`
-- Migrate from use of lgtm.com to CodeQL scanning built-in to Github (:pr:`68`)
+- Updated GitHub Action versions (:pr:`60`) :user:`rnkuhns`
+- Migrate from use of lgtm.com to CodeQL scanning built-in to GitHub (:pr:`68`)
 - Update config files and remove use of setup.py (:pr:`75`) :user:`rnkuhns`
 - Add support for Python 3.11 (:pr:`77`) :user:`rnkuhns`
 - Update ``sklearn``s version upper bounds to ``<1.3`` (:pr:`89`) :user:`fkiraly`

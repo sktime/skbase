@@ -38,7 +38,7 @@ Developer guide
     .. grid-item-card:: Git Workflow
         :text-align: center
 
-        Our Git and Github workflow.
+        Our Git and GitHub workflow.
 
         +++
 
@@ -47,7 +47,7 @@ Developer guide
             :click-parent:
             :expand:
 
-            Git and Github Workflow
+            Git and GitHub Workflow
 
     .. grid-item-card:: Continuous Integration
         :text-align: center

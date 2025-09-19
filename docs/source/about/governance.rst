@@ -101,7 +101,7 @@ additional rights and responsibilities for maintaining the project, including:
 
 - providing technical direction
 - strategic planning, roadmapping and project management
-- managing community infrastructure (e.g., Github repository, etc)
+- managing community infrastructure (e.g., GitHub repository, etc)
 - fostering collaborations with external organisations
 - avoiding deadlocks and ensuring a smooth functioning of the project
 
@@ -137,7 +137,7 @@ all appointment votes occur on private chats.
 
 Core developers are expected to express their consensus (or veto) in the medium
 where a given decision takes place. For changes included in the Project's issues
-and Pull Requests, this is through comments or Github's built-in review process.
+and Pull Requests, this is through comments or GitHub's built-in review process.
 
 Types of decisions
 ------------------
@@ -194,7 +194,7 @@ on a topic. A topic must receive two-thirds of core developer votes cast
 (abstentions are allowed) via comments on the relevant issue or
 Pull Request over a 5 day voting period.
 
-In the event a proposed change does not gather the necesssary votes, then:
+In the event a proposed change does not gather the necessary votes, then:
 
 - The core developer who triggered the vote can choose to drop the issue
 - The proposed changes can be escalated to the CC, who will seek to learn more
