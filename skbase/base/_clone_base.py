@@ -43,7 +43,7 @@ def _clone(estimator, *, safe=True, clone_plugins=None, base_cls=None):
         Must implement ``_check`` and ``_clone`` method, see ``BaseCloner`` interface.
         If passed, will work through clone plugins in ``clone_plugins``
         before working through ``DEFAULT_CLONE_PLUGINS``. To override
-        a cloner in ``DEAULT_CLONE_PLUGINS``, simply ensure a cloner with
+        a cloner in ``DEFAULT_CLONE_PLUGINS``, simply ensure a cloner with
         the same ``_check`` logis is present in ``clone_plugins``.
     base_cls : reference to BaseObject
         Reference to the BaseObject class from skbase.base._base.

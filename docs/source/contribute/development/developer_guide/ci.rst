@@ -7,7 +7,7 @@ Continuous integration
 .. _Github Actions: https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
 .. _precommit.ci: https://pre-commit.ci/
 
-``skbase`` uses `Github Actions`_ continuous integration (CI) services
+``skbase`` uses `GitHub Actions`_ continuous integration (CI) services
 to ensure contributions meet the project's standards. See the sections below to
 see how the project automatically validates code quality, and builds and tests
 your changes.
@@ -35,7 +35,7 @@ to run prior committing your code locally.
     (including unit testing). This duplicates the code quality portion of the
     CI routine, but enables the longer unit testing portion of the CI routine
     to be cancelled whenever the code quality portion fails. A contribution
-    that enables Github Action workflows to be cancelled when
+    that enables GitHub Action workflows to be cancelled when
     `pre-commit.ci <https://pre-commit.ci/>`_ fails, would be greatly appreciated.
 
 Unit testing

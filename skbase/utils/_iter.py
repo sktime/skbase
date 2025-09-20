@@ -84,7 +84,7 @@ def _remove_type_text(input_):
 
 
 def _format_seq_to_str(seq, sep=", ", last_sep=None, remove_type_text=True):
-    """Format a sequence to a string of delimitted elements.
+    """Format a sequence to a string of delimited elements.
 
     This is useful to format sequences into a pretty printing format for
     creating error messages or warnings.

@@ -244,7 +244,7 @@ class BaseFixtureGenerator:
 class QuickTester:
     """Mixin class which adds the run_tests method to run tests on one object.
 
-    Mixin for test classes inherting from ``scikit-base`` ``BaseFixtureGenerator``,
+    Mixin for test classes inheriting from ``scikit-base`` ``BaseFixtureGenerator``,
     to allow running tests on a single object instance.
     """
 
