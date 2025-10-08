@@ -14,6 +14,15 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.13.0] - 2025-10-08
+=====================
+
+Python 3.14 compatibility and Python 3.9 End-of-Life update.
+
+Contents
+--------
+
+
 [0.12.6] - 2025-09-18
 =====================
 
