@@ -471,8 +471,8 @@ def _get_module_info(
 
     module_functions: MutableMapping = {}  # of FunctionInfo type
     for name, func in _get_members_uw(module, inspect.isfunction):
-        # python 3.14 and higher have __annotations__ as a function
-        if name == "__annotations__":
+        # python 3.14 and higher have __annotate__ as a function
+        if name == "__annotate__":
             continue
         uw_func = inspect.unwrap(func)  # unwrap any decorators
         funcname = uw_func.__name__
