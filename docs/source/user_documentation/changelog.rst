@@ -22,6 +22,21 @@ Python 3.14 compatibility and Python 3.9 End-of-Life update.
 Contents
 --------
 
+* [ENH] ``TagAliaserMixin`` updated to ``sktime`` state, added tests
+  (:pr:`454`) :user:`fkiraly`
+* [DOC] Fix typos (:pr:`449`) :user:`szepeviktor`
+* [MNT] [Dependabot](deps): Bump ``github/codeql-action`` from ``3`` to ``4``
+  (:pr:`452`) :user:`dependabot[bot]`
+* [MNT] python 3.14 compatibility and python 3.9 end-of-life (:pr:`453`) :user:`fkiraly`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`450`) :user:`pre-commit-ci[bot]`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`451`) :user:`pre-commit-ci[bot]`
+
+Contributors
+------------
+
+:user:`fkiraly`,
+:user:`szepeviktor`
+
 
 [0.12.6] - 2025-09-18
 =====================
