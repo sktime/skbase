@@ -1183,13 +1183,39 @@ class TagAliaserMixin:
     * Values in ``deprecate_dict`` should be strings, the version of
     removal/renaming, in PEP 440 format, e.g., ``"1.0.0"``.
 
-    The class will ensure that new tags alias old tags and vice versa, during
-    the deprecation period. Informative warnings will be raised whenever the
-    deprecated tags are being accessed.
+    The class will ensure that new tags alias old tags and vice versa, during the
+    deprecation period. Informative warnings will be raised whenever the deprecated tags
+    are being accessed.
 
-    When removing tags, ensure to remove the removed tags from this class.
-    If no tags are deprecated anymore (e.g., all deprecated tags are removed/renamed),
-    ensure toremove this class as a parent of BaseObject or BaseEstimator.
+    When removing tags, ensure to remove the removed tags from this class. If no tags
+    are deprecated anymore (e.g., all deprecated tags are removed/renamed), ensure
+    to remove this class as a parent of ``BaseObject`` or ``BaseEstimator``.
+
+    Exact aliasing logic, in the situation of an "old" and "new" tag,
+    i.e., an entry ``{"old_tag": "new_tag"}`` in ``alias_dict``:
+
+    * if only the new tag is present, and the new tag is requested,
+      returns the value of the new tag, no warning.
+      This is the "target" state of the deprecation process.
+    * if both new and old tag are present, and any of the two is requested,
+      returns the value of the old tag.
+      This priority is in order to deprecate in a way that does not break existing code,
+      in case the values of the two tags differ.
+      Raises a warning in addition, if the old tag was requested.
+    * if only the new tag is present, and the old tag is requested,
+      returns the value of the new tag, raises a warning.
+    * if only the old tag is present, and the new tag is requested,
+      returns the value of the new tag, without a warning.
+
+    Note: all warnings above are for the user of the estimator,
+    when attempting to read the old tag,
+    suggesting to use the new tag instead, which is the deprecation target state.
+
+    Warnings and errors for the developer of the estimator,
+    to change the old tag to new if
+    the old tag is still present, are not raised by this class.
+    These warnings should be raised separately, in API conformance tests,
+    preferably at CI time and as exceptions.
     """
 
     # dictionary of aliases
@@ -1296,15 +1322,50 @@ class TagAliaserMixin:
         """
         cls._deprecate_tag_warn([tag_name])
         alias_dict = cls.alias_dict
-        old_tags = alias_dict.keys()
-        new_tags = alias_dict.values()
 
-        if tag_name in old_tags or tag_name in new_tags:
-            return cls.get_class_tags().get(tag_name, tag_value_default)
+        # check is tag is aliased or aliasing
+        # if yes, ensure that tag_name is the new tag name str
+        # and old_tag is the old tag name str
+        old_tag_name = ""
+        new_tag_name = ""
+        if tag_name in alias_dict:
+            old_tag_name = tag_name
+            new_tag_name = alias_dict[old_tag_name]
+        if tag_name in alias_dict.values():
+            old_tag_name = [k for k, v in alias_dict.items() if v == tag_name][0]
+            new_tag_name = tag_name
 
-        return super(TagAliaserMixin, cls).get_class_tag(
+        tag_changed = new_tag_name != old_tag_name
+        old_tag_queried = tag_name == old_tag_name and tag_changed
+
+        if tag_changed:
+            # retrieve old tag value, if it exists
+            old_tag_val = cls._get_class_flag(
+                old_tag_name,
+                "__tag_not_found__",
+                flag_attr_name="_tags",
+            )
+            old_tag_present = old_tag_val != "__tag_not_found__"
+            # case 1: old tag present, and new or old tag queried
+            # then: return value of old tag
+            if old_tag_present:
+                return old_tag_val
+            # case 2: old tag was queried, but old tag not present
+            # then: return value of new tag
+            elif old_tag_queried:
+                return cls._get_class_flag(
+                    new_tag_name,
+                    tag_value_default,
+                    flag_attr_name="_tags",
+                )
+
+        # if we reach here, then:
+        # no aliasing happened, i.e., tag_name is not in alias_dict
+        # then: return value of tag_name as usual
+        tag_val = super().get_class_tag(
             tag_name=tag_name, tag_value_default=tag_value_default
         )
+        return tag_val
 
     def get_tags(self):
         """Get tags from instance, with tag level inheritance and overrides.
@@ -1389,17 +1450,51 @@ class TagAliaserMixin:
         """
         self._deprecate_tag_warn([tag_name])
         alias_dict = self.alias_dict
-        old_tags = alias_dict.keys()
-        new_tags = alias_dict.values()
 
-        if tag_name in old_tags or tag_name in new_tags:
-            return self.get_tags().get(tag_name, tag_value_default)
+        old_tag_name = ""
+        new_tag_name = ""
+        if tag_name in alias_dict:
+            old_tag_name = tag_name
+            new_tag_name = alias_dict[old_tag_name]
+        if tag_name in alias_dict.values():
+            old_tag_name = [k for k, v in alias_dict.items() if v == tag_name][0]
+            new_tag_name = tag_name
 
-        return super(TagAliaserMixin, self).get_tag(
+        tag_changed = new_tag_name != old_tag_name
+        old_tag_queried = tag_name == old_tag_name and tag_changed
+
+        if tag_changed:
+            # retrieve old tag value, if it exists
+            old_tag_val = self._get_flag(
+                old_tag_name,
+                "__tag_not_found__",
+                raise_error=False,
+                flag_attr_name="_tags",
+            )
+            old_tag_present = old_tag_val != "__tag_not_found__"
+            # case 1: old tag present, and new or old tag queried
+            # then: return value of old tag
+            if old_tag_present:
+                return old_tag_val
+            # case 2: old tag was queried, but old tag not present
+            # then: return value of new tag
+            elif old_tag_queried:
+                return self._get_flag(
+                    new_tag_name,
+                    tag_value_default,
+                    raise_error=False,
+                    flag_attr_name="_tags",
+                )
+
+        # if we reach here, then:
+        # no aliasing happened, i.e., tag_name is not in alias_dict
+        # then: return value of tag_name as usual
+        tag_val = super().get_tag(
             tag_name=tag_name,
             tag_value_default=tag_value_default,
             raise_error=raise_error,
         )
+        return tag_val
 
     def set_tags(self, **tag_dict):
         """Set instance level tag overrides to given values.
@@ -1434,13 +1529,25 @@ class TagAliaserMixin:
         """
         self._deprecate_tag_warn(tag_dict.keys())
 
-        tag_dict = self._complete_dict(tag_dict)
-        super(TagAliaserMixin, self).set_tags(**tag_dict)
+        tag_dict = self._complete_dict(tag_dict, direction="old_to_new")
+        self._set_flags(flag_attr_name="_tags", **tag_dict)
         return self
 
     @classmethod
-    def _complete_dict(cls, tag_dict):
-        """Add all aliased and aliasing tags to the dictionary."""
+    def _complete_dict(cls, tag_dict, direction="both"):
+        """Add all aliased and aliasing tags to the dictionary.
+
+        Parameters
+        ----------
+        tag_dict : dict
+            Dictionary of tag name: tag value pairs.
+
+        direction : str, one of "old_to_new", "both"
+            Direction of aliasing to complete the dictionary for.
+
+            * "old_to_new": complete only from old tags to new tags
+            * "both": complete both from old to new and from new to old
+        """
         alias_dict = cls.alias_dict
         deprecated_tags = set(tag_dict.keys()).intersection(alias_dict.keys())
         new_tags = set(tag_dict.keys()).intersection(alias_dict.values())
@@ -1451,12 +1558,8 @@ class TagAliaserMixin:
             #   to all tags that could *be aliased by* the string
             #   and all tags that could be *aliasing* the string
             # this way we ensure upwards and downwards compatibility
-            for old_tag, new_tag in alias_dict.items():
-                for tag in tag_dict:
-                    if tag == old_tag and new_tag != "":
-                        new_tag_dict[new_tag] = tag_dict[tag]
-                    if tag == new_tag:
-                        new_tag_dict[old_tag] = tag_dict[tag]
+            for old_tag in alias_dict:
+                cls._translate_tags(new_tag_dict, tag_dict, old_tag, direction)
             return new_tag_dict
         else:
             return tag_dict
@@ -1488,6 +1591,37 @@ class TagAliaserMixin:
                 else:
                     msg += ", please remove code that access or sets {tag_name!r}"
                 warnings.warn(msg, category=FutureWarning, stacklevel=2)
+
+    @classmethod
+    def _translate_tags(cls, new_tag_dict, tag_dict, old_tag, direction="both"):
+        """Translate old tag to new tag.
+
+        Mutates ``new_tag_dict`` given ``old_tag_dict`` and ``old_tag``.
+
+        Parameters
+        ----------
+        new_tag_dict : dict
+            Dictionary of new tags.
+        tag_dict : dict
+            Dictionary of old tags.
+        old_tag : str
+            Name of the tag to translate.
+
+        Returns
+        -------
+        str
+            Translated tag name.
+        """
+        alias_dict = cls.alias_dict
+        new_tag = alias_dict[old_tag]
+
+        if old_tag in tag_dict and new_tag != "":
+            new_tag_dict[new_tag] = tag_dict[old_tag]
+        if direction == "both" and new_tag in tag_dict and old_tag not in tag_dict:
+            new_tag_dict[old_tag] = tag_dict[new_tag]
+        if direction == "old_to_new" and old_tag in new_tag_dict:
+            del new_tag_dict[old_tag]
+        return new_tag_dict
 
 
 class BaseEstimator(BaseObject):
