@@ -6,7 +6,7 @@ Installation
 
 ``skbase`` currently supports:
 
-* environments with python version 3.9, 3.10, 3.11, 3.12, or 3.13
+* environments with python version 3.10, 3.11, 3.12, 3.13, or 3.14
 * operating systems Mac OS X, Unix-like OS, Windows 8.1 and higher
 
 Checkout the full list of pre-compiled wheels on
@@ -121,8 +121,8 @@ steps to create one using ``conda``:
 
 1. Use your command line tool to first confirm ``conda`` is present on your
    system: :code:`conda --version`
-2. Create a new virtual environment named ``skbase-dev`` with python version ``3.9``:
-   :code:`conda create -n skbase-dev python=3.9`
+2. Create a new virtual environment named ``skbase-dev`` with python version ``3.11``:
+   :code:`conda create -n skbase-dev python=3.11`
 3. Activate this newly created environment: :code:`conda activate skbase-dev`
 
 Step 3 - Build ``skbase`` from source
