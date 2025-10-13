@@ -440,9 +440,15 @@ def _get_module_info(
         ):
             continue
         # Otherwise, store info about the class
-        uw_klass = inspect.unwrap(klass)  # unwrap any decorators
-        klassname = uw_klass.__name__
-        if uw_klass.__module__ == module.__name__ or name in designed_imports:
+        try:
+            uw_klass = inspect.unwrap(klass)  # unwrap any decorators
+        except (ValueError, AttributeError):
+            uw_klass = klass  # use original if unwrap fails
+
+        # Use klass.__name__ and klass.__module__ instead of uw_klass to handle metaclasses
+        # where unwrapping may return unexpected objects
+        klassname = klass.__name__
+        if klass.__module__ == module.__name__ or name in designed_imports:
             klass_authors = getattr(klass, "__author__", authors)
             if isinstance(klass_authors, (list, tuple)):
                 klass_authors = ", ".join(klass_authors)
@@ -466,7 +472,7 @@ def _get_module_info(
                 "is_base_class": klass in package_base_classes,
                 "is_base_object": issubclass(klass, BaseObject),
                 "authors": klass_authors,
-                "module_name": uw_klass.__module__,
+                "module_name": klass.__module__,
             }
 
     module_functions: MutableMapping = {}  # of FunctionInfo type
@@ -518,13 +524,16 @@ def _get_members_uw(module, predicate=None):
         if not callable(obj):
             continue
 
+        # Check predicate before unwrapping to handle metaclasses correctly
+        # On Python 3.10 and earlier, inspect.unwrap can fail on classes with metaclasses
+        if predicate is not None and not predicate(obj):
+            continue
+
         try:
             unwrapped = inspect.unwrap(obj)
         except ValueError:
-            continue  # skip circular wrappers or broken decorators
+            unwrapped = obj  # use original if unwrap fails
 
-        if predicate is not None and not predicate(unwrapped):
-            continue
         yield name, obj
 
 
@@ -1109,7 +1118,7 @@ def _walk_and_retrieve_all_objs(root, package_name, modules_to_ignore):
             continue
 
         module = importlib.import_module(module_name)
-        classes = inspect.getmembers(module, inspect.isclass)
+        classes = _get_members_uw(module, inspect.isclass)
         # Filter classes
         estimators = [
             (klass.__name__, klass)
