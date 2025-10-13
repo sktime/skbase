@@ -1,26 +1,24 @@
 # -*- coding: utf-8 -*-
-"""Tests for lookup utilities handling classes defined with metaclasses."""
+"""Tests for lookup helpers handling classes defined with metaclasses."""
 
+import importlib
+import inspect
 from typing import List
 
-from skbase.lookup import all_objects, get_package_metadata
+from skbase.lookup import get_package_metadata
+from skbase.lookup._lookup import _get_members_uw
 from skbase.utils.dependencies._import import CommonMagicMeta, MagicAttribute
 
 __author__: List[str] = ["SimonBlanke"]
 
 
-def test_all_objects_discovers_metaclass_classes():
-    """Classes defined with metaclasses should be returned by all_objects."""
-    results = all_objects(
-        package_name="skbase.utils.dependencies._import",
-        object_types=object,
-        modules_to_ignore=(),
-        suppress_import_stdout=True,
-    )
-    objects = dict(results)
+def test_get_members_uw_discovers_metaclass_classes():
+    """_get_members_uw should retain classes even when unwrapping metaclass objects."""
+    module = importlib.import_module("skbase.utils.dependencies._import")
+    members = dict(_get_members_uw(module, inspect.isclass))
 
-    assert objects["MagicAttribute"] is MagicAttribute
-    assert objects["CommonMagicMeta"] is CommonMagicMeta
+    assert members["MagicAttribute"] is MagicAttribute
+    assert members["CommonMagicMeta"] is CommonMagicMeta
 
 
 def test_get_package_metadata_tracks_metaclass_classes():
