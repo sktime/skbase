@@ -445,8 +445,11 @@ def _get_module_info(
         except (ValueError, AttributeError):
             uw_klass = klass  # use original if unwrap fails
 
-        # Use klass.__name__ and klass.__module__ instead of uw_klass to handle metaclasses
-        # where unwrapping may return unexpected objects
+        """
+        Use klass.__name__ and klass.__module__ instead
+        of uw_klass to handle metaclasses
+        where unwrapping may return unexpected objects
+        """
         klassname = klass.__name__
         if klass.__module__ == module.__name__ or name in designed_imports:
             klass_authors = getattr(klass, "__author__", authors)
@@ -524,8 +527,11 @@ def _get_members_uw(module, predicate=None):
         if not callable(obj):
             continue
 
-        # Check predicate before unwrapping to handle metaclasses correctly
-        # On Python 3.10 and earlier, inspect.unwrap can fail on classes with metaclasses
+        """
+        Check predicate before unwrapping to handle metaclasses correctly
+        On Python 3.10 and earlier, inspect.unwrap
+        can fail on classes with metaclasses
+        """
         if predicate is not None and not predicate(obj):
             continue
 
