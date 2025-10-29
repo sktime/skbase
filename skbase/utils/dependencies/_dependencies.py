@@ -147,12 +147,30 @@ def _check_soft_dependencies(
             f"or None, but found msg of type {type(msg)}"
         )
 
-    def _get_pkg_version_and_req(package):
+    def _get_pkg_version_and_req(package, case_sensitive=False):
         """Get package version and requirement object from package string.
 
         Parameters
         ----------
         package : str
+            name of package to check,
+            PEP 440 compatibe specifier string, e.g., "pandas" or "sklearn".
+            This is the pypi package name, not the import name, e.g.,
+            ``scikit-learn``, not ``sklearn``.
+
+        case_sensitive : bool, default=False
+            whether package names are case sensitive or not.
+            pypi package names are case sensitive, but pypi disallows
+            multiple package names that differ only in case.
+            Hence there is at most a single correct case for a given package name,
+            and a user will most likely intend to refer to the correct package,
+            even when providing an incorrect case for the pypi name.
+
+            * If set to True, package names are case sensitive, and None is returned
+              if the correct case is not provided, e.g., ``mapie`` instead of ``MAPIE``.
+            * If set to False, package names are case insensitive, and a version is
+              returned for all case combinations,
+              e.g., ``mapie``, ``MAPIE``, ``Mapie``, ``mApIe``.
 
         Returns
         -------
@@ -179,7 +197,7 @@ def _check_soft_dependencies(
         package_name = req.name
         package_version_req = req.specifier
 
-        pkg_env_version = _get_pkg_version(package_name)
+        pkg_env_version = _get_pkg_version(package_name, case_sensitive=case_sensitive)
         if normalize_reqs:
             pkg_env_version = _normalize_version(pkg_env_version)
 
@@ -212,7 +230,9 @@ def _check_soft_dependencies(
         req_sat = []
 
         for package in package_req:
-            pkg_version_req, pkg_nm, pkg_env_version = _get_pkg_version_and_req(package)
+            pkg_version_req, pkg_nm, pkg_env_version = _get_pkg_version_and_req(
+                package, case_sensitive=case_sensitive
+            )
             pkg_version_reqs.append(pkg_version_req)
             pkg_env_versions.append(pkg_env_version)
             pkg_names.append(pkg_nm)
