@@ -122,6 +122,17 @@ def test_check_soft_dependencies_nested():
         )
 
 
+def test_check_soft_dependencies_case_sensitive():
+    """Test case sensitivity in package checking."""
+    # By default, package names are case insensitive
+    assert _check_soft_dependencies("PyTest", severity="none")
+    assert _check_soft_dependencies("NUMPY>=1.0.0", severity="none")
+
+    # When case_sensitive=False, package names are case insensitive
+    assert not _check_soft_dependencies("PyTest", case_sensitive=True, severity="none")
+    assert not _check_soft_dependencies("NUMPY>0", case_sensitive=True, severity="none")
+
+
 @patch("skbase.utils.dependencies._dependencies.sys")
 @pytest.mark.parametrize(
     "mock_release_version, prereleases, expect_exception",

@@ -1,6 +1,6 @@
 [project]
 name = "scikit-base"
-version = "0.12.6"
+version = "0.13.0"
 description = "Base classes for sklearn-like parametric objects"
 authors = [
     {name = "sktime developers", email = "sktime.toolbox@gmail.com"},
@@ -26,13 +26,13 @@ classifiers = [
     "Operating System :: POSIX",
     "Operating System :: Unix",
     "Operating System :: MacOS",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
-requires-python = ">=3.9,<3.14"
+requires-python = ">=3.10,<3.15"
 dependencies = []
 
 [project.optional-dependencies]
