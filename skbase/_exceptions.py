@@ -15,7 +15,11 @@ class FixtureGenerationError(Exception):
 
     def __init__(self, fixture_name="", err=None):
         self.fixture_name = fixture_name
-        super().__init__(f"fixture {fixture_name} failed to generate. {err}")
+        super().__init__(
+            f"fixture {fixture_name} failed to generate. {err}",
+            fixture_name=fixture_name,
+            original_exception=err,
+        )
 
 
 class NotFittedError(ValueError, AttributeError):
