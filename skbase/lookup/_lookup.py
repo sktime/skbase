@@ -440,16 +440,6 @@ def _get_module_info(
         ):
             continue
         # Otherwise, store info about the class
-        try:
-            uw_klass = inspect.unwrap(klass)  # unwrap any decorators
-        except (ValueError, AttributeError):
-            uw_klass = klass  # use original if unwrap fails
-
-        """
-        Use klass.__name__ and klass.__module__ instead
-        of uw_klass to handle metaclasses
-        where unwrapping may return unexpected objects
-        """
         klassname = klass.__name__
         if klass.__module__ == module.__name__ or name in designed_imports:
             klass_authors = getattr(klass, "__author__", authors)
@@ -465,8 +455,9 @@ def _get_module_info(
             module_classes[name] = {
                 "klass": klass,
                 "name": klassname,
+                # Access __doc__ directly to avoid unwrap issues with metaclasses
                 "description": (
-                    "" if uw_klass.__doc__ is None else uw_klass.__doc__.split("\n")[0]
+                    "" if klass.__doc__ is None else klass.__doc__.split("\n")[0]
                 ),
                 "tags": (
                     klass.get_class_tags() if hasattr(klass, "get_class_tags") else None
