@@ -552,16 +552,24 @@ def _get_members_uw(module, predicate=None):
         if not callable(obj):
             continue
 
-        # Try to unwrap; if successful check predicate on unwrapped, else on original
-        try:
-            check_obj = inspect.unwrap(obj)
-        except (ValueError, AttributeError):
-            check_obj = obj
+        # Check predicate on original first, then try unwrapping if needed
+        if predicate is not None:
+            # If original matches predicate, yield it (handles metaclasses correctly)
+            if predicate(obj):
+                yield name, obj
+                continue
 
-        if predicate is not None and not predicate(check_obj):
-            continue
-
-        yield name, obj
+            # Original doesn't match, try unwrapping (for decorated functions)
+            try:
+                unwrapped = inspect.unwrap(obj)
+                if predicate(unwrapped):
+                    yield name, obj
+            except (ValueError, AttributeError):
+                # Unwrap failed, and original didn't match, so skip
+                pass
+        else:
+            # No predicate, yield everything
+            yield name, obj
 
 
 def get_package_metadata(
