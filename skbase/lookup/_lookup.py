@@ -518,18 +518,9 @@ def _get_members_uw(module, predicate=None):
         if not callable(obj):
             continue
 
-        """
-        Check predicate before unwrapping to handle metaclasses correctly
-        On Python 3.10 and earlier, inspect.unwrap
-        can fail on classes with metaclasses
-        """
+        # Check predicate on original object to handle metaclasses correctly
         if predicate is not None and not predicate(obj):
             continue
-
-        try:
-            unwrapped = inspect.unwrap(obj)
-        except ValueError:
-            unwrapped = obj  # use original if unwrap fails
 
         yield name, obj
 
