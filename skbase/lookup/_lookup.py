@@ -513,7 +513,38 @@ def _get_module_info(
 
 
 def _get_members_uw(module, predicate=None):
-    """Get members of a module. Same as inspect.getmembers, but robust to decorators."""
+    """Get members of a module with safe handling for metaclasses.
+
+    This function is similar to inspect.getmembers but handles edge cases with
+    metaclasses more robustly. The key difference is that it checks predicates
+    on the original object before any processing, which is necessary for proper
+    metaclass detection on Python 3.9 and 3.10.
+
+    Parameters
+    ----------
+    module : ModuleType
+        The module to retrieve members from.
+    predicate : callable, optional (default=None)
+        If provided, only members for which predicate(member) is True are yielded.
+        The predicate is checked on the original object.
+
+    Yields
+    ------
+    (name, obj) : tuple of (str, object)
+        Tuples of (member_name, member_object) for all callable members in the
+        module that match the predicate.
+
+    Notes
+    -----
+    This function differs from inspect.getmembers in that it:
+    - Only yields callable objects
+    - Checks the predicate on the original object
+    - Does not unwrap decorated objects, avoiding ValueError on metaclasses
+
+    See Also
+    --------
+    inspect.getmembers : Standard library function for getting members
+    """
     for name, obj in vars(module).items():
         if not callable(obj):
             continue
