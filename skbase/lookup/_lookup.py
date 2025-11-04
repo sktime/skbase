@@ -516,9 +516,9 @@ def _get_members_uw(module, predicate=None):
     """Get members of a module with safe handling for metaclasses.
 
     This function is similar to inspect.getmembers but handles edge cases with
-    metaclasses more robustly. The key difference is that it checks predicates
-    on the original object before any processing, which is necessary for proper
-    metaclass detection on Python 3.9 and 3.10.
+    metaclasses and decorated functions more robustly. It unwraps decorators
+    for predicate checking while safely handling metaclasses where unwrapping
+    fails.
 
     Parameters
     ----------
@@ -526,7 +526,8 @@ def _get_members_uw(module, predicate=None):
         The module to retrieve members from.
     predicate : callable, optional (default=None)
         If provided, only members for which predicate(member) is True are yielded.
-        The predicate is checked on the original object.
+        The predicate is checked on the unwrapped object if unwrapping succeeds,
+        or on the original object if unwrapping fails.
 
     Yields
     ------
@@ -538,8 +539,10 @@ def _get_members_uw(module, predicate=None):
     -----
     This function differs from inspect.getmembers in that it:
     - Only yields callable objects
-    - Checks the predicate on the original object
-    - Does not unwrap decorated objects, avoiding ValueError on metaclasses
+    - Safely handles unwrap failures (e.g., metaclasses on Python 3.9-3.10)
+    - Checks predicate on unwrapped version for decorated functions
+    - Checks predicate on original when unwrap fails
+    - Always yields the original object, not the unwrapped version
 
     See Also
     --------
@@ -549,8 +552,14 @@ def _get_members_uw(module, predicate=None):
         if not callable(obj):
             continue
 
-        # Check predicate on original object to handle metaclasses correctly
-        if predicate is not None and not predicate(obj):
+        # Try to unwrap; if successful check predicate on unwrapped, else on original
+        try:
+            unwrapped = inspect.unwrap(obj)
+            check_obj = unwrapped
+        except (ValueError, AttributeError):
+            check_obj = obj
+
+        if predicate is not None and not predicate(check_obj):
             continue
 
         yield name, obj
