@@ -150,6 +150,17 @@
       "contributions": [
         "maintenance"
       ]
+    },
+    {
+      "login": "SimonBlanke",
+      "name": "Simon Blanke",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20640612?v=4",
+      "profile": "https://github.com/SimonBlanke",
+      "contributions": [
+        "bug",
+        "code",
+        "test"
+      ]
     }
   ],
   "projectName": "skbase",
