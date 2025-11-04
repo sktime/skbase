@@ -554,8 +554,7 @@ def _get_members_uw(module, predicate=None):
 
         # Try to unwrap; if successful check predicate on unwrapped, else on original
         try:
-            unwrapped = inspect.unwrap(obj)
-            check_obj = unwrapped
+            check_obj = inspect.unwrap(obj)
         except (ValueError, AttributeError):
             check_obj = obj
 
