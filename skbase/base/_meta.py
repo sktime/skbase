@@ -356,7 +356,7 @@ class _MetaObjectMixin:
     def _check_objects(
         self,
         objs,
-        attr_name="steps",
+        attr_name=None,
         cls_type=None,
         allow_dict=False,
         allow_mix=True,
@@ -370,8 +370,9 @@ class _MetaObjectMixin:
         objs : Any
             Should be list of objects, a list of (str, object) tuples or a
             dict[str, objects]. Any objects should `cls_type` class.
-        attr_name : str, default="steps"
-            Name of checked attribute in error messages.
+        attr_name : str, default=None
+            Name of checked attribute in error messages. If None, the value is
+            auto-detected from the "named_object_parameters" tag.
         cls_type : class or tuple of classes, default=BaseEstimator.
             class(es) that all objects are checked to be an instance of.
         allow_dict : bool, default=False
