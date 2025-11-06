@@ -406,6 +406,9 @@ class _MetaObjectMixin:
             Also raised if objects in `objs` are not instances of `cls_type`
             or `cls_type is not None, a class or tuple of classes.
         """
+        if attr_name is None:
+            attr_name = self.get_tag("named_object_parameters")
+
         msg = (
             f"Invalid {attr_name!r} attribute, {attr_name!r} should be a list "
             "of objects, or a list of (string, object) tuples. "
