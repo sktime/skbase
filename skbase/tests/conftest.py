@@ -3,7 +3,6 @@
 from typing import List
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.utils.dependencies import _check_python_version
 
 __all__: List[str] = [
     "SKBASE_BASE_CLASSES",
@@ -16,11 +15,8 @@ __all__: List[str] = [
 ]
 __author__: List[str] = ["fkiraly", "RNKuhns"]
 
-# workaround for bug 442 where metaclasses do not get discovered in python <=3.10
-if _check_python_version(">=3.11", severity="none"):
-    IMPORT_CLS = ("CommonMagicMeta", "MagicAttribute")
-else:
-    IMPORT_CLS = ("CommonMagicMeta",)
+# bug 442 fixed: metaclasses now discovered correctly on all Python versions
+IMPORT_CLS = ("CommonMagicMeta", "MagicAttribute")
 
 SKBASE_BASE_CLASSES = (BaseObject, BaseEstimator)
 SKBASE_MODULES = (
