@@ -197,3 +197,18 @@ def test_check_objects_attr_name_explicit():
 
     assert isinstance(result, list)
     assert len(result) == 2
+
+
+def test_check_objects_attr_name_custom_tag():
+    """Test that _check_objects auto-detects from custom named_object_parameters tag."""
+    # custom tag
+    meta_obj = MetaObjectTester()
+    meta_obj.set_tags(**{"named_object_parameters": "components"})
+
+    components = [ComponentDummy(1), ComponentDummy(2)]
+
+    # should auto-detect custom tag
+    result = meta_obj._check_objects(components, attr_name=None)
+
+    assert isinstance(result, list)
+    assert len(result) == 2
