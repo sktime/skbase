@@ -169,6 +169,7 @@ def test_metaestimator_composite(long_steps):
     meta_est.set_params(bar__b="something else")
     assert meta_est.get_params()["bar__b"] == "something else"
 
+
 def test_check_objects_attr_name_auto_detection():
     """Test that _check_objects auto-detects attr_name from tag."""
 
@@ -183,6 +184,7 @@ def test_check_objects_attr_name_auto_detection():
     assert all(isinstance(item, tuple) and len(item) == 2 for item in result)
     assert all(isinstance(item[0], str) for item in result)
     assert all(isinstance(item[1], ComponentDummy) for item in result)
+
 
 def test_check_objects_attr_name_explicit():
     """Test that _check_objects works with explicit attr_name."""
