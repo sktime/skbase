@@ -121,7 +121,9 @@ class _MetaObjectMixin:
         """
         # Use tag interface that will be available when mixin is used
         named_object_attr = self.get_tag("named_object_parameters")  # type: ignore
-        return self._set_params(named_object_attr, **kwargs)
+        result = self._set_params(named_object_attr, **kwargs)
+        self.reset()  # <- Call reset after parameters are set
+        return result
 
     def _get_fitted_params(self):
         """Get fitted parameters.

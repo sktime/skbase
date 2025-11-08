@@ -168,3 +168,23 @@ def test_metaestimator_composite(long_steps):
 
     meta_est.set_params(bar__b="something else")
     assert meta_est.get_params()["bar__b"] == "something else"
+
+
+def test_basemetaobject_set_params_uses_baseobject_reset():
+    """Test that BaseMetaObject.set_params correctly triggers BaseObject.reset."""
+
+    class ResetCheckMetaObject(BaseMetaObject):
+        def __init__(self, a=1, steps=None):
+            self.a = a
+            self.steps = steps if steps is not None else []
+            self.set_tags(foo="bar")  # optional tag use
+            super().__init__()
+            self.b_ = 2 * self.a  # Dependent attribute
+
+    obj = ResetCheckMetaObject()
+    assert obj.b_ == 2
+
+    # set_params should update 'a' and trigger reset (from BaseObject) which updates 'b_'
+    obj.set_params(a=10)
+    assert obj.a == 10
+    assert obj.b_ == 20  # This confirms reset updated the dependent value
