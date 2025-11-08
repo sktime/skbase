@@ -185,6 +185,9 @@ def test_check_objects_attr_name_auto_detection():
     assert all(isinstance(item[0], str) for item in result)
     assert all(isinstance(item[1], ComponentDummy) for item in result)
 
+    with pytest.raises(TypeError, match="'steps'"):
+        meta_obj._check_objects(None, attr_name=None)
+
 
 def test_check_objects_attr_name_explicit():
     """Test that _check_objects works with explicit attr_name."""
@@ -197,6 +200,9 @@ def test_check_objects_attr_name_explicit():
 
     assert isinstance(result, list)
     assert len(result) == 2
+
+    with pytest.raises(TypeError, match="'custom_steps'"):
+        meta_obj._check_objects(None, attr_name="custom_steps")
 
 
 def test_check_objects_attr_name_custom_tag():
@@ -212,3 +218,6 @@ def test_check_objects_attr_name_custom_tag():
 
     assert isinstance(result, list)
     assert len(result) == 2
+
+    with pytest.raises(TypeError, match="'components'"):
+        meta_obj._check_objects(None, attr_name=None)
