@@ -189,12 +189,12 @@ def test_set_params_resets_fitted_state():
     meta_obj.set_params(steps=new_steps)
 
     # Fitted state should be gone after set_params
-    assert not hasattr(meta_obj, "fitted_attr_"), (
-        "fitted_attr_ should be removed by reset() during set_params(steps=...)"
-    )
-    assert not hasattr(meta_obj, "another_fitted_"), (
-        "another_fitted_ should be removed by reset() during set_params(steps=...)"
-    )
+    assert not hasattr(
+        meta_obj, "fitted_attr_"
+    ), "fitted_attr_ should be removed by reset() during set_params(steps=...)"
+    assert not hasattr(
+        meta_obj, "another_fitted_"
+    ), "another_fitted_ should be removed by reset() during set_params(steps=...)"
 
     # Test 2: Replacing individual step should also trigger reset
     meta_obj = MetaObjectTester(steps=steps)
@@ -202,6 +202,6 @@ def test_set_params_resets_fitted_state():
 
     meta_obj.set_params(foo=ComponentDummy(77))
 
-    assert not hasattr(meta_obj, "fitted_attr_"), (
-        "fitted_attr_ should be removed by reset() during set_params(foo=...)"
-    )
+    assert not hasattr(
+        meta_obj, "fitted_attr_"
+    ), "fitted_attr_ should be removed by reset() during set_params(foo=...)"
