@@ -184,3 +184,14 @@ def test_check_objects_attr_name_auto_detection():
     assert all(isinstance(item[0], str) for item in result)
     assert all(isinstance(item[1], ComponentDummy) for item in result)
 
+def test_check_objects_attr_name_explicit():
+    """Test that _check_objects works with explicit attr_name."""
+    # Create a meta object with steps
+    steps = [ComponentDummy(42), ComponentDummy(24)]
+    meta_obj = MetaObjectTester(steps=steps)
+
+    # Test with explicit attr_name
+    result = meta_obj._check_objects(steps, attr_name="custom_steps")
+
+    assert isinstance(result, list)
+    assert len(result) == 2
