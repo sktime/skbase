@@ -168,3 +168,56 @@ def test_metaestimator_composite(long_steps):
 
     meta_est.set_params(bar__b="something else")
     assert meta_est.get_params()["bar__b"] == "something else"
+
+
+def test_check_objects_attr_name_auto_detection():
+    """Test that _check_objects auto-detects attr_name from tag."""
+
+    steps = [ComponentDummy(42), ComponentDummy(24)]
+    meta_obj = MetaObjectTester(steps=steps)
+
+    # auto-detect from tag
+    result = meta_obj._check_objects(steps, attr_name=None)
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert all(isinstance(item, tuple) and len(item) == 2 for item in result)
+    assert all(isinstance(item[0], str) for item in result)
+    assert all(isinstance(item[1], ComponentDummy) for item in result)
+
+    with pytest.raises(TypeError, match="'steps'"):
+        meta_obj._check_objects(None, attr_name=None)
+
+
+def test_check_objects_attr_name_explicit():
+    """Test that _check_objects works with explicit attr_name."""
+    # Create a meta object with steps
+    steps = [ComponentDummy(42), ComponentDummy(24)]
+    meta_obj = MetaObjectTester(steps=steps)
+
+    # Test with explicit attr_name
+    result = meta_obj._check_objects(steps, attr_name="custom_steps")
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+
+    with pytest.raises(TypeError, match="'custom_steps'"):
+        meta_obj._check_objects(None, attr_name="custom_steps")
+
+
+def test_check_objects_attr_name_custom_tag():
+    """Test that _check_objects auto-detects from custom named_object_parameters tag."""
+    # custom tag
+    meta_obj = MetaObjectTester()
+    meta_obj.set_tags(**{"named_object_parameters": "components"})
+
+    components = [ComponentDummy(1), ComponentDummy(2)]
+
+    # should auto-detect custom tag
+    result = meta_obj._check_objects(components, attr_name=None)
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+
+    with pytest.raises(TypeError, match="'components'"):
+        meta_obj._check_objects(None, attr_name=None)
