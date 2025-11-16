@@ -440,9 +440,8 @@ def _get_module_info(
         ):
             continue
         # Otherwise, store info about the class
-        uw_klass = inspect.unwrap(klass)  # unwrap any decorators
-        klassname = uw_klass.__name__
-        if uw_klass.__module__ == module.__name__ or name in designed_imports:
+        klassname = klass.__name__
+        if klass.__module__ == module.__name__ or name in designed_imports:
             klass_authors = getattr(klass, "__author__", authors)
             if isinstance(klass_authors, (list, tuple)):
                 klass_authors = ", ".join(klass_authors)
@@ -456,8 +455,9 @@ def _get_module_info(
             module_classes[name] = {
                 "klass": klass,
                 "name": klassname,
+                # Access __doc__ directly to avoid unwrap issues with metaclasses
                 "description": (
-                    "" if uw_klass.__doc__ is None else uw_klass.__doc__.split("\n")[0]
+                    "" if klass.__doc__ is None else klass.__doc__.split("\n")[0]
                 ),
                 "tags": (
                     klass.get_class_tags() if hasattr(klass, "get_class_tags") else None
@@ -466,7 +466,7 @@ def _get_module_info(
                 "is_base_class": klass in package_base_classes,
                 "is_base_object": issubclass(klass, BaseObject),
                 "authors": klass_authors,
-                "module_name": uw_klass.__module__,
+                "module_name": klass.__module__,
             }
 
     module_functions: MutableMapping = {}  # of FunctionInfo type
@@ -513,19 +513,63 @@ def _get_module_info(
 
 
 def _get_members_uw(module, predicate=None):
-    """Get members of a module. Same as inspect.getmembers, but robust to decorators."""
+    """Get members of a module with safe handling for metaclasses.
+
+    This function is similar to inspect.getmembers but handles edge cases with
+    metaclasses and decorated functions more robustly. It unwraps decorators
+    for predicate checking while safely handling metaclasses where unwrapping
+    fails.
+
+    Parameters
+    ----------
+    module : ModuleType
+        The module to retrieve members from.
+    predicate : callable, optional (default=None)
+        If provided, only members for which predicate(member) is True are yielded.
+        The predicate is checked on the unwrapped object if unwrapping succeeds,
+        or on the original object if unwrapping fails.
+
+    Yields
+    ------
+    (name, obj) : tuple of (str, object)
+        Tuples of (member_name, member_object) for all callable members in the
+        module that match the predicate.
+
+    Notes
+    -----
+    This function differs from inspect.getmembers in that it:
+    - Only yields callable objects
+    - Safely handles unwrap failures (e.g., metaclasses on Python 3.9-3.10)
+    - Checks predicate on unwrapped version for decorated functions
+    - Checks predicate on original when unwrap fails
+    - Always yields the original object, not the unwrapped version
+
+    See Also
+    --------
+    inspect.getmembers : Standard library function for getting members
+    """
     for name, obj in vars(module).items():
         if not callable(obj):
             continue
 
-        try:
-            unwrapped = inspect.unwrap(obj)
-        except ValueError:
-            continue  # skip circular wrappers or broken decorators
+        # Check predicate on original first, then try unwrapping if needed
+        if predicate is not None:
+            # If original matches predicate, yield it (handles metaclasses correctly)
+            if predicate(obj):
+                yield name, obj
+                continue
 
-        if predicate is not None and not predicate(unwrapped):
-            continue
-        yield name, obj
+            # Original doesn't match, try unwrapping (for decorated functions)
+            try:
+                unwrapped = inspect.unwrap(obj)
+                if predicate(unwrapped):
+                    yield name, obj
+            except (ValueError, AttributeError):
+                # Unwrap failed, and original didn't match, so skip
+                pass
+        else:
+            # No predicate, yield everything
+            yield name, obj
 
 
 def get_package_metadata(
@@ -1109,7 +1153,7 @@ def _walk_and_retrieve_all_objs(root, package_name, modules_to_ignore):
             continue
 
         module = importlib.import_module(module_name)
-        classes = inspect.getmembers(module, inspect.isclass)
+        classes = _get_members_uw(module, inspect.isclass)
         # Filter classes
         estimators = [
             (klass.__name__, klass)
