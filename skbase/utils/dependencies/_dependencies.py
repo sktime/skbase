@@ -311,8 +311,10 @@ def _get_installed_packages_private(lowercase=False):
 
     dists = distributions()
     dists = {dist for dist in dists if dist.metadata is not None}
-    package_names = {dist.metadata["Name"] for dist in dists}
-    package_versions = {pkg_name: version(pkg_name) for pkg_name in package_names}
+    package_names = {dist.metadata.get("Name") for dist in dists}
+    package_versions = {
+        pkg_name: version(pkg_name) for pkg_name in package_names if pkg_name
+    }
     # developer note:
     # we cannot just use distributions naively,
     # because the same top level package name may appear *twice*,

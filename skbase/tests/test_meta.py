@@ -221,3 +221,40 @@ def test_check_objects_attr_name_custom_tag():
 
     with pytest.raises(TypeError, match="'components'"):
         meta_obj._check_objects(None, attr_name=None)
+
+
+def test_set_params_resets_fitted_state():
+    """Test that set_params calls reset, removing fitted state.
+
+    Regression test for issue #412.
+    BaseMetaObject should call reset() during set_params() to clear fitted state,
+    maintaining consistency with BaseObject behavior.
+    """
+    steps = [("foo", ComponentDummy(42)), ("bar", ComponentDummy(24))]
+    meta_obj = MetaObjectTester(steps=steps)
+
+    # Add some fitted state (simulating a fit operation)
+    meta_obj.fitted_attr_ = "should be removed after set_params"
+    meta_obj.another_fitted_ = 123
+
+    # Test 1: Setting the named object parameter should trigger reset
+    new_steps = [("foo", ComponentDummy(99))]
+    meta_obj.set_params(steps=new_steps)
+
+    # Fitted state should be gone after set_params
+    assert not hasattr(
+        meta_obj, "fitted_attr_"
+    ), "fitted_attr_ should be removed by reset() during set_params(steps=...)"
+    assert not hasattr(
+        meta_obj, "another_fitted_"
+    ), "another_fitted_ should be removed by reset() during set_params(steps=...)"
+
+    # Test 2: Replacing individual step should also trigger reset
+    meta_obj = MetaObjectTester(steps=steps)
+    meta_obj.fitted_attr_ = "should be removed"
+
+    meta_obj.set_params(foo=ComponentDummy(77))
+
+    assert not hasattr(
+        meta_obj, "fitted_attr_"
+    ), "fitted_attr_ should be removed by reset() during set_params(foo=...)"

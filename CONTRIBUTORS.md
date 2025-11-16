@@ -1,5 +1,5 @@
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg?style=flat-square)](#contributors)
+[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 This project follows the
@@ -31,6 +31,7 @@ Thanks goes to these wonderful people
       <td align="center" valign="top" width="11.11%"><a href="https://github.com/achieveordie"><img src="https://avatars.githubusercontent.com/u/54197164?v=4" width="100px;" alt=""/><br /><sub><b>Sagar Mishra</b></sub></a></td>
     </tr>
     <tr>
+      <td align="center" valign="top" width="11.11%"><a href="https://github.com/SimonBlanke"><img src="https://avatars.githubusercontent.com/u/20640612?v=4" width="100px;" alt=""/><br /><sub><b>Simon Blanke</b></sub></a></td>
       <td align="center" valign="top" width="11.11%"><a href="https://github.com/tpvasconcelos"><img src="https://avatars.githubusercontent.com/u/17701527?v=4" width="100px;" alt=""/><br /><sub><b>Tomas P. de Vasconcelos</b></sub></a></td>
       <td align="center" valign="top" width="11.11%"><a href="https://github.com/szepeviktor"><img src="https://avatars.githubusercontent.com/u/952007?v=4" width="100px;" alt=""/><br /><sub><b>Viktor Szépe</b></sub></a></td>
       <td align="center" valign="top" width="11.11%"><a href="https://github.com/XinyuWuu"><img src="https://avatars.githubusercontent.com/u/57612792?v=4" width="100px;" alt=""/><br /><sub><b>Xinyu Wu</b></sub></a></td>
