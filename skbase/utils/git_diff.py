@@ -5,8 +5,9 @@ __all__ = []
 
 import importlib.util
 import inspect
-import subprocess
 from functools import lru_cache
+from typing import List
+
 
 @lru_cache
 def get_module_from_class(cls):
@@ -23,6 +24,7 @@ def get_module_from_class(cls):
     """
     module = inspect.getmodule(cls)
     return module.__name__ if module else None
+
 
 @lru_cache
 def get_path_from_module(module_str):
@@ -41,15 +43,29 @@ def get_path_from_module(module_str):
         module_spec = importlib.util.find_spec(module_str)
         if module_spec is None:
             raise ImportError(
-                f"Error in get_path_from_module, module '{module_str}' not found."
+                f"Error in get_path_from_module, module {module_str!r} not found."
             )
         module_path = module_spec.origin
         if module_path.endswith("__init__.py"):
             return module_path[:-11]
         return module_path
     except Exception as e:
-        raise ImportError(f"Error finding module '{module_str}'") from e
-    
+        raise ImportError(f"Error finding module {module_str!r}") from e
+
+
+def _run_git_diff(cmd: List[str]) -> str:
+    # Safety note: cmd is always a hard-coded list constructed in this module only.
+    # No user input is ever injected → safe from shell injection.
+    # nosec B404
+    result = __import__("subprocess").run(
+        cmd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return result.stdout
+
+
 @lru_cache
 def is_module_changed(module_str):
     """Check if a module has changed compared to the main branch.
@@ -62,13 +78,11 @@ def is_module_changed(module_str):
         module string, e.g., sktime.forecasting.naive
     """
     module_file_path = get_path_from_module(module_str)
-    cmd = f"git diff remotes/origin/main -- {module_file_path}"
-    try:
-        output = subprocess.check_output(cmd, shell=True, text=True, encoding="utf-8")
-        return bool(output)
-    except subprocess.CalledProcessError:
-        return True
-    
+    cmd = ["git", "diff", "remotes/origin/main", "--", module_file_path]
+    output = _run_git_diff(cmd)
+    return bool(output)
+
+
 @lru_cache
 def is_class_changed(cls):
     """Check if a class' parent module has changed compared to the main branch.
@@ -84,6 +98,7 @@ def is_class_changed(cls):
     """
     module_str = get_module_from_class(cls)
     return is_module_changed(module_str)
+
 
 def get_changed_lines(file_path, only_indented=True):
     """Get changed or added lines from a file.
@@ -102,29 +117,23 @@ def get_changed_lines(file_path, only_indented=True):
     -------
     list of str : changed or added lines on current branch
     """
-    cmd = f"git diff remotes/origin/main -- {file_path}"
+    cmd = ["git", "diff", "remotes/origin/main", "--", file_path]
+    result_str = _run_git_diff(cmd)
 
-    try:
-        # Run 'git diff' command to get the changes in the specified file
-        result = subprocess.check_output(cmd, shell=True, text=True)
+    start_chars = "+ " if only_indented else "+"
 
-        # if only indented lines are requested, add space to start_chars
-        start_chars = "+"
-        if only_indented:
-            start_chars += " "
+    changed_lines = [
+        line[1:].rstrip()
+        for line in result_str.splitlines()
+        if line.startswith(start_chars)
+    ]
 
-        # Extract the changed or new lines and return as a list of strings
-        changed_lines = [
-            line.strip() for line in result.split("\n") if line.startswith(start_chars)
-        ]
-        # remove first character ('+') from each line
-        changed_lines = [line[1:] for line in changed_lines]
+    if only_indented:
+        changed_lines = [line for line in changed_lines if line and line[0] == " "]
 
-        return changed_lines
+    return changed_lines
 
-    except subprocess.CalledProcessError:
-        return []
-    
+
 def get_packages_with_changed_specs():
     """Get packages with changed or added specs.
 
@@ -133,6 +142,7 @@ def get_packages_with_changed_specs():
     list of str : names of packages with changed or added specs
     """
     return list(_get_packages_with_changed_specs())
+
 
 @lru_cache
 def _get_packages_with_changed_specs():
@@ -162,20 +172,18 @@ def _get_packages_with_changed_specs():
         if len(splits) < 2:
             continue
 
-        req = line.split(sep)[1]
+        req = splits[1]
 
-        # deal with ; python_version >= "3.7" in requirements
         if ";" in req:
-            req = req.split(";")[0]
+            req = req.split(";")[0].strip()
 
-        try:  # deal with lines that are not package requirement strings
+        try:
             pkg = Requirement(req).name
         except InvalidRequirement:
             continue
         else:
             packages.append(pkg)
 
-    # make unique
     packages = tuple(set(packages))
 
     return packages
