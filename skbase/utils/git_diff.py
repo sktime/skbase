@@ -8,6 +8,7 @@ import inspect
 import subprocess
 from functools import lru_cache
 
+
 @lru_cache
 def get_module_from_class(cls):
     """Get full parent module string from class.
@@ -23,6 +24,7 @@ def get_module_from_class(cls):
     """
     module = inspect.getmodule(cls)
     return module.__name__ if module else None
+
 
 @lru_cache
 def get_path_from_module(module_str):
@@ -49,7 +51,8 @@ def get_path_from_module(module_str):
         return module_path
     except Exception as e:
         raise ImportError(f"Error finding module '{module_str}'") from e
-    
+
+
 @lru_cache
 def is_module_changed(module_str):
     """Check if a module has changed compared to the main branch.
@@ -68,7 +71,8 @@ def is_module_changed(module_str):
         return bool(output)
     except subprocess.CalledProcessError:
         return True
-    
+
+
 @lru_cache
 def is_class_changed(cls):
     """Check if a class' parent module has changed compared to the main branch.
@@ -84,6 +88,7 @@ def is_class_changed(cls):
     """
     module_str = get_module_from_class(cls)
     return is_module_changed(module_str)
+
 
 def get_changed_lines(file_path, only_indented=True):
     """Get changed or added lines from a file.
@@ -124,7 +129,8 @@ def get_changed_lines(file_path, only_indented=True):
 
     except subprocess.CalledProcessError:
         return []
-    
+
+
 def get_packages_with_changed_specs():
     """Get packages with changed or added specs.
 
@@ -133,6 +139,7 @@ def get_packages_with_changed_specs():
     list of str : names of packages with changed or added specs
     """
     return list(_get_packages_with_changed_specs())
+
 
 @lru_cache
 def _get_packages_with_changed_specs():
