@@ -9,6 +9,7 @@ from functools import lru_cache
 from typing import List
 
 
+
 @lru_cache
 def get_module_from_class(cls):
     """Get full parent module string from class.
