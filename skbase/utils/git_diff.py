@@ -9,7 +9,6 @@ from functools import lru_cache
 from typing import List
 
 
-
 @lru_cache
 def get_module_from_class(cls):
     """Get full parent module string from class.
@@ -57,8 +56,7 @@ def get_path_from_module(module_str):
 def _run_git_diff(cmd: List[str]) -> str:
     # Safety note: cmd is always a hard-coded list constructed in this module only.
     # No user input is ever injected → safe from shell injection.
-    # nosec B404
-    result = __import__("subprocess").run(
+    result = __import__("subprocess").run(  # nosec B404, B603
         cmd,
         capture_output=True,
         text=True,
