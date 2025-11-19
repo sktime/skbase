@@ -36,7 +36,10 @@ def test_all_objects_returns_class_name_for_alias(tmp_path, monkeypatch):
 
 
 def test_all_objects_filter_tags_returns_matches(tmp_path, monkeypatch):
-    """Test that all_objects honors the filter_tags argument and returns matching classes."""
+    """Test that all_objects honors the filter_tags argument.
+
+    Ensure the function returns matching classes when a tag is provided.
+    """
     pkg_name = "pkg_tag_case"
     root = tmp_path / pkg_name
     root.mkdir()
