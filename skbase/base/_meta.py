@@ -233,8 +233,6 @@ class _MetaObjectMixin:
         Self
             Instance of self.
         """
-        if not params:
-            return self
 
         # Track whether we handle any params locally.
         # This is needed because we pop params before calling super(),
@@ -260,11 +258,8 @@ class _MetaObjectMixin:
         # 3. Step parameters and other initialisation arguments
         super().set_params(**params)  # type: ignore
 
-        # If we handled params locally and super() got nothing (empty dict),
-        # it would have returned early without calling reset().
-        # To maintain consistency with BaseObject, we must call reset() ourselves.
-        if params_handled_locally and not params:
-            self.reset()
+        # After the change to BaseObject.set_params, super().set_params will
+        # always perform reset when appropriate.
 
         return self
 
