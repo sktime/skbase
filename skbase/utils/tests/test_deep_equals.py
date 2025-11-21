@@ -128,3 +128,17 @@ def copy_except_if_sklearn(obj):
             return obj
         else:
             return deepcopy(obj)
+@pytest.mark.skipif(
+    not _check_soft_dependencies("jax", severity="none"),
+    reason="jax not available",
+)
+class TestJAXArrayEquality:
+    """Tests for JAX array equality via deep_equals."""
+
+    def test_jax_array_equal_1d(self):
+        """Test equal 1D JAX arrays."""
+        import jax.numpy as jnp
+
+        x = jnp.array([1, 2, 3])
+        y = jnp.array([1, 2, 3])
+        assert deep_equals(x, y)
