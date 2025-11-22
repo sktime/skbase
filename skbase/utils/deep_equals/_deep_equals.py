@@ -4,6 +4,7 @@
 Objects compared can have one of the following valid types:
     types compatible with != comparison
     pd.Series, pd.DataFrame, np.ndarray
+    jax.numpy.ndarray (if jax is installed)
     lists, tuples, or dicts of a valid type (recursive)
 """
 from inspect import isclass, signature
@@ -34,6 +35,7 @@ def deep_equals(x, y, return_msg=False, plugins=None):
     Correct if x/y are one of the following valid types:
         types compatible with != comparison
         pd.Series, pd.DataFrame, np.ndarray
+        jax.numpy.ndarray (if jax is installed)
         lists, tuples, or dicts of a valid type (recursive)
 
     Important note:
@@ -76,6 +78,7 @@ def deep_equals(x, y, return_msg=False, plugins=None):
     plugins_default = [
         _numpy_equals_plugin,
         _pandas_equals_plugin,
+        _jax_equals_plugin,
         _fh_equals_plugin,
     ]
 
@@ -470,6 +473,7 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
     Correct if x/y are one of the following valid types:
         types compatible with != comparison
         pd.Series, pd.DataFrame, np.ndarray
+        jax.numpy.ndarray (if jax is installed)
         lists, tuples, or dicts of a valid type (recursive)
 
     Important note:
