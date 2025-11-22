@@ -4,6 +4,7 @@
 Objects compared can have one of the following valid types:
     types compatible with != comparison
     pd.Series, pd.DataFrame, np.ndarray
+    jax.numpy.ndarray (if jax is installed)
     lists, tuples, or dicts of a valid type (recursive)
 """
 from inspect import isclass, signature
@@ -34,6 +35,7 @@ def deep_equals(x, y, return_msg=False, plugins=None):
     Correct if x/y are one of the following valid types:
         types compatible with != comparison
         pd.Series, pd.DataFrame, np.ndarray
+        jax.numpy.ndarray (if jax is installed)
         lists, tuples, or dicts of a valid type (recursive)
 
     Important note:
@@ -76,6 +78,7 @@ def deep_equals(x, y, return_msg=False, plugins=None):
     plugins_default = [
         _numpy_equals_plugin,
         _pandas_equals_plugin,
+        _jax_equals_plugin,
         _fh_equals_plugin,
     ]
 
@@ -374,6 +377,59 @@ def _dict_equals(x, y, return_msg=False, deep_equals=None):
     return ret(True, "")
 
 
+def _jax_equals_plugin(x, y, return_msg=False, deep_equals=None):
+    """Test two JAX arrays for equality.
+
+    Correct if both x and y are jax.numpy.ndarray.
+
+    Parameters
+    ----------
+    x : jax.numpy.ndarray
+    y : jax.numpy.ndarray
+    return_msg : bool, optional, default=False
+        whether to return informative message about what is not equal
+    deep_equals : callable, optional
+        not used in this plugin, but required by plugin signature
+
+    Returns
+    -------
+    None : if jax is not available or x is not a JAX array
+    is_equal : bool - True if x and y are equal in value
+        returned if return_msg=False
+    (is_equal, msg) : tuple of (bool, str)
+        returned if return_msg=True
+        msg is indication of what is the reason for not being equal,
+        concatenation of the following strings:
+
+        - .ndim - ndim of x and y are not equal
+        - .shape - shape of x and y are not equal
+        - .dtype - dtype of x and y are not equal
+        - .values - values of x and y are not equal
+    """
+    jax_available = _softdep_available("jax")
+
+    if not jax_available:
+        return None
+
+    import jax.numpy as jnp
+
+    if not isinstance(x, jnp.ndarray):
+        return None
+
+    ret = _make_ret(return_msg)
+
+    if x.ndim != y.ndim:
+        return ret(False, f".ndim, x.ndim = {x.ndim} != y.ndim = {y.ndim}")
+    if x.shape != y.shape:
+        return ret(False, f".shape, x.shape = {x.shape} != y.shape = {y.shape}")
+    if x.dtype != y.dtype:
+        return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
+
+    is_equal = bool(jnp.array_equal(x, y))
+
+    return ret(is_equal, ".values")
+
+
 def _fh_equals_plugin(x, y, return_msg=False, deep_equals=None):
     """Test two forecasting horizons for equality.
 
@@ -418,6 +474,7 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
     Correct if x/y are one of the following valid types:
         types compatible with != comparison
         pd.Series, pd.DataFrame, np.ndarray
+        jax.numpy.ndarray (if jax is installed)
         lists, tuples, or dicts of a valid type (recursive)
 
     Important note:
