@@ -5,7 +5,7 @@ from typing import List
 
 from skbase.base import BaseObject
 
-from .fixtures import Child, ClassWithABTrue, Parent
+from .test_fixtures import Child, ClassWithABTrue, Parent
 
 __all__: List[str] = [
     "CompositionDummy",
