@@ -176,3 +176,141 @@ class TestJAXArrayEquality:
         x = jnp.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
         y = jnp.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
         assert deep_equals(x, y)
+
+    def test_jax_array_unequal_values(self):
+        """Test unequal JAX arrays (different values)."""
+        import jax.numpy as jnp
+
+        x = jnp.array([1, 2, 3])
+        y = jnp.array([1, 2, 4])
+        assert not deep_equals(x, y)
+
+    def test_jax_array_unequal_shape(self):
+        """Test unequal JAX arrays (different shapes)."""
+        import jax.numpy as jnp
+
+        x = jnp.array([1, 2, 3])
+        y = jnp.array([[1, 2, 3]])
+        assert not deep_equals(x, y)
+
+    def test_jax_array_unequal_ndim(self):
+        """Test unequal JAX arrays (different ndim)."""
+        import jax.numpy as jnp
+
+        x = jnp.array([1, 2, 3])
+        y = jnp.array([[1], [2], [3]])
+        assert not deep_equals(x, y)
+
+    def test_jax_array_unequal_dtype_int_float(self):
+        """Test unequal JAX arrays (different dtypes: int vs float)."""
+        import jax.numpy as jnp
+
+        x = jnp.array([1, 2, 3], dtype=jnp.int32)
+        y = jnp.array([1, 2, 3], dtype=jnp.float32)
+        assert not deep_equals(x, y)
+
+    def test_jax_array_equal_float(self):
+        """Test equal float JAX arrays."""
+        import jax.numpy as jnp
+
+        x = jnp.array([1.0, 2.5, 3.7])
+        y = jnp.array([1.0, 2.5, 3.7])
+        assert deep_equals(x, y)
+
+    def test_jax_array_equal_complex(self):
+        """Test equal complex JAX arrays."""
+        import jax.numpy as jnp
+
+        x = jnp.array([1.0 + 2.0j, 3.0 + 4.0j])
+        y = jnp.array([1.0 + 2.0j, 3.0 + 4.0j])
+        assert deep_equals(x, y)
+
+    def test_jax_array_in_dict(self):
+        """Test JAX arrays nested in dict."""
+        import jax.numpy as jnp
+
+        x = {"data": jnp.array([1, 2, 3]), "other": 42}
+        y = {"data": jnp.array([1, 2, 3]), "other": 42}
+        assert deep_equals(x, y)
+
+    def test_jax_array_in_dict_unequal(self):
+        """Test unequal JAX arrays nested in dict."""
+        import jax.numpy as jnp
+
+        x = {"data": jnp.array([1, 2, 3]), "other": 42}
+        y = {"data": jnp.array([1, 2, 4]), "other": 42}
+        assert not deep_equals(x, y)
+
+    def test_jax_array_in_list(self):
+        """Test JAX arrays nested in list."""
+        import jax.numpy as jnp
+
+        x = [jnp.array([1, 2]), jnp.array([3, 4])]
+        y = [jnp.array([1, 2]), jnp.array([3, 4])]
+        assert deep_equals(x, y)
+
+    def test_jax_array_in_list_unequal(self):
+        """Test unequal JAX arrays nested in list."""
+        import jax.numpy as jnp
+
+        x = [jnp.array([1, 2]), jnp.array([3, 4])]
+        y = [jnp.array([1, 2]), jnp.array([3, 5])]
+        assert not deep_equals(x, y)
+
+    def test_jax_array_in_tuple(self):
+        """Test JAX arrays nested in tuple."""
+        import jax.numpy as jnp
+
+        x = (jnp.array([1, 2]), jnp.array([3, 4]))
+        y = (jnp.array([1, 2]), jnp.array([3, 4]))
+        assert deep_equals(x, y)
+
+    def test_jax_array_return_msg_equal(self):
+        """Test return_msg=True for equal arrays."""
+        import jax.numpy as jnp
+
+        x = jnp.array([1, 2, 3])
+        y = jnp.array([1, 2, 3])
+        is_equal, msg = deep_equals(x, y, return_msg=True)
+        assert is_equal
+        assert msg == ""
+
+    def test_jax_array_return_msg_unequal_shape(self):
+        """Test return_msg=True for unequal shapes."""
+        import jax.numpy as jnp
+
+        x = jnp.array([1, 2, 3])
+        y = jnp.array([1, 2])
+        is_equal, msg = deep_equals(x, y, return_msg=True)
+        assert not is_equal
+        assert ".shape" in msg
+
+    def test_jax_array_return_msg_unequal_ndim(self):
+        """Test return_msg=True for unequal ndim."""
+        import jax.numpy as jnp
+
+        x = jnp.array([1, 2, 3])
+        y = jnp.array([[1, 2, 3]])
+        is_equal, msg = deep_equals(x, y, return_msg=True)
+        assert not is_equal
+        assert ".ndim" in msg
+
+    def test_jax_array_return_msg_unequal_dtype(self):
+        """Test return_msg=True for unequal dtypes."""
+        import jax.numpy as jnp
+
+        x = jnp.array([1, 2, 3], dtype=jnp.int32)
+        y = jnp.array([1, 2, 3], dtype=jnp.float32)
+        is_equal, msg = deep_equals(x, y, return_msg=True)
+        assert not is_equal
+        assert ".dtype" in msg
+
+    def test_jax_array_return_msg_unequal_values(self):
+        """Test return_msg=True for unequal values."""
+        import jax.numpy as jnp
+
+        x = jnp.array([1, 2, 3])
+        y = jnp.array([1, 2, 4])
+        is_equal, msg = deep_equals(x, y, return_msg=True)
+        assert not is_equal
+        assert ".values" in msg
