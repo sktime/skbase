@@ -4,12 +4,16 @@ from copy import deepcopy
 from typing import List
 
 from skbase.base import BaseObject
+from .fixtures import Parent, Child, ClassWithABTrue
 
 __all__: List[str] = [
     "CompositionDummy",
     "InheritsFromBaseObject",
     "AnotherClass",
     "NotABaseObject",
+    "Parent",
+    "Child",
+    "ClassWithABTrue",
 ]
 __author__: List[str] = ["fkiraly", "RNKuhns"]
 
@@ -71,4 +75,7 @@ MOCK_PACKAGE_OBJECTS = [
     CompositionDummy,
     InheritsFromBaseObject,
     _NonPublicClass,
+    Parent,
+    Child,
+    ClassWithABTrue,
 ]

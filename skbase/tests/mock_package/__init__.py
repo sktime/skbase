@@ -1,5 +1,28 @@
 # -*- coding: utf-8 -*-
-"""Mock package for skbase testing."""
+"""Mock package for skbase testing.
+
+This package contains controlled test fixtures used by lookup tests.
+"""
 from typing import List
+
+from .test_mock_package import (
+	CompositionDummy,
+	InheritsFromBaseObject,
+	AnotherClass,
+	NotABaseObject,
+	MOCK_PACKAGE_OBJECTS,
+)
+from .fixtures import Parent, Child, ClassWithABTrue
+
+__all__: List[str] = [
+	"CompositionDummy",
+	"InheritsFromBaseObject",
+	"AnotherClass",
+	"NotABaseObject",
+	"MOCK_PACKAGE_OBJECTS",
+	"Parent",
+	"Child",
+	"ClassWithABTrue",
+]
 
 __author__: List[str] = ["fkiraly", "RNKuhns"]
