@@ -128,6 +128,24 @@ def copy_except_if_sklearn(obj):
             return obj
         else:
             return deepcopy(obj)
+
+
+# Add JAX examples
+if _check_soft_dependencies("jax", severity="none"):
+    import jax.numpy as jnp
+
+    EXAMPLES += [
+        jnp.array([1, 2, 3]),
+        jnp.array([1, 2, 4]),
+        jnp.array([[1, 2], [3, 4]]),
+        jnp.array([[1, 2], [3, 5]]),
+        # some nested structures
+        {"data": jnp.array([1, 2, 3]), "value": 42},
+        {"data": jnp.array([1, 2, 4]), "value": 42},
+        [jnp.array([1, 2]), jnp.array([3, 4])],
+    ]
+
+
 @pytest.mark.skipif(
     not _check_soft_dependencies("jax", severity="none"),
     reason="jax not available",
