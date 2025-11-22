@@ -398,12 +398,13 @@ def _jax_equals_plugin(x, y, return_msg=False, deep_equals=None):
         returned if return_msg=False
     (is_equal, msg) : tuple of (bool, str)
         returned if return_msg=True
-        msg is indication of what is the reason for not being equal
-            concatenation of the following strings:
-            .ndim - ndim of x and y are not equal
-            .shape - shape of x and y are not equal
-            .dtype - dtype of x and y are not equal
-            .values - values of x and y are not equal
+        msg is indication of what is the reason for not being equal,
+        concatenation of the following strings:
+
+        - .ndim - ndim of x and y are not equal
+        - .shape - shape of x and y are not equal
+        - .dtype - dtype of x and y are not equal
+        - .values - values of x and y are not equal
     """
     jax_available = _softdep_available("jax")
 
