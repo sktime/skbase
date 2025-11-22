@@ -328,3 +328,27 @@ class TestJAXArrayEquality:
 
         # This should not raise ValueError anymore
         assert deep_equals(dict1, dict2)
+
+    def test_jax_array_empty(self):
+        """Test empty JAX arrays."""
+        import jax.numpy as jnp
+
+        x = jnp.array([])
+        y = jnp.array([])
+        assert deep_equals(x, y)
+
+    def test_jax_array_zero_dim(self):
+        """Test 0-dimensional JAX arrays (scalars)."""
+        import jax.numpy as jnp
+
+        x = jnp.array(42)
+        y = jnp.array(42)
+        assert deep_equals(x, y)
+
+    def test_jax_array_zero_dim_unequal(self):
+        """Test unequal 0-dimensional JAX arrays."""
+        import jax.numpy as jnp
+
+        x = jnp.array(42)
+        y = jnp.array(43)
+        assert not deep_equals(x, y)
