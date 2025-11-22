@@ -160,3 +160,19 @@ class TestJAXArrayEquality:
         x = jnp.array([1, 2, 3])
         y = jnp.array([1, 2, 3])
         assert deep_equals(x, y)
+
+    def test_jax_array_equal_2d(self):
+        """Test equal 2D JAX arrays."""
+        import jax.numpy as jnp
+
+        x = jnp.array([[1, 2], [3, 4]])
+        y = jnp.array([[1, 2], [3, 4]])
+        assert deep_equals(x, y)
+
+    def test_jax_array_equal_3d(self):
+        """Test equal 3D JAX arrays."""
+        import jax.numpy as jnp
+
+        x = jnp.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
+        y = jnp.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
+        assert deep_equals(x, y)
