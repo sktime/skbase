@@ -314,3 +314,17 @@ class TestJAXArrayEquality:
         is_equal, msg = deep_equals(x, y, return_msg=True)
         assert not is_equal
         assert ".values" in msg
+
+    def test_reproducer_from_issue_324(self):
+        """Test the reproducer from issue #324.
+
+        This was the original failing case that motivated adding JAX support.
+        """
+        import jax.numpy as jnp
+
+        # Simulate the issue scenario
+        dict1 = {"a": jnp.array([1, 2, 3]).reshape((-1, 1))}
+        dict2 = {"a": jnp.array([1, 2, 3]).reshape((-1, 1))}
+
+        # This should not raise ValueError anymore
+        assert deep_equals(dict1, dict2)
