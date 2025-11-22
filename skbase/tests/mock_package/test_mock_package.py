@@ -4,7 +4,8 @@ from copy import deepcopy
 from typing import List
 
 from skbase.base import BaseObject
-from .fixtures import Parent, Child, ClassWithABTrue
+
+from .fixtures import Child, ClassWithABTrue, Parent
 
 __all__: List[str] = [
     "CompositionDummy",

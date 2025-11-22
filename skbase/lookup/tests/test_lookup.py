@@ -38,10 +38,10 @@ from skbase.tests.conftest import (
 )
 from skbase.tests.mock_package import (
     MOCK_PACKAGE_OBJECTS,
+    ClassWithABTrue,
     CompositionDummy,
     NotABaseObject,
     Parent,
-    ClassWithABTrue,
 )
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]
