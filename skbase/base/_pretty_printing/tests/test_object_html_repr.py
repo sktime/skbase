@@ -11,6 +11,20 @@ class ComponentDummy(BaseObject):
         self.a = a
         super().__init__()
 
+    def __eq__(self, other):
+        """Equality for test helper: objects equal if same type and `a` equals.
+
+        This silences static analysis warnings about adding attributes
+        without overriding `__eq__` and provides sensible equality for
+        test comparisons. We intentionally do not implement `__hash__`
+        because instances are mutable in tests.
+        """
+        if not isinstance(other, ComponentDummy):
+            return NotImplemented
+        return getattr(self, "a", None) == getattr(other, "a", None)
+
+    __hash__ = None
+
 
 class MetaObjectForHtml(BaseMetaObject):
     def __init__(self, steps=None):
