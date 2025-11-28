@@ -5,11 +5,16 @@ from typing import List
 
 from skbase.base import BaseObject
 
+from .test_fixtures import Child, ClassWithABTrue, Parent
+
 __all__: List[str] = [
     "CompositionDummy",
     "InheritsFromBaseObject",
     "AnotherClass",
     "NotABaseObject",
+    "Parent",
+    "Child",
+    "ClassWithABTrue",
 ]
 __author__: List[str] = ["fkiraly", "RNKuhns"]
 
@@ -71,4 +76,7 @@ MOCK_PACKAGE_OBJECTS = [
     CompositionDummy,
     InheritsFromBaseObject,
     _NonPublicClass,
+    Parent,
+    Child,
+    ClassWithABTrue,
 ]
