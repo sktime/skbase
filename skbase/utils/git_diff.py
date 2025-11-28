@@ -1,7 +1,7 @@
 """Git related utilities to identify changed modules."""
 
 __author__ = ["fkiraly"]
-__all__ = []
+__all__ = ["git_diff"]
 
 import importlib.util
 import inspect
@@ -10,7 +10,7 @@ from typing import List
 
 
 @lru_cache
-def get_module_from_class(cls):
+def _get_module_from_class(cls):
     """Get full parent module string from class.
 
     Parameters
@@ -27,7 +27,7 @@ def get_module_from_class(cls):
 
 
 @lru_cache
-def get_path_from_module(module_str):
+def _get_path_from_module(module_str):
     r"""Get local path string from module string.
 
     Parameters
@@ -65,8 +65,13 @@ def _run_git_diff(cmd: List[str]) -> str:
     return result.stdout
 
 
+def git_diff(*args, **kwargs):
+    """Public wrapper for _run_git_diff."""
+    return _run_git_diff(*args, **kwargs)
+
+
 @lru_cache
-def is_module_changed(module_str):
+def _is_module_changed(module_str):
     """Check if a module has changed compared to the main branch.
 
     If a child module has changed, the parent module is considered changed as well.
@@ -76,14 +81,14 @@ def is_module_changed(module_str):
     module_str : str
         module string, e.g., sktime.forecasting.naive
     """
-    module_file_path = get_path_from_module(module_str)
+    module_file_path = _get_path_from_module(module_str)
     cmd = ["git", "diff", "remotes/origin/main", "--", module_file_path]
     output = _run_git_diff(cmd)
     return bool(output)
 
 
 @lru_cache
-def is_class_changed(cls):
+def _is_class_changed(cls):
     """Check if a class' parent module has changed compared to the main branch.
 
     Parameters
@@ -95,11 +100,11 @@ def is_class_changed(cls):
     -------
     bool : True if changed, False otherwise
     """
-    module_str = get_module_from_class(cls)
-    return is_module_changed(module_str)
+    module_str = _get_module_from_class(cls)
+    return _is_module_changed(module_str)
 
 
-def get_changed_lines(file_path, only_indented=True):
+def _get_changed_lines(file_path, only_indented=True):
     """Get changed or added lines from a file.
 
     Compares the current branch to the origin-main branch.
@@ -133,8 +138,8 @@ def get_changed_lines(file_path, only_indented=True):
     return changed_lines
 
 
-def get_packages_with_changed_specs():
-    """Get packages with changed or added specs.
+def _get_packages_with_changed_specs_list():
+    """Get packages with changed or added specs (private list wrapper).
 
     Returns
     -------
@@ -156,7 +161,7 @@ def _get_packages_with_changed_specs():
     """
     from packaging.requirements import InvalidRequirement, Requirement
 
-    changed_lines = get_changed_lines("pyproject.toml")
+    changed_lines = _get_changed_lines("pyproject.toml")
 
     packages = []
     for line in changed_lines:
