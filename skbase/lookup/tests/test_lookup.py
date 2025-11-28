@@ -5,6 +5,7 @@
 # are copyrighted by the sktime developers, BSD-3-Clause License. For
 # conditions see https://github.com/sktime/sktime/blob/main/LICENSE
 import importlib
+import inspect
 import pathlib
 import sys
 from copy import deepcopy
@@ -834,6 +835,111 @@ def test_get_return_tags():
     tag_names = ["a_tag_that_does_not_exist"]
     results = _get_return_tags(Parent, tag_names)
     assert _test_get_return_tags_output(results, len(tag_names)) and results[0] is None
+
+
+def test_get_package_metadata_matches_expected_representation_mock_package():
+    """Verify get_package_metadata returns the expected representation for the
+    controlled `skbase.tests.mock_package` mock package.
+
+    This test builds an expected representation for each discovered module by
+    introspecting the module directly (using `inspect`) and compares the
+    resulting metadata for classes and functions against the output of
+    `get_package_metadata`.
+    """
+    package_name = "skbase.tests.mock_package"
+    results = get_package_metadata(
+        package_name,
+        recursive=True,
+        exclude_non_public_items=True,
+        exclude_non_public_modules=True,
+        modules_to_ignore=None,
+        package_base_classes=SKBASE_BASE_CLASSES,
+        classes_to_exclude=None,
+        suppress_import_stdout=True,
+    )
+
+    assert isinstance(results, dict)
+
+    for module_name, module_meta in results.items():
+        # import the module to compute expected metadata
+        mod = importlib.import_module(module_name)
+
+        # Expected classes: public classes defined in the module
+        expected_classes = {}
+        for name, cls in inspect.getmembers(mod, inspect.isclass):
+            if cls.__module__ != mod.__name__:
+                continue
+            if name.startswith("_"):
+                continue
+            mod_authors = getattr(mod, "__author__", [])
+            klass_authors = getattr(cls, "__author__", mod_authors)
+            if isinstance(klass_authors, (list, tuple)):
+                klass_authors = ", ".join(klass_authors)
+
+            expected_classes[name] = {
+                "klass": cls,
+                "name": name,
+                "description": (
+                    "" if cls.__doc__ is None else cls.__doc__.split("\n")[0]
+                ),
+                "tags": (
+                    cls.get_class_tags() if hasattr(cls, "get_class_tags") else None
+                ),
+                "is_concrete_implementation": (
+                    issubclass(cls, SKBASE_BASE_CLASSES)
+                    and cls not in SKBASE_BASE_CLASSES
+                ),
+                "is_base_class": cls in SKBASE_BASE_CLASSES,
+                "is_base_object": issubclass(cls, BaseObject),
+                "authors": klass_authors,
+                "module_name": cls.__module__,
+            }
+
+        # Expected functions: public functions defined in the module
+        expected_functions = {}
+        for name, func in inspect.getmembers(mod, inspect.isfunction):
+            if func.__module__ != mod.__name__:
+                continue
+            if name.startswith("_"):
+                continue
+            uw = inspect.unwrap(func)
+            expected_functions[name] = {
+                "func": func,
+                "name": uw.__name__,
+                "description": (
+                    "" if uw.__doc__ is None else uw.__doc__.split("\n")[0]
+                ),
+                "module_name": uw.__module__,
+            }
+
+        # Compare discovered names
+        assert set(module_meta["classes"].keys()) == set(expected_classes.keys())
+        assert set(module_meta["functions"].keys()) == set(expected_functions.keys())
+
+        # Compare class metadata fields
+        for cname, cmeta in module_meta["classes"].items():
+            exp = expected_classes[cname]
+            assert cmeta["name"] == exp["name"]
+            assert cmeta["description"] == exp["description"]
+            # tags: compare dict equality or both None
+            if cmeta.get("tags") is None:
+                assert exp.get("tags") is None
+            else:
+                assert isinstance(cmeta.get("tags"), dict)
+                assert cmeta.get("tags") == exp.get("tags")
+            assert cmeta["is_base_class"] == exp["is_base_class"]
+            assert cmeta["is_base_object"] == exp["is_base_object"]
+            assert cmeta["module_name"] == exp["module_name"]
+
+        # Compare function metadata fields
+        for fname, fmeta in module_meta["functions"].items():
+            expf = expected_functions[fname]
+            assert fmeta["name"] == expf["name"]
+            assert fmeta["description"] == expf["description"]
+            assert fmeta["module_name"] == expf["module_name"]
+            # func object should at least have the same name and module
+            assert fmeta["func"].__name__ == expf["func"].__name__
+            assert fmeta["func"].__module__ == expf["func"].__module__
 
 
 @pytest.mark.parametrize("as_dataframe", [True, False])
