@@ -268,6 +268,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_is_npnan",
             "_is_npndarray",
             "_is_pandas",
+            "_jax_equals_plugin",
             "_numpy_equals_plugin",
             "_pandas_equals",
             "_pandas_equals_plugin",
