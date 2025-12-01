@@ -360,9 +360,6 @@ class BaseObject(_FlagManager):
         -------
         self : reference to self (after parameters have been set)
         """
-        if not params:
-            # Simple optimization to gain speed (inspect is slow)
-            return self
         valid_params = self.get_params(deep=True)
 
         unmatched_keys = []
