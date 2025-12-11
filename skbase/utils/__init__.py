@@ -8,6 +8,7 @@ from skbase.utils._iter import make_strings_unique
 from skbase.utils._nested_iter import flatten, is_flat, unflat_len, unflatten
 from skbase.utils._utils import subset_dict_keys
 from skbase.utils.deep_equals import deep_equals
+from skbase.utils.git_diff import git_diff
 from skbase.utils.random_state import (
     check_random_state,
     sample_dependent_seed,
@@ -19,6 +20,7 @@ __all__: List[str] = [
     "check_random_state",
     "deep_equals",
     "flatten",
+    "git_diff",
     "is_flat",
     "make_strings_unique",
     "sample_dependent_seed",
