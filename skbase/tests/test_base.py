@@ -881,6 +881,18 @@ def test_set_params_with_no_param_to_set_returns_object(
     )
 
 
+def test_set_params_with_no_param_resets_fitted_state(
+    fixture_class_parent: Type[Parent],
+):
+    """Test that calling set_params() with no args resets fitted attributes."""
+    base_obj = fixture_class_parent()
+    base_obj.fitted_attr_ = "should be removed"
+
+    base_obj.set_params()
+
+    assert not hasattr(base_obj, "fitted_attr_")
+
+
 # This section tests the clone functionality
 # These have been adapted from sklearn's tests of clone to use the clone
 # method that is included as part of the BaseObject interface
