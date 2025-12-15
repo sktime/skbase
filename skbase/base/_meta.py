@@ -424,6 +424,8 @@ class _MetaObjectMixin:
             If `objs` is not a list of (str, object) tuples or a dict[str, objects].
             Also raised if objects in `objs` are not instances of `cls_type`
             or `cls_type is not None, a class or tuple of classes.
+            Also raised if attr_name is None and the "named_object_parameters"
+            tag is not set to a non-empty string.
         """
         if attr_name is None:
             attr_name = self.get_tag("named_object_parameters")
