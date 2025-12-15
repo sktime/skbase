@@ -271,4 +271,3 @@ def test_check_objects_attr_name_none_tag_not_set():
 
     with pytest.raises(TypeError, match="could not be auto-detected.*non-empty string"):
         meta_obj._check_objects(steps, attr_name=None)
-
