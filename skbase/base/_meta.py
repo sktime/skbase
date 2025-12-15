@@ -384,6 +384,14 @@ class _MetaObjectMixin:
     ):
         """Check that objects is a list of objects or sequence of named objects.
 
+        This method serves as an orchestration layer that handles tag resolution
+        and delegates validation to _validate_and_coerce_objects.
+
+        Note: This method is an exception to the standard pattern where private
+        methods receive all configuration as parameters. Since _check_objects
+        serves as a semi-public entry point (used in tests and potentially by
+        subclasses), it handles tag resolution internally for convenience.
+
         Parameters
         ----------
         objs : Any
@@ -439,7 +447,6 @@ class _MetaObjectMixin:
                     f"Current tag value: {attr_name!r}"
                 )
 
-        # Pure validation (no self dependency)
         validated_objs = self._validate_objects(
             objs=objs,
             attr_name=attr_name,
