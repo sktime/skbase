@@ -504,6 +504,7 @@ class _MetaObjectMixin:
             "of objects, or a list of (string, object) tuples. "
         )
 
+        # Determine and validate cls_type
         if cls_type is None:
             cls_type = BaseObject
             _class_name = "BaseObject"
@@ -518,6 +519,7 @@ class _MetaObjectMixin:
 
         msg += f"All objects in {attr_name!r} must be of type {_class_name}"
 
+        # Check basic structure
         if (
             objs is None
             or (not allow_empty and len(objs) == 0)
@@ -532,17 +534,18 @@ class _MetaObjectMixin:
 
             return is_est, is_tuple
 
-        # We've already guarded against objs being dict when allow_dict is False
-        # So here we can just check dictionary elements
+        # Validate dictionary elements
         if isinstance(objs, dict) and not all(
             isinstance(name, str) and isinstance(obj, cls_type)
             for name, obj in objs.items()
         ):
             raise TypeError(msg)
 
+        # Validate list elements
         elif not all(any(is_obj_is_tuple(x)) for x in objs):
             raise TypeError(msg)
 
+        # Check for mixed types if not allowed
         msg_no_mix = (
             f"Elements of {attr_name} must either all be objects, "
             f"or all (str, objects) tuples. A mix of the two is not allowed."
