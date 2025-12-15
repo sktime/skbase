@@ -15,14 +15,7 @@ from .test_mock_package import (
 )
 
 __all__: List[str] = [
-    "CompositionDummy",
-    "InheritsFromBaseObject",
-    "AnotherClass",
-    "NotABaseObject",
     "MOCK_PACKAGE_OBJECTS",
-    "Parent",
-    "Child",
-    "ClassWithABTrue",
 ]
 
 __author__: List[str] = ["fkiraly", "RNKuhns"]

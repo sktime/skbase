@@ -12,9 +12,6 @@ __all__: List[str] = [
     "InheritsFromBaseObject",
     "AnotherClass",
     "NotABaseObject",
-    "Parent",
-    "Child",
-    "ClassWithABTrue",
 ]
 __author__: List[str] = ["fkiraly", "RNKuhns"]
 
