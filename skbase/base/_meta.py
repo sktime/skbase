@@ -458,9 +458,7 @@ class _MetaObjectMixin:
 
         # Coercion (transform to named object tuples)
         return self._coerce_to_named_object_tuples(
-            validated_objs,
-            clone=clone,
-            make_unique=True
+            validated_objs, clone=clone, make_unique=True
         )
 
     @staticmethod
