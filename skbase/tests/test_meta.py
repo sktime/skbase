@@ -258,3 +258,17 @@ def test_set_params_resets_fitted_state():
     assert not hasattr(
         meta_obj, "fitted_attr_"
     ), "fitted_attr_ should be removed by reset() during set_params(foo=...)"
+
+
+def test_check_objects_attr_name_none_tag_not_set():
+    """Test error when attr_name is None and tag is not set or returns None."""
+    meta_obj = MetaObjectTester()
+
+    # Set tag to None explicitly
+    meta_obj.set_tags(**{"named_object_parameters": None})
+
+    steps = [ComponentDummy(1)]
+
+    with pytest.raises(TypeError, match="could not be auto-detected.*non-empty string"):
+        meta_obj._check_objects(steps, attr_name=None)
+
