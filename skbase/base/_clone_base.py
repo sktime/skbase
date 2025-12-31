@@ -68,7 +68,7 @@ def _clone(estimator, *, safe=True, clone_plugins=None, base_cls=None):
     # if provided by user, work through user provided plugins first, then defaults
     if clone_plugins is not None:
         all_plugins = clone_plugins.copy()
-        all_plugins.append(DEFAULT_CLONE_PLUGINS.copy())
+        all_plugins.extend(DEFAULT_CLONE_PLUGINS.copy())
     else:
         all_plugins = DEFAULT_CLONE_PLUGINS
 
