@@ -1391,3 +1391,58 @@ def test_get_set_config():
     # test that reset does not reset config
     test_obj.reset()
     assert test_obj.get_config() == expected_config
+
+
+def test_clone_with_custom_plugins():
+    """Test that cloning works when custom clone_plugins are provided.
+
+    This test ensures that custom plugins are correctly combined with
+    DEFAULT_CLONE_PLUGINS when passed to _clone. Specifically, it verifies
+    that the plugin list is properly extended (not appended as a nested list),
+    which would cause TypeError when iterating.
+
+    Regression test for: https://github.com/sktime/skbase/issues/483
+    """
+    from skbase.base._clone_base import _clone
+    from skbase.base._clone_plugins import BaseCloner
+
+    class CustomCloner(BaseCloner):
+        """Custom clone plugin that marks objects as custom-cloned."""
+
+        def _check(self, obj):
+            # Only handle objects with a specific marker attribute
+            return hasattr(obj, "_use_custom_cloner") and obj._use_custom_cloner
+
+        def _clone(self, obj):
+            # Clone using default mechanism, then add marker
+            new_obj = obj.__class__(**obj.get_params(deep=False))
+            new_obj._custom_cloned = True
+            return new_obj
+
+    # Test 1: Clone with custom plugins - should not raise TypeError
+    base_obj = Parent()
+    cloned = _clone(base_obj, clone_plugins=[CustomCloner])
+
+    assert cloned is not base_obj
+    assert cloned.get_params() == base_obj.get_params()
+
+    # Test 2: Clone object that matches custom plugin
+    base_obj_marked = Parent()
+    base_obj_marked._use_custom_cloner = True
+    cloned_marked = _clone(base_obj_marked, clone_plugins=[CustomCloner])
+
+    assert hasattr(cloned_marked, "_custom_cloned")
+    assert cloned_marked._custom_cloned is True
+
+    # Test 3: Multiple custom plugins should work
+    class AnotherCustomCloner(BaseCloner):
+        """Another custom clone plugin."""
+
+        def _check(self, obj):
+            return False
+
+        def _clone(self, obj):
+            return obj
+
+    cloned_multi = _clone(base_obj, clone_plugins=[CustomCloner, AnotherCustomCloner])
+    assert cloned_multi is not base_obj
