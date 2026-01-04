@@ -386,7 +386,8 @@ def test_set_tags_works_with_missing_tags_dynamic_attribute(
 ):
     """Test set_tags will still work if _tags_dynamic is missing."""
     base_obj = deepcopy(fixture_tag_class_object)
-    delattr(base_obj, "_tags_dynamic")
+    attr_name = "_tags_dynamic"
+    delattr(base_obj, attr_name)  # noqa
     assert not hasattr(base_obj, "_tags_dynamic")
     base_obj.set_tags(some_tag="something")
     tags = base_obj.get_tags()
