@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tools for validating and comparing BaseObjects and collections of BaseObjects."""
+
 from typing import List
 
 from skbase.validate._named_objects import (

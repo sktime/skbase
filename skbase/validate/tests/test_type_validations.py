@@ -13,6 +13,7 @@ tests in this module include:
 - test_check_sequence_with_seq_of_class_and_instance_input
 - test_convert_scalar_seq_type_input_to_tuple_raises_error
 """
+
 import collections
 
 import numpy as np
