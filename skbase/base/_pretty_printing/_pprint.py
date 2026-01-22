@@ -4,6 +4,7 @@
 # are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
 # conditions see https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
 """Utility functionality for pretty-printing objects used in BaseObject.__repr__."""
+
 import inspect
 import pprint
 from collections import OrderedDict
