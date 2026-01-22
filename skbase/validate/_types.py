@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tools for validating types."""
+
 import collections
 import inspect
 from typing import Any, List, Optional, Sequence, Tuple, Union

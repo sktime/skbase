@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Utility to check soft dependency imports, and raise warnings or errors."""
+
 import sys
 import warnings
 from functools import lru_cache

@@ -14,6 +14,7 @@ tests in this module include:
   invalid value is provided for sequence_type parameter.
 - test_make_strings_unique_output: verify make_strings_unique output is expected.
 """
+
 import pytest
 
 from skbase.base import BaseEstimator, BaseObject
