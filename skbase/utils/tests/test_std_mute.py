@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tests of stdout_mute and stderr_mute."""
+
 import io
 import sys
 from contextlib import redirect_stderr, redirect_stdout

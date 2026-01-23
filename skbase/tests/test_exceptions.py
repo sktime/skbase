@@ -5,6 +5,7 @@ tests in this module:
 
     test_exceptions_raise_error - Test that skbase exceptions raise expected error.
 """
+
 from typing import List
 
 import pytest

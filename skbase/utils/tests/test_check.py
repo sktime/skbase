@@ -8,6 +8,7 @@ tests in this module include:
 - test_is_scalar_nan_output to verify _is_scalar_nan outputs expected value for
   different inputs.
 """
+
 from skbase.utils._check import _is_scalar_nan
 
 __author__ = ["RNKuhns"]
