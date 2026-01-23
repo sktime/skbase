@@ -2,7 +2,6 @@
 # flake8: noqa A005
 """Utilities for inspection of function arguments."""
 
-
 from inspect import signature
 
 

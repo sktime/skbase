@@ -4,6 +4,7 @@
 
 adapted from scikit-learn's and sktime's estimator_checks
 """
+
 import numbers
 import types
 from copy import deepcopy

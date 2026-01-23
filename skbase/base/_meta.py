@@ -8,6 +8,7 @@
 # scikit-learn: https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
 # sktime:  https://github.com/sktime/sktime/blob/main/LICENSE
 """Implements functionality for meta objects composed of other objects."""
+
 from inspect import isclass
 
 from skbase.base._base import BaseEstimator, BaseObject

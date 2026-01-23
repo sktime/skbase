@@ -10,6 +10,7 @@ package_metadata()
 all_objects(object_types, filter_tags)
     Look (and optionally filter) BaseObject descendants in a package or module.
 """
+
 # all_objects is based on the sktime all_estimator retrieval utility, which
 # is based on the sklearn estimator retrieval utility of the same name
 # See https://github.com/scikit-learn/scikit-learn/blob/main/COPYING and
