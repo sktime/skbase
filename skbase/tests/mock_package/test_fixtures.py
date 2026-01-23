@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Additional fixture classes for the mock package used in lookup tests."""
+
 from typing import List
 
 from skbase.base import BaseObject
