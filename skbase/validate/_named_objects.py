@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Validate if an input is one of the allowed named object formats."""
+
 import collections.abc
 
 from skbase.base import BaseObject

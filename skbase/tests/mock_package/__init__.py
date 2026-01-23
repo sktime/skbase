@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Mock package for skbase testing.
+"""Mock package for skbase testing."""
 
-This package contains controlled test fixtures used by lookup tests.
-"""
 from typing import List
 
 from .test_fixtures import Child  # noqa: F401

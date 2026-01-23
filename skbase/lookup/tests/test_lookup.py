@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tests for skbase lookup functionality."""
+
 # Elements of the lookup tests reuse code developed in sktime. These elements
 # are copyrighted by the sktime developers, BSD-3-Clause License. For
 # conditions see https://github.com/sktime/sktime/blob/main/LICENSE

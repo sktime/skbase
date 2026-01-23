@@ -5,6 +5,7 @@
 # conditions see https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
 
 """Utility functions to perform various types of checks."""
+
 from __future__ import annotations
 
 import math

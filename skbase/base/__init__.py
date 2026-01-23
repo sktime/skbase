@@ -6,6 +6,7 @@
 The included functionality makes it easy to reuse scikit-learn and
 sktime design principles in your project.
 """
+
 from typing import List
 
 from skbase.base._base import BaseEstimator, BaseObject

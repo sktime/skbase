@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tests of random_seed related functionality."""
+
 import pytest
 
 from skbase.utils.random_state import sample_dependent_seed, set_random_state

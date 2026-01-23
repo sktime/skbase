@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Utility functionality used through `skbase`."""
+
 from typing import List
 
 from skbase.utils._iter import make_strings_unique

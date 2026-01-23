@@ -7,6 +7,7 @@ Objects compared can have one of the following valid types:
     jax.numpy.ndarray (if jax is installed)
     lists, tuples, or dicts of a valid type (recursive)
 """
+
 from inspect import isclass, signature
 
 from skbase.utils.deep_equals._common import _make_ret
