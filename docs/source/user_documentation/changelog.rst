@@ -69,6 +69,15 @@ Maintenance
 * [pre-commit.ci] pre-commit autoupdates
   (:pr:`458`, :pr:`468`, :pr:`470`, :pr:`480`, :pr:`488`) :user:`pre-commit-ci[bot]`
 
+Contributors
+------------
+
+:user:`auderson`,
+:user:`arnavk23`,
+:user:`fkiraly`,
+:user:`ParamThakkar123`,
+:user:`SimonBlanke`
+
 
 [0.13.0] - 2025-10-08
 =====================
