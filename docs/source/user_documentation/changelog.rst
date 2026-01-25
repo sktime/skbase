@@ -14,6 +14,71 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[0.13.1] - 2026-01-25
+=====================
+
+Feature, bugfix, and maintenance release.
+
+Enhancements
+------------
+
+* [ENH] ensure ``_get_installed_packages`` does not break in case of empty package
+  metadata (:pr:`461`) :user:`auderson`
+* [ENH] ``deep_equals`` plugin for ``jax`` arrays (:pr:`477`) :user:`SimonBlanke`
+* [ENH] regression test for HTML repr of meta-objects (:pr:`473`) :user:`arnavk23`
+* [ENH] move ``git_diff`` utility from ``sktime`` to ``skbase``
+  (:pr:`471`) :user:`ParamThakkar123`
+
+Fixes
+-----
+
+* [BUG] regression test certifying for fix ``115`` (:pr:`460`) :user:`SimonBlanke`
+* [BUG] fix ``case_sensitive`` argument in ``_check_soft_dependencies``
+  (:pr:`464`) :user:`fkiraly`
+* [BUG] exceptions - fix ``B042`` pre-commit issue (:pr:`465`) :user:`fkiraly`
+* [BUG] Fix Metaclass lookup (:pr:`457`) :user:`SimonBlanke`
+* [BUG] fix ``#483``, change ``.append()`` to ``.extend()``
+  (:pr:`484`) :user:`SimonBlanke`
+* [BUG] ensure ``BaseMetaObject`` resets at ``set_params``;
+  add ``test_set_params_resets_fitted_state`` test to trigger error
+  (:pr:`467`) :user:`SimonBlanke`
+
+Maintenance
+-----------
+
+* [MNT] add precommit skip for ``delattr`` use in test (:pr:`485`) :user:`fkiraly`
+* [MNT] Delete unused ``cancel.yml`` workflow (:pr:`489`) :user:`fkiraly`
+* [MNT] [Dependabot](deps): Bump ``actions/setup-node`` from ``5`` to ``6``
+  (:pr:`459`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump ``actions/download-artifact`` from ``5`` to ``6``
+  (:pr:`462`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump ``actions/upload-artifact`` from ``4`` to ``5``
+  (:pr:`463`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump ``actions/checkout`` from ``5`` to ``6``
+  (:pr:`475`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps-dev): Update sphinx-gallery requirement from
+  ``<0.20.0`` to ``<0.21.0`` (:pr:`479`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump ``actions/download-artifact`` from ``6`` to ``7``
+  (:pr:`481`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump ``actions/upload-artifact`` from ``5`` to ``6``
+  (:pr:`482`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump ``styfle/cancel-workflow-action`` from
+  ``0.12.1`` to ``0.13.0`` (:pr:`487`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps-dev): Update sphinx requirement from ``!=7.2.0,<9.0.0``
+  to ``!=7.2.0,<10.0.0`` (:pr:`486`) :user:`dependabot[bot]`
+* [pre-commit.ci] pre-commit autoupdates
+  (:pr:`458`, :pr:`468`, :pr:`470`, :pr:`480`, :pr:`488`) :user:`pre-commit-ci[bot]`
+
+Contributors
+------------
+
+:user:`auderson`,
+:user:`arnavk23`,
+:user:`fkiraly`,
+:user:`ParamThakkar123`,
+:user:`SimonBlanke`
+
+
 [0.13.0] - 2025-10-08
 =====================
 
