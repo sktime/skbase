@@ -37,13 +37,13 @@ from skbase.tests.conftest import (
     SKBASE_PUBLIC_CLASSES_BY_MODULE,
     SKBASE_PUBLIC_FUNCTIONS_BY_MODULE,
     SKBASE_PUBLIC_MODULES,
-    ClassWithABTrue,
-    Parent,
 )
-from skbase.tests.mock_package.test_mock_package import (
+from skbase.tests.mock_package import (
     MOCK_PACKAGE_OBJECTS,
+    ClassWithABTrue,
     CompositionDummy,
     NotABaseObject,
+    Parent,
 )
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]
@@ -1033,7 +1033,7 @@ def test_all_objects_class_filter(class_filter):
     """Test all_objects filters by class type as expected."""
     # Results applying filter
     objs = all_objects(
-        package_name="skbase",
+        package_name="skbase.tests.mock_package",
         return_names=True,
         as_dataframe=True,
         return_tags=None,
@@ -1047,7 +1047,7 @@ def test_all_objects_class_filter(class_filter):
 
     # Results without filter
     objs = all_objects(
-        package_name="skbase",
+        package_name="skbase.tests.mock_package",
         return_names=True,
         as_dataframe=True,
         return_tags=None,
@@ -1073,7 +1073,7 @@ def test_all_object_tag_filter(tag_filter):
     """Test all_objects filters by tag as expected."""
     # Results applying filter
     objs = all_objects(
-        package_name="skbase",
+        package_name="skbase.tests.mock_package",
         return_names=True,
         as_dataframe=True,
         return_tags=None,
@@ -1087,7 +1087,7 @@ def test_all_object_tag_filter(tag_filter):
 
     # Results without filter
     objs = all_objects(
-        package_name="skbase",
+        package_name="skbase.tests.mock_package",
         return_names=True,
         as_dataframe=True,
         return_tags=None,
@@ -1148,7 +1148,7 @@ def test_all_object_class_lookup(class_lookup, class_filter):
     """Test all_objects class_lookup parameter works as expected.."""
     # Results applying filter
     objs = all_objects(
-        package_name="skbase",
+        package_name="skbase.tests.mock_package",
         return_names=True,
         as_dataframe=True,
         return_tags=None,
@@ -1171,7 +1171,7 @@ def test_all_object_class_lookup_invalid_object_types_raises(
     # Results applying filter
     with pytest.raises(ValueError):
         all_objects(
-            package_name="skbase",
+            package_name="skbase.tests.mock_package",
             return_names=True,
             as_dataframe=True,
             return_tags=None,
