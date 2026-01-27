@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Tests for global config functionality."""
 
-import pytest
-
 from skbase.config import (
     config_context,
     get_config,

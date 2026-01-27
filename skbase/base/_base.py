@@ -765,8 +765,7 @@ class BaseObject(_FlagManager):
 
         # Update with local config overrides (highest priority)
         if hasattr(self, "_config_dynamic"):
-            local_overrides = getattr(self, "_config_dynamic")
-            config.update(local_overrides)
+            config.update(self._config_dynamic)
 
         return config
 
