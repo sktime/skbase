@@ -76,7 +76,8 @@ import pytest
 import scipy.sparse as sp
 
 from skbase.base import BaseEstimator, BaseObject
-from skbase.config import get_default_config, reset_config as reset_global_config
+from skbase.config import get_default_config
+from skbase.config import reset_config as reset_global_config
 from skbase.tests.conftest import Child, Parent
 from skbase.tests.mock_package.test_mock_package import CompositionDummy
 from skbase.utils.dependencies import _check_soft_dependencies
@@ -1399,26 +1400,27 @@ def test_get_set_config():
 
 def test_global_config_integration():
     """Test that global config is integrated into BaseObject.get_config."""
-    from skbase.config import set_config as set_global_config, reset_config as reset_global_config
-    
+    from skbase.config import reset_config as reset_global_config
+    from skbase.config import set_config as set_global_config
+
     reset_global_config()
-    
+
     class _TestGlobalConfig(BaseObject):
         _config = {"local_config": "class_value"}
-    
+
     test_obj = _TestGlobalConfig()
-    
+
     # Initially, should have class + global defaults
     config = test_obj.get_config()
     assert config["local_config"] == "class_value"
     assert config["display"] == "diagram"  # global default
-    
+
     # Set global config
     set_global_config(display="text")
-    
+
     config = test_obj.get_config()
     assert config["display"] == "text"  # global override
-    
+
     # Local override should take precedence
     test_obj.set_config(display="diagram")
     config = test_obj.get_config()

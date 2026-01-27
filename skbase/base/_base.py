@@ -752,22 +752,22 @@ class BaseObject(_FlagManager):
         """
         # Start with class defaults
         config = self._get_class_flags(flag_attr_name="_config")
-        
+
         # Update with global config
         global_config = get_global_config()
         config.update(global_config)
-        
+
         # Update with extension config if available
         if hasattr(self, "__skbase_get_config__"):
             extension_config = self.__skbase_get_config__()
             if isinstance(extension_config, dict):
                 config.update(extension_config)
-        
+
         # Update with local config overrides (highest priority)
         if hasattr(self, "_config_dynamic"):
             local_overrides = getattr(self, "_config_dynamic")
             config.update(local_overrides)
-        
+
         return config
 
     def set_config(self, **config_dict):

@@ -53,12 +53,12 @@ def test_config_context():
     """Test config_context temporarily changes config."""
     reset_config()
     original_config = get_config()
-    
+
     with config_context(display="text", check_clone=True):
         inner_config = get_config()
         assert inner_config["display"] == "text"
         assert inner_config["check_clone"] is True
-    
+
     # Should be back to original
     final_config = get_config()
     assert final_config == original_config
@@ -67,13 +67,13 @@ def test_config_context():
 def test_config_context_nested():
     """Test nested config_context."""
     reset_config()
-    
+
     with config_context(display="text"):
         assert get_config()["display"] == "text"
-        
+
         with config_context(print_changed_only=False):
             assert get_config()["display"] == "text"
             assert get_config()["print_changed_only"] is False
-        
+
         assert get_config()["display"] == "text"
         assert get_config()["print_changed_only"] is True  # back to default
