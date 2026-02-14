@@ -711,7 +711,6 @@ def test_get_package_metadata_tag_filter(tag_filter):
         assert len(unfiltered_classes) > len(filtered_classes)
 
 
-
 def test_get_return_tags():
     """Test _get_return_tags returns expected."""
 
