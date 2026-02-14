@@ -31,8 +31,6 @@ from skbase.lookup._lookup import (
 )
 from skbase.tests.conftest import (
     SKBASE_BASE_CLASSES,
-    SKBASE_MODULES,
-    SKBASE_PUBLIC_MODULES,
 )
 from skbase.tests.mock_package import (
     MOCK_PACKAGE_OBJECTS,
