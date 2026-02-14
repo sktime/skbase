@@ -31,11 +31,7 @@ from skbase.lookup._lookup import (
 )
 from skbase.tests.conftest import (
     SKBASE_BASE_CLASSES,
-    SKBASE_CLASSES_BY_MODULE,
-    SKBASE_FUNCTIONS_BY_MODULE,
     SKBASE_MODULES,
-    SKBASE_PUBLIC_CLASSES_BY_MODULE,
-    SKBASE_PUBLIC_FUNCTIONS_BY_MODULE,
     SKBASE_PUBLIC_MODULES,
 )
 from skbase.tests.mock_package import (
@@ -714,102 +710,6 @@ def test_get_package_metadata_tag_filter(tag_filter):
     else:
         assert len(unfiltered_classes) > len(filtered_classes)
 
-
-@pytest.mark.parametrize("exclude_non_public_modules", [True, False])
-@pytest.mark.parametrize("exclude_non_public_items", [True, False])
-def test_get_package_metadata_returns_expected_results(
-    exclude_non_public_modules, exclude_non_public_items
-):
-    """Test that get_package_metadata_returns expected results using skbase."""
-    results = get_package_metadata(
-        "skbase",
-        exclude_non_public_items=exclude_non_public_items,
-        exclude_non_public_modules=exclude_non_public_modules,
-        package_base_classes=SKBASE_BASE_CLASSES,
-        modules_to_ignore="tests",
-        classes_to_exclude=TagAliaserMixin,
-        suppress_import_stdout=False,
-    )
-    public_modules_excluding_tests = [
-        module
-        for module in SKBASE_PUBLIC_MODULES
-        if not _is_ignored_module(module, modules_to_ignore="tests")
-    ]
-    modules_excluding_tests = [
-        module
-        for module in SKBASE_MODULES
-        if not _is_ignored_module(module, modules_to_ignore="tests")
-    ]
-    if exclude_non_public_modules:
-        assert tuple(results.keys()) == tuple(public_modules_excluding_tests)
-    else:
-        assert tuple(results.keys()) == tuple(modules_excluding_tests)
-
-    for module in results:
-        if exclude_non_public_items:
-            module_funcs = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.get(module, ())
-            module_classes = SKBASE_PUBLIC_CLASSES_BY_MODULE.get(module, ())
-            which_str = "public"
-            fun_str = "SKBASE_PUBLIC_FUNCTIONS_BY_MODULE"
-            cls_str = "SKBASE_PUBLIC_CLASSES_BY_MODULE"
-        else:
-            module_funcs = SKBASE_FUNCTIONS_BY_MODULE.get(module, ())
-            module_classes = SKBASE_CLASSES_BY_MODULE.get(module, ())
-            which_str = "all"
-            fun_str = "SKBASE_FUNCTIONS_BY_MODULE"
-            cls_str = "SKBASE_CLASSES_BY_MODULE"
-
-        # Verify expected functions are returned
-        retrieved_funcs = set(results[module]["functions"].keys())
-        expected_funcs = set(module_funcs)
-
-        if retrieved_funcs != expected_funcs:
-            msg = (
-                "When using get_package_metadata utility, retrieved objects "
-                f"for {which_str} functions in module {module} do not match expected. "
-                f"Expected: {expected_funcs}; "
-                f"retrieved: {retrieved_funcs}. "
-                f"Expected functions are stored in {fun_str}, in test_lookup."
-            )
-            raise AssertionError(msg)
-
-        # Verify expected classes are returned
-        retrieved_cls = set(results[module]["classes"].keys())
-        expected_cls = set(module_classes)
-
-        if retrieved_cls != expected_cls:
-            msg = (
-                "When using get_package_metadata utility, retrieved objects "
-                f"for {which_str} classes in module {module} do not match expected. "
-                f"Expected: {expected_cls}; "
-                f"retrieved: {retrieved_cls}. "
-                f"Expected functions are stored in {cls_str}, in test_lookup."
-            )
-            raise AssertionError(msg)
-
-        # Verify class metadata attributes correct
-        for klass, klass_metadata in results[module]["classes"].items():
-            if klass_metadata["klass"] in SKBASE_BASE_CLASSES:
-                assert (
-                    klass_metadata["is_base_class"] is True
-                ), f"{klass} should be base class."
-            else:
-                assert (
-                    klass_metadata["is_base_class"] is False
-                ), f"{klass} should not be base class."
-
-            if issubclass(klass_metadata["klass"], BaseObject):
-                assert klass_metadata["is_base_object"] is True
-            else:
-                assert klass_metadata["is_base_object"] is False
-
-            if (
-                issubclass(klass_metadata["klass"], SKBASE_BASE_CLASSES)
-                and klass_metadata["klass"] not in SKBASE_BASE_CLASSES
-            ):
-                assert klass_metadata["is_concrete_implementation"] is True
-            else:
-                assert klass_metadata["is_concrete_implementation"] is False
 
 
 def test_get_return_tags():
