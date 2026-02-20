@@ -96,7 +96,17 @@ def _safe_import(import_path, pkg_name=None, condition=True, return_object="Magi
             module_name, attr_name = import_path.rsplit(".", 1)
             module = importlib.import_module(module_name)
             return getattr(module, attr_name)
-        except (ImportError, AttributeError):
+        except Exception as e:
+            # if not (ImportError, AttributeError), raise warning
+            from warnings import warn
+
+            if not isinstance(e, (ImportError, AttributeError)):
+                warn(
+                    f"Importing '{import_path}' failed with error "
+                    "other than ImportError or AttributeError:"
+                    f": {e}. ",
+                    ImportWarning,
+                )
             pass
 
     if return_object == "MagicMock":
