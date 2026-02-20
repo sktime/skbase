@@ -23,6 +23,7 @@ def _safe_import(import_path, pkg_name=None, condition=True, return_object="Magi
 
     Example: ``clone = _safe_import("sklearn.clone", pkg_name="scikit-learn")``.
 
+
     Parameters
     ----------
     import_path : str
@@ -64,8 +65,19 @@ def _safe_import(import_path, pkg_name=None, condition=True, return_object="Magi
         - The imported submodule if ``import_path`` has one dot
         - The imported class/function if ``import_path`` has multiple dots
 
-        If the package or import path are not found:
-        a unique ``MagicMock`` object per unique import path.
+        If the package or import path are not found, or if the import raises
+        any exception (including unexpected errors from cascading imports):
+        a unique ``MagicMock`` object per unique import path (if
+        ``return_object="MagicMock"``), or ``None`` (if ``return_object="None"``).
+
+    Warns
+    -----
+    ImportWarning
+        If the import fails with an exception other than ``ImportError`` or
+        ``AttributeError``. This can happen when a soft dependency has a
+        breaking change in a new version that causes a cascading import error
+        (e.g., ``RuntimeError``, ``TypeError``, ``SyntaxError``).
+        The warning message includes the original exception details.
 
     Examples
     --------
