@@ -102,7 +102,7 @@ def _safe_import(import_path, pkg_name=None, condition=True, return_object="Magi
 
             if not isinstance(e, (ImportError, AttributeError)):
                 warn(
-                    f"Importing '{import_path}' failed with error "
+                    f"Importing {import_path!r} failed with error "
                     "other than ImportError or AttributeError:"
                     f": {e}. ",
                     ImportWarning,
