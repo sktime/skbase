@@ -1,6 +1,8 @@
 # copyright: sktime developers, BSD-3-Clause License (see LICENSE file)
 """Tests the aliasing logic in the Tag Aliaser."""
+
 import pytest
+
 from skbase.base import BaseObject as _BaseObject
 from skbase.base._base import TagAliaserMixin as _TagAliaserMixin
 
