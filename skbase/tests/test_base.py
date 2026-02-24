@@ -1044,7 +1044,7 @@ def test_clone_none_and_empty_array_nan_sparse_matrix(
     if isinstance(base_obj.c, np.ndarray):
         np.testing.assert_array_equal(base_obj.c, new_base_obj.c)
         np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
-    elif isinstance(base_obj.c, type(sp.csr_matrix(np.array([[0]])))):
+    elif sp.issparse(base_obj.c):
         assert (base_obj.c != new_base_obj.c).nnz == 0
         assert (base_obj.c != new_base_obj2.c).nnz == 0
     else:
