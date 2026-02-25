@@ -205,7 +205,7 @@ def _check_soft_dependencies(
 
     # each element of the list "package" must be satisfied
     for package_req in packages:
-        # for elemehts, two cases can happen:
+        # for elements, two cases can happen:
         #
         # 1. package is a string, e.g., "pandas". Then this must be present.
         # 2. package is a tuple or list, e.g., ("pandas", "scikit-learn").
