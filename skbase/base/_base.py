@@ -52,6 +52,7 @@ State:
     fitted state flag       - is_fitted (property)
     fitted state check      - check_is_fitted (raises error if not is_fitted)
 """
+
 import inspect
 import re
 import warnings

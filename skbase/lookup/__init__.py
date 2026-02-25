@@ -12,6 +12,7 @@ all_objects()
     Lookup BaseObject descendants in a package or module. Users can optionally filter
     the information to return.
 """
+
 # all_objects is based on the sktime all_estimator retrieval utility, which
 # is based on the sklearn estimator retrieval utility of the same name
 # See https://github.com/scikit-learn/scikit-learn/blob/main/COPYING and

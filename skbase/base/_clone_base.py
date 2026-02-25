@@ -19,6 +19,7 @@ Each element of DEFAULT_CLONE_PLUGINS inherits from BaseCloner, with methods:
 * check(obj) -> boolean - fast checker whether plugin applies
 * clone(obj) -> type(obj) - method to clone obj
 """
+
 __all__ = ["_clone", "_check_clone"]
 
 from skbase.base._clone_plugins import DEFAULT_CLONE_PLUGINS
@@ -68,7 +69,7 @@ def _clone(estimator, *, safe=True, clone_plugins=None, base_cls=None):
     # if provided by user, work through user provided plugins first, then defaults
     if clone_plugins is not None:
         all_plugins = clone_plugins.copy()
-        all_plugins.append(DEFAULT_CLONE_PLUGINS.copy())
+        all_plugins.extend(DEFAULT_CLONE_PLUGINS.copy())
     else:
         all_plugins = DEFAULT_CLONE_PLUGINS
 

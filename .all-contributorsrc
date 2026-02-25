@@ -161,6 +161,17 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "RecreationalMath",
+      "name": "Nirbhai Singh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6928297?v=4",
+      "profile": "https://github.com/RecreationalMath",
+      "contributions": [
+        "bug",
+        "code",
+        "test"
+      ]
     }
   ],
   "projectName": "skbase",

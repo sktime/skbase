@@ -14,6 +14,7 @@ Each element of DEFAULT_CLONE_PLUGINS inherits from BaseCloner, with methods:
 * check(obj) -> boolean - fast checker whether plugin applies
 * clone(obj) -> type(obj) - method to clone obj
 """
+
 from functools import lru_cache
 from inspect import isclass
 
