@@ -61,6 +61,50 @@ class _VisualBlock:
         return self
 
 
+def _params_to_html_table(estimator):
+    """Generate an HTML parameter table for an estimator.
+
+    Instead of showing a raw ``str(estimator)`` inside a ``<pre>`` block,
+    this function builds a two-column HTML table: one column for the
+    parameter name and one for its current value.
+
+    Parameters
+    ----------
+    estimator : BaseObject
+        The estimator whose ``get_params(deep=False)`` will be used.
+
+    Returns
+    -------
+    str
+        HTML string of a ``<table>`` element, or empty string when the
+        estimator has no parameters or no ``get_params`` method.
+    """
+    if not hasattr(estimator, "get_params"):
+        return ""
+
+    params = estimator.get_params(deep=False)
+    if not params:
+        return "<em>No parameters</em>"
+
+    rows = []
+    for param_name, value in sorted(params.items()):
+        value_str = html.escape(repr(value))
+        escaped_name = html.escape(param_name)
+        rows.append(
+            f"<tr>"
+            f'<td class="sk-param-key"><span class="sk-param-name">{escaped_name}</span></td>'
+            f'<td class="sk-param-value">{value_str}</td>'
+            f"</tr>"
+        )
+
+    return (
+        '<table class="sk-params-table">'
+        "<thead><tr><th>Parameter</th><th>Value</th></tr></thead>"
+        "<tbody>" + "".join(rows) + "</tbody>"
+        "</table>"
+    )
+
+
 def _write_label_html(
     out,
     name,
@@ -68,6 +112,7 @@ def _write_label_html(
     outer_class="sk-label-container",
     inner_class="sk-label",
     checked=False,
+    estimator=None,
 ):
     """Write labeled html with or without a dropdown with named details."""
     out.write(f'<div class={outer_class!r}><div class="{inner_class} sk-toggleable">')
@@ -79,12 +124,29 @@ def _write_label_html(
 
         checked_str = "checked" if checked else ""
         est_id = uuid.uuid4()
+
+        # Show a structured param table when possible; fall back to <pre>.
+        if estimator is not None and hasattr(estimator, "get_params"):
+            table_html = _params_to_html_table(estimator)
+            if table_html:
+                dropdown_content = (
+                    '<div class="sk-toggleable__content sk-toggleable__content-table">'
+                    f"{table_html}</div>"
+                )
+            else:
+                dropdown_content = (
+                    f'<div class="sk-toggleable__content"><pre>{name_details}</pre></div>'
+                )
+        else:
+            dropdown_content = (
+                f'<div class="sk-toggleable__content"><pre>{name_details}</pre></div>'
+            )
+
         out.write(
             '<input class="sk-toggleable__control sk-hidden--visually" '
             f'id={est_id!r} type="checkbox" {checked_str}>'
             f"<label for={est_id!r} class={label_class!r}>{name}</label>"
-            f'<div class="sk-toggleable__content"><pre>{name_details}'
-            "</pre></div>"
+            f"{dropdown_content}"
         )
     else:
         out.write(f"<label>{name}</label>")
@@ -133,7 +195,12 @@ def _write_base_object_html(
         out.write(f'<div class="sk-item{dash_cls}">')
 
         if base_object_label:
-            _write_label_html(out, base_object_label, base_object_label_details)
+            _write_label_html(
+                out,
+                base_object_label,
+                base_object_label_details,
+                estimator=base_object,
+            )
 
         kind = est_block.kind
         out.write(f'<div class="sk-{kind}">')
@@ -151,6 +218,12 @@ def _write_base_object_html(
 
         out.write("</div></div>")
     elif est_block.kind == "single":
+        # Only pass an estimator when it has get_params; strings/None don't.
+        single_estimator = (
+            est_block.estimators
+            if hasattr(est_block.estimators, "get_params")
+            else None
+        )
         _write_label_html(
             out,
             est_block.names,
@@ -158,6 +231,7 @@ def _write_base_object_html(
             outer_class="sk-item",
             inner_class="sk-estimator",
             checked=first_call,
+            estimator=single_estimator,
         )
 
 
@@ -334,6 +408,34 @@ _STYLE = """
 }
 #$id div.sk-text-repr-fallback {
   display: none;
+}
+#$id .sk-toggleable__content-table {
+  padding: 0.4em;
+  background-color: #f0f8ff;
+}
+#$id table.sk-params-table {
+  border-collapse: collapse;
+  font-family: monospace;
+  font-size: 0.9em;
+  width: 100%;
+}
+#$id table.sk-params-table thead tr {
+  background-color: #d4ebff;
+}
+#$id table.sk-params-table th,
+#$id table.sk-params-table td {
+  padding: 0.3em 0.6em;
+  text-align: left;
+  border: 1px solid gray;
+}
+#$id table.sk-params-table tbody tr:nth-child(even) {
+  background-color: #e8f4ff;
+}
+#$id table.sk-params-table tbody tr:hover {
+  background-color: #d4ebff;
+}
+#$id .sk-param-name {
+  font-weight: bold;
 }
 """.replace("  ", "").replace("\n", "")  # noqa
 
