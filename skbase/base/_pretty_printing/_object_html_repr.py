@@ -134,9 +134,7 @@ def _write_label_html(
                     f"{table_html}</div>"
                 )
             else:
-                dropdown_content = (
-                    f'<div class="sk-toggleable__content"><pre>{name_details}</pre></div>'
-                )
+                dropdown_content = f'<div class="sk-toggleable__content"><pre>{name_details}</pre></div>'
         else:
             dropdown_content = (
                 f'<div class="sk-toggleable__content"><pre>{name_details}</pre></div>'
