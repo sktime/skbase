@@ -43,7 +43,9 @@ def test_tag_aliaser():
     """Tests the tag aliaser logic, as described in its docstring."""
     # case both new and old tags exist
     # old tag takes precedence
-    with pytest.warns(FutureWarning, match=_tag_deprecation_regex("old_tag_1", "new_tag_1")):
+    with pytest.warns(
+        FutureWarning, match=_tag_deprecation_regex("old_tag_1", "new_tag_1")
+    ):
         new_tag_1_val = AliaserTestClass().get_tag("new_tag_1")
         assert new_tag_1_val == "old_tag_1_value"
         old_tag_1_val = AliaserTestClass().get_tag("old_tag_1")
@@ -55,7 +57,9 @@ def test_tag_aliaser():
         assert old_tag_1_val == "old_tag_1_value"
 
     # case only new tag exists
-    with pytest.warns(FutureWarning, match=_tag_deprecation_regex("old_tag_2", "new_tag_2")):
+    with pytest.warns(
+        FutureWarning, match=_tag_deprecation_regex("old_tag_2", "new_tag_2")
+    ):
         new_tag_2_val = AliaserTestClass().get_tag("new_tag_2")
         assert new_tag_2_val == "new_tag_2_value"
         old_tag_2_val = AliaserTestClass().get_tag("old_tag_2")
@@ -67,7 +71,9 @@ def test_tag_aliaser():
         assert old_tag_2_val == "new_tag_2_value"
 
     # case only old tag exists
-    with pytest.warns(FutureWarning, match=_tag_deprecation_regex("old_tag_3", "new_tag_3")):
+    with pytest.warns(
+        FutureWarning, match=_tag_deprecation_regex("old_tag_3", "new_tag_3")
+    ):
         new_tag_3_val = AliaserTestClass().get_tag("new_tag_3")
         assert new_tag_3_val == "old_tag_3_value"
         old_tag_3_val = AliaserTestClass().get_tag("old_tag_3")
@@ -95,4 +101,3 @@ def test_tag_aliaser():
         assert all_tags_cls["old_tag_2"] == "new_tag_2_value"
         assert all_tags_cls["new_tag_3"] == "old_tag_3_value"
         assert all_tags_cls["old_tag_3"] == "old_tag_3_value"
-        
