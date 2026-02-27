@@ -33,6 +33,10 @@ SKBASE_MODULES = (
     "skbase.base._pretty_printing._object_html_repr",
     "skbase.base._pretty_printing._pprint",
     "skbase.base._tagmanager",
+    "skbase.config",
+    "skbase.config._config",
+    "skbase.config.tests",
+    "skbase.config.tests.test_config",
     "skbase.lookup",
     "skbase.lookup.tests",
     "skbase.lookup.tests.test_lookup",
@@ -72,6 +76,9 @@ SKBASE_MODULES = (
 SKBASE_PUBLIC_MODULES = (
     "skbase",
     "skbase.base",
+    "skbase.config",
+    "skbase.config.tests",
+    "skbase.config.tests.test_config",
     "skbase.lookup",
     "skbase.lookup.tests",
     "skbase.lookup.tests.test_lookup",
@@ -157,6 +164,20 @@ SKBASE_CLASSES_BY_MODULE.update(
     }
 )
 SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
+    "skbase.config": (
+        "config_context",
+        "get_config",
+        "get_default_config",
+        "reset_config",
+        "set_config",
+    ),
+    "skbase.config._config": (
+        "config_context",
+        "get_config",
+        "get_default_config",
+        "reset_config",
+        "set_config",
+    ),
     "skbase.lookup": ("all_objects", "get_package_metadata"),
     "skbase.lookup._lookup": ("all_objects", "get_package_metadata"),
     "skbase.testing.utils._conditional_fixtures": (
@@ -223,6 +244,14 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_write_label_html",
         ),
         "skbase.base._pretty_printing._pprint": ("_changed_params", "_safe_repr"),
+        "skbase.config._config": (
+            "_get_global_config",
+            "config_context",
+            "get_config",
+            "get_default_config",
+            "reset_config",
+            "set_config",
+        ),
         "skbase.lookup._lookup": (
             "all_objects",
             "get_package_metadata",

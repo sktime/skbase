@@ -76,6 +76,8 @@ import pytest
 import scipy.sparse as sp
 
 from skbase.base import BaseEstimator, BaseObject
+from skbase.config import get_default_config
+from skbase.config import reset_config as reset_global_config
 from skbase.tests.conftest import Child, Parent
 from skbase.tests.mock_package.test_mock_package import CompositionDummy
 from skbase.utils.dependencies import _check_soft_dependencies
@@ -1361,6 +1363,7 @@ def test_eq_dunder():
 
 def test_get_set_config():
     """Tests get_config and set_config methods."""
+    reset_global_config()  # Reset global config to defaults
 
     class _TestConfig(BaseObject):
         _config = {"foo_config": 42, "bar": "a"}
@@ -1375,13 +1378,15 @@ def test_get_set_config():
     test_obj = _TestConfig(7)
 
     expected_config_orig = BaseObject._config.copy()
-    expected_config_orig.update({"foo_config": 42, "bar": "a"})
+    expected_config_orig.update(get_default_config())  # global defaults
+    expected_config_orig.update({"foo_config": 42, "bar": "a"})  # class
 
     # Test get_config
     assert test_obj.get_config() == expected_config_orig
 
     expected_config = BaseObject._config.copy()
-    expected_config.update({"foo_config": 37, "bar": "a"})
+    expected_config.update(get_default_config())  # global
+    expected_config.update({"foo_config": 37, "bar": "a"})  # local override
 
     # Test set_config
     test_obj.set_config(foo_config=37)
@@ -1391,6 +1396,35 @@ def test_get_set_config():
     # test that reset does not reset config
     test_obj.reset()
     assert test_obj.get_config() == expected_config
+
+
+def test_global_config_integration():
+    """Test that global config is integrated into BaseObject.get_config."""
+    from skbase.config import reset_config as reset_global_config
+    from skbase.config import set_config as set_global_config
+
+    reset_global_config()
+
+    class _TestGlobalConfig(BaseObject):
+        _config = {"local_config": "class_value"}
+
+    test_obj = _TestGlobalConfig()
+
+    # Initially, should have class + global defaults
+    config = test_obj.get_config()
+    assert config["local_config"] == "class_value"
+    assert config["display"] == "diagram"  # global default
+
+    # Set global config
+    set_global_config(display="text")
+
+    config = test_obj.get_config()
+    assert config["display"] == "text"  # global override
+
+    # Local override should take precedence
+    test_obj.set_config(display="diagram")
+    config = test_obj.get_config()
+    assert config["display"] == "diagram"  # local override
 
 
 def test_clone_with_custom_plugins():
