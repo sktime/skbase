@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests to run without pytest, to check pytest isolation."""
 
 # copyright: sktime developers, BSD-3-Clause License (see LICENSE file)
