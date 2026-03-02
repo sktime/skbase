@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 # Elements of BaseObject reuse code developed in scikit-learn. These elements
 # are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
@@ -20,7 +19,7 @@ Each element of DEFAULT_CLONE_PLUGINS inherits from BaseCloner, with methods:
 * clone(obj) -> type(obj) - method to clone obj
 """
 
-__all__ = ["_clone", "_check_clone"]
+__all__ = ["_check_clone", "_clone"]
 
 from skbase.base._clone_plugins import DEFAULT_CLONE_PLUGINS
 

@@ -1,23 +1,23 @@
 #!/usr/bin/env python3 -u
-# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tools for validating types."""
 
 import collections
 import inspect
-from typing import Any, List, Optional, Sequence, Tuple, Union
+from collections.abc import Sequence
+from typing import Any
 
 from skbase.utils._iter import _format_seq_to_str, _remove_type_text, _scalar_to_seq
 
-__author__: List[str] = ["RNKuhns", "fkiraly"]
-__all__: List[str] = ["check_sequence", "check_type", "is_sequence"]
+__author__: list[str] = ["RNKuhns", "fkiraly"]
+__all__: list[str] = ["check_sequence", "check_type", "is_sequence"]
 
 
 def check_type(
     input_: Any,
     expected_type: type,
     allow_none: bool = False,
-    input_name: Optional[str] = None,
+    input_name: str | None = None,
     use_subclass: bool = False,
 ) -> Any:
     """Check the input is the expected type.
@@ -90,30 +90,29 @@ def check_type(
     type_check = issubclass if use_subclass else isinstance
     if (allow_none and input_ is None) or type_check(input_, expected_type):
         return input_
+    chk_msg = "subclass type" if use_subclass else "be type"
+    expected_type_str = _remove_type_text(expected_type)
+    input_type_str = _remove_type_text(type(input_))
+    if allow_none:
+        type_msg = f"{expected_type_str} or None"
     else:
-        chk_msg = "subclass type" if use_subclass else "be type"
-        expected_type_str = _remove_type_text(expected_type)
-        input_type_str = _remove_type_text(type(input_))
-        if allow_none:
-            type_msg = f"{expected_type_str} or None"
-        else:
-            type_msg = f"{expected_type_str}"
-        raise TypeError(
-            f"`{input_name}` should {chk_msg} {type_msg}, but found {input_type_str}."
-        )
+        type_msg = f"{expected_type_str}"
+    raise TypeError(
+        f"`{input_name}` should {chk_msg} {type_msg}, but found {input_type_str}."
+    )
 
 
 def _convert_scalar_seq_type_input_to_tuple(
-    type_input: Optional[Union[type, Tuple[type, ...]]],
-    none_default: Optional[type] = None,
-    type_input_subclass: Optional[type] = None,
+    type_input: type | tuple[type, ...] | None,
+    none_default: type | None = None,
+    type_input_subclass: type | None = None,
     input_name: str = None,
-) -> Tuple[type, ...]:
+) -> tuple[type, ...]:
     """Convert input that is scalar or sequence of types to always be a tuple."""
     if none_default is None:
         none_default = collections.abc.Sequence
 
-    seq_output: Tuple[type, ...]
+    seq_output: tuple[type, ...]
     if type_input is None:
         seq_output = (none_default,)
     # if a sequence of types received as sequence_type, convert to tuple of types
@@ -134,8 +133,8 @@ def _convert_scalar_seq_type_input_to_tuple(
 
 def is_sequence(
     input_seq: Any,
-    sequence_type: Optional[Union[type, Tuple[type, ...]]] = None,
-    element_type: Optional[Union[type, Tuple[type, ...]]] = None,
+    sequence_type: type | tuple[type, ...] | None = None,
+    element_type: type | tuple[type, ...] | None = None,
 ) -> bool:
     """Indicate if an object is a sequence with optional check of element types.
 
@@ -223,8 +222,8 @@ def is_sequence(
 
 def check_sequence(
     input_seq: Sequence[Any],
-    sequence_type: Optional[Union[type, Tuple[type, ...]]] = None,
-    element_type: Optional[Union[type, Tuple[type, ...]]] = None,
+    sequence_type: type | tuple[type, ...] | None = None,
+    element_type: type | tuple[type, ...] | None = None,
     coerce_output_type_to: type = None,
     coerce_scalar_input: bool = False,
     sequence_name: str = None,

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3 -u
-# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """:mod:`skbase.base` contains base classes for creating parametric objects.
 
@@ -17,12 +16,12 @@ from skbase.base._meta import (
     BaseMetaObjectMixin,
 )
 
-__author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
-__all__: List[str] = [
-    "BaseObject",
+__author__: list[str] = ["mloning", "RNKuhns", "fkiraly"]
+__all__: list[str] = [
     "BaseEstimator",
     "BaseMetaEstimator",
-    "BaseMetaObject",
     "BaseMetaEstimatorMixin",
+    "BaseMetaObject",
     "BaseMetaObjectMixin",
+    "BaseObject",
 ]

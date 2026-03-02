@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 # Many elements of this code were developed in scikit-learn. These elements
 # are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
@@ -100,7 +99,7 @@ def _get_visual_block(base_object):
         return _VisualBlock(
             "single", base_object, names=base_object, name_details=base_object
         )
-    elif base_object is None:
+    if base_object is None:
         return _VisualBlock("single", base_object, names="None", name_details="None")
 
     # check if base_object looks like a meta base_object wraps base_object
@@ -137,7 +136,9 @@ def _write_base_object_html(
 
         kind = est_block.kind
         out.write(f'<div class="sk-{kind}">')
-        est_infos = zip(est_block.estimators, est_block.names, est_block.name_details)
+        est_infos = zip(
+            est_block.estimators, est_block.names, est_block.name_details, strict=False
+        )
 
         for est, name, name_details in est_infos:
             if kind == "serial":
@@ -335,7 +336,7 @@ _STYLE = """
 #$id div.sk-text-repr-fallback {
   display: none;
 }
-""".replace("  ", "").replace("\n", "")  # noqa
+""".replace("  ", "").replace("\n", "")
 
 
 def _object_html_repr(base_object):

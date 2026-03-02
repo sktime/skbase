@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Tests for deep_equals utility."""
 
 from copy import deepcopy
@@ -12,7 +11,7 @@ from skbase.utils.dependencies import _check_soft_dependencies
 EXAMPLES = [
     42,
     [],
-    ((((())))),
+    (()),
     [[[[()]]]],
     3.5,
     4.2,
@@ -122,13 +121,11 @@ def copy_except_if_sklearn(obj):
     """
     if not _check_soft_dependencies("scikit-learn", severity="none"):
         return deepcopy(obj)
-    else:
-        from sklearn.base import BaseEstimator
+    from sklearn.base import BaseEstimator
 
-        if isinstance(obj, BaseEstimator):
-            return obj
-        else:
-            return deepcopy(obj)
+    if isinstance(obj, BaseEstimator):
+        return obj
+    return deepcopy(obj)
 
 
 # Add JAX examples

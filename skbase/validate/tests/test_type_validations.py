@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tests of the functionality for validating iterables of named objects.
 
@@ -100,7 +99,7 @@ def test_is_sequence_output():
     # True for any sequence
     assert is_sequence([1, 2, 3]) is True
     # But false for generators, since they are iterable but not sequences
-    assert is_sequence((c for c in [1, 2, 3])) is False
+    assert is_sequence(c for c in [1, 2, 3]) is False
 
     # Test use of sequence_type restriction
     assert is_sequence([1, 2, 3, 4], sequence_type=list) is True
@@ -173,7 +172,7 @@ def test_check_sequence_output():
         TypeError,
         match="Invalid sequence: Input sequence expected to be a a sequence.",
     ):
-        assert check_sequence((c for c in [1, 2, 3]))
+        assert check_sequence(c for c in [1, 2, 3])
 
     # Test use of sequence_type restriction
     assert check_sequence([1, 2, 3, 4], sequence_type=list) == [1, 2, 3, 4]

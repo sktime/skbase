@@ -1,5 +1,4 @@
 #!/usr/bin/env python3 -u
-# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tests of the functionality for working with iterables.
 
@@ -76,7 +75,7 @@ def test_format_seq_to_str():
 def test_format_seq_to_str_raises():
     """Test _format_seq_to_str raises error when input is unexpected type."""
     with pytest.raises(TypeError, match="`seq` must be a sequence or scalar.*"):
-        _format_seq_to_str((c for c in [1, 2, 3]))
+        _format_seq_to_str(c for c in [1, 2, 3])
 
 
 def test_scalar_to_seq_expected_output():

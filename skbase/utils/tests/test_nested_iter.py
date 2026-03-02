@@ -1,5 +1,4 @@
 #!/usr/bin/env python3 -u
-# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tests of the functionality for working with iterables.
 
@@ -70,7 +69,7 @@ def test_unflat_len():
     assert unflat_len((1, 2)) == 2
     assert unflat_len([1, (2, 3), 4, 5]) == 5
     assert unflat_len([1, 2, (c for c in (2, 3, 4))]) == 5
-    assert unflat_len((c for c in [1, 2, (c for c in (2, 3, 4))])) == 5
+    assert unflat_len(c for c in [1, 2, (c for c in (2, 3, 4))]) == 5
 
 
 def test_is_flat():
@@ -78,8 +77,8 @@ def test_is_flat():
     assert is_flat([1, 2, 3, 4, 5]) is True
     assert is_flat([1, (2, 3), 4, 5]) is False
     # Check with flat generator
-    assert is_flat((c for c in [1, 2, 3])) is True
+    assert is_flat(c for c in [1, 2, 3]) is True
     # Check with nested generator
     assert is_flat([1, 2, (c for c in (2, 3, 4))]) is False
     # Check with generator nested in a generator
-    assert is_flat((c for c in [1, 2, (c for c in (2, 3, 4))])) is False
+    assert is_flat(c for c in [1, 2, (c for c in (2, 3, 4))]) is False

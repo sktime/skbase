@@ -1,5 +1,4 @@
 #!/usr/bin/env python3 -u
-# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Utility functionality used through `skbase`."""
 
@@ -16,8 +15,8 @@ from skbase.utils.random_state import (
     set_random_state,
 )
 
-__author__: List[str] = ["RNKuhns", "fkiraly"]
-__all__: List[str] = [
+__author__: list[str] = ["RNKuhns", "fkiraly"]
+__all__: list[str] = [
     "check_random_state",
     "deep_equals",
     "flatten",

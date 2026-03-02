@@ -1,5 +1,4 @@
 #!/usr/bin/env python3 -u
-# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tools to lookup information on code artifacts in a Python package or module.
 
@@ -21,8 +20,8 @@ from typing import List
 
 from skbase.lookup._lookup import all_objects, get_package_metadata
 
-__all__: List[str] = ["all_objects", "get_package_metadata"]
-__author__: List[str] = [
+__all__: list[str] = ["all_objects", "get_package_metadata"]
+__author__: list[str] = [
     "fkiraly",
     "mloning",
     "katiebuc",

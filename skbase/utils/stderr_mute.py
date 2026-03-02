@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Context manager to suppress stderr."""
 
 __author__ = ["XinyuWu"]
@@ -35,7 +34,7 @@ class StderrMute:
             self._stderr = sys.stderr
             sys.stderr = io.StringIO()
 
-    def __exit__(self, type, value, traceback):  # noqa: A002
+    def __exit__(self, type, value, traceback):
         """Context manager exit point."""
         # restore stderr if active
         # if not active, nothing needs to be done, since stderr was not replaced
@@ -49,7 +48,7 @@ class StderrMute:
         # return statement not needed as type was None, but included for clarity
         return True
 
-    def _handle_exit_exceptions(self, type, value, traceback):  # noqa: A002
+    def _handle_exit_exceptions(self, type, value, traceback):
         """Handle exceptions raised during __exit__.
 
         Parameters

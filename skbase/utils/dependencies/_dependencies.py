@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Utility to check soft dependency imports, and raise warnings or errors."""
 
 import sys
@@ -221,8 +220,7 @@ def _check_soft_dependencies(
                 return False
             if pkg_version_req != SpecifierSet(""):
                 return pkg_env_version in pkg_version_req
-            else:
-                return True
+            return True
 
         pkg_version_reqs = []
         pkg_env_versions = []
@@ -275,7 +273,7 @@ def _check_soft_dependencies(
 
         # now we check compatibility with the version specifier if non-empty
         if not any(req_sat):
-            zp = zip(package_req, pkg_names, pkg_env_versions, req_sat)
+            zp = zip(package_req, pkg_names, pkg_env_versions, req_sat, strict=False)
             reqs_not_satisfied = [x for x in zp if x[3] is False]
             actual_vers = [f"{x[1]} {x[2]}" for x in reqs_not_satisfied]
             pkg_env_version_str = ", ".join(actual_vers)
@@ -727,13 +725,13 @@ def _raise_at_severity(
 
     if severity == "error":
         raise exception_type(msg)
-    elif severity == "warning":
+    if severity == "warning":
         warnings.warn(msg, category=warning_type, stacklevel=stacklevel)
     elif severity == "none":
-        return None
+        return
     else:
         raise ValueError(
             f"Error in calling {caller}, severity "
             f'argument must be "error", "warning", or "none", found {severity!r}.'
         )
-    return None
+    return

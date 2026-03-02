@@ -1,20 +1,17 @@
-# -*- coding: utf-8 -*-
 """Common functionality for skbase unit tests."""
-
-from typing import List
 
 from skbase.base import BaseEstimator, BaseObject
 
-__all__: List[str] = [
+__all__: list[str] = [
     "SKBASE_BASE_CLASSES",
-    "SKBASE_MODULES",
-    "SKBASE_PUBLIC_MODULES",
-    "SKBASE_PUBLIC_CLASSES_BY_MODULE",
     "SKBASE_CLASSES_BY_MODULE",
-    "SKBASE_PUBLIC_FUNCTIONS_BY_MODULE",
     "SKBASE_FUNCTIONS_BY_MODULE",
+    "SKBASE_MODULES",
+    "SKBASE_PUBLIC_CLASSES_BY_MODULE",
+    "SKBASE_PUBLIC_FUNCTIONS_BY_MODULE",
+    "SKBASE_PUBLIC_MODULES",
 ]
-__author__: List[str] = ["fkiraly", "RNKuhns"]
+__author__: list[str] = ["fkiraly", "RNKuhns"]
 
 # bug 442 fixed: metaclasses now discovered correctly on all Python versions
 IMPORT_CLS = ("CommonMagicMeta", "MagicAttribute")
@@ -343,7 +340,6 @@ class Parent(BaseObject):
 
     def some_method(self):
         """To be implemented by child class."""
-        pass
 
 
 # Fixture class for testing tag system, child overrides tags
@@ -355,11 +351,9 @@ class Child(Parent):
 
     def some_method(self):
         """Child class' implementation."""
-        pass
 
     def some_other_method(self):
         """To be implemented in the child class."""
-        pass
 
 
 # Fixture class for testing tag system, child overrides tags
@@ -371,8 +365,6 @@ class ClassWithABTrue(Parent):
 
     def some_method(self):
         """Child class' implementation."""
-        pass
 
     def some_other_method(self):
         """To be implemented in the child class."""
-        pass

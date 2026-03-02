@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 # Elements of BaseObject reuse code developed in scikit-learn. These elements
 # are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
@@ -58,15 +57,14 @@ import re
 import warnings
 from collections import defaultdict
 from copy import deepcopy
-from typing import List
 
 from skbase._exceptions import NotFittedError
 from skbase.base._clone_base import _check_clone, _clone
 from skbase.base._pretty_printing._object_html_repr import _object_html_repr
 from skbase.base._tagmanager import _FlagManager
 
-__author__: List[str] = ["fkiraly", "mloning", "RNKuhns", "tpvasconcelos"]
-__all__: List[str] = ["BaseEstimator", "BaseObject"]
+__author__: list[str] = ["fkiraly", "mloning", "RNKuhns", "tpvasconcelos"]
+__all__: list[str] = ["BaseEstimator", "BaseObject"]
 
 
 class BaseObject(_FlagManager):
@@ -86,7 +84,7 @@ class BaseObject(_FlagManager):
         """Construct BaseObject."""
         self._init_flags(flag_attr_name="_tags")
         self._init_flags(flag_attr_name="_config")
-        super(BaseObject, self).__init__()
+        super().__init__()
 
     def __eq__(self, other):
         """Equality dunder. Checks equal class and parameters.
@@ -210,7 +208,7 @@ class BaseObject(_FlagManager):
             in ``skbase.base._clone_plugins``, and implement
             the methods ``_check`` and ``_clone``.
         """
-        return None
+        return
 
     @classmethod
     def _get_init_signature(cls):
@@ -1233,7 +1231,7 @@ class TagAliaserMixin:
 
     def __init__(self):
         """Construct TagAliaserMixin."""
-        super(TagAliaserMixin, self).__init__()
+        super().__init__()
 
     @classmethod
     def get_class_tags(cls):
@@ -1277,7 +1275,7 @@ class TagAliaserMixin:
             class attribute via nested inheritance. NOT overridden by dynamic
             tags set by ``set_tags`` or ``clone_tags``.
         """
-        collected_tags = super(TagAliaserMixin, cls).get_class_tags()
+        collected_tags = super().get_class_tags()
         cls._deprecate_tag_warn(collected_tags)
         collected_tags = cls._complete_dict(collected_tags)
         return collected_tags
@@ -1353,7 +1351,7 @@ class TagAliaserMixin:
                 return old_tag_val
             # case 2: old tag was queried, but old tag not present
             # then: return value of new tag
-            elif old_tag_queried:
+            if old_tag_queried:
                 return cls._get_class_flag(
                     new_tag_name,
                     tag_value_default,
@@ -1400,7 +1398,7 @@ class TagAliaserMixin:
             class attribute via nested inheritance and then any overrides
             and new tags from ``_tags_dynamic`` object attribute.
         """
-        collected_tags = super(TagAliaserMixin, self).get_tags()
+        collected_tags = super().get_tags()
         self._deprecate_tag_warn(collected_tags)
         collected_tags = self._complete_dict(collected_tags)
         return collected_tags
@@ -1479,7 +1477,7 @@ class TagAliaserMixin:
                 return old_tag_val
             # case 2: old tag was queried, but old tag not present
             # then: return value of new tag
-            elif old_tag_queried:
+            if old_tag_queried:
                 return self._get_flag(
                     new_tag_name,
                     tag_value_default,
@@ -1562,8 +1560,7 @@ class TagAliaserMixin:
             for old_tag in alias_dict:
                 cls._translate_tags(new_tag_dict, tag_dict, old_tag, direction)
             return new_tag_dict
-        else:
-            return tag_dict
+        return tag_dict
 
     @classmethod
     def _deprecate_tag_warn(cls, tags):
@@ -1656,8 +1653,7 @@ class BaseEstimator(BaseObject):
         """
         if hasattr(self, "_is_fitted"):
             return self._is_fitted
-        else:
-            return False
+        return False
 
     def check_is_fitted(self, method_name=None):
         """Check if the estimator has been fitted.
@@ -1818,8 +1814,7 @@ class BaseEstimator(BaseObject):
                 if hasattr(obj, attr):
                     attr = getattr(obj, attr)
                     return attr, True
-                else:
-                    return None, False
+                return None, False
             except Exception:
                 return None, False
 

@@ -1,18 +1,18 @@
 #!/usr/bin/env python3 -u
-# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Functionality for working with sequences."""
 
-from typing import Any, Iterable, List, MutableMapping, Optional, Union
+from collections.abc import Iterable, MutableMapping
+from typing import Any
 
-__author__: List[str] = ["RNKuhns"]
-__all__: List[str] = ["subset_dict_keys"]
+__author__: list[str] = ["RNKuhns"]
+__all__: list[str] = ["subset_dict_keys"]
 
 
 def subset_dict_keys(
     input_dict: MutableMapping[Any, Any],
-    keys: Union[Iterable, int, float, bool, str, type],
-    prefix: Optional[str] = None,
+    keys: Iterable | int | float | bool | str | type,
+    prefix: str | None = None,
     remove_prefix: bool = True,
 ):
     """Subset dictionary so it only contains specified keys.
@@ -76,8 +76,7 @@ def subset_dict_keys(
             return x[len(prefix__) :]
         # The way this is used below, this else shouldn't really execute
         # But its here for completeness in case something goes wrong
-        else:
-            return x  # pragma: no cover
+        return x  # pragma: no cover
 
     # Handle passage of certain scalar values
     if isinstance(keys, (str, float, int, bool, type)):

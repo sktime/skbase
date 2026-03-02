@@ -1,25 +1,24 @@
-# -*- coding: utf-8 -*-
 """Testing utility for easy generation of conditional fixtures in pytest_generate_tests.
 
 Exports create_conditional_fixtures_and_names utility
 """
 
+from collections.abc import Callable
 from copy import deepcopy
-from typing import Callable, Dict, List
 
 from skbase._exceptions import FixtureGenerationError
 from skbase.utils._nested_iter import _remove_single
 from skbase.validate import check_sequence
 
-__author__: List[str] = ["fkiraly"]
-__all__: List[str] = ["create_conditional_fixtures_and_names"]
+__author__: list[str] = ["fkiraly"]
+__all__: list[str] = ["create_conditional_fixtures_and_names"]
 
 
 def create_conditional_fixtures_and_names(
     test_name: str,
-    fixture_vars: List[str],
-    generator_dict: Dict[str, Callable],
-    fixture_sequence: List[str] = None,
+    fixture_vars: list[str],
+    generator_dict: dict[str, Callable],
+    fixture_sequence: list[str] = None,
     raise_exceptions: bool = False,
     deepcopy_fixtures: bool = False,
 ):
@@ -101,7 +100,7 @@ def create_conditional_fixtures_and_names(
     fixture_vars = check_sequence(
         fixture_vars, sequence_type=list, element_type=str, sequence_name="fixture_vars"
     )
-    fixture_vars = [var for var in fixture_vars if var in generator_dict.keys()]
+    fixture_vars = [var for var in fixture_vars if var in generator_dict]
 
     # order fixture_vars according to fixture_sequence if provided
     if fixture_sequence is not None:
@@ -176,7 +175,7 @@ def create_conditional_fixtures_and_names(
             if i == 0:
                 kwargs = {}
             else:
-                kwargs = dict(zip(old_fixture_vars, fixture))
+                kwargs = dict(zip(old_fixture_vars, fixture, strict=False))
             # retrieve conditional fixtures, conditional on fixture values in kwargs
             new_fixtures, new_fixture_names_r = get_fixtures(fixture_var, **kwargs)
             # new fixture values are concatenation/product of old values plus new

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 # Many elements of this code were developed in scikit-learn. These elements
 # are copyrighted by the scikit-learn developers, BSD-3-Clause License. For
@@ -26,8 +25,6 @@ class KeyValTuple(tuple):
 
 class KeyValTupleParam(KeyValTuple):
     """Dummy class for correctly rendering key-value tuples from parameters."""
-
-    pass
 
 
 def _changed_params(base_object):
@@ -131,7 +128,7 @@ class _BaseObjectPrettyPrinter(pprint.PrettyPrinter):
         # (they are treated as dicts)
         self.n_max_elements_to_show = n_max_elements_to_show
 
-    def format(self, obj, context, maxlevels, level):  # noqa
+    def format(self, obj, context, maxlevels, level):
         return _safe_repr(
             obj, context, maxlevels, level, changed_only=self.changed_only
         )

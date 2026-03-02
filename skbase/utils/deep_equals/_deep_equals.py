@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Testing utility to compare equality in value for nested objects.
 
 Objects compared can have one of the following valid types:
@@ -112,8 +111,7 @@ def _is_npnan(x):
 
         return isinstance(x, float) and np.isnan(x)
 
-    else:
-        return False
+    return False
 
 
 def _coerce_list(x):
@@ -131,8 +129,7 @@ def _numpy_equals_plugin(x, y, return_msg=False, deep_equals=None):
 
     if not numpy_available or not _is_npndarray(x):
         return None
-    else:
-        import numpy as np
+    import numpy as np
 
     ret = _make_ret(return_msg)
 
@@ -144,15 +141,14 @@ def _numpy_equals_plugin(x, y, return_msg=False, deep_equals=None):
         return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
     if x.dtype == "str":
         return ret(np.array_equal(x, y), ".values")
-    elif x.dtype == "object":
+    if x.dtype == "object":
         x_flat = x.flatten()
         y_flat = y.flatten()
         for i in range(len(x_flat)):
             is_equal, msg = deep_equals(x_flat[i], y_flat[i], return_msg=True)
             return ret(is_equal, f"[{i}]" + msg)
         return ret(True, "")  # catches len(x_flat) == 0
-    else:
-        return ret(np.array_equal(x, y, equal_nan=True), ".values")
+    return ret(np.array_equal(x, y, equal_nan=True), ".values")
 
 
 def _pandas_equals_plugin(x, y, return_msg=False, deep_equals=None):
@@ -189,9 +185,8 @@ def _pandas_equals(x, y, return_msg=False, deep_equals=None):
             else:
                 msg = ""
             return ret(index_equal and values_equal, msg)
-        else:
-            return ret(x.equals(y), ".series_equals, x = {} != y = {}", [x, y])
-    elif isinstance(x, pd.DataFrame):
+        return ret(x.equals(y), ".series_equals, x = {} != y = {}", [x, y])
+    if isinstance(x, pd.DataFrame):
         # check column names for equality
         if not x.columns.equals(y.columns):
             return ret(
@@ -260,9 +255,8 @@ def _pandas_equals(x, y, return_msg=False, deep_equals=None):
                 if not is_equal:
                     return ret(False, f"[{c!r}]" + msg)
             return ret(True, "")
-        else:
-            return ret(x.equals(y), ".df_equals, x = {} != y = {}", [x, y])
-    elif isinstance(x, pd.Index):
+        return ret(x.equals(y), ".df_equals, x = {} != y = {}", [x, y])
+    if isinstance(x, pd.Index):
         if hasattr(x, "dtype") and hasattr(y, "dtype"):
             if not x.dtype == y.dtype:
                 return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
@@ -272,12 +266,11 @@ def _pandas_equals(x, y, return_msg=False, deep_equals=None):
                     False, f".dtypes, x.dtypes = {x.dtypes} != y.dtypes = {y.dtypes}"
                 )
         return ret(x.equals(y), "index.equals, x = {} != y = {}", [x, y])
-    else:
-        raise RuntimeError(
-            f"Unexpected type of pandas object in _pandas_equals: type(x)={type(x)},"
-            f" type(y)={type(y)}, both should be one of "
-            "pd.Series, pd.DataFrame, pd.Index"
-        )
+    raise RuntimeError(
+        f"Unexpected type of pandas object in _pandas_equals: type(x)={type(x)},"
+        f" type(y)={type(y)}, both should be one of "
+        "pd.Series, pd.DataFrame, pd.Index"
+    )
 
 
 def _tuple_equals(x, y, return_msg=False, deep_equals=None):
@@ -522,12 +515,12 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
     if isinstance(x, (list, tuple)):
         dec = deep_equals_curried
         return ret(*_tuple_equals(x, y, return_msg=True, deep_equals=dec))
-    elif isinstance(x, dict):
+    if isinstance(x, dict):
         dec = deep_equals_curried
         return ret(*_dict_equals(x, y, return_msg=True, deep_equals=dec))
-    elif _is_npnan(x):
+    if _is_npnan(x):
         return ret(_is_npnan(y), f"type(x)={type(x)} != type(y)={type(y)}")
-    elif isclass(x):
+    if isclass(x):
         return ret(x == y, f".class, x={x.__name__} != y={y.__name__}")
 
     if plugins is not None:
@@ -589,8 +582,7 @@ def _safe_any_unequal(x, y):
             any_un = any(unequal)
             if isinstance(any_un, bool):
                 return any_un
-            else:
-                return False
+            return False
         except Exception:
             return False
 
@@ -600,8 +592,7 @@ def _safe_any_unequal(x, y):
         any_un = np.any(x != y) or np.any(_coerce_list(x != y))
         if isinstance(any_un, bool) or any_un.dtype == "bool":
             return any_un
-        else:
-            return False
+        return False
     except Exception:
         return False
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tests for skbase pretty printing functionality."""
 
@@ -15,7 +14,7 @@ class CompositionDummy(BaseObject):
         self.foo = foo
         self.bar = bar
 
-        super(CompositionDummy, self).__init__()
+        super().__init__()
 
 
 @pytest.mark.skipif(

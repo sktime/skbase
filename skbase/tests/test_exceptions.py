@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Tests for skbase exceptions.
 
 tests in this module:
@@ -6,13 +5,11 @@ tests in this module:
     test_exceptions_raise_error - Test that skbase exceptions raise expected error.
 """
 
-from typing import List
-
 import pytest
 
 from skbase._exceptions import FixtureGenerationError, NotFittedError
 
-__author__: List[str] = ["RNKuhns"]
+__author__: list[str] = ["RNKuhns"]
 
 ALL_EXCEPTIONS = [FixtureGenerationError, NotFittedError]
 

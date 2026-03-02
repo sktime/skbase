@@ -1,18 +1,16 @@
-# -*- coding: utf-8 -*-
 """Mock package for testing skbase functionality."""
 
 from copy import deepcopy
-from typing import List
 
 from skbase.base import BaseObject
 
-__all__: List[str] = [
+__all__: list[str] = [
+    "AnotherClass",
     "CompositionDummy",
     "InheritsFromBaseObject",
-    "AnotherClass",
     "NotABaseObject",
 ]
-__author__: List[str] = ["fkiraly", "RNKuhns"]
+__author__: list[str] = ["fkiraly", "RNKuhns"]
 
 
 class CompositionDummy(BaseObject):
@@ -23,7 +21,7 @@ class CompositionDummy(BaseObject):
         self.foo_ = deepcopy(foo)
         self.bar = bar
 
-        super(CompositionDummy, self).__init__()
+        super().__init__()
 
     @classmethod
     def get_test_params(cls, parameter_set="default"):
