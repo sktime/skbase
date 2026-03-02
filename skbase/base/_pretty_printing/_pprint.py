@@ -46,11 +46,9 @@ def _changed_params(base_object):
         if isinstance(v, BaseObject) and v.__class__ != init_params[k].__class__:
             return True
         # Use repr as a last resort. It may be expensive.
-        if repr(v) != repr(init_params[k]) and not (
+        return repr(v) != repr(init_params[k]) and not (
             _is_scalar_nan(init_params[k]) and _is_scalar_nan(v)
-        ):
-            return True
-        return False
+        )
 
     return {k: v for k, v in params.items() if has_changed(k, v)}
 

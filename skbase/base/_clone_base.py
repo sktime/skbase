@@ -110,7 +110,7 @@ def _check_clone(original, clone):
     self_params = original.get_params(deep=False)
 
     # check that all attributes are written to the clone
-    for attrname in self_params.keys():
+    for attrname in self_params:
         if not hasattr(clone, attrname):
             raise RuntimeError(
                 f"error in {original}.clone, __init__ must write all arguments "
@@ -118,7 +118,7 @@ def _check_clone(original, clone):
                 f"Please check __init__ of {original}."
             )
 
-    clone_attrs = {attr: getattr(clone, attr) for attr in self_params.keys()}
+    clone_attrs = {attr: getattr(clone, attr) for attr in self_params}
 
     # check equality of parameters post-clone and pre-clone
     clone_attrs_valid, msg = deep_equals(self_params, clone_attrs, return_msg=True)

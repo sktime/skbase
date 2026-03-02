@@ -58,6 +58,7 @@ import re
 import warnings
 from collections import defaultdict
 from copy import deepcopy
+from typing import ClassVar
 
 from skbase._exceptions import NotFittedError
 from skbase.base._clone_base import _check_clone, _clone
@@ -74,7 +75,7 @@ class BaseObject(_FlagManager):
     Extends scikit-learn's BaseEstimator to include sktime style interface for tags.
     """
 
-    _config = {
+    _config: ClassVar[dict] = {
         "display": "diagram",
         "print_changed_only": True,
         "check_clone": False,  # whether to execute validity checks in clone
@@ -448,10 +449,10 @@ class BaseObject(_FlagManager):
         def _get_alias(x, d):
             """Return alias of x in d."""
             # if key is in valid_params, key is replaced by key (itself)
-            if any(x == y for y in d.keys()):
+            if x in d:
                 return x
 
-            suff_list = [y for y in d.keys() if _is_suffix(x, y)]
+            suff_list = [y for y in d if _is_suffix(x, y)]
 
             # if key is a __ suffix of exactly one key in valid_params,
             #   it is replaced by that key
@@ -467,7 +468,7 @@ class BaseObject(_FlagManager):
             # if ns == 1
             return suff_list[0]
 
-        alias_dict = {_get_alias(x, valid_params): d[x] for x in d.keys()}
+        alias_dict = {_get_alias(x, valid_params): d[x] for x in d}
 
         return alias_dict
 
@@ -1221,11 +1222,11 @@ class TagAliaserMixin:
     # dictionary of aliases
     # key = old tag; value = new tag, aliased by old tag
     # override this in a child class
-    alias_dict = {"old_tag": "new_tag", "tag_to_remove": ""}
+    alias_dict: ClassVar[dict] = {"old_tag": "new_tag", "tag_to_remove": ""}
 
     # dictionary of removal version
     # key = old tag; value = version in which tag will be removed, as string
-    deprecate_dict = {"old_tag": "0.12.0", "tag_to_remove": "99.99.99"}
+    deprecate_dict: ClassVar[dict] = {"old_tag": "0.12.0", "tag_to_remove": "99.99.99"}
 
     # package name used for deprecation warnings
     _package_name = ""
@@ -1332,7 +1333,7 @@ class TagAliaserMixin:
             old_tag_name = tag_name
             new_tag_name = alias_dict[old_tag_name]
         if tag_name in alias_dict.values():
-            old_tag_name = [k for k, v in alias_dict.items() if v == tag_name][0]
+            old_tag_name = next(k for k, v in alias_dict.items() if v == tag_name)
             new_tag_name = tag_name
 
         tag_changed = new_tag_name != old_tag_name
@@ -1457,7 +1458,7 @@ class TagAliaserMixin:
             old_tag_name = tag_name
             new_tag_name = alias_dict[old_tag_name]
         if tag_name in alias_dict.values():
-            old_tag_name = [k for k, v in alias_dict.items() if v == tag_name][0]
+            old_tag_name = next(k for k, v in alias_dict.items() if v == tag_name)
             new_tag_name = tag_name
 
         tag_changed = new_tag_name != old_tag_name
@@ -1576,7 +1577,7 @@ class TagAliaserMixin:
         DeprecationWarning for each tag in tags that is aliased by cls.alias_dict
         """
         for tag_name in tags:
-            if tag_name in cls.alias_dict.keys():
+            if tag_name in cls.alias_dict:
                 version = cls.deprecate_dict[tag_name]
                 new_tag = cls.alias_dict[tag_name]
                 pkg_name = cls._package_name

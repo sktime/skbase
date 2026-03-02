@@ -10,6 +10,7 @@
 """Implements functionality for meta objects composed of other objects."""
 
 from inspect import isclass
+from typing import ClassVar
 
 from skbase.base._base import BaseEstimator, BaseObject
 from skbase.base._pretty_printing._object_html_repr import _VisualBlock
@@ -39,7 +40,7 @@ class _MetaObjectMixin:
     # _steps_attr points to the attribute of self
     # which contains the heterogeneous set of estimators
     # this must be an iterable of (name: str, estimator) pairs for the default
-    _tags = {"named_object_parameters": "steps"}
+    _tags: ClassVar[dict] = {"named_object_parameters": "steps"}
 
     def is_composite(self):
         """Check if the object is composite.
@@ -251,7 +252,7 @@ class _MetaObjectMixin:
         items = getattr(self, attr)
         names = []
         if items and isinstance(items, (list, tuple)):
-            names = list(zip(*items, strict=False))[0]
+            names = next(zip(*items, strict=False))
         for name in list(params.keys()):
             if "__" not in name and name in names:
                 self._replace_object(attr, name, params.pop(name))
@@ -361,10 +362,7 @@ class _MetaObjectMixin:
             name = obj[0]
 
         else:
-            if isinstance(obj, tuple) and len(obj) == 1:
-                _obj = obj[0]
-            else:
-                _obj = obj
+            _obj = obj[0] if isinstance(obj, tuple) and len(obj) == 1 else obj
             name = type(_obj).__name__
 
         if clone:
@@ -471,9 +469,8 @@ class _MetaObjectMixin:
             f"Elements of {attr_name} must either all be objects, "
             f"or all (str, objects) tuples. A mix of the two is not allowed."
         )
-        if not allow_mix and not all(is_obj_is_tuple(x)[0] for x in objs):
-            if not all(is_obj_is_tuple(x)[1] for x in objs):
-                raise TypeError(msg_no_mix)
+        if not allow_mix and not all(is_obj_is_tuple(x)[0] for x in objs) and not all(is_obj_is_tuple(x)[1] for x in objs):
+            raise TypeError(msg_no_mix)
 
         return self._coerce_to_named_object_tuples(objs, clone=clone, make_unique=True)
 
@@ -665,10 +662,7 @@ class _MetaObjectMixin:
             step_param = {attr_name: list(zip(new_names, new_objs, strict=False))}
 
         # retrieve other parameters, from composite_params attribute
-        if composite_params is None:
-            composite_params = {}
-        else:
-            composite_params = composite_params.copy()
+        composite_params = {} if composite_params is None else composite_params.copy()
 
         # construct the composite with both step and additional params
         composite_params.update(step_param)
@@ -807,7 +801,7 @@ class _MetaTagLogicMixin:
         for _, est in estimators:
             if est.get_tag(mid_tag_name) == mid_tag_val:
                 return True, True
-            if not est.get_tag(left_tag_name) == left_tag_val:
+            if est.get_tag(left_tag_name) != left_tag_val:
                 return False, False
         return True, False
 
