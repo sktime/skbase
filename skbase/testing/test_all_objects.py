@@ -418,24 +418,25 @@ class QuickTester:
 
             # if function is decorated with mark.parametrize, add variable settings
             # NOTE: currently this works only with single-variable mark.parametrize
-            if hasattr(test_fun, "pytestmark") and len(
-                [x for x in test_fun.pytestmark if x.name == "parametrize"]
-            ) > 0:
-                    # get the three lists from pytest
-                    (
-                        pytest_fixture_vars,
-                        pytest_fixture_prod,
-                        pytest_fixture_names,
-                    ) = self._get_pytest_mark_args(test_fun)
-                    # add them to the three lists from conditional fixtures
-                    fixture_vars, fixture_prod, fixture_names = self._product_fixtures(
-                        fixture_vars,
-                        fixture_prod,
-                        fixture_names,
-                        pytest_fixture_vars,
-                        pytest_fixture_prod,
-                        pytest_fixture_names,
-                    )
+            if (
+                hasattr(test_fun, "pytestmark")
+                and len([x for x in test_fun.pytestmark if x.name == "parametrize"]) > 0
+            ):
+                # get the three lists from pytest
+                (
+                    pytest_fixture_vars,
+                    pytest_fixture_prod,
+                    pytest_fixture_names,
+                ) = self._get_pytest_mark_args(test_fun)
+                # add them to the three lists from conditional fixtures
+                fixture_vars, fixture_prod, fixture_names = self._product_fixtures(
+                    fixture_vars,
+                    fixture_prod,
+                    fixture_names,
+                    pytest_fixture_vars,
+                    pytest_fixture_prod,
+                    pytest_fixture_names,
+                )
 
             def print_if_verbose(msg):
                 if int(verbose) > 0:
@@ -743,9 +744,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             if self.valid_tags is None:
                 invalid_tags = tags
             else:
-                invalid_tags = [
-                    tag for tag in tags if tag not in self.valid_tags
-                ]
+                invalid_tags = [tag for tag in tags if tag not in self.valid_tags]
             assert len(invalid_tags) == 0, (
                 f"_tags of {object_class} contains invalid tags: {invalid_tags}. "
                 f"For a list of valid tags, see {self.__class__.__name__}.valid_tags."

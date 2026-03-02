@@ -65,7 +65,7 @@ def test_check_type_output(fixture_estimator_instance, fixture_object_instance):
     with pytest.raises(TypeError, match=r"`input` should be type.*"):
         check_type(BaseEstimator, expected_type=BaseObject)
 
-    with pytest.raises(TypeError, match="^`input` should be.*"):
+    with pytest.raises(TypeError, match=r"^`input` should be.*"):
         check_type("something", expected_type=int, allow_none=True)
 
     # Verify optional use of issubclass instead of isinstance
@@ -80,13 +80,13 @@ def test_check_type_raises_error_if_expected_type_is_wrong_format():
 
     `expected_type` should be a type or tuple of types.
     """
-    with pytest.raises(TypeError, match="^`expected_type` should be.*"):
+    with pytest.raises(TypeError, match=r"^`expected_type` should be.*"):
         check_type(7, expected_type=11)
 
-    with pytest.raises(TypeError, match="^`expected_type` should be.*"):
+    with pytest.raises(TypeError, match=r"^`expected_type` should be.*"):
         check_type(7, expected_type=[int])
 
-    with pytest.raises(TypeError, match="^`expected_type` should be.*"):
+    with pytest.raises(TypeError, match=r"^`expected_type` should be.*"):
         check_type(None, expected_type=[int])
 
 
@@ -171,7 +171,7 @@ def test_check_sequence_output():
     # But false for generators, since they are iterable but not sequences
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: Input sequence expected to be a a sequence.",
+        match=r"Invalid sequence: Input sequence expected to be a a sequence.",
     ):
         assert check_sequence(c for c in [1, 2, 3])
 
@@ -179,12 +179,12 @@ def test_check_sequence_output():
     assert check_sequence([1, 2, 3, 4], sequence_type=list) == [1, 2, 3, 4]
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: Input sequence expected to be a tuple.",
+        match=r"Invalid sequence: Input sequence expected to be a tuple.",
     ):
         check_sequence([1, 2, 3, 4], sequence_type=tuple)
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: Input sequence expected to be a list.",
+        match=r"Invalid sequence: Input sequence expected to be a list.",
     ):
         check_sequence((1, 2, 3, 4), sequence_type=list)
     assert check_sequence((1, 2, 3, 4), sequence_type=tuple) == (1, 2, 3, 4)
@@ -203,22 +203,22 @@ def test_check_sequence_output():
 
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: .*",
+        match=r"Invalid sequence: .*",
     ):
         check_sequence([1, 2, 3], element_type=float)
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: .*",
+        match=r"Invalid sequence: .*",
     ):
         check_sequence([1, 2, 3, 4], sequence_type=tuple, element_type=int)
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: .*",
+        match=r"Invalid sequence: .*",
     ):
         check_sequence([1, 2, 3, 4], sequence_type=list, element_type=float)
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: .*",
+        match=r"Invalid sequence: .*",
     ):
         check_sequence([1, 2, 3, 4], sequence_type=tuple, element_type=float)
 
@@ -231,7 +231,7 @@ def test_check_sequence_output():
     assert check_sequence([1, "something", 4.5]) == [1, "something", 4.5]
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: .*",
+        match=r"Invalid sequence: .*",
     ):
         check_sequence([1, "something", 4.5], element_type=float)
 
@@ -242,7 +242,7 @@ def test_check_sequence_output():
     # Test with 3rd party types works in default way via exact type
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: .*",
+        match=r"Invalid sequence: .*",
     ):
         check_sequence([1.2, 4.7], element_type=np.float64)
     input_seq = [np.float64(1.2), np.float64(4.7)]
@@ -257,7 +257,7 @@ def test_check_sequence_output():
     ]
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: .*",
+        match=r"Invalid sequence: .*",
     ):
         check_sequence([np.nan, 4], element_type=int)
 
@@ -300,7 +300,7 @@ def test_check_sequence_scalar_input_coercion():
     # Still raise an error if element type is not expected
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: .*",
+        match=r"Invalid sequence: .*",
     ):
         check_sequence(
             7,
@@ -323,12 +323,12 @@ def test_check_sequence_with_seq_of_class_and_instance_input(
 
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: .*",
+        match=r"Invalid sequence: .*",
     ):
         check_sequence(list(input_seq), sequence_type=tuple, element_type=BaseObject)
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: .*",
+        match=r"Invalid sequence: .*",
     ):
         # Verify we detect when list elements are not instances of valid class type
         check_sequence([1, 2, 3], element_type=BaseObject)
@@ -341,7 +341,7 @@ def test_check_sequence_with_seq_of_class_and_instance_input(
     ) == list(input_seq)
     with pytest.raises(
         TypeError,
-        match="Invalid sequence: .*",
+        match=r"Invalid sequence: .*",
     ):
         # Verify we detect when list elements are not instances of valid types
         check_sequence([1, 2, 3], element_type=BaseObject)

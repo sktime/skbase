@@ -145,6 +145,7 @@ select = [
 ignore = [
     "E203",  # Whitespace before punctuation
     "E402",  # Module import not at top of file
+    "E501",  # Line too long
     "E731",  # Do not assign a lambda expression, use a def
     "RET504",  # Unnecessary variable assignment before `return` statement
     "S101",  # Use of `assert` detected

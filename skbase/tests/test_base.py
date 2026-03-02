@@ -1284,9 +1284,9 @@ class ConfigTester(BaseObject):
 
 
 class AnotherConfigTester(BaseObject):
-    _config = {"print_changed_only": False, "bar": "a"}
+    _config: ClassVar[dict] = {"print_changed_only": False, "bar": "a"}
 
-    clsvar = 210
+    clsvar: ClassVar[int] = 210
 
     def __init__(self, a, b=42):
         self.a = a

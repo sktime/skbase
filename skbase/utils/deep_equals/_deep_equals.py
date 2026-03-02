@@ -206,21 +206,21 @@ def _pandas_equals(x, y, return_msg=False, deep_equals=None):
         xix = x.index
         yix = y.index
         if hasattr(xix, "dtype") and hasattr(xix, "dtype") and xix.dtype != yix.dtype:
-                return ret(
-                    False,
-                    ".index.dtype, x.index.dtype = {} != y.index.dtype = {}",
-                    [xix.dtype, yix.dtype],
-                )
+            return ret(
+                False,
+                ".index.dtype, x.index.dtype = {} != y.index.dtype = {}",
+                [xix.dtype, yix.dtype],
+            )
         if (
             hasattr(xix, "dtypes")
             and hasattr(yix, "dtypes")
             and not x.dtypes.equals(y.dtypes)
         ):
-                return ret(
-                    False,
-                    ".index.dtypes, x.dtypes = {} != y.index.dtypes = {}",
-                    [xix.dtypes, yix.dtypes],
-                )
+            return ret(
+                False,
+                ".index.dtypes, x.dtypes = {} != y.index.dtypes = {}",
+                [xix.dtypes, yix.dtypes],
+            )
         ix_eq = xix.equals(yix)
         if not ix_eq:
             if len(xix) != len(yix):
@@ -230,31 +230,31 @@ def _pandas_equals(x, y, return_msg=False, deep_equals=None):
                     [len(xix), len(yix)],
                 )
             if hasattr(xix, "name") and hasattr(yix, "name") and xix.name != yix.name:
-                    return ret(
-                        False,
-                        ".index.name, x.index.name = {} != y.index.name = {}",
-                        [xix.name, yix.name],
-                    )
+                return ret(
+                    False,
+                    ".index.name, x.index.name = {} != y.index.name = {}",
+                    [xix.name, yix.name],
+                )
             if (
                 hasattr(xix, "names")
                 and hasattr(yix, "names")
                 and len(xix.names) != len(yix.names)
             ):
-                    return ret(
-                        False,
-                        ".index.names, x.index.names = {} != y.index.name = {}",
-                        [xix.names, yix.names],
-                    )
+                return ret(
+                    False,
+                    ".index.names, x.index.names = {} != y.index.name = {}",
+                    [xix.names, yix.names],
+                )
             if (
                 hasattr(xix, "names")
                 and hasattr(yix, "names")
                 and not np.all(xix.names == yix.names)
             ):
-                    return ret(
-                        False,
-                        ".index.names, x.index.names = {} != y.index.name = {}",
-                        [xix.names, yix.names],
-                    )
+                return ret(
+                    False,
+                    ".index.names, x.index.names = {} != y.index.name = {}",
+                    [xix.names, yix.names],
+                )
             elts_eq = np.all(xix == yix)
             return ret(elts_eq, ".index.equals, x = {} != y = {}", [xix, yix])
         # if columns, dtypes are equal and at least one is object, recurse over Series
@@ -267,13 +267,17 @@ def _pandas_equals(x, y, return_msg=False, deep_equals=None):
         return ret(x.equals(y), ".df_equals, x = {} != y = {}", [x, y])
     if isinstance(x, pd.Index):
         if hasattr(x, "dtype") and hasattr(y, "dtype") and x.dtype != y.dtype:
-                return ret(
-                    False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}"
-                )
-        if hasattr(x, "dtypes") and hasattr(y, "dtypes") and not x.dtypes.equals(y.dtypes):
-                return ret(
-                    False, f".dtypes, x.dtypes = {x.dtypes} != y.dtypes = {y.dtypes}"
-                )
+            return ret(
+                False,
+                f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}",
+            )
+        if (
+            hasattr(x, "dtypes")
+            and hasattr(y, "dtypes")
+            and not x.dtypes.equals(y.dtypes)
+        ):
+            msg = f".dtypes, x.dtypes = {x.dtypes} != y.dtypes = {y.dtypes}"
+            return ret(False, msg)
         return ret(x.equals(y), "index.equals, x = {} != y = {}", [x, y])
     raise RuntimeError(
         f"Unexpected type of pandas object in _pandas_equals: type(x)={type(x)},"
