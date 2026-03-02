@@ -23,10 +23,14 @@ def test_std_mute(mute, expected):
     stdout_io = io.StringIO()
 
     try:
-        with redirect_stderr(stderr_io), redirect_stdout(stdout_io):
-            with StderrMute(mute), StdoutMute(mute):
-                sys.stdout.write("test stdout")
-                sys.stderr.write("test sterr")
-                1 / 0
+        with (
+            redirect_stderr(stderr_io),
+            redirect_stdout(stdout_io),
+            StderrMute(mute),
+            StdoutMute(mute),
+        ):
+            sys.stdout.write("test stdout")
+            sys.stderr.write("test sterr")
+            _ = 1 / 0
     except ZeroDivisionError:
         assert expected == [stdout_io.getvalue(), stderr_io.getvalue()]

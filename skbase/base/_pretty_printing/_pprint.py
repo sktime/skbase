@@ -382,10 +382,7 @@ def _safe_repr(obj, context, maxlevels, level, changed_only=False):
         context[objid] = 1
         readable = True
         recursive = False
-        if changed_only:
-            params = _changed_params(obj)
-        else:
-            params = obj.get_params(deep=False)
+        params = _changed_params(obj) if changed_only else obj.get_params(deep=False)
         components = []
         append = components.append
         level += 1

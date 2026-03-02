@@ -2,6 +2,7 @@
 """Tests the aliasing logic in the Tag Aliaser."""
 
 import re
+from typing import ClassVar
 
 import pytest
 
@@ -12,19 +13,19 @@ from skbase.base._base import TagAliaserMixin as _TagAliaserMixin
 class AliaserTestClass(_TagAliaserMixin, _BaseObject):
     """Class for testing tag aliasing logic."""
 
-    _tags = {
+    _tags: ClassVar[dict] = {
         "new_tag_1": "new_tag_1_value",
         "old_tag_1": "old_tag_1_value",
         "new_tag_2": "new_tag_2_value",
         "old_tag_3": "old_tag_3_value",
     }
 
-    alias_dict = {
+    alias_dict: ClassVar[dict] = {
         "old_tag_1": "new_tag_1",
         "old_tag_2": "new_tag_2",
         "old_tag_3": "new_tag_3",
     }
-    deprecate_dict = {
+    deprecate_dict: ClassVar[dict] = {
         "old_tag_1": "42.0.0",
         "old_tag_2": "84.0.0",
         "old_tag_3": "126.0.0",

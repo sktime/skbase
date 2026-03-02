@@ -75,7 +75,7 @@ def test_format_seq_to_str():
 
 def test_format_seq_to_str_raises():
     """Test _format_seq_to_str raises error when input is unexpected type."""
-    with pytest.raises(TypeError, match="`seq` must be a sequence or scalar.*"):
+    with pytest.raises(TypeError, match=r"`seq` must be a sequence or scalar.*"):
         _format_seq_to_str(c for c in [1, 2, 3])
 
 
@@ -97,13 +97,13 @@ def test_scalar_to_seq_raises():
     """Test scalar_to_seq raises error when `sequence_type` is unexpected type."""
     with pytest.raises(
         ValueError,
-        match="`sequence_type` must be a subclass of collections.abc.Sequence.",
+        match=r"`sequence_type` must be a subclass of collections.abc.Sequence.",
     ):
         _scalar_to_seq(7, sequence_type=int)
 
     with pytest.raises(
         ValueError,
-        match="`sequence_type` must be a subclass of collections.abc.Sequence.",
+        match=r"`sequence_type` must be a subclass of collections.abc.Sequence.",
     ):
         _scalar_to_seq(7, sequence_type=dict)
 

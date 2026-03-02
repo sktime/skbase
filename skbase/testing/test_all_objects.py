@@ -9,6 +9,7 @@ import numbers
 import types
 from copy import deepcopy
 from inspect import getfullargspec, isclass, signature
+from typing import ClassVar
 
 import numpy as np
 import pytest
@@ -105,12 +106,12 @@ class BaseFixtureGenerator:
     valid_base_types = None
 
     # which sequence the conditional fixtures are generated in
-    fixture_sequence = ["object_class", "object_instance"]
+    fixture_sequence: ClassVar[list[str]] = ["object_class", "object_instance"]
 
     # which fixtures are indirect, e.g., have an additional pytest.fixture block
     #   to generate an indirect fixture at runtime. Example: object_instance
     #   warning: direct fixtures retain state changes within the same test
-    indirect_fixtures = ["object_instance"]
+    indirect_fixtures: ClassVar[list[str]] = ["object_instance"]
 
     def pytest_generate_tests(self, metafunc):
         """Test parameterization routine for pytest.
@@ -417,8 +418,9 @@ class QuickTester:
 
             # if function is decorated with mark.parametrize, add variable settings
             # NOTE: currently this works only with single-variable mark.parametrize
-            if hasattr(test_fun, "pytestmark"):
-                if len([x for x in test_fun.pytestmark if x.name == "parametrize"]) > 0:
+            if hasattr(test_fun, "pytestmark") and len(
+                [x for x in test_fun.pytestmark if x.name == "parametrize"]
+            ) > 0:
                     # get the three lists from pytest
                     (
                         pytest_fixture_vars,
@@ -507,10 +509,7 @@ class QuickTester:
         """
         obj_generator_dict = generator_dict
 
-        if isclass(obj):
-            object_class = obj
-        else:
-            object_class = type(obj)
+        object_class = obj if isclass(obj) else type(obj)
 
         def _generate_object_class(test_name, **kwargs):
             return [object_class], [object_class.__name__]
@@ -571,7 +570,7 @@ class QuickTester:
             return [str(x) for x in obj]
 
         def get_id(mark):
-            if "ids" in mark.kwargs.keys():
+            if "ids" in mark.kwargs:
                 return mark.kwargs["ids"]
             return to_str(range(len(mark.args[1])))
 
@@ -615,7 +614,7 @@ class QuickTester:
         return fixture_vars_return, fixture_prod_return, fixture_names_return
 
     def _make_builtin_fixture_equivalents(self, name):
-        """Utility for QuickTester, creates equivalent fixtures for pytest runs."""
+        """Create equivalent fixtures for pytest runs."""
         import io
         import logging
         import tempfile
@@ -732,7 +731,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         assert hasattr(object_class, "get_class_tags")
         all_tags = object_class.get_class_tags()
         assert isinstance(all_tags, dict)
-        assert all(isinstance(key, str) for key in all_tags.keys())
+        assert all(isinstance(key, str) for key in all_tags)
         if hasattr(object_class, "_tags"):
             tags = object_class._tags
             msg = (
@@ -745,7 +744,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
                 invalid_tags = tags
             else:
                 invalid_tags = [
-                    tag for tag in tags.keys() if tag not in self.valid_tags
+                    tag for tag in tags if tag not in self.valid_tags
                 ]
             assert len(invalid_tags) == 0, (
                 f"_tags of {object_class} contains invalid tags: {invalid_tags}. "
@@ -986,12 +985,12 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         """Check that object class tags are in self.valid_tags."""
         if self.valid_tags is None:
             return
-        for tag in object_class.get_class_tags().keys():
+        for tag in object_class.get_class_tags():
             assert tag in self.valid_tags
 
     def test_valid_object_tags(self, object_instance):
         """Check that object tags are in self.valid_tags."""
         if self.valid_tags is None:
             return
-        for tag in object_instance.get_tags().keys():
+        for tag in object_instance.get_tags():
             assert tag in self.valid_tags

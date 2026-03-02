@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests for _check_soft_dependencies utility."""
 
+from typing import ClassVar
 from unittest.mock import patch
 
 import pytest
@@ -155,7 +156,7 @@ def test_check_python_version(
         mock_sys.version = "3.8.1"
 
     class DummyObjectClass(BaseObject):
-        _tags = {
+        _tags: ClassVar[dict] = {
             "python_version": ">=3.7.1",  # PEP 440 version specifier, e.g., ">=3.7"
             "python_dependencies": None,  # PEP 440 dependency strs, e.g., "pandas>=1.0"
             "env_marker": None,  # PEP 508 environment marker, e.g., "os_name=='posix'"

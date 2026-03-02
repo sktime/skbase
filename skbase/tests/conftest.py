@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Common functionality for skbase unit tests."""
 
+from typing import ClassVar
+
 from skbase.base import BaseEstimator, BaseObject
 
 __all__: list[str] = [
@@ -330,7 +332,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
 class Parent(BaseObject):
     """Parent class to test BaseObject's usage."""
 
-    _tags = {"A": "1", "B": 2, "C": 1234, "3": "D"}
+    _tags: ClassVar[dict] = {"A": "1", "B": 2, "C": 1234, "3": "D"}
 
     def __init__(self, a="something", b=7, c=None):
         """Initialize the class."""
@@ -347,8 +349,8 @@ class Parent(BaseObject):
 class Child(Parent):
     """Child class that is child of FixtureClassParent."""
 
-    _tags = {"A": 42, "3": "E"}
-    __author__ = ["fkiraly", "RNKuhns"]
+    _tags: ClassVar[dict] = {"A": 42, "3": "E"}
+    __author__: ClassVar[list[str]] = ["fkiraly", "RNKuhns"]
 
     def some_method(self):
         """Child class' implementation."""
@@ -361,8 +363,8 @@ class Child(Parent):
 class ClassWithABTrue(Parent):
     """Child class that sets A, B tags to True."""
 
-    _tags = {"A": True, "B": True}
-    __author__ = ["fkiraly", "RNKuhns"]
+    _tags: ClassVar[dict] = {"A": True, "B": True}
+    __author__: ClassVar[list[str]] = ["fkiraly", "RNKuhns"]
 
     def some_method(self):
         """Child class' implementation."""

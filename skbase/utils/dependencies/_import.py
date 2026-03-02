@@ -119,6 +119,7 @@ def _safe_import(import_path, pkg_name=None, condition=True, return_object="Magi
                     "other than ImportError or AttributeError:"
                     f": {e}. ",
                     ImportWarning,
+                    stacklevel=2,
                 )
 
     if return_object == "MagicMock":

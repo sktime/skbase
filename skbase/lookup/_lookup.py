@@ -106,7 +106,7 @@ def _is_non_public_module(module_name: str) -> bool:
 
 
 def _is_ignored_module(
-    module_name: str, modules_to_ignore: str | list[str] | tuple[str] = None
+    module_name: str, modules_to_ignore: str | list[str] | tuple[str] | None = None
 ) -> bool:
     """Determine if module is one of the ignored modules.
 
@@ -217,7 +217,7 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
 
     # case: tag_filter is dict
     # check that all keys are str
-    if not all(isinstance(t, str) for t in tag_filter.keys()):
+    if not all(isinstance(t, str) for t in tag_filter):
         raise ValueError(f"{type_msg} {tag_filter}")
 
     cond_sat = True
@@ -719,10 +719,7 @@ def get_package_metadata(
                 continue
 
             if recursive and is_pkg:
-                if "." in name:
-                    name_ending = name[len(package_name) + 1 :]
-                else:
-                    name_ending = name
+                name_ending = name[len(package_name) + 1 :] if "." in name else name
 
                 updated_path: str
                 if "." in name_ending:
@@ -961,13 +958,12 @@ def all_objects(
         if all_estimators:
             if isinstance(all_estimators[0], tuple):
                 all_estimators = [
-                    (name, est) + _get_return_tags(est, return_tags)
+                    (name, est, *_get_return_tags(est, return_tags))
                     for (name, est) in all_estimators
                 ]
             else:
                 all_estimators = [
-                    (est,) + _get_return_tags(est, return_tags)
-                    for est in all_estimators
+                    (est, *_get_return_tags(est, return_tags)) for est in all_estimators
                 ]
         columns = columns + return_tags
 
@@ -1037,7 +1033,7 @@ def _check_object_types(object_types, class_lookup=None):
     for i, estimator_type in enumerate(object_types):
         if isinstance(estimator_type, str):
             if not isinstance(class_lookup, dict) or (
-                estimator_type not in class_lookup.keys()
+                estimator_type not in class_lookup
             ):
                 raise ValueError(_get_err_msg(estimator_type))
             estimator_type = class_lookup[estimator_type]
@@ -1140,7 +1136,7 @@ def _walk_and_retrieve_all_objs(root, package_name, modules_to_ignore):
     prefix = f"{package_name}."
 
     def _is_base_class(name):
-        return name.startswith("_") or name.startswith("Base")
+        return name.startswith(("_", "Base"))
 
     all_estimators = []
 

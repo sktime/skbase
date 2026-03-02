@@ -464,10 +464,7 @@ def _check_python_version(
         return True
     # now we know that est_version is not compatible with sys_version
 
-    if isclass(obj):
-        class_name = obj.__name__
-    else:
-        class_name = type(obj).__name__
+    class_name = obj.__name__ if isclass(obj) else type(obj).__name__
 
     if not isinstance(msg, str):
         msg = (
@@ -541,10 +538,7 @@ def _check_env_marker(obj, package=None, msg=None, severity="error"):
         return True
     # now we know that est_marker is not compatible with the environment
 
-    if isclass(obj):
-        class_name = obj.__name__
-    else:
-        class_name = type(obj).__name__
+    class_name = obj.__name__ if isclass(obj) else type(obj).__name__
 
     if not isinstance(msg, str):
         msg = (
@@ -670,10 +664,7 @@ def _normalize_version(version):
     """
     if version is None:
         return None
-    if not isinstance(version, Version):
-        version_obj = Version(version)
-    else:
-        version_obj = version
+    version_obj = Version(version) if not isinstance(version, Version) else version
     normalized_version = f"{version_obj.major}.{version_obj.minor}.{version_obj.micro}"
     return normalized_version
 

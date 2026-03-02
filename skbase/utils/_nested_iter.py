@@ -106,7 +106,7 @@ def unflatten(obj, template):
     ls = [unflat_len(x) for x in template]
     for i in range(1, len(ls)):
         ls[i] += ls[i - 1]
-    ls = [0] + ls
+    ls = [0, *ls]
 
     res = [unflatten(obj[ls[i] : ls[i + 1]], template[i]) for i in range(len(ls) - 1)]
 

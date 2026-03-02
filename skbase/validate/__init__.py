@@ -3,8 +3,6 @@
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tools for validating and comparing BaseObjects and collections of BaseObjects."""
 
-from typing import List
-
 from skbase.validate._named_objects import (
     check_sequence_named_objects,
     is_named_object_tuple,

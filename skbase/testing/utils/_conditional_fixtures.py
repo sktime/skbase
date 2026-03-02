@@ -19,7 +19,7 @@ def create_conditional_fixtures_and_names(
     test_name: str,
     fixture_vars: list[str],
     generator_dict: dict[str, Callable],
-    fixture_sequence: list[str] = None,
+    fixture_sequence: list[str] | None = None,
     raise_exceptions: bool = False,
     deepcopy_fixtures: bool = False,
 ):
@@ -153,7 +153,7 @@ def create_conditional_fixtures_and_names(
         except Exception as err:
             error = FixtureGenerationError(fixture_name=fixture_var, err=err)
             if raise_exceptions:
-                raise error
+                raise error from err
             fixture_prod = [error]
             fixture_names = [f"Error:{fixture_var}"]
 
@@ -181,7 +181,7 @@ def create_conditional_fixtures_and_names(
             new_fixtures, new_fixture_names_r = get_fixtures(fixture_var, **kwargs)
             # new fixture values are concatenation/product of old values plus new
             new_fixture_prod += [
-                fixture + (new_fixture,) for new_fixture in new_fixtures
+                (*fixture, new_fixture) for new_fixture in new_fixtures
             ]
             # new fixture name is concatenation of name so far and "dash-new name"
             #   if the new name is empty string, don't add a dash

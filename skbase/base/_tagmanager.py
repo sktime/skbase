@@ -144,7 +144,7 @@ class _FlagManager:
 
         flag_value = collected_flags.get(flag_name, flag_value_default)
 
-        if raise_error and flag_name not in collected_flags.keys():
+        if raise_error and flag_name not in collected_flags:
             raise ValueError(f"Tag with name {flag_name} could not be found.")
 
         return flag_value
@@ -209,7 +209,7 @@ class _FlagManager:
             # if flag_set is passed, intersect keys with flags in estimator
             if not isinstance(flag_names, list):
                 flag_names = [flag_names]
-            flag_names = [key for key in flag_names if key in flags_est.keys()]
+            flag_names = [key for key in flag_names if key in flags_est]
 
         update_dict = {key: flags_est[key] for key in flag_names}
 

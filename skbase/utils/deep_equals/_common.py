@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """Common utility functions for skbase.utils.deep_equals."""
 
+from typing import Any
 
-def _ret(is_equal, msg="", string_arguments: list = None, return_msg=False):
+
+def _ret(is_equal, msg="", string_arguments: list[Any] | None = None, return_msg=False):
     """Return is_equal and msg, formatted with string_arguments if return_msg=True.
 
     Parameters

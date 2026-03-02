@@ -69,7 +69,7 @@ __all__ = [
 
 import inspect
 from copy import deepcopy
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 import pytest
@@ -112,7 +112,7 @@ class InvalidInitSignatureTester(BaseObject):
 class RequiredParam(BaseObject):
     """BaseObject class with _required_parameters."""
 
-    _required_parameters = ["a"]
+    _required_parameters: ClassVar[list[str]] = ["a"]
 
     def __init__(self, a, b=7):
         self.a = a
@@ -399,7 +399,7 @@ def test_clone_tags():
     """Test clone_tags works as expected."""
 
     class TestClass(BaseObject):
-        _tags = {"some_tag": True, "another_tag": 37}
+        _tags: ClassVar[dict] = {"some_tag": True, "another_tag": 37}
 
     class AnotherTestClass(BaseObject):
         pass
@@ -778,7 +778,7 @@ def test_get_params_after_set_params(fixture_class_parent: type[Parent]):
     test_values = [-np.inf, np.inf, None]
 
     test_params = deepcopy(orig_params)
-    for param_name in orig_params.keys():
+    for param_name in orig_params:
         default_value = orig_params[param_name]
         for value in test_values:
             test_params[param_name] = value
@@ -937,8 +937,8 @@ def test_config_after_clone_tags(clone_config):
     """Test clone also clones config works as expected."""
 
     class TestClass(BaseObject):
-        _tags = {"some_tag": True, "another_tag": 37}
-        _config = {"check_clone": 0}
+        _tags: ClassVar[dict] = {"some_tag": True, "another_tag": 37}
+        _config: ClassVar[dict] = {"check_clone": 0}
 
     test_obj = TestClass()
     test_obj.set_config(check_clone=42, foo="bar")
@@ -957,14 +957,14 @@ def test_config_after_clone_tags(clone_config):
 
     test_obj_clone = test_obj.clone()
 
-    assert "check_clone" in test_obj_clone.get_config().keys()
+    assert "check_clone" in test_obj_clone.get_config()
     assert test_obj_clone.get_config()["check_clone"] == expected
 
     if clone_config:
-        assert "foo" in test_obj_clone.get_config().keys()
+        assert "foo" in test_obj_clone.get_config()
         assert test_obj_clone.get_config()["foo"] == "bar"
     else:
-        assert "foo" not in test_obj_clone.get_config().keys()
+        assert "foo" not in test_obj_clone.get_config()
 
 
 @pytest.mark.parametrize("clone_config", [True, False])
@@ -972,7 +972,7 @@ def test_nested_config_after_clone_tags(clone_config):
     """Test clone also clones config of nested objects."""
 
     class TestClass(BaseObject):
-        _config = {"check_clone": 0}
+        _config: ClassVar[dict] = {"check_clone": 0}
 
     class TestNestedClass(BaseObject):
         def __init__(self, obj, obj_iterable):
@@ -1002,19 +1002,19 @@ def test_nested_config_after_clone_tags(clone_config):
     test_obj_clone = test_obj.clone().obj
     test_obj_iterable_clone = test_obj.clone().obj_iterable[0]
 
-    assert "check_clone" in test_obj_clone.get_config().keys()
-    assert "check_clone" in test_obj_iterable_clone.get_config().keys()
+    assert "check_clone" in test_obj_clone.get_config()
+    assert "check_clone" in test_obj_iterable_clone.get_config()
     assert test_obj_clone.get_config()["check_clone"] == expected_obj
     assert test_obj_iterable_clone.get_config()["check_clone"] == expected_obj_iterable
 
     if clone_config:
-        assert "foo" in test_obj_clone.get_config().keys()
-        assert "foo" in test_obj_iterable_clone.get_config().keys()
+        assert "foo" in test_obj_clone.get_config()
+        assert "foo" in test_obj_iterable_clone.get_config()
         assert test_obj_clone.get_config()["foo"] == "bar"
         assert test_obj_iterable_clone.get_config()["foo"] == "barz"
     else:
-        assert "foo" not in test_obj_clone.get_config().keys()
-        assert "foo" not in test_obj_iterable_clone.get_config().keys()
+        assert "foo" not in test_obj_clone.get_config()
+        assert "foo" not in test_obj_iterable_clone.get_config()
 
 
 @pytest.mark.skipif(
@@ -1273,9 +1273,9 @@ def test_has_implementation_of(
 
 
 class ConfigTester(BaseObject):
-    _config = {"foo_config": 42, "bar": "a"}
+    _config: ClassVar[dict] = {"foo_config": 42, "bar": "a"}
 
-    clsvar = 210
+    clsvar: ClassVar[int] = 210
 
     def __init__(self, a, b=42):
         self.a = a
@@ -1364,9 +1364,9 @@ def test_get_set_config():
     """Tests get_config and set_config methods."""
 
     class _TestConfig(BaseObject):
-        _config = {"foo_config": 42, "bar": "a"}
+        _config: ClassVar[dict] = {"foo_config": 42, "bar": "a"}
 
-        clsvar = 210
+        clsvar: ClassVar[int] = 210
 
         def __init__(self, a, b=42):
             self.a = a

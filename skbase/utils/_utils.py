@@ -83,10 +83,7 @@ def subset_dict_keys(
     if isinstance(keys, (str, float, int, bool, type)):
         keys = [keys]
 
-    if prefix is not None:
-        keys = [f"{prefix}__{key}" for key in keys]
-    else:
-        keys = list(keys)
+    keys = [f"{prefix}__{key}" for key in keys] if prefix is not None else list(keys)
     subsetted_dict = {rem_prefix(k): v for k, v in input_dict.items() if k in keys}
 
     return subsetted_dict

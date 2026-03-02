@@ -94,10 +94,7 @@ def check_type(
     chk_msg = "subclass type" if use_subclass else "be type"
     expected_type_str = _remove_type_text(expected_type)
     input_type_str = _remove_type_text(type(input_))
-    if allow_none:
-        type_msg = f"{expected_type_str} or None"
-    else:
-        type_msg = f"{expected_type_str}"
+    type_msg = f"{expected_type_str} or None" if allow_none else f"{expected_type_str}"
     raise TypeError(
         f"`{input_name}` should {chk_msg} {type_msg}, but found {input_type_str}."
     )
@@ -107,7 +104,7 @@ def _convert_scalar_seq_type_input_to_tuple(
     type_input: type | tuple[type, ...] | None,
     none_default: type | None = None,
     type_input_subclass: type | None = None,
-    input_name: str = None,
+    input_name: str | None = None,
 ) -> tuple[type, ...]:
     """Convert input that is scalar or sequence of types to always be a tuple."""
     if none_default is None:
@@ -225,9 +222,9 @@ def check_sequence(
     input_seq: Sequence[Any],
     sequence_type: type | tuple[type, ...] | None = None,
     element_type: type | tuple[type, ...] | None = None,
-    coerce_output_type_to: type = None,
+    coerce_output_type_to: type | None = None,
     coerce_scalar_input: bool = False,
-    sequence_name: str = None,
+    sequence_name: str | None = None,
 ) -> Sequence[Any]:
     """Check whether an object is a sequence with optional check of element types.
 
