@@ -120,7 +120,6 @@ def _safe_import(import_path, pkg_name=None, condition=True, return_object="Magi
                     f": {e}. ",
                     ImportWarning,
                 )
-            pass
 
     if return_object == "MagicMock":
         mock_obj = _create_mock_class(obj_name)
