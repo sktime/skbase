@@ -150,6 +150,7 @@ ignore = [
     "S101",  # Use of `assert` detected
     "C408",  # Unnecessary dict call - rewrite as a literal
     "UP031",  # Use format specifier instead of %
+    "UP009",  # UTF-8 encoding declaration is unnecessary
     "S102",  # Use of exec
     "C414",  # Unnecessary `list` call within `sorted()`
     "S301",  # pickle and modules that wrap it can be unsafe
