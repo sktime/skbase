@@ -469,7 +469,11 @@ class _MetaObjectMixin:
             f"Elements of {attr_name} must either all be objects, "
             f"or all (str, objects) tuples. A mix of the two is not allowed."
         )
-        if not allow_mix and not all(is_obj_is_tuple(x)[0] for x in objs) and not all(is_obj_is_tuple(x)[1] for x in objs):
+        if (
+            not allow_mix
+            and not all(is_obj_is_tuple(x)[0] for x in objs)
+            and not all(is_obj_is_tuple(x)[1] for x in objs)
+        ):
             raise TypeError(msg_no_mix)
 
         return self._coerce_to_named_object_tuples(objs, clone=clone, make_unique=True)
