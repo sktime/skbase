@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 __author__ = ["jgyasu", "fkiraly"]
 
 from inspect import isclass

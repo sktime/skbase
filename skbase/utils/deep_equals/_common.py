@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Common utility functions for skbase.utils.deep_equals."""
 
 

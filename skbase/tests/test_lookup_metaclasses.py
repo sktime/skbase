@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for lookup helpers handling classes defined with metaclasses."""
 
 import importlib

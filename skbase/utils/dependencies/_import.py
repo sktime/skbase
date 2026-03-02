@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Import a module/class, return a Mock object or None if import fails."""
 
 import importlib

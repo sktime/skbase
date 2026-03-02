@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Git related utilities to identify changed modules."""
 
 __author__ = ["fkiraly"]

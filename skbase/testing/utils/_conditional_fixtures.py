@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Testing utility for easy generation of conditional fixtures in pytest_generate_tests.
 
 Exports create_conditional_fixtures_and_names utility

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Mock package for testing skbase functionality."""
 
 from copy import deepcopy

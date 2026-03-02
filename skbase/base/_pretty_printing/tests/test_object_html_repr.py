@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for HTML representation of meta-objects (regression for #160/#163)."""
 
 from skbase.base import BaseObject

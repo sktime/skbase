@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for skbase exceptions.
 
 tests in this module:

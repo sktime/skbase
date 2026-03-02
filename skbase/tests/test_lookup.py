@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for skbase.lookup utilities."""
 
 import importlib

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Utilities for handling the random_state variable."""
 
 __author__ = ["fkiraly"]

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Context manager to suppress stderr."""
 
 __author__ = ["XinyuWu"]

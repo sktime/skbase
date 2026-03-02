@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Testing utility to compare equality in value for nested objects.
 
 Objects compared can have one of the following valid types:

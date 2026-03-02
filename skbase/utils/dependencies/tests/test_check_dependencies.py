@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for _check_soft_dependencies utility."""
 
 from unittest.mock import patch

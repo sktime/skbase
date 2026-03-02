@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Common functionality for skbase unit tests."""
 
 from skbase.base import BaseEstimator, BaseObject
