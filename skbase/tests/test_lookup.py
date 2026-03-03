@@ -7,7 +7,6 @@ from skbase.lookup import all_objects
 
 def test_all_objects_filter_tags_returns_results(tmp_path, monkeypatch):
 
-
     from skbase.base import BaseObject
     from skbase.lookup import all_objects
 
@@ -31,4 +30,3 @@ def test_all_objects_filter_tags_returns_results(tmp_path, monkeypatch):
 
     objs = all_objects(package_name="pkg", filter_tags="my_tag")
     assert len(objs) > 0
-
