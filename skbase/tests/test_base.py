@@ -1366,6 +1366,7 @@ def test_eq_dunder():
         def __init__(self, foo, bar=84):
             self.foo = foo
             self.bar = bar
+            super().__init__()
 
     alt = AltDummy(foo=42)
     assert non_composite != alt
