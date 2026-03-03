@@ -1,13 +1,12 @@
 """Tests for skbase.lookup utilities."""
 
 import importlib
-import sys
 
 from skbase.lookup import all_objects
 
 
 def test_all_objects_filter_tags_returns_results(tmp_path, monkeypatch):
-    import importlib
+
 
     from skbase.base import BaseObject
     from skbase.lookup import all_objects
@@ -33,11 +32,3 @@ def test_all_objects_filter_tags_returns_results(tmp_path, monkeypatch):
     objs = all_objects(package_name="pkg", filter_tags="my_tag")
     assert len(objs) > 0
 
-
-def test_debug_print_available_tags():
-    from skbase.lookup import all_objects
-
-    objs = all_objects(return_names=False)
-    print(len(objs))
-    print(objs[0].get_class_tags())
-    assert True
