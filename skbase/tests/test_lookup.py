@@ -3,7 +3,6 @@
 
 def test_all_objects_filter_tags_returns_results(tmp_path, monkeypatch):
 
-
     import importlib
 
     from skbase.base import BaseObject  # noqa: F401
