@@ -1,13 +1,12 @@
 """Tests for skbase.lookup utilities."""
 
-import importlib
-
-from skbase.lookup import all_objects
-
 
 def test_all_objects_filter_tags_returns_results(tmp_path, monkeypatch):
 
-    from skbase.base import BaseObject
+
+    import importlib
+
+    from skbase.base import BaseObject  # noqa: F401
     from skbase.lookup import all_objects
 
     root = tmp_path / "pkg"
