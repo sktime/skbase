@@ -73,6 +73,13 @@ class BaseObject(_FlagManager):
     """Base class for parametric objects with sktime style tag interface.
 
     Extends scikit-learn's BaseEstimator to include sktime style interface for tags.
+
+    Examples
+    --------
+    >>> from skbase.base import BaseObject
+    >>> obj = BaseObject()
+    >>> obj.get_params()
+    {}
     """
 
     _config = {
@@ -96,6 +103,14 @@ class BaseObject(_FlagManager):
 
         Nested BaseObject descendants from ``get_params`` are compared via
         ``__eq__`` as well.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> a = BaseObject()
+        >>> b = BaseObject()
+        >>> a == b
+        True
         """
         from skbase.utils.deep_equals import deep_equals
 
@@ -137,6 +152,13 @@ class BaseObject(_FlagManager):
         self
             Instance of class reset to a clean post-init state but retaining
             the current hyper-parameter values.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> obj = BaseObject()
+        >>> obj.reset()
+        BaseObject()
         """
         # retrieve parameters to copy them later
         params = self.get_params(deep=False)
@@ -176,6 +198,16 @@ class BaseObject(_FlagManager):
         Raises
         ------
         RuntimeError if the clone is non-conforming, due to faulty ``__init__``.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> obj = BaseObject()
+        >>> cloned = obj.clone()
+        >>> obj == cloned
+        True
+        >>> obj is cloned
+        False
         """
         # get plugins for cloning, if present (empty by default)
         clone_plugins = self._get_clone_plugins()
@@ -209,6 +241,12 @@ class BaseObject(_FlagManager):
             Each plugin must inherit from ``BaseCloner``
             in ``skbase.base._clone_plugins``, and implement
             the methods ``_check`` and ``_clone``.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> BaseObject._get_clone_plugins()
+        []
         """
         return None
 
@@ -226,6 +264,12 @@ class BaseObject(_FlagManager):
         Raises
         ------
         RuntimeError if ``cls`` has varargs in ``__init__``.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> BaseObject._get_init_signature()
+        []
         """
         # fetch the constructor or the original constructor before
         # deprecation wrapping if any
@@ -271,6 +315,12 @@ class BaseObject(_FlagManager):
             List of parameter names of ``cls``.
             If ``sort=False``, in same order as they appear in the class ``__init__``.
             If ``sort=True``, alphabetically ordered.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> BaseObject.get_param_names()
+        []
         """
         if sort is None:
             sort = True
@@ -291,6 +341,12 @@ class BaseObject(_FlagManager):
             Keys are all parameters of ``cls`` that have
             a default defined in ``__init__``.
             Values are the defaults, as defined in ``__init__``.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> BaseObject.get_param_defaults()
+        {}
         """
         parameters = cls._get_init_signature()
         default_dict = {
@@ -327,6 +383,13 @@ class BaseObject(_FlagManager):
               all parameters of ``componentname`` appear as ``paramname`` with its value
             * if ``deep=True``, also contains arbitrary levels of component recursion,
               e.g., ``[componentname]__[componentcomponentname]__[paramname]``, etc
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> obj = BaseObject()
+        >>> obj.get_params()
+        {}
         """
         params = {key: getattr(self, key) for key in self.get_param_names()}
 
@@ -360,6 +423,13 @@ class BaseObject(_FlagManager):
         Returns
         -------
         self : reference to self (after parameters have been set)
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> obj = BaseObject()
+        >>> obj.set_params()
+        BaseObject()
         """
         if not params:
             # Simple optimization to gain speed (inspect is slow)
@@ -440,6 +510,15 @@ class BaseObject(_FlagManager):
         ------
         ValueError if at least one key of d is neither contained in ``valid_params``,
             nor is it a ``__``-suffix of exactly one key in ``valid_params``
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> obj = BaseObject()
+        >>> valid_params = {"myparam": 1, "otherparam": 2}
+        >>> d = {"param": 10, "otherparam": 20}
+        >>> obj._alias_params(d, valid_params)
+        {'myparam': 10, 'otherparam': 20}
         """
 
         def _is_suffix(x, y):
@@ -515,6 +594,12 @@ class BaseObject(_FlagManager):
             Dictionary of tag name : tag value pairs. Collected from ``_tags``
             class attribute via nested inheritance. NOT overridden by dynamic
             tags set by ``set_tags`` or ``clone_tags``.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> BaseObject.get_class_tags()
+        {}
         """
         return cls._get_class_flags(flag_attr_name="_tags")
 
@@ -560,6 +645,12 @@ class BaseObject(_FlagManager):
         tag_value :
             Value of the ``tag_name`` tag in ``self``.
             If not found, returns ``tag_value_default``.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> BaseObject.get_class_tag("mytag", tag_value_default="mydefault")
+        'mydefault'
         """
         return cls._get_class_flag(
             flag_name=tag_name,
@@ -598,6 +689,13 @@ class BaseObject(_FlagManager):
             Dictionary of tag name : tag value pairs. Collected from ``_tags``
             class attribute via nested inheritance and then any overrides
             and new tags from ``_tags_dynamic`` object attribute.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> obj = BaseObject()
+        >>> obj.get_tags()
+        {}
         """
         return self._get_flags(flag_attr_name="_tags")
 
@@ -644,6 +742,13 @@ class BaseObject(_FlagManager):
         ValueError, if ``raise_error`` is ``True``.
             The ``ValueError`` is then raised if ``tag_name`` is
             not in ``self.get_tags().keys()``.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> obj = BaseObject()
+        >>> obj.get_tag("mytag", tag_value_default="mydefault")
+        'mydefault'
         """
         return self._get_flag(
             flag_name=tag_name,
@@ -682,6 +787,13 @@ class BaseObject(_FlagManager):
         -------
         Self
             Reference to self.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> obj = BaseObject()
+        >>> obj.set_tags(mytag="myvalue")
+        BaseObject()
         """
         self._set_flags(flag_attr_name="_tags", **tag_dict)
 
@@ -723,6 +835,15 @@ class BaseObject(_FlagManager):
         -------
         self :
             Reference to ``self``.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> obj1 = BaseObject()
+        >>> obj1.set_tags(mytag="myvalue")
+        BaseObject(mytag="myvalue").clone_tags(obj1).get_tags()
+        {'mytag': 'myvalue'}
+
         """
         self._clone_flags(
             estimator=estimator, flag_names=tag_names, flag_attr_name="_tags"
@@ -750,6 +871,18 @@ class BaseObject(_FlagManager):
             Dictionary of config name : config value pairs. Collected from _config
             class attribute via nested inheritance and then any overrides
             and new tags from _onfig_dynamic object attribute.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> obj = BaseObject()
+        >>> obj.get_config()
+        {
+        'display': 'diagram',
+         'print_changed_only': True,
+         'check_clone': False, 'clone_config': True
+        }
+
         """
         return self._get_flags(flag_attr_name="_config")
 
@@ -779,6 +912,17 @@ class BaseObject(_FlagManager):
         Notes
         -----
         Changes object state, copies configs in config_dict to self._config_dynamic.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> obj = BaseObject()
+        >>> obj.set_config(display="text").get_config()
+        {
+        'display': 'text',
+         'print_changed_only': True, 'check_clone': False, 'clone_config': True
+            }
+
         """
         self._set_flags(flag_attr_name="_config", **config_dict)
 
@@ -816,6 +960,12 @@ class BaseObject(_FlagManager):
             Each dict are parameters to construct an "interesting" test instance, i.e.,
             `MyClass(**params)` or `MyClass(**params[i])` creates a valid test instance.
             `create_test_instance` uses the first (or only) dictionary in `params`
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> BaseObject.get_test_params()
+        {}
         """
         params_with_defaults = set(cls.get_param_defaults().keys())
         all_params = set(cls.get_param_names(sort=False))
@@ -848,6 +998,14 @@ class BaseObject(_FlagManager):
         Returns
         -------
         instance : instance of the class with default parameters
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> obj = BaseObject.create_test_instance()
+        >>> obj.get_params()
+        {}
+
 
         """
         if "parameter_set" in inspect.getfullargspec(cls.get_test_params).args:
@@ -884,6 +1042,13 @@ class BaseObject(_FlagManager):
             i-th element is name of i-th instance of obj in tests.
             The naming convention is ``{cls.__name__}-{i}`` if more than one instance,
             otherwise ``{cls.__name__}``
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> objs, names = BaseObject.create_test_instances_and_names()
+        >>> names
+        ['BaseObject']
         """
         if "parameter_set" in inspect.getfullargspec(cls.get_test_params).args:
             param_list = cls.get_test_params(parameter_set=parameter_set)
@@ -919,6 +1084,12 @@ class BaseObject(_FlagManager):
         """Safe init of cls with params for testing.
 
         Will raise informative error message if params are not valid.
+
+        Examples
+        --------
+        >>> from skbase.base import BaseObject
+        >>> params = {"invalid_param": 1}
+        >>> BaseObject._safe_init_test_params(params)
         """
         try:
             return cls(**params)
