@@ -33,3 +33,26 @@ def test_all_objects_returns_class_name_for_alias(tmp_path, monkeypatch):
 
     sys.modules.pop(f"{pkg_name}.module", None)
     sys.modules.pop(pkg_name, None)
+
+
+def test_all_objects_filter_tags_not_empty(tmp_path, monkeypatch):
+    from skbase.lookup import all_objects
+
+    root = tmp_path / "pkg"
+    root.mkdir()
+
+    (root / "__init__.py").write_text(
+        "from .module import MyObject\n__all__ = ['MyObject']\n"
+    )
+
+    (root / "module.py").write_text(
+        "from skbase.base import BaseObject\n"
+        "class MyObject(BaseObject):\n"
+        "    _tags = {'my_tag': True}\n"
+    )
+
+    monkeypatch.syspath_prepend(str(tmp_path))
+
+    objs = all_objects(package_name="pkg", filter_tags="my_tag")
+
+    assert len(objs) > 0
