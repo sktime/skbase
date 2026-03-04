@@ -21,6 +21,33 @@ along with tools to make it easier to build your own packages that follow these 
 [![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
+
+...
+ALL-CONTRIBUTORS-BADGE-END
+
+## Core Design Patterns in skbase
+
+skbase provides reusable base classes and utilities used across the
+sktime ecosystem. The design follows a few core patterns:
+
+### BaseObject
+Most objects inherit from `BaseObject`, which provides standardized
+parameter handling through `get_params` and `set_params`.
+
+### Tag System
+Objects can define capability tags via `_tags` that describe properties
+such as supported data types or behaviors.
+
+### Object Lookup
+The `lookup` utilities allow discovery of objects within packages,
+enabling automatic listing and filtering of classes.
+
+### Consistent API
+All objects follow a consistent interface similar to scikit-learn.
+
+
+
+
 ## Documentation and Tutorials
 
 To learn more about the package check out:
