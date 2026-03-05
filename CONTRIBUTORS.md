@@ -1,5 +1,5 @@
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors)
+[![All Contributors](https://img.shields.io/badge/all_contributors-14-orange.svg?style=flat-square)](#contributors)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 This project follows the
@@ -27,10 +27,11 @@ Thanks goes to these wonderful people
       <td align="center" valign="top" width="11.11%"><a href="https://github.com/mloning"><img src="https://avatars3.githubusercontent.com/u/21020482?v=4" width="100px;" alt=""/><br /><sub><b>Markus Löning</b></sub></a></td>
       <td align="center" valign="top" width="11.11%"><a href="https://github.com/MBristle"><img src="https://avatars.githubusercontent.com/MBristle" width="100px;" alt=""/><br /><sub><b>Mirko Bristle</b></sub></a></td>
       <td align="center" valign="top" width="11.11%"><a href="https://github.com/Spinachboul"><img src="https://avatars.githubusercontent.com/u/105979087?v=4" width="100px;" alt=""/><br /><sub><b>Mridul Jain</b></sub></a></td>
+      <td align="center" valign="top" width="11.11%"><a href="https://github.com/RecreationalMath"><img src="https://avatars.githubusercontent.com/u/6928297?v=4" width="100px;" alt=""/><br /><sub><b>Nirbhai Singh</b></sub></a></td>
       <td align="center" valign="top" width="11.11%"><a href="https://github.com/rnkuhns"><img src="https://avatars0.githubusercontent.com/u/26907244?v=4" width="100px;" alt=""/><br /><sub><b>Ryan Kuhns</b></sub></a></td>
-      <td align="center" valign="top" width="11.11%"><a href="https://github.com/achieveordie"><img src="https://avatars.githubusercontent.com/u/54197164?v=4" width="100px;" alt=""/><br /><sub><b>Sagar Mishra</b></sub></a></td>
     </tr>
     <tr>
+      <td align="center" valign="top" width="11.11%"><a href="https://github.com/achieveordie"><img src="https://avatars.githubusercontent.com/u/54197164?v=4" width="100px;" alt=""/><br /><sub><b>Sagar Mishra</b></sub></a></td>
       <td align="center" valign="top" width="11.11%"><a href="https://github.com/SimonBlanke"><img src="https://avatars.githubusercontent.com/u/20640612?v=4" width="100px;" alt=""/><br /><sub><b>Simon Blanke</b></sub></a></td>
       <td align="center" valign="top" width="11.11%"><a href="https://github.com/tpvasconcelos"><img src="https://avatars.githubusercontent.com/u/17701527?v=4" width="100px;" alt=""/><br /><sub><b>Tomas P. de Vasconcelos</b></sub></a></td>
       <td align="center" valign="top" width="11.11%"><a href="https://github.com/szepeviktor"><img src="https://avatars.githubusercontent.com/u/952007?v=4" width="100px;" alt=""/><br /><sub><b>Viktor Szépe</b></sub></a></td>
