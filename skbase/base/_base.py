@@ -736,21 +736,22 @@ class BaseObject(_FlagManager):
 
         Configs are key-value pairs of ``self``,
         typically used as transient flags for controlling behaviour.
+        
+        ``get_config`` returns dynamic configs, which override the default configs.
 
-        ``get_config`` returns configs with the following priority order:
-        1. Local configs set via ``set_config`` (highest priority)
-        2. Global configs set via ``skbase.config.set_config``
-        3. Extension configs from ``__skbase_get_config__`` if defined
-        4. Default configs from class ``_config`` attributes (lowest priority)
+        Default configs are set in the class attribute ``_config`` of
+        the class or its parent classes,
+        and are overridden by dynamic configs set via ``set_config``.
 
         Configs are retained under ``clone`` or ``reset`` calls.
 
         Returns
         -------
         config_dict : dict
-            Dictionary of config name : config value pairs.
+            Dictionary of config name : config value pairs. Collected from _config
+            class attribute via nested inheritance and then any overrides
+            and new tags from _onfig_dynamic object attribute.
         """
-        # Start with class defaults
         config = self._get_class_flags(flag_attr_name="_config")
 
         # Update with global config
