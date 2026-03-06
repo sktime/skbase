@@ -33,7 +33,13 @@ from skbase.tests.conftest import (
     SKBASE_BASE_CLASSES,
 )
 from skbase.tests.mock_package import (
+    MOCK_PACKAGE_CLASSES_BY_MODULE,
+    MOCK_PACKAGE_FUNCTIONS_BY_MODULE,
+    MOCK_PACKAGE_MODULES,
     MOCK_PACKAGE_OBJECTS,
+    MOCK_PACKAGE_PUBLIC_CLASSES_BY_MODULE,
+    MOCK_PACKAGE_PUBLIC_FUNCTIONS_BY_MODULE,
+    MOCK_PACKAGE_PUBLIC_MODULES,
     ClassWithABTrue,
     CompositionDummy,
     NotABaseObject,
@@ -733,6 +739,103 @@ def test_get_return_tags():
     tag_names = ["a_tag_that_does_not_exist"]
     results = _get_return_tags(Parent, tag_names)
     assert _test_get_return_tags_output(results, len(tag_names)) and results[0] is None
+
+
+@pytest.mark.parametrize("exclude_non_public_modules", [True, False])
+@pytest.mark.parametrize("exclude_non_public_items", [True, False])
+def test_get_package_metadata_returns_expected_results_mock_package(
+    exclude_non_public_modules, exclude_non_public_items
+):
+    """Test that get_package_metadata returns expected results for mock package.
+
+    This test validates the lookup retrieval against configuration constants
+    that define the expected classes and functions for each module in the
+    mock package, checking both public and non-public items.
+    """
+    results = get_package_metadata(
+        "skbase.tests.mock_package",
+        exclude_non_public_items=exclude_non_public_items,
+        exclude_non_public_modules=exclude_non_public_modules,
+        package_base_classes=SKBASE_BASE_CLASSES,
+        modules_to_ignore=None,
+        suppress_import_stdout=True,
+    )
+
+    # Determine which modules to expect based on parameters
+    if exclude_non_public_modules:
+        expected_modules = MOCK_PACKAGE_PUBLIC_MODULES
+    else:
+        expected_modules = MOCK_PACKAGE_MODULES
+
+    # Verify we got the expected modules
+    assert set(results.keys()) == set(expected_modules)
+
+    # Verify each module has the expected classes and functions
+    for module in results:
+        if exclude_non_public_items:
+            module_funcs = MOCK_PACKAGE_PUBLIC_FUNCTIONS_BY_MODULE.get(module, ())
+            module_classes = MOCK_PACKAGE_PUBLIC_CLASSES_BY_MODULE.get(module, ())
+            which_str = "public"
+            fun_str = "MOCK_PACKAGE_PUBLIC_FUNCTIONS_BY_MODULE"
+            cls_str = "MOCK_PACKAGE_PUBLIC_CLASSES_BY_MODULE"
+        else:
+            module_funcs = MOCK_PACKAGE_FUNCTIONS_BY_MODULE.get(module, ())
+            module_classes = MOCK_PACKAGE_CLASSES_BY_MODULE.get(module, ())
+            which_str = "all"
+            fun_str = "MOCK_PACKAGE_FUNCTIONS_BY_MODULE"
+            cls_str = "MOCK_PACKAGE_CLASSES_BY_MODULE"
+
+        # Verify expected functions are returned
+        retrieved_funcs = set(results[module]["functions"].keys())
+        expected_funcs = set(module_funcs)
+
+        if retrieved_funcs != expected_funcs:
+            msg = (
+                "When using get_package_metadata utility, retrieved objects "
+                f"for {which_str} functions in module {module} do not match expected. "
+                f"Expected: {expected_funcs}; "
+                f"retrieved: {retrieved_funcs}. "
+                f"Expected functions are stored in {fun_str}, in mock_package."
+            )
+            raise AssertionError(msg)
+
+        # Verify expected classes are returned
+        retrieved_cls = set(results[module]["classes"].keys())
+        expected_cls = set(module_classes)
+
+        if retrieved_cls != expected_cls:
+            msg = (
+                "When using get_package_metadata utility, retrieved objects "
+                f"for {which_str} classes in module {module} do not match expected. "
+                f"Expected: {expected_cls}; "
+                f"retrieved: {retrieved_cls}. "
+                f"Expected classes are stored in {cls_str}, in mock_package."
+            )
+            raise AssertionError(msg)
+
+        # Verify class metadata attributes are correct
+        for klass, klass_metadata in results[module]["classes"].items():
+            if klass_metadata["klass"] in SKBASE_BASE_CLASSES:
+                assert (
+                    klass_metadata["is_base_class"] is True
+                ), f"{klass} should be base class."
+            else:
+                assert (
+                    klass_metadata["is_base_class"] is False
+                ), f"{klass} should not be base class."
+
+            if issubclass(klass_metadata["klass"], BaseObject):
+                assert klass_metadata["is_base_object"] is True
+            else:
+                assert klass_metadata["is_base_object"] is False
+
+            if (
+                issubclass(klass_metadata["klass"], SKBASE_BASE_CLASSES)
+                and klass_metadata["klass"] not in SKBASE_BASE_CLASSES
+            ):
+                assert klass_metadata["is_concrete_implementation"] is True
+            else:
+                assert klass_metadata["is_concrete_implementation"] is False
 
 
 def test_get_package_metadata_matches_expected_representation_mock_package():
