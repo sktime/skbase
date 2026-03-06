@@ -1,6 +1,8 @@
-__author__ = ["jgyasu", "fkiraly"]
+__author__ = ["jgyasu", "fkiraly", "RecreationalMath"]
 
+import warnings
 from inspect import isclass
+from unittest.mock import patch
 
 from skbase.utils.dependencies import _check_soft_dependencies, _safe_import
 
@@ -96,3 +98,30 @@ def test_safe_import_pkg_with_different_name():
     import sklearn
 
     assert result is sklearn
+
+
+def test_safe_import_catches_non_import_error():
+    """Test _safe_import catches exceptions other than ImportError/AttributeError.
+
+    _safe_import should catch all exceptions during import, not just ImportError and
+    AttributeError. If a different exception is raised (e.g., RuntimeError from a
+    broken cascading import), _safe_import should emit an ImportWarning and
+    return a mock object.
+    """
+    with patch(
+        "skbase.utils.dependencies._import.importlib.import_module",
+        side_effect=RuntimeError("broken cascading import"),
+    ):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            result = _safe_import("pandas.DummyFrame")
+
+        # should not crash, should return a mocks
+        assert result is not None
+        assert hasattr(result, "__name__")
+        assert result.__name__ == "DummyFrame"
+
+        # should have emitted an ImportWarning
+        import_warnings = [x for x in w if issubclass(x.category, ImportWarning)]
+        assert len(import_warnings) == 1
+        assert "broken cascading import" in str(import_warnings[0].message)

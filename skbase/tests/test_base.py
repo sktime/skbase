@@ -1043,9 +1043,12 @@ def test_clone_none_and_empty_array_nan_sparse_matrix(
     new_base_obj = clone(base_obj)
     new_base_obj2 = base_obj.clone()
 
-    if isinstance(base_obj.c, (np.ndarray, type(sp.csr_matrix(np.array([[0]]))))):
+    if isinstance(base_obj.c, np.ndarray):
         np.testing.assert_array_equal(base_obj.c, new_base_obj.c)
         np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
+    elif sp.issparse(base_obj.c):
+        assert (base_obj.c != new_base_obj.c).nnz == 0
+        assert (base_obj.c != new_base_obj2.c).nnz == 0
     else:
         assert base_obj.c is new_base_obj.c
         assert base_obj.c is new_base_obj2.c
@@ -1359,6 +1362,22 @@ def test_eq_dunder():
     assert composite == composite_2
     assert composite != composite_3
     assert composite_2 != composite_3
+
+    # test that different classes with same params are not equal
+    class AltDummy(BaseEstimator):
+        def __init__(self, foo, bar=84):
+            self.foo = foo
+            self.bar = bar
+            super().__init__()
+
+    alt = AltDummy(foo=42)
+    assert non_composite != alt
+    assert alt != non_composite
+
+    # test non-BaseObject comparison returns False
+    assert non_composite != 42
+    assert non_composite != "string"
+    assert non_composite != None  # noqa: E711
 
 
 def test_get_set_config():
