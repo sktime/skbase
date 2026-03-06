@@ -6,7 +6,5 @@
 # conditions see https://github.com/scikit-learn/scikit-learn/blob/main/COPYING
 """Functionality for pretty printing BaseObjects."""
 
-from typing import List
-
-__author__: List[str] = ["RNKuhns"]
-__all__: List[str] = []
+__author__: list[str] = ["RNKuhns"]
+__all__: list[str] = []

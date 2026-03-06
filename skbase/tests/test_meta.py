@@ -100,18 +100,18 @@ def test_basemetaestimator_has_is_fitted(fixture_metaestimator_instance):
     """Test BaseEstimator has `is_fitted` property."""
     has_private_is_fitted = hasattr(fixture_metaestimator_instance, "_is_fitted")
     has_is_fitted = hasattr(fixture_metaestimator_instance, "is_fitted")
-    assert (
-        has_private_is_fitted and has_is_fitted
-    ), "`BaseMetaEstimator` does not have `is_fitted` property or `_is_fitted` attr."
+    assert has_private_is_fitted and has_is_fitted, (
+        "`BaseMetaEstimator` does not have `is_fitted` property or `_is_fitted` attr."
+    )
 
 
 def test_basemetaestimator_has_check_is_fitted(fixture_metaestimator_instance):
     """Test BaseEstimator has `check_is_fitted` method."""
     has_check_is_fitted = hasattr(fixture_metaestimator_instance, "check_is_fitted")
     is_method = inspect.ismethod(fixture_metaestimator_instance.check_is_fitted)
-    assert (
-        has_check_is_fitted and is_method
-    ), "`BaseMetaEstimator` does not have `check_is_fitted` method."
+    assert has_check_is_fitted and is_method, (
+        "`BaseMetaEstimator` does not have `check_is_fitted` method."
+    )
 
 
 @pytest.mark.parametrize("is_fitted_value", (True, False))
@@ -122,9 +122,9 @@ def test_basemetaestimator_is_fitted(fixture_metaestimator_instance, is_fitted_v
         fixture_metaestimator_instance.is_fitted
         == fixture_metaestimator_instance._is_fitted
     )
-    assert (
-        expected_value_unfitted
-    ), "`BaseMetaEstimator` property `is_fitted` does not return `_is_fitted` value."
+    assert expected_value_unfitted, (
+        "`BaseMetaEstimator` property `is_fitted` does not return `_is_fitted` value."
+    )
 
 
 def test_basemetaestimator_check_is_fitted_raises_error_when_unfitted(
@@ -189,12 +189,12 @@ def test_set_params_resets_fitted_state():
     meta_obj.set_params(steps=new_steps)
 
     # Fitted state should be gone after set_params
-    assert not hasattr(
-        meta_obj, "fitted_attr_"
-    ), "fitted_attr_ should be removed by reset() during set_params(steps=...)"
-    assert not hasattr(
-        meta_obj, "another_fitted_"
-    ), "another_fitted_ should be removed by reset() during set_params(steps=...)"
+    assert not hasattr(meta_obj, "fitted_attr_"), (
+        "fitted_attr_ should be removed by reset() during set_params(steps=...)"
+    )
+    assert not hasattr(meta_obj, "another_fitted_"), (
+        "another_fitted_ should be removed by reset() during set_params(steps=...)"
+    )
 
     # Test 2: Replacing individual step should also trigger reset
     meta_obj = MetaObjectTester(steps=steps)
@@ -202,6 +202,6 @@ def test_set_params_resets_fitted_state():
 
     meta_obj.set_params(foo=ComponentDummy(77))
 
-    assert not hasattr(
-        meta_obj, "fitted_attr_"
-    ), "fitted_attr_ should be removed by reset() during set_params(foo=...)"
+    assert not hasattr(meta_obj, "fitted_attr_"), (
+        "fitted_attr_ should be removed by reset() during set_params(foo=...)"
+    )

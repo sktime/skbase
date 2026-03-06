@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Git related utilities to identify changed modules."""
 
 __author__ = ["fkiraly"]
@@ -6,7 +7,6 @@ __all__ = ["git_diff"]
 import importlib.util
 import inspect
 from functools import lru_cache
-from typing import List
 
 
 @lru_cache
@@ -53,7 +53,7 @@ def _get_path_from_module(module_str):
         raise ImportError(f"Error finding module {module_str!r}") from e
 
 
-def _run_git_diff(cmd: List[str]) -> str:
+def _run_git_diff(cmd: list[str]) -> str:
     # Safety note: cmd is always a hard-coded list constructed in this module only.
     # No user input is ever injected → safe from shell injection.
     result = __import__("subprocess").run(  # nosec B404, B603
@@ -165,9 +165,9 @@ def _get_packages_with_changed_specs():
 
     packages = []
     for line in changed_lines:
-        if line.find("'") > line.find('"') and line.find('"') != -1:
-            sep = '"'
-        elif line.find("'") == -1:
+        if (line.find("'") > line.find('"') and line.find('"') != -1) or line.find(
+            "'"
+        ) == -1:
             sep = '"'
         else:
             sep = "'"

@@ -18,40 +18,18 @@ repos:
       - id: name-tests-test
         args: ["--django"]
 
-  - repo: https://github.com/pycqa/isort
-    rev: 8.0.1
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.13.1
     hooks:
-      - id: isort
-        name: isort
-
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.1.0
-    hooks:
-      - id: black
-        language_version: python3
+      - id: ruff-format
+      - id: ruff-check
+        args: [--fix]
 
   - repo: https://github.com/asottile/blacken-docs
     rev: 1.20.0
     hooks:
       - id: blacken-docs
         additional_dependencies: [black==22.3.0]
-
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.3.0
-    hooks:
-      - id: flake8
-        exclude: docs/source/conf.py, __pycache__
-        additional_dependencies:
-          [
-            flake8-bugbear,
-            flake8-builtins,
-            flake8-quotes>=3.3.2,
-            flake8-comprehensions,
-            pandas-vet,
-            flake8-print,
-            pep8-naming,
-            doc8,
-          ]
 
   - repo: https://github.com/pycqa/pydocstyle
     rev: 6.3.0
@@ -62,15 +40,8 @@ repos:
   - repo: https://github.com/nbQA-dev/nbQA
     rev: 1.9.1
     hooks:
-      - id: nbqa-isort
-        args: [--nbqa-mutate, --nbqa-dont-skip-bad-cells]
-        additional_dependencies: [isort==5.6.4]
-      - id: nbqa-black
-        args: [--nbqa-mutate, --nbqa-dont-skip-bad-cells]
-        additional_dependencies: [black>=22.3.0]
-      - id: nbqa-flake8
-        args: [--nbqa-dont-skip-bad-cells, "--extend-ignore=E402,E203"]
-        additional_dependencies: [flake8==3.8.3]
+      - id: nbqa-ruff
+        args: [--nbqa-mutate]
 
   - repo: https://github.com/PyCQA/bandit
     rev: 1.9.4

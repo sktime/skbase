@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Tests for skbase.lookup utilities."""
 
 import importlib
@@ -14,7 +15,7 @@ def test_all_objects_returns_class_name_for_alias(tmp_path, monkeypatch):
 
     # create a tmp module to test all_objects behaviour
     (root / "__init__.py").write_text(
-        "from .module import AliasName\n" "__all__ = ['AliasName']\n"
+        "from .module import AliasName\n__all__ = ['AliasName']\n"
     )
     (root / "module.py").write_text(
         "from skbase.base import BaseObject\n\n"

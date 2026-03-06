@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Import a module/class, return a Mock object or None if import fails."""
 
 import importlib
@@ -118,19 +119,18 @@ def _safe_import(import_path, pkg_name=None, condition=True, return_object="Magi
                     "other than ImportError or AttributeError:"
                     f": {e}. ",
                     ImportWarning,
+                    stacklevel=2,
                 )
-            pass
 
     if return_object == "MagicMock":
         mock_obj = _create_mock_class(obj_name)
         return mock_obj
-    elif return_object == "None":
+    if return_object == "None":
         return None
-    else:
-        raise RuntimeError(
-            "Error in skbase _safe_import, return_object argument must be "
-            f"'MagicMock' or 'None', but found {return_object}"
-        )
+    raise RuntimeError(
+        "Error in skbase _safe_import, return_object argument must be "
+        f"'MagicMock' or 'None', but found {return_object}"
+    )
 
 
 class CommonMagicMeta(type):

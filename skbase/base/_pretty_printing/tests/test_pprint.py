@@ -15,7 +15,7 @@ class CompositionDummy(BaseObject):
         self.foo = foo
         self.bar = bar
 
-        super(CompositionDummy, self).__init__()
+        super().__init__()
 
 
 @pytest.mark.skipif(

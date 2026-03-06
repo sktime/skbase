@@ -17,12 +17,11 @@ all_objects()
 # is based on the sklearn estimator retrieval utility of the same name
 # See https://github.com/scikit-learn/scikit-learn/blob/main/COPYING and
 # https://github.com/sktime/sktime/blob/main/LICENSE
-from typing import List
 
 from skbase.lookup._lookup import all_objects, get_package_metadata
 
-__all__: List[str] = ["all_objects", "get_package_metadata"]
-__author__: List[str] = [
+__all__: list[str] = ["all_objects", "get_package_metadata"]
+__author__: list[str] = [
     "fkiraly",
     "mloning",
     "katiebuc",

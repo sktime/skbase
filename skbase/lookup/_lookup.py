@@ -22,19 +22,19 @@ import pathlib
 import pkgutil
 import re
 import warnings
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping, MutableMapping, Sequence
 from copy import deepcopy
 from functools import lru_cache
 from operator import itemgetter
 from types import ModuleType
-from typing import Any, List, Mapping, MutableMapping, Optional, Sequence, Tuple, Union
+from typing import Any
 
 from skbase.base import BaseObject
 from skbase.utils.stdout_mute import StdoutMute
 from skbase.validate import check_sequence
 
-__all__: List[str] = ["all_objects", "get_package_metadata"]
-__author__: List[str] = [
+__all__: list[str] = ["all_objects", "get_package_metadata"]
+__author__: list[str] = [
     "fkiraly",
     "mloning",
     "katiebuc",
@@ -106,7 +106,7 @@ def _is_non_public_module(module_name: str) -> bool:
 
 
 def _is_ignored_module(
-    module_name: str, modules_to_ignore: Union[str, List[str], Tuple[str]] = None
+    module_name: str, modules_to_ignore: str | list[str] | tuple[str] | None = None
 ) -> bool:
     """Determine if module is one of the ignored modules.
 
@@ -141,7 +141,7 @@ def _is_ignored_module(
 
 
 def _filter_by_class(
-    klass: type, class_filter: Optional[Union[type, Sequence[type]]] = None
+    klass: type, class_filter: type | Sequence[type] | None = None
 ) -> bool:
     """Determine if a class is a subclass of the supplied classes.
 
@@ -217,7 +217,7 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
 
     # case: tag_filter is dict
     # check that all keys are str
-    if not all(isinstance(t, str) for t in tag_filter.keys()):
+    if not all(isinstance(t, str) for t in tag_filter):
         raise ValueError(f"{type_msg} {tag_filter}")
 
     cond_sat = True
@@ -279,7 +279,7 @@ def _walk(root, exclude=None, prefix=""):
 
 
 def _import_module(
-    module: Union[str, importlib.machinery.SourceFileLoader],
+    module: str | importlib.machinery.SourceFileLoader,
     suppress_import_stdout: bool = True,
 ) -> ModuleType:
     """Import a module, while optionally suppressing import standard out.
@@ -319,8 +319,8 @@ def _import_module(
 
 
 def _determine_module_path(
-    package_name: str, path: Optional[Union[str, pathlib.Path]] = None
-) -> Tuple[ModuleType, str, importlib.machinery.SourceFileLoader]:
+    package_name: str, path: str | pathlib.Path | None = None
+) -> tuple[ModuleType, str, importlib.machinery.SourceFileLoader]:
     """Determine a package's path information.
 
     Parameters
@@ -402,11 +402,11 @@ def _get_module_info(
     module: ModuleType,
     is_pkg: bool,
     path: str,
-    package_base_classes: Union[type, Tuple[type, ...]],
+    package_base_classes: type | tuple[type, ...],
     exclude_non_public_items: bool = True,
-    class_filter: Optional[Union[type, Sequence[type]]] = None,
-    tag_filter: Optional[Union[str, Sequence[str], Mapping[str, Any]]] = None,
-    classes_to_exclude: Optional[Union[type, Sequence[type]]] = None,
+    class_filter: type | Sequence[type] | None = None,
+    tag_filter: str | Sequence[str] | Mapping[str, Any] | None = None,
+    classes_to_exclude: type | Sequence[type] | None = None,
 ) -> dict:  # of ModuleInfo type
     # Make package_base_classes a tuple if it was supplied as a class
     base_classes_none = False
@@ -417,16 +417,14 @@ def _get_module_info(
             base_classes_none = True
         package_base_classes = (package_base_classes,)
 
-    exclude_classes: Optional[Sequence[type]]
-    if classes_to_exclude is None:
-        exclude_classes = classes_to_exclude
-    elif isinstance(classes_to_exclude, Sequence):
+    exclude_classes: Sequence[type] | None
+    if classes_to_exclude is None or isinstance(classes_to_exclude, Sequence):
         exclude_classes = classes_to_exclude
     elif inspect.isclass(classes_to_exclude):
         exclude_classes = (classes_to_exclude,)
 
-    designed_imports: List[str] = getattr(module, "__all__", [])
-    authors: Union[str, List[str]] = getattr(module, "__author__", [])
+    designed_imports: list[str] = getattr(module, "__all__", [])
+    authors: str | list[str] = getattr(module, "__author__", [])
     if isinstance(authors, (list, tuple)):
         authors = ", ".join(authors)
     # Compile information on classes in the module
@@ -575,15 +573,15 @@ def _get_members_uw(module, predicate=None):
 
 def get_package_metadata(
     package_name: str,
-    path: Optional[str] = None,
+    path: str | None = None,
     recursive: bool = True,
     exclude_non_public_items: bool = True,
     exclude_non_public_modules: bool = True,
-    modules_to_ignore: Union[str, List[str], Tuple[str]] = ("tests",),
-    package_base_classes: Union[type, Tuple[type, ...]] = (BaseObject,),
-    class_filter: Optional[Union[type, Sequence[type]]] = None,
-    tag_filter: Optional[Union[str, Sequence[str], Mapping[str, Any]]] = None,
-    classes_to_exclude: Optional[Union[type, Sequence[type]]] = None,
+    modules_to_ignore: str | list[str] | tuple[str] = ("tests",),
+    package_base_classes: type | tuple[type, ...] = (BaseObject,),
+    class_filter: type | Sequence[type] | None = None,
+    tag_filter: str | Sequence[str] | Mapping[str, Any] | None = None,
+    classes_to_exclude: type | Sequence[type] | None = None,
     suppress_import_stdout: bool = True,
 ) -> Mapping:  # of ModuleInfo type
     """Return a dictionary mapping all package modules to their metadata.
@@ -721,10 +719,7 @@ def get_package_metadata(
                 continue
 
             if recursive and is_pkg:
-                if "." in name:
-                    name_ending = name[len(package_name) + 1 :]
-                else:
-                    name_ending = name
+                name_ending = name[len(package_name) + 1 :] if "." in name else name
 
                 updated_path: str
                 if "." in name_ending:
@@ -759,7 +754,7 @@ def all_objects(
     return_tags=None,
     suppress_import_stdout=True,
     package_name="skbase",
-    path: Optional[str] = None,
+    path: str | None = None,
     modules_to_ignore=None,
     class_lookup=None,
 ):
@@ -963,13 +958,12 @@ def all_objects(
         if all_estimators:
             if isinstance(all_estimators[0], tuple):
                 all_estimators = [
-                    (name, est) + _get_return_tags(est, return_tags)
+                    (name, est, *_get_return_tags(est, return_tags))
                     for (name, est) in all_estimators
                 ]
             else:
                 all_estimators = [
-                    (est,) + _get_return_tags(est, return_tags)
-                    for est in all_estimators
+                    (est, *_get_return_tags(est, return_tags)) for est in all_estimators
                 ]
         columns = columns + return_tags
 
@@ -1027,20 +1021,19 @@ def _check_object_types(object_types, class_lookup=None):
         if class_lookup is None or not isinstance(class_lookup, dict):
             return (
                 f"Parameter `estimator_type` must be None, a class, or a list of "
-                f"class, but found: {repr(estimator_type)}"
+                f"class, but found: {estimator_type!r}"
             )
-        else:
-            return (
-                f"Parameter `estimator_type` must be None, a string, a class, or a list"
-                f" of [string or class]. Valid string values are: "
-                f"{tuple(class_lookup.keys())}, but found: "
-                f"{repr(estimator_type)}"
-            )
+        return (
+            f"Parameter `estimator_type` must be None, a string, a class, or a list"
+            f" of [string or class]. Valid string values are: "
+            f"{tuple(class_lookup.keys())}, but found: "
+            f"{estimator_type!r}"
+        )
 
     for i, estimator_type in enumerate(object_types):
         if isinstance(estimator_type, str):
             if not isinstance(class_lookup, dict) or (
-                estimator_type not in class_lookup.keys()
+                estimator_type not in class_lookup
             ):
                 raise ValueError(_get_err_msg(estimator_type))
             estimator_type = class_lookup[estimator_type]
@@ -1079,7 +1072,7 @@ class StdoutMuteNCatchMNF(StdoutMute):
         except catch and suppress ModuleNotFoundError.
     """
 
-    def _handle_exit_exceptions(self, type, value, traceback):  # noqa: A002
+    def _handle_exit_exceptions(self, type, value, traceback):
         """Handle exceptions raised during __exit__.
 
         Parameters
@@ -1104,12 +1097,11 @@ class StdoutMuteNCatchMNF(StdoutMute):
 def _coerce_to_tuple(x):
     if x is None:
         return ()
-    elif isinstance(x, tuple):
+    if isinstance(x, tuple):
         return x
-    elif isinstance(x, list):
+    if isinstance(x, list):
         return tuple(x)
-    else:
-        return (x,)
+    return (x,)
 
 
 @lru_cache(maxsize=100)
@@ -1144,7 +1136,7 @@ def _walk_and_retrieve_all_objs(root, package_name, modules_to_ignore):
     prefix = f"{package_name}."
 
     def _is_base_class(name):
-        return name.startswith("_") or name.startswith("Base")
+        return name.startswith(("_", "Base"))
 
     all_estimators = []
 

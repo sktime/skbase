@@ -10,6 +10,7 @@
 """Implements functionality for meta objects composed of other objects."""
 
 from inspect import isclass
+from typing import ClassVar
 
 from skbase.base._base import BaseEstimator, BaseObject
 from skbase.base._pretty_printing._object_html_repr import _VisualBlock
@@ -39,7 +40,7 @@ class _MetaObjectMixin:
     # _steps_attr points to the attribute of self
     # which contains the heterogeneous set of estimators
     # this must be an iterable of (name: str, estimator) pairs for the default
-    _tags = {"named_object_parameters": "steps"}
+    _tags: ClassVar[dict] = {"named_object_parameters": "steps"}
 
     def is_composite(self):
         """Check if the object is composite.
@@ -139,9 +140,7 @@ class _MetaObjectMixin:
         """
         fitted_params = self._get_fitted_params_default()
 
-        fitted_named_object_attr = self.get_tag(
-            "fitted_named_object_parameters"
-        )  # type: ignore
+        fitted_named_object_attr = self.get_tag("fitted_named_object_parameters")  # type: ignore
 
         named_objects_fitted_params = self._get_params(
             fitted_named_object_attr, fitted=True
@@ -253,7 +252,7 @@ class _MetaObjectMixin:
         items = getattr(self, attr)
         names = []
         if items and isinstance(items, (list, tuple)):
-            names = list(zip(*items))[0]
+            names = next(zip(*items, strict=False))
         for name in list(params.keys()):
             if "__" not in name and name in names:
                 self._replace_object(attr, name, params.pop(name))
@@ -323,14 +322,14 @@ class _MetaObjectMixin:
             A sequence of unique string names that follow named object API rules.
         """
         if len(set(names)) != len(names):
-            raise ValueError("Names provided are not unique: {0!r}".format(list(names)))
+            raise ValueError(f"Names provided are not unique: {list(names)!r}")
         # Get names that match direct parameter
         invalid_names = set(names).intersection(self.get_params(deep=False))
         invalid_names = invalid_names.union({name for name in names if "__" in name})
         if invalid_names:
             raise ValueError(
                 "Object names conflict with constructor argument or "
-                "contain '__': {0!r}".format(sorted(invalid_names))
+                f"contain '__': {sorted(invalid_names)!r}"
             )
         if make_unique:
             names = make_strings_unique(names)
@@ -363,10 +362,7 @@ class _MetaObjectMixin:
             name = obj[0]
 
         else:
-            if isinstance(obj, tuple) and len(obj) == 1:
-                _obj = obj[0]
-            else:
-                _obj = obj
+            _obj = obj[0] if isinstance(obj, tuple) and len(obj) == 1 else obj
             name = type(_obj).__name__
 
         if clone:
@@ -460,22 +456,25 @@ class _MetaObjectMixin:
 
         # We've already guarded against objs being dict when allow_dict is False
         # So here we can just check dictionary elements
-        if isinstance(objs, dict) and not all(
-            isinstance(name, str) and isinstance(obj, cls_type)
-            for name, obj in objs.items()
-        ):
-            raise TypeError(msg)
-
-        elif not all(any(is_obj_is_tuple(x)) for x in objs):
+        if (
+            isinstance(objs, dict)
+            and not all(
+                isinstance(name, str) and isinstance(obj, cls_type)
+                for name, obj in objs.items()
+            )
+        ) or not all(any(is_obj_is_tuple(x)) for x in objs):
             raise TypeError(msg)
 
         msg_no_mix = (
             f"Elements of {attr_name} must either all be objects, "
             f"or all (str, objects) tuples. A mix of the two is not allowed."
         )
-        if not allow_mix and not all(is_obj_is_tuple(x)[0] for x in objs):
-            if not all(is_obj_is_tuple(x)[1] for x in objs):
-                raise TypeError(msg_no_mix)
+        if (
+            not allow_mix
+            and not all(is_obj_is_tuple(x)[0] for x in objs)
+            and not all(is_obj_is_tuple(x)[1] for x in objs)
+        ):
+            raise TypeError(msg_no_mix)
 
         return self._coerce_to_named_object_tuples(objs, clone=clone, make_unique=True)
 
@@ -500,9 +499,11 @@ class _MetaObjectMixin:
             The
         """
         if isinstance(named_objects, dict):
-            names, objs = zip(*named_objects.items())
+            names, objs = zip(*named_objects.items(), strict=False)
         else:
-            names, objs = zip(*[self._coerce_object_tuple(x) for x in named_objects])
+            names, objs = zip(
+                *[self._coerce_object_tuple(x) for x in named_objects], strict=False
+            )
 
         # Optionally make names unique
         if make_unique:
@@ -555,7 +556,7 @@ class _MetaObjectMixin:
                 named_objects, make_unique=make_unique
             )
             # Repack the objects
-            named_objects = list(zip(names, objs))
+            named_objects = list(zip(names, objs, strict=False))
         return named_objects
 
     def _dunder_concat(
@@ -632,8 +633,7 @@ class _MetaObjectMixin:
         def concat(x, y):
             if concat_order == "left":
                 return x + y
-            else:
-                return y + x
+            return y + x
 
         # get attr_name from self and other
         # can be list of ests, list of (str, est) tuples, or list of mixture of these
@@ -658,16 +658,15 @@ class _MetaObjectMixin:
         new_objs = concat(self_objs, other_objs)
         # create the "steps" param for the composite
         # if all the names are equal to class names, we eat them away
-        if all(type(x[1]).__name__ == x[0] for x in zip(new_names, new_objs)):
+        if all(
+            type(x[1]).__name__ == x[0] for x in zip(new_names, new_objs, strict=False)
+        ):
             step_param = {attr_name: list(new_objs)}
         else:
-            step_param = {attr_name: list(zip(new_names, new_objs))}
+            step_param = {attr_name: list(zip(new_names, new_objs, strict=False))}
 
         # retrieve other parameters, from composite_params attribute
-        if composite_params is None:
-            composite_params = {}
-        else:
-            composite_params = composite_params.copy()
+        composite_params = {} if composite_params is None else composite_params.copy()
 
         # construct the composite with both step and additional params
         composite_params.update(step_param)
@@ -806,7 +805,7 @@ class _MetaTagLogicMixin:
         for _, est in estimators:
             if est.get_tag(mid_tag_name) == mid_tag_val:
                 return True, True
-            if not est.get_tag(left_tag_name) == left_tag_val:
+            if est.get_tag(left_tag_name) != left_tag_val:
                 return False, False
         return True, False
 

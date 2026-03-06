@@ -21,55 +21,55 @@ tests in this module:
 __author__ = ["fkiraly", "RNKuhns"]
 
 __all__ = [
-    "test_get_class_tags",
-    "test_get_class_tag",
-    "test_get_tags",
-    "test_get_tag",
-    "test_get_tag_raises",
-    "test_set_tags",
-    "test_set_tags_works_with_missing_tags_dynamic_attribute",
+    "test_baseobject_repr",
+    "test_baseobject_repr_mimebundle_",
+    "test_baseobject_str",
+    "test_clone",
+    "test_clone_2",
+    "test_clone_class_rather_than_instance_raises_error",
+    "test_clone_estimator_types",
+    "test_clone_none_and_empty_array_nan_sparse_matrix",
+    "test_clone_raises_error_for_nonconforming_objects",
+    "test_clone_sklearn_composite",
     "test_clone_tags",
-    "test_is_composite",
     "test_components",
-    "test_components_raises_error_base_class_is_not_class",
     "test_components_raises_error_base_class_is_not_baseobject_subclass",
-    "test_param_alias",
-    "test_nested_set_params_and_alias",
-    "test_reset",
-    "test_reset_composite",
+    "test_components_raises_error_base_class_is_not_class",
+    "test_create_test_instance",
+    "test_create_test_instances_and_names",
+    "test_eq_dunder",
+    "test_get_class_tag",
+    "test_get_class_tags",
     "test_get_init_signature",
     "test_get_init_signature_raises_error_for_invalid_signature",
     "test_get_param_names",
     "test_get_params",
-    "test_get_params_invariance",
     "test_get_params_after_set_params",
+    "test_get_params_invariance",
+    "test_get_tag",
+    "test_get_tag_raises",
+    "test_get_tags",
+    "test_get_test_params",
+    "test_get_test_params_raises_error_when_params_required",
+    "test_has_implementation_of",
+    "test_is_composite",
+    "test_nested_set_params_and_alias",
+    "test_param_alias",
+    "test_raises_on_get_params_for_param_arg_not_assigned_to_attribute",
+    "test_repr_html_wraps",
+    "test_reset",
+    "test_reset_composite",
     "test_set_params",
     "test_set_params_raises_error_non_existent_param",
     "test_set_params_raises_error_non_interface_composite",
-    "test_raises_on_get_params_for_param_arg_not_assigned_to_attribute",
     "test_set_params_with_no_param_to_set_returns_object",
-    "test_clone",
-    "test_clone_2",
-    "test_clone_raises_error_for_nonconforming_objects",
-    "test_clone_none_and_empty_array_nan_sparse_matrix",
-    "test_clone_estimator_types",
-    "test_clone_class_rather_than_instance_raises_error",
-    "test_clone_sklearn_composite",
-    "test_baseobject_repr",
-    "test_baseobject_str",
-    "test_baseobject_repr_mimebundle_",
-    "test_repr_html_wraps",
-    "test_get_test_params",
-    "test_get_test_params_raises_error_when_params_required",
-    "test_create_test_instance",
-    "test_create_test_instances_and_names",
-    "test_has_implementation_of",
-    "test_eq_dunder",
+    "test_set_tags",
+    "test_set_tags_works_with_missing_tags_dynamic_attribute",
 ]
 
 import inspect
 from copy import deepcopy
-from typing import Any, Dict, Type
+from typing import Any, ClassVar
 
 import numpy as np
 import pytest
@@ -112,7 +112,7 @@ class InvalidInitSignatureTester(BaseObject):
 class RequiredParam(BaseObject):
     """BaseObject class with _required_parameters."""
 
-    _required_parameters = ["a"]
+    _required_parameters: ClassVar[list[str]] = ["a"]
 
     def __init__(self, a, b=7):
         self.a = a
@@ -198,7 +198,7 @@ def fixture_reset_tester():
 
 
 @pytest.fixture
-def fixture_class_child_tags(fixture_class_child: Type[Child]):
+def fixture_class_child_tags(fixture_class_child: type[Child]):
     """Pytest fixture for tags of Child."""
     return fixture_class_child.get_class_tags()
 
@@ -265,7 +265,7 @@ def fixture_class_instance_no_param_interface():
 
 
 def test_get_class_tags(
-    fixture_class_child: Type[Child], fixture_class_child_tags: Any
+    fixture_class_child: type[Child], fixture_class_child_tags: Any
 ):
     """Test get_class_tags class method of BaseObject for correctness.
 
@@ -280,7 +280,7 @@ def test_get_class_tags(
     assert child_tags == fixture_class_child_tags, msg
 
 
-def test_get_class_tag(fixture_class_child: Type[Child], fixture_class_child_tags: Any):
+def test_get_class_tag(fixture_class_child: type[Child], fixture_class_child_tags: Any):
     """Test get_class_tag class method of BaseObject for correctness.
 
     Raises
@@ -307,7 +307,7 @@ def test_get_class_tag(fixture_class_child: Type[Child], fixture_class_child_tag
     assert child_tag_default_none is None, msg
 
 
-def test_get_tags(fixture_tag_class_object: Child, fixture_object_tags: Dict[str, Any]):
+def test_get_tags(fixture_tag_class_object: Child, fixture_object_tags: dict[str, Any]):
     """Test get_tags method of BaseObject for correctness.
 
     Raises
@@ -321,7 +321,7 @@ def test_get_tags(fixture_tag_class_object: Child, fixture_object_tags: Dict[str
     assert object_tags == fixture_object_tags, msg
 
 
-def test_get_tag(fixture_tag_class_object: Child, fixture_object_tags: Dict[str, Any]):
+def test_get_tag(fixture_tag_class_object: Child, fixture_object_tags: dict[str, Any]):
     """Test get_tag method of BaseObject for correctness.
 
     Raises
@@ -364,8 +364,8 @@ def test_get_tag_raises(fixture_tag_class_object: Child):
 
 def test_set_tags(
     fixture_object_instance_set_tags: Any,
-    fixture_object_set_tags: Dict[str, Any],
-    fixture_object_dynamic_tags: Dict[str, int],
+    fixture_object_set_tags: dict[str, Any],
+    fixture_object_dynamic_tags: dict[str, int],
 ):
     """Test set_tags method of BaseObject for correctness.
 
@@ -387,7 +387,7 @@ def test_set_tags_works_with_missing_tags_dynamic_attribute(
     """Test set_tags will still work if _tags_dynamic is missing."""
     base_obj = deepcopy(fixture_tag_class_object)
     attr_name = "_tags_dynamic"
-    delattr(base_obj, attr_name)  # noqa
+    delattr(base_obj, attr_name)
     assert not hasattr(base_obj, "_tags_dynamic")
     base_obj.set_tags(some_tag="something")
     tags = base_obj.get_tags()
@@ -399,7 +399,7 @@ def test_clone_tags():
     """Test clone_tags works as expected."""
 
     class TestClass(BaseObject):
-        _tags = {"some_tag": True, "another_tag": 37}
+        _tags: ClassVar[dict] = {"some_tag": True, "another_tag": 37}
 
     class AnotherTestClass(BaseObject):
         pass
@@ -463,7 +463,7 @@ def test_clone_tags():
         assert test_obj_tags.get(tag) == another_base_obj_tags[tag]
 
 
-def test_is_composite(fixture_composition_dummy: Type[CompositionDummy]):
+def test_is_composite(fixture_composition_dummy: type[CompositionDummy]):
     """Test is_composite tag for correctness.
 
     Raises
@@ -478,9 +478,9 @@ def test_is_composite(fixture_composition_dummy: Type[CompositionDummy]):
 
 
 def test_components(
-    fixture_object: Type[BaseObject],
-    fixture_class_parent: Type[Parent],
-    fixture_composition_dummy: Type[CompositionDummy],
+    fixture_object: type[BaseObject],
+    fixture_class_parent: type[Parent],
+    fixture_composition_dummy: type[CompositionDummy],
 ):
     """Test component retrieval.
 
@@ -514,7 +514,7 @@ def test_components(
 
 
 def test_components_raises_error_base_class_is_not_class(
-    fixture_object: Type[BaseObject], fixture_composition_dummy: Type[CompositionDummy]
+    fixture_object: type[BaseObject], fixture_composition_dummy: type[CompositionDummy]
 ):
     """Test _component method raises error if base_class param is not class."""
     non_composite = fixture_composition_dummy(foo=42)
@@ -533,7 +533,7 @@ def test_components_raises_error_base_class_is_not_class(
 
 
 def test_components_raises_error_base_class_is_not_baseobject_subclass(
-    fixture_composition_dummy: Type[CompositionDummy],
+    fixture_composition_dummy: type[CompositionDummy],
 ):
     """Test _component method raises error if base_class is not BaseObject subclass."""
 
@@ -563,18 +563,18 @@ def test_param_alias():
     composite = CompositionDummy(foo=non_composite)
 
     # this should write to a of foo, because there is only one suffix called a
-    composite.set_params(**{"a": 424242})
+    composite.set_params(a=424242)
     assert composite.get_params()["foo__a"] == 424242
 
     # this should write to bar of composite, because "bar" is a full parameter string
     #   there is a suffix in foo, but if the full string is there, it writes to that
-    composite.set_params(**{"bar": 424243})
+    composite.set_params(bar=424243)
     assert composite.get_params()["bar"] == 424243
 
     # trying to write to bad_param should raise an exception
     # since bad_param is neither a suffix nor a full parameter string
     with pytest.raises(ValueError, match=r"Invalid parameter keys provided to"):
-        composite.set_params(**{"bad_param": 424242})
+        composite.set_params(bad_param=424242)
 
     # new example: highly nested composite with identical suffixes
     non_composite1 = composite
@@ -584,10 +584,10 @@ def test_param_alias():
     # trying to write to a should raise an exception
     # since there are two suffix a, and a is not a full parameter string
     with pytest.raises(ValueError, match=r"does not uniquely determine parameter key"):
-        uber_composite.set_params(**{"a": 424242})
+        uber_composite.set_params(a=424242)
 
     # same as above, should overwrite "bar" of uber_composite
-    uber_composite.set_params(**{"bar": 424243})
+    uber_composite.set_params(bar=424243)
     assert uber_composite.get_params()["bar"] == 424243
 
 
@@ -611,14 +611,14 @@ def test_nested_set_params_and_alias():
     # this should write to a of foo
     # potential error here is that composite does not have foo__a to start with
     # so error catching or writing foo__a to early could cause an exception
-    composite.set_params(**{"foo": non_composite, "foo__a": 424242})
+    composite.set_params(foo=non_composite, foo__a=424242)
     assert composite.get_params()["foo__a"] == 424242
 
     non_composite = AliasTester(a=42, bar=4242)
     composite = CompositionDummy(foo=0)
 
     # same, and recognizing that foo__a is the only matching suffix in the end state
-    composite.set_params(**{"foo": non_composite, "a": 424242})
+    composite.set_params(foo=non_composite, a=424242)
     assert composite.get_params()["foo__a"] == 424242
 
     # new example: highly nested composite with identical suffixes
@@ -629,20 +629,18 @@ def test_nested_set_params_and_alias():
     # trying to write to a should raise an exception
     # since there are two suffix a, and a is not a full parameter string
     with pytest.raises(ValueError, match=r"does not uniquely determine parameter key"):
-        uber_composite.set_params(
-            **{"a": 424242, "foo": non_composite1, "bar": non_composite2}
-        )
+        uber_composite.set_params(a=424242, foo=non_composite1, bar=non_composite2)
 
     uber_composite = CompositionDummy(foo=non_composite1, bar=42)
 
     # same as above, should overwrite "bar" of uber_composite
-    uber_composite.set_params(**{"bar": 424243})
+    uber_composite.set_params(bar=424243)
     assert uber_composite.get_params()["bar"] == 424243
 
 
 # Test parameter interface (get_params, set_params, reset and related methods)
 # Some tests of get_params and set_params are adapted from sklearn tests
-def test_reset(fixture_reset_tester: Type[ResetTester]):
+def test_reset(fixture_reset_tester: type[ResetTester]):
     """Test reset method for correct behaviour, on a simple estimator.
 
     Raises
@@ -669,7 +667,7 @@ def test_reset(fixture_reset_tester: Type[ResetTester]):
     assert hasattr(x, "foo")
 
 
-def test_reset_composite(fixture_reset_tester: Type[ResetTester]):
+def test_reset_composite(fixture_reset_tester: type[ResetTester]):
     """Test reset method for correct behaviour, on a composite estimator."""
     y = fixture_reset_tester(42)
     x = fixture_reset_tester(a=y)
@@ -684,20 +682,20 @@ def test_reset_composite(fixture_reset_tester: Type[ResetTester]):
     assert not hasattr(x.a, "d")
 
 
-def test_get_init_signature(fixture_class_parent: Type[Parent]):
+def test_get_init_signature(fixture_class_parent: type[Parent]):
     """Test error is raised when invalid init signature is used."""
     init_sig = fixture_class_parent._get_init_signature()
     init_sig_is_list = isinstance(init_sig, list)
     init_sig_elements_are_params = all(
         isinstance(p, inspect.Parameter) for p in init_sig
     )
-    assert (
-        init_sig_is_list and init_sig_elements_are_params
-    ), "`_get_init_signature` is not returning expected result."
+    assert init_sig_is_list and init_sig_elements_are_params, (
+        "`_get_init_signature` is not returning expected result."
+    )
 
 
 def test_get_init_signature_raises_error_for_invalid_signature(
-    fixture_invalid_init: Type[InvalidInitSignatureTester],
+    fixture_invalid_init: type[InvalidInitSignatureTester],
 ):
     """Test error is raised when invalid init signature is used."""
     with pytest.raises(RuntimeError):
@@ -706,9 +704,9 @@ def test_get_init_signature_raises_error_for_invalid_signature(
 
 @pytest.mark.parametrize("sort", [True, False])
 def test_get_param_names(
-    fixture_object: Type[BaseObject],
-    fixture_class_parent: Type[Parent],
-    fixture_class_parent_expected_params: Dict[str, Any],
+    fixture_object: type[BaseObject],
+    fixture_class_parent: type[Parent],
+    fixture_class_parent_expected_params: dict[str, Any],
     sort: bool,
 ):
     """Test that get_param_names returns list of string parameter names."""
@@ -723,10 +721,10 @@ def test_get_param_names(
 
 
 def test_get_params(
-    fixture_class_parent: Type[Parent],
-    fixture_class_parent_expected_params: Dict[str, Any],
+    fixture_class_parent: type[Parent],
+    fixture_class_parent_expected_params: dict[str, Any],
     fixture_class_instance_no_param_interface: NoParamInterface,
-    fixture_composition_dummy: Type[CompositionDummy],
+    fixture_composition_dummy: type[CompositionDummy],
 ):
     """Test get_params returns expected parameters."""
     # Simple test of returned params
@@ -750,8 +748,8 @@ def test_get_params(
 
 
 def test_get_params_invariance(
-    fixture_class_parent: Type[Parent],
-    fixture_composition_dummy: Type[CompositionDummy],
+    fixture_class_parent: type[Parent],
+    fixture_composition_dummy: type[CompositionDummy],
 ):
     """Test that get_params(deep=False) is subset of get_params(deep=True)."""
     composite = fixture_composition_dummy(foo=fixture_class_parent(), bar=84)
@@ -760,7 +758,7 @@ def test_get_params_invariance(
     assert all(item in deep_params.items() for item in shallow_params.items())
 
 
-def test_get_params_after_set_params(fixture_class_parent: Type[Parent]):
+def test_get_params_after_set_params(fixture_class_parent: type[Parent]):
     """Test that get_params returns the same thing before and after set_params.
 
     Based on scikit-learn check in check_estimator.
@@ -780,7 +778,7 @@ def test_get_params_after_set_params(fixture_class_parent: Type[Parent]):
     test_values = [-np.inf, np.inf, None]
 
     test_params = deepcopy(orig_params)
-    for param_name in orig_params.keys():
+    for param_name in orig_params:
         default_value = orig_params[param_name]
         for value in test_values:
             test_params[param_name] = value
@@ -801,9 +799,9 @@ def test_get_params_after_set_params(fixture_class_parent: Type[Parent]):
 
 
 def test_set_params(
-    fixture_class_parent: Type[Parent],
-    fixture_class_parent_expected_params: Dict[str, Any],
-    fixture_composition_dummy: Type[CompositionDummy],
+    fixture_class_parent: type[Parent],
+    fixture_class_parent_expected_params: dict[str, Any],
+    fixture_composition_dummy: type[CompositionDummy],
 ):
     """Test set_params works as expected."""
     # Simple case of setting a parameter
@@ -826,7 +824,7 @@ def test_set_params(
 
 def test_set_params_raises_error_non_existent_param(
     fixture_class_parent_instance: Parent,
-    fixture_composition_dummy: Type[CompositionDummy],
+    fixture_composition_dummy: type[CompositionDummy],
 ):
     """Test set_params raises an error when passed a non-existent parameter name."""
     # non-existing parameter in svc
@@ -843,7 +841,7 @@ def test_set_params_raises_error_non_existent_param(
 
 def test_set_params_raises_error_non_interface_composite(
     fixture_class_instance_no_param_interface: NoParamInterface,
-    fixture_composition_dummy: Type[CompositionDummy],
+    fixture_composition_dummy: type[CompositionDummy],
 ):
     """Test set_params raises error when setting param of non-conforming composite."""
     # When a composite is made up of a class that doesn't have the BaseObject
@@ -870,7 +868,7 @@ def test_raises_on_get_params_for_param_arg_not_assigned_to_attribute():
 
 
 def test_set_params_with_no_param_to_set_returns_object(
-    fixture_class_parent: Type[Parent],
+    fixture_class_parent: type[Parent],
 ):
     """Test set_params correctly returns self when no parameters are set."""
     base_obj = fixture_class_parent()
@@ -908,19 +906,19 @@ def test_clone_2(fixture_class_parent_instance: Parent):
 
 
 def test_clone_raises_error_for_nonconforming_objects(
-    fixture_invalid_init: Type[InvalidInitSignatureTester],
-    fixture_buggy: Type[Buggy],
-    fixture_modify_param: Type[ModifyParam],
+    fixture_invalid_init: type[InvalidInitSignatureTester],
+    fixture_buggy: type[Buggy],
+    fixture_modify_param: type[ModifyParam],
 ):
     """Test that clone raises an error on nonconforming BaseObjects."""
     buggy = fixture_buggy()
-    buggy.set_config(**{"check_clone": True})
+    buggy.set_config(check_clone=True)
     buggy.a = 2
     with pytest.raises(RuntimeError):
         buggy.clone()
 
     varg_obj = fixture_invalid_init(a=7)
-    varg_obj.set_config(**{"check_clone": True})
+    varg_obj.set_config(check_clone=True)
     with pytest.raises(RuntimeError):
         varg_obj.clone()
 
@@ -939,17 +937,17 @@ def test_config_after_clone_tags(clone_config):
     """Test clone also clones config works as expected."""
 
     class TestClass(BaseObject):
-        _tags = {"some_tag": True, "another_tag": 37}
-        _config = {"check_clone": 0}
+        _tags: ClassVar[dict] = {"some_tag": True, "another_tag": 37}
+        _config: ClassVar[dict] = {"check_clone": 0}
 
     test_obj = TestClass()
-    test_obj.set_config(**{"check_clone": 42, "foo": "bar"})
+    test_obj.set_config(check_clone=42, foo="bar")
 
     if not clone_config:
         # if clone_config config is set to False:
         # config key check_clone should be default, 0
         # the new config key foo should not be present
-        test_obj.set_config(**{"clone_config": False})
+        test_obj.set_config(clone_config=False)
         expected = 0
     else:
         # if clone_config config is set to True:
@@ -959,14 +957,14 @@ def test_config_after_clone_tags(clone_config):
 
     test_obj_clone = test_obj.clone()
 
-    assert "check_clone" in test_obj_clone.get_config().keys()
+    assert "check_clone" in test_obj_clone.get_config()
     assert test_obj_clone.get_config()["check_clone"] == expected
 
     if clone_config:
-        assert "foo" in test_obj_clone.get_config().keys()
+        assert "foo" in test_obj_clone.get_config()
         assert test_obj_clone.get_config()["foo"] == "bar"
     else:
-        assert "foo" not in test_obj_clone.get_config().keys()
+        assert "foo" not in test_obj_clone.get_config()
 
 
 @pytest.mark.parametrize("clone_config", [True, False])
@@ -974,7 +972,7 @@ def test_nested_config_after_clone_tags(clone_config):
     """Test clone also clones config of nested objects."""
 
     class TestClass(BaseObject):
-        _config = {"check_clone": 0}
+        _config: ClassVar[dict] = {"check_clone": 0}
 
     class TestNestedClass(BaseObject):
         def __init__(self, obj, obj_iterable):
@@ -982,16 +980,16 @@ def test_nested_config_after_clone_tags(clone_config):
             self.obj_iterable = obj_iterable
 
     test_obj = TestNestedClass(
-        obj=TestClass().set_config(**{"check_clone": 1, "foo": "bar"}),
-        obj_iterable=[TestClass().set_config(**{"check_clone": 2, "foo": "barz"})],
+        obj=TestClass().set_config(check_clone=1, foo="bar"),
+        obj_iterable=[TestClass().set_config(check_clone=2, foo="barz")],
     )
 
     if not clone_config:
         # if clone_config config is set to False:
         # config key check_clone should be default, 0
         # the new config key foo should not be present
-        test_obj.obj.set_config(**{"clone_config": False})
-        test_obj.obj_iterable[0].set_config(**{"clone_config": False})
+        test_obj.obj.set_config(clone_config=False)
+        test_obj.obj_iterable[0].set_config(clone_config=False)
         expected_obj = 0
         expected_obj_iterable = 0
     else:
@@ -1004,19 +1002,19 @@ def test_nested_config_after_clone_tags(clone_config):
     test_obj_clone = test_obj.clone().obj
     test_obj_iterable_clone = test_obj.clone().obj_iterable[0]
 
-    assert "check_clone" in test_obj_clone.get_config().keys()
-    assert "check_clone" in test_obj_iterable_clone.get_config().keys()
+    assert "check_clone" in test_obj_clone.get_config()
+    assert "check_clone" in test_obj_iterable_clone.get_config()
     assert test_obj_clone.get_config()["check_clone"] == expected_obj
     assert test_obj_iterable_clone.get_config()["check_clone"] == expected_obj_iterable
 
     if clone_config:
-        assert "foo" in test_obj_clone.get_config().keys()
-        assert "foo" in test_obj_iterable_clone.get_config().keys()
+        assert "foo" in test_obj_clone.get_config()
+        assert "foo" in test_obj_iterable_clone.get_config()
         assert test_obj_clone.get_config()["foo"] == "bar"
         assert test_obj_iterable_clone.get_config()["foo"] == "barz"
     else:
-        assert "foo" not in test_obj_clone.get_config().keys()
-        assert "foo" not in test_obj_iterable_clone.get_config().keys()
+        assert "foo" not in test_obj_clone.get_config()
+        assert "foo" not in test_obj_iterable_clone.get_config()
 
 
 @pytest.mark.skipif(
@@ -1033,7 +1031,7 @@ def test_nested_config_after_clone_tags(clone_config):
     ],
 )
 def test_clone_none_and_empty_array_nan_sparse_matrix(
-    fixture_class_parent: Type[Parent], c_value
+    fixture_class_parent: type[Parent], c_value
 ):
     from sklearn.base import clone
 
@@ -1052,7 +1050,7 @@ def test_clone_none_and_empty_array_nan_sparse_matrix(
         assert base_obj.c is new_base_obj2.c
 
 
-def test_clone_estimator_types(fixture_class_parent: Type[Parent]):
+def test_clone_estimator_types(fixture_class_parent: type[Parent]):
     """Test clone works for parameters that are types rather than instances."""
     base_obj = fixture_class_parent(c=fixture_class_parent)
     new_base_obj = base_obj.clone()
@@ -1065,7 +1063,7 @@ def test_clone_estimator_types(fixture_class_parent: Type[Parent]):
     reason="skip test if sklearn is not available",
 )  # sklearn is part of the dev dependency set, test should be executed with that
 def test_clone_class_rather_than_instance_raises_error(
-    fixture_class_parent: Type[Parent],
+    fixture_class_parent: type[Parent],
 ):
     """Test clone raises expected error when cloning a class instead of an instance."""
     from sklearn.base import clone
@@ -1109,8 +1107,8 @@ def test_clone_sklearn_composite_retains_config():
 
 # Tests of BaseObject pretty printing representation inspired by sklearn
 def test_baseobject_repr(
-    fixture_class_parent: Type[Parent],
-    fixture_composition_dummy: Type[CompositionDummy],
+    fixture_class_parent: type[Parent],
+    fixture_composition_dummy: type[CompositionDummy],
 ):
     """Test BaseObject repr works as expected."""
     # Simple test where all parameters are left at defaults
@@ -1149,16 +1147,16 @@ def test_baseobject_repr(
     long_base_obj_repr = fixture_class_parent(a=["long_params"] * 1000)
     assert len(repr(long_base_obj_repr)) == 535
 
-    named_objs = [(f"Step {i+1}", Child()) for i in range(25)]
+    named_objs = [(f"Step {i + 1}", Child()) for i in range(25)]
     base_comp = CompositionDummy(foo=Parent(c=Child(c=named_objs)))
     assert len(repr(base_comp)) == 1362
 
 
 def test_baseobject_str(fixture_class_parent_instance: Parent):
     """Test BaseObject string representation works."""
-    assert (
-        str(fixture_class_parent_instance) == "Parent()"
-    ), "String representation of instance not working."
+    assert str(fixture_class_parent_instance) == "Parent()", (
+        "String representation of instance not working."
+    )
 
     # Check that local config works as expected
     fixture_class_parent_instance.set_config(print_changed_only=False)
@@ -1200,7 +1198,7 @@ def test_get_test_params(fixture_class_parent_instance: Parent):
 
 
 def test_get_test_params_raises_error_when_params_required(
-    fixture_required_param: Type[RequiredParam],
+    fixture_required_param: type[RequiredParam],
 ):
     """Test get_test_params raises an error when parameters are required."""
     with pytest.raises(ValueError):
@@ -1208,7 +1206,7 @@ def test_get_test_params_raises_error_when_params_required(
 
 
 def test_create_test_instance(
-    fixture_class_parent: Type[Parent], fixture_class_parent_instance: Parent
+    fixture_class_parent: type[Parent], fixture_class_parent_instance: Parent
 ):
     """Test first that create_test_instance logic works."""
     base_obj = fixture_class_parent.create_test_instance()
@@ -1275,9 +1273,9 @@ def test_has_implementation_of(
 
 
 class ConfigTester(BaseObject):
-    _config = {"foo_config": 42, "bar": "a"}
+    _config: ClassVar[dict] = {"foo_config": 42, "bar": "a"}
 
-    clsvar = 210
+    clsvar: ClassVar[int] = 210
 
     def __init__(self, a, b=42):
         self.a = a
@@ -1286,9 +1284,9 @@ class ConfigTester(BaseObject):
 
 
 class AnotherConfigTester(BaseObject):
-    _config = {"print_changed_only": False, "bar": "a"}
+    _config: ClassVar[dict] = {"print_changed_only": False, "bar": "a"}
 
-    clsvar = 210
+    clsvar: ClassVar[int] = 210
 
     def __init__(self, a, b=42):
         self.a = a
@@ -1382,9 +1380,9 @@ def test_get_set_config():
     """Tests get_config and set_config methods."""
 
     class _TestConfig(BaseObject):
-        _config = {"foo_config": 42, "bar": "a"}
+        _config: ClassVar[dict] = {"foo_config": 42, "bar": "a"}
 
-        clsvar = 210
+        clsvar: ClassVar[int] = 210
 
         def __init__(self, a, b=42):
             self.a = a

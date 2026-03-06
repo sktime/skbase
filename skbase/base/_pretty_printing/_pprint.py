@@ -27,8 +27,6 @@ class KeyValTuple(tuple):
 class KeyValTupleParam(KeyValTuple):
     """Dummy class for correctly rendering key-value tuples from parameters."""
 
-    pass
-
 
 def _changed_params(base_object):
     """Return dict (param_name: value) of parameters with non-default values."""
@@ -48,11 +46,9 @@ def _changed_params(base_object):
         if isinstance(v, BaseObject) and v.__class__ != init_params[k].__class__:
             return True
         # Use repr as a last resort. It may be expensive.
-        if repr(v) != repr(init_params[k]) and not (
+        return repr(v) != repr(init_params[k]) and not (
             _is_scalar_nan(init_params[k]) and _is_scalar_nan(v)
-        ):
-            return True
-        return False
+        )
 
     return {k: v for k, v in params.items() if has_changed(k, v)}
 
@@ -131,7 +127,7 @@ class _BaseObjectPrettyPrinter(pprint.PrettyPrinter):
         # (they are treated as dicts)
         self.n_max_elements_to_show = n_max_elements_to_show
 
-    def format(self, obj, context, maxlevels, level):  # noqa
+    def format(self, obj, context, maxlevels, level):
         return _safe_repr(
             obj, context, maxlevels, level, changed_only=self.changed_only
         )
@@ -386,10 +382,7 @@ def _safe_repr(obj, context, maxlevels, level, changed_only=False):
         context[objid] = 1
         readable = True
         recursive = False
-        if changed_only:
-            params = _changed_params(obj)
-        else:
-            params = obj.get_params(deep=False)
+        params = _changed_params(obj) if changed_only else obj.get_params(deep=False)
         components = []
         append = components.append
         level += 1

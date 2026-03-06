@@ -11,7 +11,6 @@ import pathlib
 import sys
 from copy import deepcopy
 from types import ModuleType
-from typing import List
 
 import pandas as pd
 import pytest
@@ -46,8 +45,8 @@ from skbase.tests.mock_package.test_mock_package import (
     NotABaseObject,
 )
 
-__author__: List[str] = ["RNKuhns", "fkiraly"]
-__all__: List[str] = []
+__author__: list[str] = ["RNKuhns", "fkiraly"]
+__all__: list[str] = []
 
 
 MODULE_METADATA_EXPECTED_KEYS = (
@@ -186,10 +185,7 @@ def _check_package_metadata_result(results):
                 isinstance(k, str) and isinstance(v, dict)
                 for k, v in mod_metadata["classes"].items()
             )
-        ):
-            return False
-        # Then verify sub-dict values for each class have required keys
-        elif not all(
+        ) or not all(
             k in c_meta
             for c_meta in mod_metadata["classes"].values()
             for k in REQUIRED_CLASS_METADATA_KEYS
@@ -202,10 +198,7 @@ def _check_package_metadata_result(results):
                 isinstance(k, str) and isinstance(v, dict)
                 for k, v in mod_metadata["functions"].items()
             )
-        ):
-            return False
-        # Then verify sub-dict values for each function have required keys
-        elif not all(
+        ) or not all(
             k in f_meta
             for f_meta in mod_metadata["functions"].values()
             for k in REQUIRED_FUNCTION_METADATA_KEYS
@@ -415,9 +408,9 @@ def test_walk_returns_expected_format(fixture_skbase_root_path):
     """Check walk function returns expected format."""
 
     def _test_walk_return(p):
-        assert (
-            isinstance(p, tuple) and len(p) == 3
-        ), "_walk should return tuple of length 3"
+        assert isinstance(p, tuple) and len(p) == 3, (
+            "_walk should return tuple of length 3"
+        )
         assert (
             isinstance(p[0], str)
             and isinstance(p[1], bool)
@@ -790,13 +783,13 @@ def test_get_package_metadata_returns_expected_results(
         # Verify class metadata attributes correct
         for klass, klass_metadata in results[module]["classes"].items():
             if klass_metadata["klass"] in SKBASE_BASE_CLASSES:
-                assert (
-                    klass_metadata["is_base_class"] is True
-                ), f"{klass} should be base class."
+                assert klass_metadata["is_base_class"] is True, (
+                    f"{klass} should be base class."
+                )
             else:
-                assert (
-                    klass_metadata["is_base_class"] is False
-                ), f"{klass} should not be base class."
+                assert klass_metadata["is_base_class"] is False, (
+                    f"{klass} should not be base class."
+                )
 
             if issubclass(klass_metadata["klass"], BaseObject):
                 assert klass_metadata["is_base_object"] is True
@@ -982,13 +975,12 @@ def test_all_objects_returns_expected_types(
     if isinstance(modules_to_ignore, str):
         modules_to_ignore = (modules_to_ignore,)
     if (
-        modules_to_ignore is not None
-        and "tests" in modules_to_ignore
+        modules_to_ignore is not None and "tests" in modules_to_ignore
         # and "mock_package" in modules_to_ignore
     ):
-        assert (
-            len(objs) == 0
-        ), "Search of `skbase` should only return objects from tests module."
+        assert len(objs) == 0, (
+            "Search of `skbase` should only return objects from tests module."
+        )
     else:
         # We expect at least one object to be returned so we verify output type/format
         _check_all_object_output_types(

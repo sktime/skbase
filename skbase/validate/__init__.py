@@ -3,8 +3,6 @@
 # copyright: skbase developers, BSD-3-Clause License (see LICENSE file)
 """Tools for validating and comparing BaseObjects and collections of BaseObjects."""
 
-from typing import List
-
 from skbase.validate._named_objects import (
     check_sequence_named_objects,
     is_named_object_tuple,
@@ -12,8 +10,8 @@ from skbase.validate._named_objects import (
 )
 from skbase.validate._types import check_sequence, check_type, is_sequence
 
-__author__: List[str] = ["RNKuhns", "fkiraly"]
-__all__: List[str] = [
+__author__: list[str] = ["RNKuhns", "fkiraly"]
+__all__: list[str] = [
     "check_sequence",
     "check_sequence_named_objects",
     "check_type",
