@@ -1359,6 +1359,22 @@ def test_eq_dunder():
     assert composite != composite_3
     assert composite_2 != composite_3
 
+    # test that different classes with same params are not equal
+    class AltDummy(BaseEstimator):
+        def __init__(self, foo, bar=84):
+            self.foo = foo
+            self.bar = bar
+            super().__init__()
+
+    alt = AltDummy(foo=42)
+    assert non_composite != alt
+    assert alt != non_composite
+
+    # test non-BaseObject comparison returns False
+    assert non_composite != 42
+    assert non_composite != "string"
+    assert non_composite != None  # noqa: E711
+
 
 def test_get_set_config():
     """Tests get_config and set_config methods."""
