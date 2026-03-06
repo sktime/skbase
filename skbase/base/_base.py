@@ -736,7 +736,7 @@ class BaseObject(_FlagManager):
 
         Configs are key-value pairs of ``self``,
         typically used as transient flags for controlling behaviour.
-        
+
         ``get_config`` returns dynamic configs, which override the default configs.
 
         Default configs are set in the class attribute ``_config`` of
