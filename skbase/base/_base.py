@@ -1110,7 +1110,11 @@ class BaseObject(_FlagManager):
             "<div class='sk-base-object' style='border: 1px solid #ccc; "
             "padding: 10px; margin: 5px; font-family: monospace;'>"
         )
-        out += f"<h4 style='margin-top: 0; margin-bottom: 5px;'>{self.__class__.__name__}</h4>"
+        cls_name = self.__class__.__name__
+        out += (
+            "<h4 style='margin-top: 0;"
+            f" margin-bottom: 5px;'>{cls_name}</h4>"
+        )
 
         params = self.get_params(deep=False)
         if not params:
@@ -1120,9 +1124,11 @@ class BaseObject(_FlagManager):
             for key, value in params.items():
                 if hasattr(value, "_repr_html_inner_"):
                     out += f"<li style='margin-bottom: 5px;'><strong>{key}</strong>: "
+                    vcls = value.__class__.__name__
                     out += (
-                        "<details style='margin-left: 15px;'><summary style='cursor: pointer;'>"
-                        f"<em>{value.__class__.__name__}</em></summary>"
+                        "<details style='margin-left: 15px;'>"
+                        "<summary style='cursor: pointer;'>"
+                        f"<em>{vcls}</em></summary>"
                     )
                     out += value._repr_html_inner_()
                     out += "</details></li>"
