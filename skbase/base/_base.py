@@ -1111,10 +1111,7 @@ class BaseObject(_FlagManager):
             "padding: 10px; margin: 5px; font-family: monospace;'>"
         )
         cls_name = self.__class__.__name__
-        out += (
-            "<h4 style='margin-top: 0;"
-            f" margin-bottom: 5px;'>{cls_name}</h4>"
-        )
+        out += "<h4 style='margin-top: 0;" f" margin-bottom: 5px;'>{cls_name}</h4>"
 
         params = self.get_params(deep=False)
         if not params:
