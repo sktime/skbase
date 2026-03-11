@@ -753,6 +753,7 @@ def get_package_metadata(
 def all_objects(
     object_types=None,
     filter_tags=None,
+    exclude_tags=None,
     exclude_objects=None,
     return_names=True,
     as_dataframe=False,
@@ -819,6 +820,19 @@ def all_objects(
           - If ``search_value`` is iterable, then the filter condition is that
             at least one element of ``search_value`` satisfies the above conditions,
             applied to ``tag_value``.
+
+    exclude_tags: str, list[str] or dict[str, Any], default=None
+        Tags to use for excluding objects from the return.
+        An object is excluded if ANY of the ``exclude_tags`` conditions match.
+        The format is the same as ``filter_tags``:
+
+        - If a str or list of strings is provided, objects that have all
+          the tag(s) set to ``True`` will be excluded.
+        - If a dict is provided, objects where any tag matches the
+          corresponding value will be excluded.
+
+        ``filter_tags`` is applied first (inclusion), then ``exclude_tags``
+        (exclusion). Both can be combined.
 
     exclude_objects: str or list[str], default=None
         Names of estimators to exclude.
@@ -940,6 +954,14 @@ def all_objects(
     if filter_tags:
         all_estimators = [
             (n, est) for (n, est) in all_estimators if _filter_by_tags(est, filter_tags)
+        ]
+
+    # Exclude based on given exclude_tags
+    if exclude_tags:
+        all_estimators = [
+            (n, est)
+            for (n, est) in all_estimators
+            if not _filter_by_tags(est, exclude_tags)
         ]
 
     # remove names if return_names=False
