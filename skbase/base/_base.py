@@ -76,7 +76,7 @@ class BaseObject(_FlagManager):
     """
 
     _config = {
-        "display": "diagram",
+        "display": "text",
         "print_changed_only": True,
         "check_clone": False,  # whether to execute validity checks in clone
         "clone_config": True,  # clone config values (True) or use defaults (False)
@@ -1084,29 +1084,57 @@ class BaseObject(_FlagManager):
 
         return repr_
 
-    @property
     def _repr_html_(self):
         """HTML representation of BaseObject.
 
-        This is redundant with the logic of `_repr_mimebundle_`. The latter
-        should be favorted in the long term, `_repr_html_` is only
-        implemented for consumers who do not interpret `_repr_mimbundle_`.
+        Returns
+        -------
+        str
+            HTML representation of BaseObject. None if display config is not 'diagram'.
         """
-        if self.get_config()["display"] != "diagram":
-            raise AttributeError(
-                "_repr_html_ is only defined when the "
-                "`display` configuration option is set to 'diagram'."
-            )
-        return self._repr_html_inner
+        if self.get_config().get("display", "text") != "diagram":
+            return None
+        return self._repr_html_inner_()
 
-    def _repr_html_inner(self):
+    def _repr_html_inner_(self):
         """Return HTML representation of class.
 
-        This function is returned by the @property `_repr_html_` to make
-        `hasattr(BaseObject, "_repr_html_") return `True` or `False` depending
-        on `self.get_config()["display"]`.
+        Returns
+        -------
+        str
+            HTML representation of the BaseObject.
         """
-        return _object_html_repr(self)
+        import html
+
+        out = (
+            "<div class='sk-base-object' style='border: 1px solid #ccc; "
+            "padding: 10px; margin: 5px; font-family: monospace;'>"
+        )
+        out += f"<h4 style='margin-top: 0; margin-bottom: 5px;'>{self.__class__.__name__}</h4>"
+
+        params = self.get_params(deep=False)
+        if not params:
+            out += "<p style='margin: 0; font-style: italic;'>No parameters</p>"
+        else:
+            out += "<ul style='list-style-type: none; padding-left: 0; margin: 0;'>"
+            for key, value in params.items():
+                if hasattr(value, "_repr_html_inner_"):
+                    out += f"<li style='margin-bottom: 5px;'><strong>{key}</strong>: "
+                    out += (
+                        "<details style='margin-left: 15px;'><summary style='cursor: pointer;'>"
+                        f"<em>{value.__class__.__name__}</em></summary>"
+                    )
+                    out += value._repr_html_inner_()
+                    out += "</details></li>"
+                else:
+                    out += (
+                        f"<li style='margin-bottom: 5px;'><strong>{key}</strong>: "
+                        f"<code>{html.escape(repr(value))}</code></li>"
+                    )
+            out += "</ul>"
+
+        out += "</div>"
+        return out
 
     def _repr_mimebundle_(self, **kwargs):
         """Mime bundle used by jupyter kernels to display instances of BaseObject."""
