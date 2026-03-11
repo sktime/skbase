@@ -162,4 +162,3 @@ exclude = ["tests", "tests.*"]
 python_version = "3.10"
 packages = ["skbase"]
 ignore_missing_imports = true
-
