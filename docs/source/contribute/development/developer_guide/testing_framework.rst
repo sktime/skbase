@@ -190,6 +190,7 @@ return a single ``dict`` or a ``list`` of ``dict``.
 
     from skbase.base import BaseObject
 
+
     class MyEstimator(BaseObject):
         def __init__(self, alpha=1.0, method="fast"):
             self.alpha = alpha
@@ -286,7 +287,6 @@ To add a new test that runs on every ``BaseObject``:
 .. code-block:: python
 
     class TestAllObjects(BaseFixtureGenerator, QuickTester):
-
         def test_my_custom_check(self, object_instance):
             """Check a custom invariant on all BaseObject instances."""
             params = object_instance.get_params()
