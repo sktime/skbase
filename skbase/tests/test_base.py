@@ -1474,9 +1474,9 @@ def test_get_class_tags_diamond_inheritance():
 
     tags = Diamond.get_class_tags()
 
-    assert tags["A"] == 42, (
-        "Mixin tag override was lost due to incorrect MRO tag resolution"
-    )
+    assert (
+        tags["A"] == 42
+    ), "Mixin tag override was lost due to incorrect MRO tag resolution"
     assert tags["B"] == 2
 
     obj = Diamond()
