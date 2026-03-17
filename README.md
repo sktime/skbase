@@ -7,6 +7,36 @@
 `skbase` provides base classes for creating scikit-learn-like parametric objects,
 along with tools to make it easier to build your own packages that follow these design patterns.
 
+## What are skbase design patterns?
+
+`skbase` provides reusable base classes that follow consistent design
+patterns inspired by scikit-learn and sktime. These patterns make it easier
+to build structured, maintainable, and interoperable machine learning
+components.
+
+Key features include:
+
+- **Parameter management**: scikit-learn style `get_params` and `set_params`
+  interfaces.
+- **Tag system**: structured metadata handling inspired by sktime.
+- **Cloning & resetting**: easy re-instantiation of objects with the same configuration.
+- **Fitted parameter inspection**: consistent access to learned attributes.
+- **Object composition**: support for nesting and managing component BaseObjects.
+- **Configuration control**: instance-level configuration overrides.
+- **Parameter validation**: built-in validation patterns for safe initialization.
+
+In addition, `skbase` encourages clean coding practices:
+
+- All parameters must be explicit keyword arguments in `__init__`.
+- Parameters are stored as attributes with the same name.
+- Learned state attributes end with `_`.
+- All attributes are created in `__init__`.
+- Public attributes are documented clearly in the docstring.
+
+These patterns provide a clear design contract for building extensible,
+scikit-learn-compatible frameworks.
+
+
 :rocket: Version 0.13.1 is now available. Check out our
 [release notes](https://skbase.readthedocs.io/en/latest/changelog.html).
 
