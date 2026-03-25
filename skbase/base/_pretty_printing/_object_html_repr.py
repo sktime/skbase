@@ -74,7 +74,7 @@ def _params_to_html_table(estimator):
         The estimator whose ``get_params(deep=False)`` will be used.
 
     Returns
-  
+
     str
         HTML string of a ``<table>`` element, or empty string when the
         estimator has no parameters or no ``get_params`` method.
@@ -116,7 +116,7 @@ def _write_label_html(
     estimator=None,
 ):
     """Write labeled html with or without a dropdown with named details."""
-    out.write(f'<div class={outer_class!r}>')
+    out.write(f"<div class={outer_class!r}>")
     out.write(f'<div class="{inner_class} sk-toggleable">')
     name = html.escape(name)
 
@@ -138,7 +138,7 @@ def _write_label_html(
             else:
                 dropdown_content = (
                     f'<div class="sk-toggleable__content">'
-                    f'<pre>{name_details}</pre></div>'
+                    f"<pre>{name_details}</pre></div>"
                 )
         else:
             dropdown_content = (
