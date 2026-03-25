@@ -74,7 +74,7 @@ def _params_to_html_table(estimator):
         The estimator whose ``get_params(deep=False)`` will be used.
 
     Returns
-
+    -------
     str
         HTML string of a ``<table>`` element, or empty string when the
         estimator has no parameters or no ``get_params`` method.
