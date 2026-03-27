@@ -64,6 +64,7 @@ from skbase._exceptions import NotFittedError
 from skbase.base._clone_base import _check_clone, _clone
 from skbase.base._pretty_printing._object_html_repr import _object_html_repr
 from skbase.base._tagmanager import _FlagManager
+from skbase.config import get_config as get_global_config
 
 __author__: List[str] = ["fkiraly", "mloning", "RNKuhns", "tpvasconcelos"]
 __all__: List[str] = ["BaseEstimator", "BaseObject"]
@@ -751,7 +752,23 @@ class BaseObject(_FlagManager):
             class attribute via nested inheritance and then any overrides
             and new tags from _onfig_dynamic object attribute.
         """
-        return self._get_flags(flag_attr_name="_config")
+        config = self._get_class_flags(flag_attr_name="_config")
+
+        # Update with global config
+        global_config = get_global_config()
+        config.update(global_config)
+
+        # Update with extension config if available
+        if hasattr(self, "__skbase_get_config__"):
+            extension_config = self.__skbase_get_config__()
+            if isinstance(extension_config, dict):
+                config.update(extension_config)
+
+        # Update with local config overrides (highest priority)
+        if hasattr(self, "_config_dynamic"):
+            config.update(self._config_dynamic)
+
+        return config
 
     def set_config(self, **config_dict):
         """Set config flags to given values.
