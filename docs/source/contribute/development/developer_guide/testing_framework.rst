@@ -7,8 +7,8 @@ Testing Framework
 .. note::
 
     This page explains ``skbase``'s testing framework with an emphasis on how
-    the package's developers are expected to interact with the test suite. If
-    you are a developer and want to learn how you can use the ``skbase``
+    the package's developers  are expected to interact with the test suite. If
+    you are developer and want to learn how you can use the ``skbase``
     testing framework to develop your own package, see our
     :ref:`testing user guide <user_guide_testing>`.
 
@@ -60,36 +60,95 @@ Test module architecture
 
 ``skbase`` uses a tiered approach to test its functionality:
 
-- *Package level* tests in ``skbase/tests/test_base.py`` verify the
-  ``BaseObject`` interface and core behaviour shared by all objects.
+- *package level* tests in ``tests/test_base.py`` are designed to verify the
+  ``BaseObject`` interface
 
-- *Module level* tests are focused on verifying the compliance of a concrete
+- *module level* tests are focused on verifying the compliance of a concrete
   class with the ``BaseObject`` contract. These live alongside the module
   they test in ``test_all_[name_of_class].py`` files.
 
-- *Low level* tests in the ``tests`` folders in each module verify the
-  functionality of individual code artifacts (functions and helpers).
+- *low level* tests in the ``tests`` folders in each module are used to verify the
+  functionality of individual code artifacts
 
-Module conventions
-------------------
+Module conventions are as follows:
 
-* Each module contains a ``tests`` folder with tests specific to that module.
-
-  * Sub-modules may also contain ``tests`` folders.
-  * *Module* tests focused on testing a specific class interface should
-    contain a file ``test_all_[name_of_class].py``.
-
+* Each module contains a ``tests`` folder that contains tests specific to that module.
+    * Sub-modules may also contain ``tests`` folders.
+    * *module* tests focused on testing a specific class interface should contain a file
+      ``test_all_[name_of_class].py``
 * ``tests`` folders may contain ``_config.py`` files to collect test
-  configuration settings for that module.
-* *Module* and *low level* tests should not repeat tests performed at a
-  higher level.
+  configuration settings for that modules
+* *module* and *low* level tests should not repeat tests performed at a higher level
 
+
+Writing and registering new tests for scikit-base
+=================================================
+
+Adding a new ``BaseObject`` subclass to the test suite
+------------------------------------------------------
+
+To have your new subclass automatically picked up by ``skbase``'s test suite:
+
+1. **Implement ``get_test_params``** on your class
+   (see :ref:`providing-test-params` below).
+
+2. **Ensure the class is importable** from the package specified in
+   ``BaseFixtureGenerator.package_name``. The framework uses
+   ``skbase.lookup.all_objects`` to discover classes.
+
+3. The existing ``TestAllObjects`` tests will automatically run on your
+   new class when you execute ``pytest``.
+
+Adding new test methods
+-----------------------
+
+To add a new test that runs on every ``BaseObject`` in ``skbase``:
+
+1. Create a new method on a class inheriting from
+   ``BaseFixtureGenerator`` and ``QuickTester`` (or add it to
+   ``TestAllObjects``).
+
+2. Name the method ``test_*`` so ``pytest`` discovers it.
+
+3. Use ``object_class`` and/or ``object_instance`` as parameters — they are
+   automatically parameterized by the fixture generator.
+
+.. code-block:: python
+
+    class TestAllObjects(BaseFixtureGenerator, QuickTester):
+
+        def test_my_custom_check(self, object_instance):
+            """Check a custom invariant on all BaseObject instances."""
+            params = object_instance.get_params()
+            assert isinstance(params, dict)
+
+Excluding tests for specific classes
+-------------------------------------
+
+If a test should be skipped for a particular class, add an entry to the
+``excluded_tests`` dictionary:
+
+.. code-block:: python
+
+    class MyTestSuite(BaseFixtureGenerator, QuickTester):
+        excluded_tests = {
+            "MySpecialClass": ["test_clone", "test_set_params"],
+        }
+
+
+Using ``skbase.testing`` in third-party packages
+=================================================
+
+The ``skbase.testing`` module provides a reusable testing framework that
+third-party packages building on ``skbase`` can use to test their own
+``BaseObject`` subclasses. By inheriting from the classes below and pointing
+``package_name`` at your own package, you get a full test suite with minimal
+boilerplate.
 
 The ``skbase.testing`` module
-=============================
+-----------------------------
 
-The ``skbase.testing`` module provides three key classes that form the
-backbone of the testing framework:
+The module provides three key classes:
 
 * ``BaseFixtureGenerator`` — generates parameterized test fixtures from
   discovered ``BaseObject`` subclasses.
@@ -101,12 +160,22 @@ backbone of the testing framework:
 
 
 ``BaseFixtureGenerator``
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``BaseFixtureGenerator`` automatically discovers all ``BaseObject``
 subclasses in a given package and generates ``pytest`` fixtures for them.
 It plugs into ``pytest``'s ``pytest_generate_tests`` hook to parameterize
 tests with ``object_class`` and ``object_instance`` fixtures.
+
+To use it in your own package, subclass ``BaseFixtureGenerator`` and set
+``package_name``:
+
+.. code-block:: python
+
+    from skbase.testing import BaseFixtureGenerator, QuickTester
+
+    class MyPackageFixtureGenerator(BaseFixtureGenerator):
+        package_name = "my_package"
 
 Class variables that can be overridden by descendants:
 
@@ -131,7 +200,7 @@ Class variables that can be overridden by descendants:
 
 
 ``QuickTester``
----------------
+~~~~~~~~~~~~~~~
 
 ``QuickTester`` is a mixin class that adds the ``run_tests`` method. When
 mixed into a test class that also inherits from ``BaseFixtureGenerator``,
@@ -160,7 +229,7 @@ Key parameters of ``run_tests``:
 
 
 ``TestAllObjects``
-------------------
+~~~~~~~~~~~~~~~~~~
 
 ``TestAllObjects`` inherits from both ``BaseFixtureGenerator`` and
 ``QuickTester``. It contains the standard package-level tests that every
@@ -175,9 +244,21 @@ Key parameters of ``run_tests``:
 * ``test_clone`` — verifies that ``clone`` produces a correct copy.
 * ``test_repr`` / ``test_repr_html`` — checks string representations.
 
+To use ``TestAllObjects`` in your own package, subclass it and set
+``package_name``:
 
-Using the testing framework
-============================
+.. code-block:: python
+
+    from skbase.testing import TestAllObjects
+
+    class TestAllMyPackageObjects(TestAllObjects):
+        package_name = "my_package"
+
+Running ``pytest`` will then automatically discover and test all
+``BaseObject`` subclasses in ``my_package``.
+
+
+.. _providing-test-params:
 
 Providing test parameters with ``get_test_params``
 --------------------------------------------------
@@ -250,60 +331,6 @@ interactively:
 
 The ``results`` dictionary maps test-fixture identifiers to ``"PASSED"``
 or the exception that was raised.
-
-
-Writing and registering new tests
-=================================
-
-Adding a new ``BaseObject`` subclass to the test suite
-------------------------------------------------------
-
-To have your new subclass automatically picked up by the testing framework:
-
-1. **Implement ``get_test_params``** on your class (see above).
-
-2. **Ensure the class is importable** from the package specified in
-   ``BaseFixtureGenerator.package_name``. The framework uses
-   ``skbase.lookup.all_objects`` to discover classes.
-
-3. The existing ``TestAllObjects`` tests will automatically run on your
-   new class when you execute ``pytest``.
-
-Adding new test methods
------------------------
-
-To add a new test that runs on every ``BaseObject``:
-
-1. Create a new method on a class inheriting from
-   ``BaseFixtureGenerator`` and ``QuickTester`` (or add it to
-   ``TestAllObjects``).
-
-2. Name the method ``test_*`` so ``pytest`` discovers it.
-
-3. Use ``object_class`` and/or ``object_instance`` as parameters — they are
-   automatically parameterized by the fixture generator.
-
-.. code-block:: python
-
-    class TestAllObjects(BaseFixtureGenerator, QuickTester):
-
-        def test_my_custom_check(self, object_instance):
-            """Check a custom invariant on all BaseObject instances."""
-            params = object_instance.get_params()
-            assert isinstance(params, dict)
-
-Excluding tests for specific classes
--------------------------------------
-
-If a test should be skipped for a particular class, add an entry to the
-``excluded_tests`` dictionary:
-
-.. code-block:: python
-
-    class MyTestSuite(BaseFixtureGenerator, QuickTester):
-        excluded_tests = {
-            "MySpecialClass": ["test_clone", "test_set_params"],
-        }
 
 
 Testing utilities
