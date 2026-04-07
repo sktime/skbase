@@ -116,7 +116,6 @@ To add a new test that runs on every ``BaseObject`` in ``skbase``:
 .. code-block:: python
 
     class TestAllObjects(BaseFixtureGenerator, QuickTester):
-
         def test_my_custom_check(self, object_instance):
             """Check a custom invariant on all BaseObject instances."""
             params = object_instance.get_params()
@@ -173,6 +172,7 @@ To use it in your own package, subclass ``BaseFixtureGenerator`` and set
 .. code-block:: python
 
     from skbase.testing import BaseFixtureGenerator, QuickTester
+
 
     class MyPackageFixtureGenerator(BaseFixtureGenerator):
         package_name = "my_package"
@@ -251,6 +251,7 @@ To use ``TestAllObjects`` in your own package, subclass it and set
 
     from skbase.testing import TestAllObjects
 
+
     class TestAllMyPackageObjects(TestAllObjects):
         package_name = "my_package"
 
@@ -270,6 +271,7 @@ return a single ``dict`` or a ``list`` of ``dict``.
 .. code-block:: python
 
     from skbase.base import BaseObject
+
 
     class MyEstimator(BaseObject):
         def __init__(self, alpha=1.0, method="fast"):
