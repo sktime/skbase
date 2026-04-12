@@ -49,6 +49,12 @@ Maintenance
 * [MNT] [Dependabot](deps): Bump codecov/codecov-action
   from ``5`` to ``6`` (:pr:`538`) :user:`dependabot[bot]`
 
+Contributors
+------------
+:user:`Dreamstick9`,
+:user:`RecreationalMath`,
+:user:`WHOIM1205`
+
 
 [0.13.1] - 2026-01-25
 =====================
