@@ -32,21 +32,8 @@ class _FlagManager:
         """
         collected_flags = {}
 
-        # FIX (Issue #539): Iterate over the *full* MRO and skip only `object`.
-        #
-        # The previous code used `inspect.getmro(cls)[:-2]`, relying on the
-        # assumption that the last two MRO entries are always `BaseObject` and
-        # `object`. That assumption breaks under multiple inheritance.
-        #
-        # Python's C3 linearisation can push user-defined Mixin classes to the
-        # very end of the MRO (just before `object`). For example:
-        #
-        #   class MyObj(BaseObject, MyMixin): ...
-        #   # MRO: MyObj -> BaseObject -> _FlagManager -> MyMixin -> object
-        #
-        # Slicing with [:-2] drops `MyMixin`, permanently losing any flags it
-        # defines. The only safe sentinel is `object` itself (which never carries
-        # user-defined flags), so we skip it explicitly and iterate the rest.
+        # To ensure flags from Mixins placed after BaseObject in the MRO are not
+        # dropped, iterate over the full MRO and skip only the `object` sentinel.
         for parent_class in reversed(inspect.getmro(cls)):
             if parent_class is object:
                 continue
