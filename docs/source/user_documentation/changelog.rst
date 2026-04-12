@@ -51,6 +51,7 @@ Maintenance
 
 Contributors
 ------------
+
 :user:`Dreamstick9`,
 :user:`RecreationalMath`,
 :user:`WHOIM1205`
