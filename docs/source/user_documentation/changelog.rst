@@ -19,6 +19,37 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 
 Feature, bugfix, and maintenance release.
 
+Enhancements
+------------
+
+* [ENH] Added catch all exceptions block instead of just
+  catching ``ImportError`` & ``AttributeError`` in ``_safe_import``
+  (:pr:`494`) :user:`RecreationalMath`
+* [ENH] Catch expected ``FutureWarnings`` in ``test_tag_aliaser``
+  (:pr:`498`) :user:`Dreamstick9`
+* [ENH] Fix ``SparseEfficiencyWarning`` when comparing
+  sparse matrices in ``test_base.py`` (:pr:`496`) :user:`Dreamstick9`
+
+Fixes
+-----
+
+* [BUG] Fix ``__eq__`` missing class type check (:pr:`507`) :user:`WHOIM1205`
+
+Maintenance
+-----------
+
+* [MNT] Update legacy black dependency in pre-commit hook
+  (:pr:`500`) :user:`Dreamstick9`
+* [MNT] [Dependabot](deps): Bump actions/download-artifact from ``7`` to ``8``
+  (:pr:`505`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump actions/upload-artifact from ``6`` to ``7``
+  (:pr:`506`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps-dev): Update sphinx-issues requirement
+  from ``<6.0.0`` to ``<7.0.0`` (:pr:`534`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump codecov/codecov-action
+  from ``5`` to ``6`` (:pr:`538`) :user:`dependabot[bot]`
+
+
 [0.13.1] - 2026-01-25
 =====================
 
