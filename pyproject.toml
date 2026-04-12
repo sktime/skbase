@@ -193,6 +193,8 @@ convention = "numpy"
 
 [tool.bandit]
 exclude_dirs = ["*/tests/*", "*/testing/*"]
+
+[tool.setuptools]
 zip-safe = true
 
 [tool.setuptools.package-data]
