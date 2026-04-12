@@ -8,6 +8,7 @@ on:
   pull_request:
     branches:
       - main
+    types: [opened, synchronize]
   schedule:
     - cron: "0 6 * * 1"  # every Monday at 6am UTC
 
@@ -53,10 +54,8 @@ jobs:
             --exclude-newer ${{ matrix.exclude_newer }} \
             -e ".[all_extras,dev]" numpy pandas
 
-      - name: Show installed versions
-        run: |
-          python -c "import numpy; print('numpy:', numpy.__version__)"
-          python -c "import pandas; print('pandas:', pandas.__version__)"
+      - name: Show dependencies
+        run: python -m pip list
 
       - name: Run deep_equals tests
         run: |
