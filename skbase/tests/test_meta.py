@@ -214,6 +214,7 @@ def test_set_params_resets_fitted_state():
 # Regression test for Issue #539
 # ---------------------------------------------------------------------------
 
+
 def test_get_class_flags_preserves_mixin_tags():
     """Regression test for Issue #539.
 
@@ -246,16 +247,16 @@ def test_get_class_flags_preserves_mixin_tags():
     mro_classes = [c.__name__ for c in MyObj.__mro__]
 
     # Sanity-check: MyMixin should be near the tail (after BaseObject).
-    assert mro_classes.index("MyMixin") > mro_classes.index("BaseObject"), (
-        "Test setup error: MyMixin should appear after BaseObject in the MRO."
-    )
+    assert mro_classes.index("MyMixin") > mro_classes.index(
+        "BaseObject"
+    ), "Test setup error: MyMixin should appear after BaseObject in the MRO."
 
     collected = MyObj._get_class_flags()
 
     # Both own_tag and mixin_tag must be present.
-    assert "own_tag" in collected, (
-        "'own_tag' defined directly on MyObj was not collected."
-    )
+    assert (
+        "own_tag" in collected
+    ), "'own_tag' defined directly on MyObj was not collected."
     assert "mixin_tag" in collected, (
         "Regression (Issue #539): 'mixin_tag' from MyMixin was dropped by "
         "_get_class_flags.  The MRO slice [:-2] is being used again – revert "
