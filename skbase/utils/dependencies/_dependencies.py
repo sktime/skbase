@@ -221,8 +221,7 @@ def _check_soft_dependencies(
                 return False
             if pkg_version_req != SpecifierSet(""):
                 return pkg_env_version in pkg_version_req
-            else:
-                return True
+            return True
 
         pkg_version_reqs = []
         pkg_env_versions = []
@@ -275,7 +274,7 @@ def _check_soft_dependencies(
 
         # now we check compatibility with the version specifier if non-empty
         if not any(req_sat):
-            zp = zip(package_req, pkg_names, pkg_env_versions, req_sat)
+            zp = zip(package_req, pkg_names, pkg_env_versions, req_sat, strict=False)
             reqs_not_satisfied = [x for x in zp if x[3] is False]
             actual_vers = [f"{x[1]} {x[2]}" for x in reqs_not_satisfied]
             pkg_env_version_str = ", ".join(actual_vers)
@@ -465,10 +464,7 @@ def _check_python_version(
         return True
     # now we know that est_version is not compatible with sys_version
 
-    if isclass(obj):
-        class_name = obj.__name__
-    else:
-        class_name = type(obj).__name__
+    class_name = obj.__name__ if isclass(obj) else type(obj).__name__
 
     if not isinstance(msg, str):
         msg = (
@@ -542,10 +538,7 @@ def _check_env_marker(obj, package=None, msg=None, severity="error"):
         return True
     # now we know that est_marker is not compatible with the environment
 
-    if isclass(obj):
-        class_name = obj.__name__
-    else:
-        class_name = type(obj).__name__
+    class_name = obj.__name__ if isclass(obj) else type(obj).__name__
 
     if not isinstance(msg, str):
         msg = (
@@ -671,10 +664,7 @@ def _normalize_version(version):
     """
     if version is None:
         return None
-    if not isinstance(version, Version):
-        version_obj = Version(version)
-    else:
-        version_obj = version
+    version_obj = Version(version) if not isinstance(version, Version) else version
     normalized_version = f"{version_obj.major}.{version_obj.minor}.{version_obj.micro}"
     return normalized_version
 
@@ -727,13 +717,13 @@ def _raise_at_severity(
 
     if severity == "error":
         raise exception_type(msg)
-    elif severity == "warning":
+    if severity == "warning":
         warnings.warn(msg, category=warning_type, stacklevel=stacklevel)
     elif severity == "none":
-        return None
+        return
     else:
         raise ValueError(
             f"Error in calling {caller}, severity "
             f'argument must be "error", "warning", or "none", found {severity!r}.'
         )
-    return None
+    return

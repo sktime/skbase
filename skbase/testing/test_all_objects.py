@@ -9,7 +9,7 @@ import numbers
 import types
 from copy import deepcopy
 from inspect import getfullargspec, isclass, signature
-from typing import List
+from typing import ClassVar
 
 import numpy as np
 import pytest
@@ -23,7 +23,7 @@ from skbase.testing.utils.inspect import _get_args
 from skbase.utils.deep_equals import deep_equals
 from skbase.utils.dependencies import _check_soft_dependencies
 
-__author__: List[str] = ["fkiraly"]
+__author__: list[str] = ["fkiraly"]
 
 
 class BaseFixtureGenerator:
@@ -106,12 +106,12 @@ class BaseFixtureGenerator:
     valid_base_types = None
 
     # which sequence the conditional fixtures are generated in
-    fixture_sequence = ["object_class", "object_instance"]
+    fixture_sequence: ClassVar[list[str]] = ["object_class", "object_instance"]
 
     # which fixtures are indirect, e.g., have an additional pytest.fixture block
     #   to generate an indirect fixture at runtime. Example: object_instance
     #   warning: direct fixtures retain state changes within the same test
-    indirect_fixtures = ["object_instance"]
+    indirect_fixtures: ClassVar[list[str]] = ["object_instance"]
 
     def pytest_generate_tests(self, metafunc):
         """Test parameterization routine for pytest.
@@ -176,7 +176,7 @@ class BaseFixtureGenerator:
         fixts = [gen.replace("_generate_", "") for gen in gens]
 
         generator_dict = {}
-        for var, gen in zip(fixts, gens):
+        for var, gen in zip(fixts, gens, strict=False):
             generator_dict[var] = getattr(self, gen)
 
         return generator_dict
@@ -185,8 +185,7 @@ class BaseFixtureGenerator:
         """Shorthand to check whether test test_name is excluded for object est."""
         if self.excluded_tests is None:
             return False
-        else:
-            return test_name in self.excluded_tests.get(est.__name__, [])
+        return test_name in self.excluded_tests.get(est.__name__, [])
 
     # the following functions define fixture generation logic for pytest_generate_tests
     # each function is of signature (test_name:str, **kwargs) -> List of fixtures
@@ -419,36 +418,38 @@ class QuickTester:
 
             # if function is decorated with mark.parametrize, add variable settings
             # NOTE: currently this works only with single-variable mark.parametrize
-            if hasattr(test_fun, "pytestmark"):
-                if len([x for x in test_fun.pytestmark if x.name == "parametrize"]) > 0:
-                    # get the three lists from pytest
-                    (
-                        pytest_fixture_vars,
-                        pytest_fixture_prod,
-                        pytest_fixture_names,
-                    ) = self._get_pytest_mark_args(test_fun)
-                    # add them to the three lists from conditional fixtures
-                    fixture_vars, fixture_prod, fixture_names = self._product_fixtures(
-                        fixture_vars,
-                        fixture_prod,
-                        fixture_names,
-                        pytest_fixture_vars,
-                        pytest_fixture_prod,
-                        pytest_fixture_names,
-                    )
+            if (
+                hasattr(test_fun, "pytestmark")
+                and len([x for x in test_fun.pytestmark if x.name == "parametrize"]) > 0
+            ):
+                # get the three lists from pytest
+                (
+                    pytest_fixture_vars,
+                    pytest_fixture_prod,
+                    pytest_fixture_names,
+                ) = self._get_pytest_mark_args(test_fun)
+                # add them to the three lists from conditional fixtures
+                fixture_vars, fixture_prod, fixture_names = self._product_fixtures(
+                    fixture_vars,
+                    fixture_prod,
+                    fixture_names,
+                    pytest_fixture_vars,
+                    pytest_fixture_prod,
+                    pytest_fixture_names,
+                )
 
             def print_if_verbose(msg):
                 if int(verbose) > 0:
-                    print(msg)  # noqa: T001, T201
+                    print(msg)  # noqa: T201
 
             # loop B: for each test, we loop over all fixtures
-            for params, fixt_name in zip(fixture_prod, fixture_names):
+            for params, fixt_name in zip(fixture_prod, fixture_names, strict=False):
                 # this is needed because pytest unwraps 1-tuples automatically
                 # but subsequent code assumes params is k-tuple, no matter what k is
                 if len(fixture_vars) == 1:
                     params = (params,)
                 key = f"{test_name}[{fixt_name}]"
-                args = dict(zip(fixture_vars, params))
+                args = dict(zip(fixture_vars, params, strict=False))
 
                 for f in test_fun_vars:
                     if f not in args:
@@ -509,10 +510,7 @@ class QuickTester:
         """
         obj_generator_dict = generator_dict
 
-        if isclass(obj):
-            object_class = obj
-        else:
-            object_class = type(obj)
+        object_class = obj if isclass(obj) else type(obj)
 
         def _generate_object_class(test_name, **kwargs):
             return [object_class], [object_class.__name__]
@@ -573,10 +571,9 @@ class QuickTester:
             return [str(x) for x in obj]
 
         def get_id(mark):
-            if "ids" in mark.kwargs.keys():
+            if "ids" in mark.kwargs:
                 return mark.kwargs["ids"]
-            else:
-                return to_str(range(len(mark.args[1])))
+            return to_str(range(len(mark.args[1])))
 
         pytest_fixture_vars = [x.args[0] for x in marks]
         pytest_fixt_raw = [x.args[1] for x in marks]
@@ -618,16 +615,16 @@ class QuickTester:
         return fixture_vars_return, fixture_prod_return, fixture_names_return
 
     def _make_builtin_fixture_equivalents(self, name):
-        """Utility for QuickTester, creates equivalent fixtures for pytest runs."""
+        """Create equivalent fixtures for pytest runs."""
         import io
         import logging
         import tempfile
         from pathlib import Path
 
         values = {}
-        if "tmp_path" == name:
+        if name == "tmp_path":
             return Path(tempfile.mkdtemp())
-        if "capsys" == name:
+        if name == "capsys":
             # crude emulation using StringIO
             return type(
                 "Capsys",
@@ -639,12 +636,12 @@ class QuickTester:
                 },
             )()
 
-        if "monkeypatch" == name:
+        if name == "monkeypatch":
             from _pytest.monkeypatch import MonkeyPatch
 
             return MonkeyPatch()
 
-        if "caplog" == name:
+        if name == "caplog":
 
             class Caplog:
                 def __init__(self):
@@ -735,7 +732,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         assert hasattr(object_class, "get_class_tags")
         all_tags = object_class.get_class_tags()
         assert isinstance(all_tags, dict)
-        assert all(isinstance(key, str) for key in all_tags.keys())
+        assert all(isinstance(key, str) for key in all_tags)
         if hasattr(object_class, "_tags"):
             tags = object_class._tags
             msg = (
@@ -747,9 +744,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             if self.valid_tags is None:
                 invalid_tags = tags
             else:
-                invalid_tags = [
-                    tag for tag in tags.keys() if tag not in self.valid_tags
-                ]
+                invalid_tags = [tag for tag in tags if tag not in self.valid_tags]
             assert len(invalid_tags) == 0, (
                 f"_tags of {object_class} contains invalid tags: {invalid_tags}. "
                 f"For a list of valid tags, see {self.__class__.__name__}.valid_tags."
@@ -766,7 +761,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
     def test_inheritance(self, object_class):
         """Check that object inherits from BaseObject."""
         assert issubclass(object_class, BaseObject), (
-            f"object: {object_class} " f"is not a sub-class of " f"BaseObject."
+            f"object: {object_class} is not a sub-class of BaseObject."
         )
         # Usually should inherit only from one BaseObject type
         if self.valid_base_types is not None:
@@ -988,13 +983,13 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
     def test_valid_object_class_tags(self, object_class):
         """Check that object class tags are in self.valid_tags."""
         if self.valid_tags is None:
-            return None
-        for tag in object_class.get_class_tags().keys():
+            return
+        for tag in object_class.get_class_tags():
             assert tag in self.valid_tags
 
     def test_valid_object_tags(self, object_instance):
         """Check that object tags are in self.valid_tags."""
         if self.valid_tags is None:
-            return None
-        for tag in object_instance.get_tags().keys():
+            return
+        for tag in object_instance.get_tags():
             assert tag in self.valid_tags

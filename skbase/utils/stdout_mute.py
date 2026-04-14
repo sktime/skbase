@@ -35,7 +35,7 @@ class StdoutMute:
             self._stdout = sys.stdout
             sys.stdout = io.StringIO()
 
-    def __exit__(self, type, value, traceback):  # noqa: A002
+    def __exit__(self, type, value, traceback):
         """Context manager exit point."""
         # restore stdout if active
         # if not active, nothing needs to be done, since stdout was not replaced
@@ -49,7 +49,7 @@ class StdoutMute:
         # return statement not needed as type was None, but included for clarity
         return True
 
-    def _handle_exit_exceptions(self, type, value, traceback):  # noqa: A002
+    def _handle_exit_exceptions(self, type, value, traceback):
         """Handle exceptions raised during __exit__.
 
         Parameters

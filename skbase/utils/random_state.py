@@ -58,7 +58,7 @@ def set_random_state(estimator, random_state=None, deep=True, root_policy="copy"
             keys.append(key)
 
     seeds = sample_dependent_seed(random_state, n_seeds=len(keys))
-    to_set = dict(zip(keys, seeds))
+    to_set = dict(zip(keys, seeds, strict=False))
 
     if root_policy == "copy" and "random_state" in to_set:
         to_set["random_state"] = random_state_orig

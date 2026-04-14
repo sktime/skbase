@@ -4,13 +4,12 @@
 """Functionality for working with nested sequences."""
 
 import collections
-from typing import List
 
-__author__: List[str] = ["RNKuhns", "fkiraly"]
-__all__: List[str] = [
+__author__: list[str] = ["RNKuhns", "fkiraly"]
+__all__: list[str] = [
+    "_remove_single",
     "flatten",
     "is_flat",
-    "_remove_single",
     "unflat_len",
     "unflatten",
 ]
@@ -42,8 +41,7 @@ def _remove_single(x):
     """
     if len(x) == 1:
         return x[0]
-    else:
-        return x
+    return x
 
 
 def flatten(obj):
@@ -73,8 +71,7 @@ def flatten(obj):
         obj, (collections.abc.Iterable, collections.abc.Sequence)
     ) or isinstance(obj, str):
         return [obj]
-    else:
-        return type(obj)([y for x in obj for y in flatten(x)])
+    return type(obj)([y for x in obj for y in flatten(x)])
 
 
 def unflatten(obj, template):
@@ -109,7 +106,7 @@ def unflatten(obj, template):
     ls = [unflat_len(x) for x in template]
     for i in range(1, len(ls)):
         ls[i] += ls[i - 1]
-    ls = [0] + ls
+    ls = [0, *ls]
 
     res = [unflatten(obj[ls[i] : ls[i + 1]], template[i]) for i in range(len(ls) - 1)]
 
@@ -146,8 +143,7 @@ def unflat_len(obj):
         obj, (collections.abc.Iterable, collections.abc.Sequence)
     ) or isinstance(obj, str):
         return 1
-    else:
-        return sum([unflat_len(x) for x in obj])
+    return sum([unflat_len(x) for x in obj])
 
 
 def is_flat(obj):

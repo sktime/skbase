@@ -11,9 +11,9 @@ from skbase.utils._nested_iter import _remove_single, flatten, is_flat, unflatte
 
 __author__ = ["fkiraly", "RNKuhns"]
 __all__ = [
-    "_scalar_to_seq",
-    "_remove_type_text",
     "_format_seq_to_str",
+    "_remove_type_text",
+    "_scalar_to_seq",
     "make_strings_unique",
 ]
 
@@ -61,15 +61,12 @@ def _scalar_to_seq(scalar, sequence_type=None):
     # We'll treat str like regular scalar and not a sequence
     if isinstance(scalar, Sequence) and not isinstance(scalar, str):
         return scalar
-    elif sequence_type is None:
+    if sequence_type is None:
         return (scalar,)
-    elif issubclass(sequence_type, Sequence) and sequence_type != Sequence:
+    if issubclass(sequence_type, Sequence) and sequence_type != Sequence:
         # Note calling (scalar,) is done to avoid str unpacking
         return sequence_type((scalar,))  # type: ignore
-    else:
-        raise ValueError(
-            "`sequence_type` must be a subclass of collections.abc.Sequence."
-        )
+    raise ValueError("`sequence_type` must be a subclass of collections.abc.Sequence.")
 
 
 def _remove_type_text(input_):
@@ -80,8 +77,7 @@ def _remove_type_text(input_):
     m = re.match("^<class '(.*)'>$", input_)
     if m:
         return m[1]
-    else:
-        return input_
+    return input_
 
 
 def _format_seq_to_str(seq, sep=", ", last_sep=None, remove_type_text=True):
@@ -134,9 +130,9 @@ def _format_seq_to_str(seq, sep=", ", last_sep=None, remove_type_text=True):
     if isinstance(seq, str):
         return seq
     # Allow casting of scalars to strings
-    elif isinstance(seq, (int, float, bool, type)):
+    if isinstance(seq, (int, float, bool, type)):
         return _remove_type_text(seq)
-    elif not isinstance(seq, Sequence):
+    if not isinstance(seq, Sequence):
         raise TypeError(
             "`seq` must be a sequence or scalar str, int, float, bool or class."
         )

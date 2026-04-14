@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests for _check_soft_dependencies utility."""
 
+from typing import ClassVar
 from unittest.mock import patch
 
 import pytest
@@ -57,12 +58,12 @@ def test_check_soft_deps():
 
 def test_check_soft_dependencies_nested():
     """Test check_soft_dependencies with ."""
-    ALWAYS_INSTALLED = "pytest"  # noqa: N806
-    ALWAYS_INSTALLED2 = "numpy"  # noqa: N806
-    ALWAYS_INSTALLED_W_V = "pytest>=0.5.0"  # noqa: N806
-    ALWAYS_INSTALLED_W_V2 = "numpy>=0.1.0"  # noqa: N806
-    NEVER_INSTALLED = "nonexistent__package_foo_bar"  # noqa: N806
-    NEVER_INSTALLED_W_V = "pytest<0.1.0"  # noqa: N806
+    ALWAYS_INSTALLED = "pytest"
+    ALWAYS_INSTALLED2 = "numpy"
+    ALWAYS_INSTALLED_W_V = "pytest>=0.5.0"
+    ALWAYS_INSTALLED_W_V2 = "numpy>=0.1.0"
+    NEVER_INSTALLED = "nonexistent__package_foo_bar"
+    NEVER_INSTALLED_W_V = "pytest<0.1.0"
 
     # Test that the function does not raise an error when all dependencies are installed
     _check_soft_dependencies(ALWAYS_INSTALLED)
@@ -155,7 +156,7 @@ def test_check_python_version(
         mock_sys.version = "3.8.1"
 
     class DummyObjectClass(BaseObject):
-        _tags = {
+        _tags: ClassVar[dict] = {
             "python_version": ">=3.7.1",  # PEP 440 version specifier, e.g., ">=3.7"
             "python_dependencies": None,  # PEP 440 dependency strs, e.g., "pandas>=1.0"
             "env_marker": None,  # PEP 508 environment marker, e.g., "os_name=='posix'"

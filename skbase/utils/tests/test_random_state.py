@@ -36,10 +36,7 @@ def test_set_random_state(external, deep, root_policy):
             return set_random_state(
                 obj, random_state=42, deep=deep, root_policy=root_policy
             )
-        else:
-            return obj.set_random_state(
-                random_state=42, deep=deep, self_policy=root_policy
-            )
+        return obj.set_random_state(random_state=42, deep=deep, self_policy=root_policy)
 
     class DummyDummy(BaseObject):
         """Has no random_state attribute."""
@@ -47,7 +44,7 @@ def test_set_random_state(external, deep, root_policy):
         def __init__(self, foo):
             self.foo = foo
 
-            super(DummyDummy, self).__init__()
+            super().__init__()
 
     class SeedCompositionDummy(BaseObject):
         """Potentially composite object, for testing."""
@@ -56,7 +53,7 @@ def test_set_random_state(external, deep, root_policy):
             self.foo = foo
             self.random_state = random_state
 
-            super(SeedCompositionDummy, self).__init__()
+            super().__init__()
 
     simple = SeedCompositionDummy(foo=1, random_state=41)
     seedless = DummyDummy(foo=42)

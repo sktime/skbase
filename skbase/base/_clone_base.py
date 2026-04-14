@@ -20,7 +20,7 @@ Each element of DEFAULT_CLONE_PLUGINS inherits from BaseCloner, with methods:
 * clone(obj) -> type(obj) - method to clone obj
 """
 
-__all__ = ["_clone", "_check_clone"]
+__all__ = ["_check_clone", "_clone"]
 
 from skbase.base._clone_plugins import DEFAULT_CLONE_PLUGINS
 
@@ -110,7 +110,7 @@ def _check_clone(original, clone):
     self_params = original.get_params(deep=False)
 
     # check that all attributes are written to the clone
-    for attrname in self_params.keys():
+    for attrname in self_params:
         if not hasattr(clone, attrname):
             raise RuntimeError(
                 f"error in {original}.clone, __init__ must write all arguments "
@@ -118,7 +118,7 @@ def _check_clone(original, clone):
                 f"Please check __init__ of {original}."
             )
 
-    clone_attrs = {attr: getattr(clone, attr) for attr in self_params.keys()}
+    clone_attrs = {attr: getattr(clone, attr) for attr in self_params}
 
     # check equality of parameters post-clone and pre-clone
     clone_attrs_valid, msg = deep_equals(self_params, clone_attrs, return_msg=True)

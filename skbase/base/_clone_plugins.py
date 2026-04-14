@@ -15,13 +15,13 @@ Each element of DEFAULT_CLONE_PLUGINS inherits from BaseCloner, with methods:
 * clone(obj) -> type(obj) - method to clone obj
 """
 
-from functools import lru_cache
+from functools import cache
 from inspect import isclass
 
 
 # imports wrapped in functions to avoid exceptions on skbase init
 # wrapped in _safe_import to avoid exceptions on skbase init
-@lru_cache(maxsize=None)
+@cache
 def _is_sklearn_present():
     """Check whether scikit-learn is present."""
     from skbase.utils.dependencies import _check_soft_dependencies
@@ -29,7 +29,7 @@ def _is_sklearn_present():
     return _check_soft_dependencies("scikit-learn")
 
 
-@lru_cache(maxsize=None)
+@cache
 def _get_sklearn_clone():
     """Get sklearn's clone function."""
     from skbase.utils.dependencies._import import _safe_import
@@ -196,13 +196,12 @@ class _CloneCatchAll(BaseCloner):
 
         if not self.safe:
             return deepcopy(obj)
-        else:
-            raise TypeError(
-                "Cannot clone object '%s' (type %s): "
-                "it does not seem to be a scikit-base object or scikit-learn "
-                "estimator, as it does not implement a "
-                "'get_params' method." % (repr(obj), type(obj))
-            )
+        raise TypeError(
+            "Cannot clone object '%s' (type %s): "
+            "it does not seem to be a scikit-base object or scikit-learn "
+            "estimator, as it does not implement a "
+            "'get_params' method." % (repr(obj), type(obj))
+        )
 
 
 DEFAULT_CLONE_PLUGINS = [

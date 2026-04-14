@@ -7,8 +7,6 @@ The included functionality makes it easy to reuse scikit-learn and
 sktime design principles in your project.
 """
 
-from typing import List
-
 from skbase.base._base import BaseEstimator, BaseObject
 from skbase.base._meta import (
     BaseMetaEstimator,
@@ -17,12 +15,12 @@ from skbase.base._meta import (
     BaseMetaObjectMixin,
 )
 
-__author__: List[str] = ["mloning", "RNKuhns", "fkiraly"]
-__all__: List[str] = [
-    "BaseObject",
+__author__: list[str] = ["mloning", "RNKuhns", "fkiraly"]
+__all__: list[str] = [
     "BaseEstimator",
     "BaseMetaEstimator",
-    "BaseMetaObject",
     "BaseMetaEstimatorMixin",
+    "BaseMetaObject",
     "BaseMetaObjectMixin",
+    "BaseObject",
 ]

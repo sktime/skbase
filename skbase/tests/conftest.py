@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 """Common functionality for skbase unit tests."""
 
-from typing import List
+from typing import ClassVar
 
 from skbase.base import BaseEstimator, BaseObject
 
-__all__: List[str] = [
+__all__: list[str] = [
     "SKBASE_BASE_CLASSES",
-    "SKBASE_MODULES",
-    "SKBASE_PUBLIC_MODULES",
-    "SKBASE_PUBLIC_CLASSES_BY_MODULE",
     "SKBASE_CLASSES_BY_MODULE",
-    "SKBASE_PUBLIC_FUNCTIONS_BY_MODULE",
     "SKBASE_FUNCTIONS_BY_MODULE",
+    "SKBASE_MODULES",
+    "SKBASE_PUBLIC_CLASSES_BY_MODULE",
+    "SKBASE_PUBLIC_FUNCTIONS_BY_MODULE",
+    "SKBASE_PUBLIC_MODULES",
 ]
-__author__: List[str] = ["fkiraly", "RNKuhns"]
+__author__: list[str] = ["fkiraly", "RNKuhns"]
 
 # bug 442 fixed: metaclasses now discovered correctly on all Python versions
 IMPORT_CLS = ("CommonMagicMeta", "MagicAttribute")
@@ -332,7 +332,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
 class Parent(BaseObject):
     """Parent class to test BaseObject's usage."""
 
-    _tags = {"A": "1", "B": 2, "C": 1234, "3": "D"}
+    _tags: ClassVar[dict] = {"A": "1", "B": 2, "C": 1234, "3": "D"}
 
     def __init__(self, a="something", b=7, c=None):
         """Initialize the class."""
@@ -343,36 +343,31 @@ class Parent(BaseObject):
 
     def some_method(self):
         """To be implemented by child class."""
-        pass
 
 
 # Fixture class for testing tag system, child overrides tags
 class Child(Parent):
     """Child class that is child of FixtureClassParent."""
 
-    _tags = {"A": 42, "3": "E"}
-    __author__ = ["fkiraly", "RNKuhns"]
+    _tags: ClassVar[dict] = {"A": 42, "3": "E"}
+    __author__: ClassVar[list[str]] = ["fkiraly", "RNKuhns"]
 
     def some_method(self):
         """Child class' implementation."""
-        pass
 
     def some_other_method(self):
         """To be implemented in the child class."""
-        pass
 
 
 # Fixture class for testing tag system, child overrides tags
 class ClassWithABTrue(Parent):
     """Child class that sets A, B tags to True."""
 
-    _tags = {"A": True, "B": True}
-    __author__ = ["fkiraly", "RNKuhns"]
+    _tags: ClassVar[dict] = {"A": True, "B": True}
+    __author__: ClassVar[list[str]] = ["fkiraly", "RNKuhns"]
 
     def some_method(self):
         """Child class' implementation."""
-        pass
 
     def some_other_method(self):
         """To be implemented in the child class."""
-        pass

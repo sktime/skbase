@@ -84,9 +84,7 @@ def is_named_object_tuple(obj, object_type=None):
         object_type = BaseObject
     if not isinstance(obj, tuple) or len(obj) != 2:
         return False
-    if not isinstance(obj[0], str) or not isinstance(obj[1], object_type):
-        return False
-    return True
+    return isinstance(obj[0], str) and isinstance(obj[1], object_type)
 
 
 def is_sequence_named_objects(

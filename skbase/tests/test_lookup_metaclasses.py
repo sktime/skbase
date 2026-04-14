@@ -3,13 +3,12 @@
 
 import importlib
 import inspect
-from typing import List
 
 from skbase.lookup import get_package_metadata
 from skbase.lookup._lookup import _get_members_uw
 from skbase.utils.dependencies._import import CommonMagicMeta, MagicAttribute
 
-__author__: List[str] = ["SimonBlanke"]
+__author__: list[str] = ["SimonBlanke"]
 
 
 def test_get_members_uw_discovers_metaclass_classes():
