@@ -2,13 +2,7 @@
 name: Test deep_equals downwards compatibility
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
-    types: [opened, synchronize]
   schedule:
     - cron: "0 6 * * 1"  # every Monday at 6am UTC
 
