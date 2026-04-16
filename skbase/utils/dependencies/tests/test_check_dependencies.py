@@ -131,7 +131,7 @@ def test_check_soft_dependencies_case_sensitive():
     assert _check_soft_dependencies("sCiKiT.BaSe>=0.1.0", severity="none")
     assert _check_soft_dependencies("scikit_base>=0.1.0", severity="none")
 
-    # When case_sensitive=False, package names are case insensitive
+    # When case_sensitive=True, package names must match case exactly
     assert not _check_soft_dependencies("PyTest", case_sensitive=True, severity="none")
     assert not _check_soft_dependencies("NUMPY>0", case_sensitive=True, severity="none")
     assert not _check_soft_dependencies(
