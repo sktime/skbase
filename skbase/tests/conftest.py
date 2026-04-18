@@ -67,7 +67,7 @@ SKBASE_MODULES = (
     "skbase.utils.stdout_mute",
     "skbase.validate",
     "skbase.validate._named_objects",
-    "skbase.validate._types",
+    "skbase.validate._type_checks",
 )
 SKBASE_PUBLIC_MODULES = (
     "skbase",
@@ -205,7 +205,7 @@ SKBASE_PUBLIC_FUNCTIONS_BY_MODULE = {
         "sample_dependent_seed",
         "set_random_state",
     ),
-    "skbase.validate._types": ("check_sequence", "check_type", "is_sequence"),
+    "skbase.validate._type_checks": ("check_sequence", "check_type", "is_sequence"),
 }
 SKBASE_FUNCTIONS_BY_MODULE = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.copy()
 SKBASE_FUNCTIONS_BY_MODULE.update(
@@ -319,7 +319,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "is_sequence_named_objects",
             "_named_baseobject_error_msg",
         ),
-        "skbase.validate._types": (
+        "skbase.validate._type_checks": (
             "check_sequence",
             "check_type",
             "is_sequence",
