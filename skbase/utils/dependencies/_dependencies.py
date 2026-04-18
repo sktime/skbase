@@ -358,7 +358,10 @@ def _norm_pkgname(pkg_name):
     -------
     str : normalized package name pkg_name, lowercased and with . and _ replaced by -
     """
-    return pkg_name.lower().replace("_", "-").replace(".", "-")
+    import re
+
+    pkg_name = re.sub(r"[-_.]+", "-", pkg_name).lower()
+    return pkg_name
 
 
 def _get_installed_packages(lowercase=False):
