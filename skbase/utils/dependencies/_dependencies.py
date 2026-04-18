@@ -360,7 +360,7 @@ def _norm_pkgname(pkg_name):
     """
     import re
 
-    pkg_name = re.sub(r"[-_.]+", "-", pkg_name).lower()
+    pkg_name = re.sub(r"[-_.]+", "-", pkg_name).lower()  # noqa: PD005
     return pkg_name
 
 
