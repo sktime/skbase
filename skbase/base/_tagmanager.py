@@ -38,10 +38,7 @@ class _FlagManager:
             if parent_class is object:
                 continue
             if flag_attr_name in parent_class.__dict__:
-                # Need the if here because mixins might not have _more_flags
-                # but might do redundant work in estimators
-                # (i.e. calling more flags on BaseEstimator multiple times)
-                # Check __dict__ instead of getattr, to avoid MRO-inherited duplicates
+                # Check own __dict__ to avoid MRO-inherited duplicates
                 more_flags = parent_class.__dict__[flag_attr_name]
                 collected_flags.update(more_flags)
 
