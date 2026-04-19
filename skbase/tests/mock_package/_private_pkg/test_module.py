@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
-"""Private module in mock package for lookup non-public coverage."""
+"""Private module in mock package for non-public lookup coverage."""
 
 from skbase.base import BaseObject
 
 
 class PrivateModuleClass(BaseObject):
-    """Publicly named class living in a private module."""
+    """Represent a publicly named class in a private module."""
 
 
 class _PrivateModuleHiddenClass(BaseObject):
-    """Non-public class living in a private module."""
+    """Represent a non-public class in a private module."""
 
 
 def private_module_public_function():
-    """Function with public name in a private module."""
+    """Return marker for a public function in a private module."""
     return "visible-only-when-non-public-modules-included"
 
 
 def _private_module_hidden_function():
-    """Function with private name in a private module."""
+    """Return marker for a private function in a private module."""
     return "visible-only-when-non-public-items-included"
 
 
