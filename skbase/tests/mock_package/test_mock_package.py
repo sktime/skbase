@@ -118,9 +118,7 @@ MOCK_PACKAGE_CLASSES_BY_MODULE = {
 
 # Expected public functions by module for validation
 MOCK_PACKAGE_PUBLIC_FUNCTIONS_BY_MODULE = {
-    "skbase.tests.mock_package._private_module": (
-        "private_module_public_function",
-    ),
+    "skbase.tests.mock_package._private_module": ("private_module_public_function",),
     "skbase.tests.mock_package.test_module_public": (
         "decorated_function",
         "my_decorator",
