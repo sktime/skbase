@@ -57,6 +57,14 @@ Maintenance
 * [MNT] downwards compatibility testing for ``deep_equals``
   (:pr:`537`) :user:`sid200727`
 
+Contributors
+------------
+
+:user:`fkiraly`,
+:user:`sid200727`,
+:user:`SimonBlanke`,
+:user:`WHOIM1205`,
+:user:`vedant21-oss`
 
 [0.13.2] - 2026-04-12
 =====================
