@@ -125,7 +125,7 @@ jobs:
 
   test-integrations:
     needs: code-quality
-    name: "inrTEGRATIONS - ${{ matrix.name }}"
+    name: "integrations - ${{ matrix.name }}"
     runs-on: ubuntu-latest
 
     strategy:
