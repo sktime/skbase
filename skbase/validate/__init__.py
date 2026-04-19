@@ -10,7 +10,7 @@ from skbase.validate._named_objects import (
     is_named_object_tuple,
     is_sequence_named_objects,
 )
-from skbase.validate._types import check_sequence, check_type, is_sequence
+from skbase.validate._type_checks import check_sequence, check_type, is_sequence
 
 __author__: List[str] = ["RNKuhns", "fkiraly"]
 __all__: List[str] = [

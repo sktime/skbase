@@ -79,16 +79,26 @@ def _check_soft_dependencies(
 
     case_sensitive : bool, default=False
         whether package names are case sensitive or not.
-        pypi package names are case sensitive, but pypi disallows
+        pypi package names can be case sensitive, but pypi disallows
         multiple package names that differ only in case.
         Hence there is at most a single correct case for a given package name,
         and a user will most likely intend to refer to the correct package,
         even when providing an incorrect case for the pypi name.
 
+        Package names may also contain symbols ``.``, ``-``, and ``_``,
+        but PEP 503 declares that these are equivalent for normalized package naming;
+        similarly, there can be no pypi packages whose names differ only in these
+        symbols, or case.
+
         * If set to True, package names are case sensitive, and the check will fail
           if the correct case is not provided, e.g., ``mapie`` instead of ``MAPIE``.
+          Symbols ``.``, ``-``, and ``_`` are also not considered equivalent.
         * If set to False, package names are case insensitive, and the check will pass
           for all case combinations, e.g., ``mapie``, ``MAPIE``, ``Mapie``, ``mApIe``.
+          Symbols ``.``, ``-``, and ``_`` are also considered equivalent, and the check
+          will pass for all equivalent combinations
+          e.g., ``my-pkg``, ``mY_pkg``, and ``my.PkG`` are all considered the same
+          package name.
 
     Raises
     ------
@@ -161,11 +171,16 @@ def _check_soft_dependencies(
 
         case_sensitive : bool, default=False
             whether package names are case sensitive or not.
-            pypi package names are case sensitive, but pypi disallows
+            pypi package names can be case sensitive, but pypi disallows
             multiple package names that differ only in case.
             Hence there is at most a single correct case for a given package name,
             and a user will most likely intend to refer to the correct package,
             even when providing an incorrect case for the pypi name.
+
+            Package names may also contain symbols ``.``, ``-``, and ``_``,
+            but PEP 503 declares that these are equivalent for normalized package
+            naming; similarly, there can be no pypi packages whose names differ
+            only in these symbols, or case.
 
             * If set to True, package names are case sensitive, and None is returned
               if the correct case is not provided, e.g., ``mapie`` instead of ``MAPIE``.
@@ -206,7 +221,7 @@ def _check_soft_dependencies(
 
     # each element of the list "package" must be satisfied
     for package_req in packages:
-        # for elemehts, two cases can happen:
+        # for elements, two cases can happen:
         #
         # 1. package is a string, e.g., "pandas". Then this must be present.
         # 2. package is a tuple or list, e.g., ("pandas", "scikit-learn").
@@ -324,8 +339,29 @@ def _get_installed_packages_private(lowercase=False):
     # the "version" contract ensures we always get the version that corresponds
     # to the importable distribution, i.e., the top one in the sys.path.
     if lowercase:
-        package_versions = {k.lower(): v for k, v in package_versions.items()}
+        package_versions = {_norm_pkgname(k): v for k, v in package_versions.items()}
+
     return package_versions
+
+
+def _norm_pkgname(pkg_name):
+    """Normalize package name by lowercasing and replacing . and _ with -.
+
+    Carries out normalization as described in PEP 503.
+
+    Parameters
+    ----------
+    pkg_name : str
+        name of the package to normalize.
+
+    Returns
+    -------
+    str : normalized package name pkg_name, lowercased and with . and _ replaced by -
+    """
+    import re
+
+    pkg_name = re.sub(r"[-_.]+", "-", pkg_name).lower()  # noqa: PD005
+    return pkg_name
 
 
 def _get_installed_packages(lowercase=False):
@@ -361,11 +397,16 @@ def _get_pkg_version(package_name, case_sensitive=False):
 
     case_sensitive : bool, default=False
         whether package names are case sensitive or not.
-        pypi package names are case sensitive, but pypi disallows
+        pypi package names can be case sensitive, but pypi disallows
         multiple package names that differ only in case.
         Hence there is at most a single correct case for a given package name,
         and a user will most likely intend to refer to the correct package,
         even when providing an incorrect case for the pypi name.
+
+        Package names may also contain symbols ``.``, ``-``, and ``_``,
+        but PEP 503 declares that these are equivalent for normalized package naming;
+        similarly, there can be no pypi packages whose names differ only in these
+        symbols, or case.
 
         * If set to True, package names are case sensitive, and None is returned
           if the correct case is not provided, e.g., ``mapie`` instead of ``MAPIE``.
@@ -379,7 +420,7 @@ def _get_pkg_version(package_name, case_sensitive=False):
     """
     pkgs = _get_installed_packages(lowercase=not case_sensitive)
     if not case_sensitive:
-        package_name = package_name.lower()
+        package_name = _norm_pkgname(package_name)
     pkg_vers_str = pkgs.get(package_name, None)
     if pkg_vers_str is None:
         return None
