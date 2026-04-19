@@ -21,11 +21,24 @@ Increment version to 1.0.0 to mark long-term API stable releases of ``skbase``.
 
 Minor feature release.
 
+Core interface changes
+----------------------
+
+Tag inheritance resolution in ``get_tags`` and ``get_class_tags`` now uses all parent
+classes in MRO, and resolves diamond inheritance the same way as Python proper.
+
+``scikit-base`` no longer expects ``BaseObject`` to be the top level base class for
+all objects in the ecosystem, allowing mixin and other base classes to be used without
+API non-compliance.
+
 Enhancements
 ------------
 
 * [ENH] change ``_MetaObjectMixin._check_objects`` default
   for ``attr_name`` to auto-detect (:pr:`466`) :user:`SimonBlanke`
+* [ENH] change tag resolution in ``_get_class_flags`` to use all parent classes in MRO,
+  and check for tag in class dict
+  instead of using ``getattr`` (:pr:`540`) :user:`vedant21-oss`
 
 Fixes
 -----
