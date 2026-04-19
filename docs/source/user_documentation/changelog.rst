@@ -21,6 +21,9 @@ Increment version to 1.0.0 to mark long-term API stable releases of ``skbase``.
 
 Minor feature release.
 
+Tag inheritance resolution have changed to encompass diamond inheritance
+and mixed base class situations, see below for details.
+
 Core interface changes
 ----------------------
 
