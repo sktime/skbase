@@ -32,6 +32,8 @@ Fixes
 
 * [BUG] normalize package names in ``_check_soft_dependencies``
   following PEP 503 (:pr:`544`) :user:`fkiraly`
+* [BUG] Fix incorrect tag resolution in ``_get_class_flags`` with diamond inheritance
+  (:pr:`511`) :user:`WHOIM1205`
 
 Maintenance
 -----------
