@@ -21,6 +21,12 @@ Increment version to 1.0.0 to mark long-term API stable releases of ``skbase``.
 
 Minor feature release.
 
+Enhancements
+------------
+
+* [ENH] change ``_MetaObjectMixin._check_objects`` default
+  for ``attr_name`` to auto-detect (:pr:`466`) :user:`SimonBlanke`
+
 Fixes
 -----
 
