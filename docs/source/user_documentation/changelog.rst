@@ -21,6 +21,18 @@ Minor feature release.
 
 Increment version to 1.0.0 to mark long-term API stable release of ``skbase``.
 
+Fixes
+-----
+
+* [BUG] normalize package names in ``_check_soft_dependencies``
+  following PEP 503 (:pr:`544`) :user:`fkiraly`
+
+Maintenance
+-----------
+
+* [MNT] downwards compatibility testing for ``deep_equals``
+  (:pr:`537`) :user:`sid200727`
+
 
 [0.13.2] - 2026-04-12
 =====================
