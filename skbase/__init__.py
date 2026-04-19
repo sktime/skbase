@@ -7,4 +7,4 @@ The included functionality makes it easy to reuse scikit-learn and
 sktime design principles in your project.
 """
 
-__version__: str = "0.13.2"
+__version__: str = "1.0.0"

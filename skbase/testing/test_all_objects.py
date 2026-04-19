@@ -763,6 +763,34 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
                 f"object tags."
             )
 
+    def test_class_tags_match_mro(self, object_class):
+        """Check that class tags correctly reflect the full MRO.
+
+        Based on the bugfix for Issue #539: Python's C3 linearisation can place
+        mixins after BaseObject in the MRO. class flags/tags should therefore
+        be collected from the entire MRO, excluding only `object`.
+        """
+        collected_tags = object_class.get_class_tags()
+
+        expected_tags = {}
+        for parent_class in reversed(object_class.__mro__):
+            if parent_class is object:
+                continue
+            if hasattr(parent_class, "_tags") and isinstance(parent_class._tags, dict):
+                expected_tags.update(parent_class._tags)
+
+        # Ensure all tags defined somewhere in the MRO appear correctly in the
+        # collected tags.
+        for tag_name, tag_value in expected_tags.items():
+            assert tag_name in collected_tags, (
+                f"Tag {tag_name!r} defined in MRO of {object_class.__name__} was "
+                f"dropped. Expected value: {tag_value}."
+            )
+            assert collected_tags[tag_name] == tag_value, (
+                f"Tag {tag_name!r} in {object_class.__name__} has mismatched value. "
+                f"Expected {tag_value}, got {collected_tags[tag_name]}."
+            )
+
     def test_inheritance(self, object_class):
         """Check that object inherits from BaseObject."""
         assert issubclass(object_class, BaseObject), (
