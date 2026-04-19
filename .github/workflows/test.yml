@@ -121,4 +121,53 @@ jobs:
           python -m pytest
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
+
+  test-integrations:
+    needs: code-quality
+    name: "integrations - ${{ matrix.name }}"
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # a few months before numpy 2 release (numpy 2.0 was June 2024)
+          - name: "numpy-1"
+            python-version: "3.10"
+            exclude_newer: "2024-01-01"
+
+          # pandas 1.x era
+          - name: "pandas-1"
+            python-version: "3.10"
+            exclude_newer: "2023-01-01"
+
+          # pandas 2.x era (pandas 2.0 was April 2023)
+          - name: "pandas-2"
+            python-version: "3.10"
+            exclude_newer: "2024-06-01"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install skbase with version cutoff
+        run: |
+          uv pip install --system \
+            --exclude-newer ${{ matrix.exclude_newer }} \
+            -e ".[all_extras,dev,test]"
+
+      - name: Show dependencies
+        run: python -m pip list
+
+      - name: Run deep_equals tests
+        run: |
+          python -m pytest skbase/utils/tests/test_deep_equals.py -v

@@ -63,7 +63,7 @@ SKBASE_MODULES = (
     "skbase.utils.stdout_mute",
     "skbase.validate",
     "skbase.validate._named_objects",
-    "skbase.validate._types",
+    "skbase.validate._type_checks",
 )
 SKBASE_PUBLIC_MODULES = (
     "skbase",
