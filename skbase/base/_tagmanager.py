@@ -32,9 +32,11 @@ class _FlagManager:
         """
         collected_flags = {}
 
-        # We exclude the last two parent classes: sklearn.base.BaseEstimator and
-        # the basic Python object.
-        for parent_class in reversed(inspect.getmro(cls)[:-2]):
+        # To ensure flags from Mixins placed after BaseObject in the MRO are not
+        # dropped, iterate over the full MRO and skip only the `object` sentinel.
+        for parent_class in reversed(inspect.getmro(cls)):
+            if parent_class is object:
+                continue
             if flag_attr_name in parent_class.__dict__:
                 # Check own __dict__ to avoid MRO-inherited duplicates
                 more_flags = parent_class.__dict__[flag_attr_name]
