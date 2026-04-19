@@ -6,6 +6,8 @@ from typing import List
 
 from skbase.base import BaseObject
 
+from .test_fixtures import Child, ClassWithABTrue, Parent
+
 __all__: List[str] = [
     "CompositionDummy",
     "InheritsFromBaseObject",
@@ -72,4 +74,96 @@ MOCK_PACKAGE_OBJECTS = [
     CompositionDummy,
     InheritsFromBaseObject,
     _NonPublicClass,
+    Parent,
+    Child,
+    ClassWithABTrue,
 ]
+
+# Expected public classes by module for validation
+MOCK_PACKAGE_PUBLIC_CLASSES_BY_MODULE = {
+    "skbase.tests.mock_package._private_pkg.test_module": ("PrivateModuleClass",),
+    "skbase.tests.mock_package.test_mock_package": (
+        "AnotherClass",
+        "CompositionDummy",
+        "InheritsFromBaseObject",
+        "NotABaseObject",
+    ),
+    "skbase.tests.mock_package.test_fixtures": (
+        "Child",
+        "ClassWithABTrue",
+        "Parent",
+    ),
+}
+
+# Expected all classes by module (including non-public) for validation
+MOCK_PACKAGE_CLASSES_BY_MODULE = {
+    "skbase.tests.mock_package._private_pkg.test_module": (
+        "PrivateModuleClass",
+        "_PrivateModuleHiddenClass",
+    ),
+    "skbase.tests.mock_package.test_mock_package": (
+        "AnotherClass",
+        "CompositionDummy",
+        "InheritsFromBaseObject",
+        "NotABaseObject",
+        "_NonPublicClass",
+    ),
+    "skbase.tests.mock_package.test_fixtures": (
+        "Child",
+        "ClassWithABTrue",
+        "Parent",
+    ),
+    "skbase.tests.mock_package.test_private_module": ("_PrivateThing",),
+}
+
+# Expected public functions by module for validation
+MOCK_PACKAGE_PUBLIC_FUNCTIONS_BY_MODULE = {
+    "skbase.tests.mock_package._private_pkg.test_module": (
+        "private_module_public_function",
+    ),
+    "skbase.tests.mock_package.test_module_public": (
+        "decorated_function",
+        "my_decorator",
+        "simple_function",
+    ),
+    "skbase.tests.mock_package.subpkg.test_module_b": ("subpkg_fn",),
+}
+
+# Expected all functions by module (including non-public) for validation
+MOCK_PACKAGE_FUNCTIONS_BY_MODULE = {
+    "skbase.tests.mock_package._private_pkg.test_module": (
+        "private_module_public_function",
+        "_private_module_hidden_function",
+    ),
+    "skbase.tests.mock_package.test_module_public": (
+        "decorated_function",
+        "_private_helper",
+        "my_decorator",
+        "simple_function",
+    ),
+    "skbase.tests.mock_package.subpkg.test_module_b": ("subpkg_fn",),
+}
+
+# List of all public modules in mock package
+MOCK_PACKAGE_PUBLIC_MODULES = (
+    "skbase.tests.mock_package",
+    "skbase.tests.mock_package.subpkg",
+    "skbase.tests.mock_package.subpkg.test_module_b",
+    "skbase.tests.mock_package.test_fixtures",
+    "skbase.tests.mock_package.test_mock_package",
+    "skbase.tests.mock_package.test_module_public",
+    "skbase.tests.mock_package.test_private_module",
+)
+
+# List of all modules (including non-public) in mock package
+MOCK_PACKAGE_MODULES = (
+    "skbase.tests.mock_package",
+    "skbase.tests.mock_package._private_pkg",
+    "skbase.tests.mock_package._private_pkg.test_module",
+    "skbase.tests.mock_package.subpkg",
+    "skbase.tests.mock_package.subpkg.test_module_b",
+    "skbase.tests.mock_package.test_fixtures",
+    "skbase.tests.mock_package.test_mock_package",
+    "skbase.tests.mock_package.test_module_public",
+    "skbase.tests.mock_package.test_private_module",
+)
