@@ -17,9 +17,9 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 [1.0.0] - 2026-04-19
 ====================
 
-Minor feature release.
+Increment version to 1.0.0 to mark long-term API stable releases of ``skbase``.
 
-Increment version to 1.0.0 to mark long-term API stable release of ``skbase``.
+Minor feature release.
 
 Fixes
 -----
