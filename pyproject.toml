@@ -1,6 +1,6 @@
 [project]
 name = "scikit-base"
-version = "0.13.1"
+version = "1.0.0"
 description = "Base classes for sklearn-like parametric objects"
 authors = [
     {name = "sktime developers", email = "sktime.toolbox@gmail.com"},
@@ -70,7 +70,7 @@ docs = [
     "nbsphinx>=0.8.6",
     "numpydoc",
     "pydata-sphinx-theme",
-    "sphinx-issues<6.0.0",
+    "sphinx-issues<7.0.0",
     "sphinx-gallery<0.21.0",
     "sphinx-panels",
     "sphinx-design<0.7.0",
