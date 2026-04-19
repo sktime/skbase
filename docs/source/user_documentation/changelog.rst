@@ -14,6 +14,14 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[1.0.0] - 2026-04-19
+====================
+
+Minor feature release.
+
+Increment version to 1.0.0 to mark long-term API stable release of ``skbase``.
+
+
 [0.13.2] - 2026-04-12
 =====================
 
