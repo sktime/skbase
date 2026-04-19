@@ -783,11 +783,11 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
         # collected tags.
         for tag_name, tag_value in expected_tags.items():
             assert tag_name in collected_tags, (
-                f"Tag '{tag_name}' defined in MRO of {object_class.__name__} was "
+                f"Tag {tag_name!r} defined in MRO of {object_class.__name__} was "
                 f"dropped. Expected value: {tag_value}."
             )
             assert collected_tags[tag_name] == tag_value, (
-                f"Tag '{tag_name}' in {object_class.__name__} has mismatched value. "
+                f"Tag {tag_name!r} in {object_class.__name__} has mismatched value. "
                 f"Expected {tag_value}, got {collected_tags[tag_name]}."
             )
 
