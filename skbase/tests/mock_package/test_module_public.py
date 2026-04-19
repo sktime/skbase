@@ -23,4 +23,9 @@ def decorated_function(y):
     return y + 1
 
 
+def _private_helper(z):
+    """Private helper to exercise non-public function filtering."""
+    return z - 1
+
+
 __all__ = ["simple_function", "decorated_function"]
