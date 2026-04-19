@@ -37,11 +37,12 @@ class _FlagManager:
         for parent_class in reversed(inspect.getmro(cls)):
             if parent_class is object:
                 continue
-            if hasattr(parent_class, flag_attr_name):
+            if flag_attr_name in parent_class.__dict__:
                 # Need the if here because mixins might not have _more_flags
                 # but might do redundant work in estimators
                 # (i.e. calling more flags on BaseEstimator multiple times)
-                more_flags = getattr(parent_class, flag_attr_name)
+                # Check __dict__ instead of getattr, to avoid MRO-inherited duplicates
+                more_flags = parent_class.__dict__[flag_attr_name]
                 collected_flags.update(more_flags)
 
         return deepcopy(collected_flags)
