@@ -35,11 +35,9 @@ class _FlagManager:
         # We exclude the last two parent classes: sklearn.base.BaseEstimator and
         # the basic Python object.
         for parent_class in reversed(inspect.getmro(cls)[:-2]):
-            if hasattr(parent_class, flag_attr_name):
-                # Need the if here because mixins might not have _more_flags
-                # but might do redundant work in estimators
-                # (i.e. calling more flags on BaseEstimator multiple times)
-                more_flags = getattr(parent_class, flag_attr_name)
+            if flag_attr_name in parent_class.__dict__:
+                # Check own __dict__ to avoid MRO-inherited duplicates
+                more_flags = parent_class.__dict__[flag_attr_name]
                 collected_flags.update(more_flags)
 
         return deepcopy(collected_flags)
