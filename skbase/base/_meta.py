@@ -234,21 +234,10 @@ class _MetaObjectMixin:
         Self
             Instance of self.
         """
-        if not params:
-            return self
-
-        # Track whether we handle any params locally.
-        # This is needed because we pop params before calling super(),
-        # and if we pop ALL params, super() will return early without
-        # calling reset(), which would be inconsistent with BaseObject behavior.
-        # See issue #412.
-        params_handled_locally = False
-
         # Ensure strict ordering of parameter setting:
         # 1. All steps
         if attr in params:
             setattr(self, attr, params.pop(attr))
-            params_handled_locally = True
         # 2. Step replacement
         items = getattr(self, attr)
         names = []
@@ -257,15 +246,11 @@ class _MetaObjectMixin:
         for name in list(params.keys()):
             if "__" not in name and name in names:
                 self._replace_object(attr, name, params.pop(name))
-                params_handled_locally = True
         # 3. Step parameters and other initialisation arguments
         super().set_params(**params)  # type: ignore
 
-        # If we handled params locally and super() got nothing (empty dict),
-        # it would have returned early without calling reset().
-        # To maintain consistency with BaseObject, we must call reset() ourselves.
-        if params_handled_locally and not params:
-            self.reset()
+        # After the change to BaseObject.set_params, super().set_params will
+        # always perform reset when appropriate.
 
         return self
 
