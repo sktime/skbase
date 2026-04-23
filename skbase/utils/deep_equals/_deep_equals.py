@@ -142,7 +142,7 @@ def _numpy_equals_plugin(x, y, return_msg=False, deep_equals=None):
         return ret(False, f".shape, x.shape = {x.shape} != y.shape = {y.shape}")
     if x.dtype != y.dtype:
         return ret(False, f".dtype, x.dtype = {x.dtype} != y.dtype = {y.dtype}")
-    if x.dtype == "str":
+    if x.dtype == "str" or np.issubdtype(x.dtype, np.character):
         return ret(np.array_equal(x, y), ".values")
     elif x.dtype == "object":
         x_flat = x.flatten()
