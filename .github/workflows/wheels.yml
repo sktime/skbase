@@ -66,7 +66,7 @@ jobs:
     name: Test wheels on ${{ matrix.os }} with ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false  # to not fail all combinations if just one fail
+      fail-fast: false  # to not fail all combinations if just one fails
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
@@ -96,7 +96,7 @@ jobs:
         run: echo "WHEELNAME=$(ls ./wheelhouse/scikit_base-*none-any.whl)" >> $env:GITHUB_ENV
 
       - name: Install wheel and extras
-        run: python3 -m pip install "${{ env.WHEELNAME }}[all_extras,dev]"
+        run: python -m pip install "${{ env.WHEELNAME }}[all_extras,dev]"
 
       - name: Run tests
         run: python -m pytest
