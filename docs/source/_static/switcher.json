@@ -5,19 +5,29 @@
     "url": "https://skbase.readthedocs.io/en/latest/"
   },
   {
-    "name": "0.13.1 (stable)",
+    "name": "1.0.0 (stable)",
     "version": "stable",
-    "url": "https://skbase.readthedocs.io/en/v0.1265/"
+    "url": "https://skbase.readthedocs.io/en/v1.0.0/"
+  },
+  {
+    "name": "0.13.2",
+    "version": "stable",
+    "url": "https://skbase.readthedocs.io/en/v0.13.2/"
+  },
+  {
+    "name": "0.13.1",
+    "version": "stable",
+    "url": "https://skbase.readthedocs.io/en/v0.13.1/"
   },
   {
     "name": "0.13.0",
     "version": "stable",
-    "url": "https://skbase.readthedocs.io/en/v0.1265/"
+    "url": "https://skbase.readthedocs.io/en/v0.13.0/"
   },
   {
     "name": "0.12.6",
     "version": "stable",
-    "url": "https://skbase.readthedocs.io/en/v0.1265/"
+    "url": "https://skbase.readthedocs.io/en/v0.12.6/"
   },
   {
     "name": "0.12.5",
