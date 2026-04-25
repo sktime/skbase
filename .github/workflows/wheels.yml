@@ -89,11 +89,11 @@ jobs:
       # Set wheel filename differently for Unix vs Windows
       - name: Get wheel filename (Unix)
         if: runner.os != 'Windows'
-        run: echo "WHEELNAME=$(ls ./wheelhouse/sktime-*none-any.whl)" >> $GITHUB_ENV
+        run: echo "WHEELNAME=$(ls ./wheelhouse/scikit-base-*none-any.whl)" >> $GITHUB_ENV
 
       - name: Get wheel filename (Windows)
         if: runner.os == 'Windows'
-        run: echo "WHEELNAME=$(ls ./wheelhouse/sktime-*none-any.whl)" >> $env:GITHUB_ENV
+        run: echo "WHEELNAME=$(ls ./wheelhouse/scikit-base-*none-any.whl)" >> $env:GITHUB_ENV
 
       - name: Install wheel and extras
         run: python3 -m pip install "${{ env.WHEELNAME }}[all_extras,dev]"
