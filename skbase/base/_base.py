@@ -63,9 +63,9 @@ from typing import List
 from skbase._exceptions import NotFittedError
 from skbase.base._clone_base import _check_clone, _clone
 from skbase.base._pretty_printing._object_html_repr import _object_html_repr
-from skbase.base._tagmanager import _FlagManager
+from skbase.base._tagmanager import _DEFAULT_SENTINEL, _FlagManager
 
-__author__: List[str] = ["fkiraly", "mloning", "RNKuhns", "tpvasconcelos"]
+__author__: List[str] = ["fkiraly", "mloning", "RNKuhns", "tpvasconcelos", "Deep-Axe"]
 __all__: List[str] = ["BaseEstimator", "BaseObject"]
 
 
@@ -601,7 +601,9 @@ class BaseObject(_FlagManager):
         """
         return self._get_flags(flag_attr_name="_tags")
 
-    def get_tag(self, tag_name, tag_value_default=None, raise_error=True):
+    def get_tag(
+        self, tag_name, tag_value_default=_DEFAULT_SENTINEL, raise_error=True
+    ):
         """Get tag value from instance, with tag level inheritance and overrides.
 
         Every ``scikit-base`` compatible object has a dictionary of tags.
@@ -627,23 +629,28 @@ class BaseObject(_FlagManager):
         ----------
         tag_name : str
             Name of tag to be retrieved
-        tag_value_default : any type, optional; default=None
-            Default/fallback value if tag is not found
+        tag_value_default : any type, optional
+            Default/fallback value if tag is not found. When provided (including
+            ``None``), it is returned on a missing tag regardless of ``raise_error``.
+            When omitted, behaviour is controlled by ``raise_error``.
         raise_error : bool
-            whether a ``ValueError`` is raised when the tag is not found
+            Whether a ``ValueError`` is raised when the tag is not found.
+            Ignored when ``tag_value_default`` is explicitly provided.
 
         Returns
         -------
         tag_value : Any
-            Value of the ``tag_name`` tag in ``self``.
-            If not found, raises an error if
-            ``raise_error`` is True, otherwise it returns ``tag_value_default``.
+            Value of the ``tag_name`` tag in ``self``. If not found:
+            - ``tag_value_default`` is returned when it was explicitly provided,
+            - a ``ValueError`` is raised when ``raise_error=True`` and no default
+              was given,
+            - ``None`` is returned otherwise.
 
         Raises
         ------
-        ValueError, if ``raise_error`` is ``True``.
-            The ``ValueError`` is then raised if ``tag_name`` is
-            not in ``self.get_tags().keys()``.
+        ValueError
+            If ``tag_name`` is not in ``self.get_tags().keys()``, no default was
+            supplied, and ``raise_error`` is ``True``.
         """
         return self._get_flag(
             flag_name=tag_name,
@@ -1405,7 +1412,9 @@ class TagAliaserMixin:
         collected_tags = self._complete_dict(collected_tags)
         return collected_tags
 
-    def get_tag(self, tag_name, tag_value_default=None, raise_error=True):
+    def get_tag(
+        self, tag_name, tag_value_default=_DEFAULT_SENTINEL, raise_error=True
+    ):
         """Get tag value from instance, with tag level inheritance and overrides.
 
         Every ``scikit-base`` compatible object has a dictionary of tags.
@@ -1431,23 +1440,28 @@ class TagAliaserMixin:
         ----------
         tag_name : str
             Name of tag to be retrieved
-        tag_value_default : any type, optional; default=None
-            Default/fallback value if tag is not found
+        tag_value_default : any type, optional
+            Default/fallback value if tag is not found. When provided (including
+            ``None``), it is returned on a missing tag regardless of ``raise_error``.
+            When omitted, behaviour is controlled by ``raise_error``.
         raise_error : bool
-            whether a ``ValueError`` is raised when the tag is not found
+            Whether a ``ValueError`` is raised when the tag is not found.
+            Ignored when ``tag_value_default`` is explicitly provided.
 
         Returns
         -------
         tag_value : Any
-            Value of the ``tag_name`` tag in ``self``.
-            If not found, raises an error if
-            ``raise_error`` is True, otherwise it returns ``tag_value_default``.
+            Value of the ``tag_name`` tag in ``self``. If not found:
+            - ``tag_value_default`` is returned when it was explicitly provided,
+            - a ``ValueError`` is raised when ``raise_error=True`` and no default
+              was given,
+            - ``None`` is returned otherwise.
 
         Raises
         ------
-        ValueError, if ``raise_error`` is ``True``.
-            The ``ValueError`` is then raised if ``tag_name`` is
-            not in ``self.get_tags().keys()``.
+        ValueError
+            If ``tag_name`` is not in ``self.get_tags().keys()``, no default was
+            supplied, and ``raise_error`` is ``True``.
         """
         self._deprecate_tag_warn([tag_name])
         alias_dict = self.alias_dict

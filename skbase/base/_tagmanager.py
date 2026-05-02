@@ -10,6 +10,9 @@ __all__ = ["_FlagManager"]
 import inspect
 from copy import deepcopy
 
+# Sentinel distinguishes "caller passed no default" from "caller passed None".
+_DEFAULT_SENTINEL = object()
+
 
 class _FlagManager:
     """Mixin class for flag and configuration settings management."""
@@ -111,7 +114,7 @@ class _FlagManager:
     def _get_flag(
         self,
         flag_name,
-        flag_value_default=None,
+        flag_value_default=_DEFAULT_SENTINEL,
         raise_error=True,
         flag_attr_name="_flags",
     ):
@@ -121,33 +124,44 @@ class _FlagManager:
         ----------
         flag_name : str
             Name of flag to be retrieved.
-        flag_value_default : any type, default=None
-            Default/fallback value if flag is not found
+        flag_value_default : any type, default=_DEFAULT_SENTINEL
+            Default/fallback value if flag is not found. If provided (including
+            ``None``), it is returned when the flag is missing regardless of
+            ``raise_error``.
         raise_error : bool
-            Whether a `ValueError` is raised when the flag is not found.
+            Whether a ``ValueError`` is raised when the flag is not found.
+            Ignored if ``flag_value_default`` was explicitly supplied.
         flag_attr_name : str, default = "_flags"
             Name of the flag attribute that is read.
 
         Returns
         -------
         flag_value :
-            Value of the `flag_name` flag in self. If not found, returns an error if
-            raise_error is True, otherwise it returns `flag_value_default`.
+            Value of the ``flag_name`` flag in self. If not found:
+            - returns ``flag_value_default`` when it was explicitly provided, or
+            - raises ``ValueError`` when ``raise_error=True`` and no default given,
+            - returns ``None`` otherwise.
 
         Raises
         ------
         ValueError
-            if `raise_error` is `True`, i.e.,
-            if `flag_name` is not in `self.get_flags().keys()`
+            if ``flag_name`` is not found, no default was supplied, and
+            ``raise_error`` is ``True``.
         """
         collected_flags = self._get_flags(flag_attr_name=flag_attr_name)
 
-        flag_value = collected_flags.get(flag_name, flag_value_default)
+        if flag_name in collected_flags:
+            return collected_flags[flag_name]
 
-        if raise_error and flag_name not in collected_flags.keys():
+        # Flag not found: determine what to return.
+        if flag_value_default is not _DEFAULT_SENTINEL:
+            # Caller explicitly supplied a default; respect it unconditionally.
+            return flag_value_default
+
+        if raise_error:
             raise ValueError(f"Tag with name {flag_name} could not be found.")
 
-        return flag_value
+        return None
 
     def _set_flags(self, flag_attr_name="_flags", **flag_dict):
         """Set dynamic flags to given values.
