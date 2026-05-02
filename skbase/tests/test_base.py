@@ -377,7 +377,9 @@ def test_get_tag_default_bypasses_raise_error(fixture_tag_class_object: Child):
     """
     # Explicit string default, no raise_error=False needed
     val = fixture_tag_class_object.get_tag("bar", "fallback")
-    assert val == "fallback", "Expected 'fallback' when default supplied without raise_error=False"
+    assert (
+        val == "fallback"
+    ), "Expected 'fallback' when default supplied without raise_error=False"
 
     # Explicitly passing None as default should return None, not raise
     val_none = fixture_tag_class_object.get_tag("bar", None)

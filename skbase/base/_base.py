@@ -601,9 +601,7 @@ class BaseObject(_FlagManager):
         """
         return self._get_flags(flag_attr_name="_tags")
 
-    def get_tag(
-        self, tag_name, tag_value_default=_DEFAULT_SENTINEL, raise_error=True
-    ):
+    def get_tag(self, tag_name, tag_value_default=_DEFAULT_SENTINEL, raise_error=True):
         """Get tag value from instance, with tag level inheritance and overrides.
 
         Every ``scikit-base`` compatible object has a dictionary of tags.
@@ -1412,9 +1410,7 @@ class TagAliaserMixin:
         collected_tags = self._complete_dict(collected_tags)
         return collected_tags
 
-    def get_tag(
-        self, tag_name, tag_value_default=_DEFAULT_SENTINEL, raise_error=True
-    ):
+    def get_tag(self, tag_name, tag_value_default=_DEFAULT_SENTINEL, raise_error=True):
         """Get tag value from instance, with tag level inheritance and overrides.
 
         Every ``scikit-base`` compatible object has a dictionary of tags.
