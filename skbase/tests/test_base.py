@@ -65,6 +65,7 @@ __all__ = [
     "test_create_test_instances_and_names",
     "test_has_implementation_of",
     "test_eq_dunder",
+    "test_get_class_tags_diamond_inheritance",
 ]
 
 import inspect
@@ -1053,9 +1054,12 @@ def test_clone_none_and_empty_array_nan_sparse_matrix(
     new_base_obj = clone(base_obj)
     new_base_obj2 = base_obj.clone()
 
-    if isinstance(base_obj.c, (np.ndarray, type(sp.csr_matrix(np.array([[0]]))))):
+    if isinstance(base_obj.c, np.ndarray):
         np.testing.assert_array_equal(base_obj.c, new_base_obj.c)
         np.testing.assert_array_equal(base_obj.c, new_base_obj2.c)
+    elif sp.issparse(base_obj.c):
+        assert (base_obj.c != new_base_obj.c).nnz == 0
+        assert (base_obj.c != new_base_obj2.c).nnz == 0
     else:
         assert base_obj.c is new_base_obj.c
         assert base_obj.c is new_base_obj2.c
@@ -1370,6 +1374,22 @@ def test_eq_dunder():
     assert composite != composite_3
     assert composite_2 != composite_3
 
+    # test that different classes with same params are not equal
+    class AltDummy(BaseEstimator):
+        def __init__(self, foo, bar=84):
+            self.foo = foo
+            self.bar = bar
+            super().__init__()
+
+    alt = AltDummy(foo=42)
+    assert non_composite != alt
+    assert alt != non_composite
+
+    # test non-BaseObject comparison returns False
+    assert non_composite != 42
+    assert non_composite != "string"
+    assert non_composite != None  # noqa: E711
+
 
 def test_get_set_config():
     """Tests get_config and set_config methods."""
@@ -1458,3 +1478,35 @@ def test_clone_with_custom_plugins():
 
     cloned_multi = _clone(base_obj, clone_plugins=[CustomCloner, AnotherCustomCloner])
     assert cloned_multi is not base_obj
+
+
+def test_get_class_tags_diamond_inheritance():
+    """Test that diamond inheritance resolves tags correctly.
+
+    Regression test for a bug where _get_class_flags used hasattr/getattr
+    instead of __dict__ lookup, causing MRO-inherited _tags to overwrite
+    mixin overrides in diamond inheritance scenarios.
+    """
+
+    class Base(BaseObject):
+        _tags = {"A": 1, "B": 2}
+
+    class Mixin(BaseObject):
+        _tags = {"A": 42}
+
+    class Mid(Base):
+        pass
+
+    class Diamond(Mixin, Mid):
+        pass
+
+    tags = Diamond.get_class_tags()
+
+    assert (
+        tags["A"] == 42
+    ), "Mixin tag override was lost due to incorrect MRO tag resolution"
+    assert tags["B"] == 2
+
+    obj = Diamond()
+    assert obj.get_tag("A", raise_error=False) == 42
+    assert obj.get_tag("B", raise_error=False) == 2

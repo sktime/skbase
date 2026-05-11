@@ -99,7 +99,7 @@ class BaseObject(_FlagManager):
         """
         from skbase.utils.deep_equals import deep_equals
 
-        if not isinstance(other, BaseObject):
+        if type(self) is not type(other):
             return False
 
         self_params = self.get_params(deep=False)
