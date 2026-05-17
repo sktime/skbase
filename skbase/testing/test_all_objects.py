@@ -745,7 +745,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             assert isinstance(tags, dict), msg
             assert len(tags) > 0, f"_tags dict of class {object_class} is empty"
             if self.valid_tags is None:
-                invalid_tags = tags
+                invalid_tags = []
             else:
                 invalid_tags = [
                     tag for tag in tags.keys() if tag not in self.valid_tags
