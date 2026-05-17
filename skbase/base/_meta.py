@@ -376,7 +376,7 @@ class _MetaObjectMixin:
     def _check_objects(
         self,
         objs,
-        attr_name="steps",
+        attr_name=None,
         cls_type=None,
         allow_dict=False,
         allow_mix=True,
@@ -385,13 +385,22 @@ class _MetaObjectMixin:
     ):
         """Check that objects is a list of objects or sequence of named objects.
 
+        This method serves as an orchestration layer that handles tag resolution
+        and delegates validation to _validate_and_coerce_objects.
+
+        Note: This method is an exception to the standard pattern where private
+        methods receive all configuration as parameters. Since _check_objects
+        serves as a semi-public entry point (used in tests and potentially by
+        subclasses), it handles tag resolution internally for convenience.
+
         Parameters
         ----------
         objs : Any
             Should be list of objects, a list of (str, object) tuples or a
             dict[str, objects]. Any objects should `cls_type` class.
-        attr_name : str, default="steps"
-            Name of checked attribute in error messages.
+        attr_name : str, default=None
+            Name of checked attribute in error messages. If None, the value is
+            auto-detected from the "named_object_parameters" tag.
         cls_type : class or tuple of classes, default=BaseEstimator.
             class(es) that all objects are checked to be an instance of.
         allow_dict : bool, default=False
@@ -424,12 +433,86 @@ class _MetaObjectMixin:
             If `objs` is not a list of (str, object) tuples or a dict[str, objects].
             Also raised if objects in `objs` are not instances of `cls_type`
             or `cls_type is not None, a class or tuple of classes.
+            Also raised if attr_name is None and the "named_object_parameters"
+            tag is not set to a non-empty string.
         """
+        if attr_name is None:
+            attr_name = self.get_tag("named_object_parameters")
+
+            # Validate that the tag returned a usable value
+            if not isinstance(attr_name, str) or not attr_name:
+                raise TypeError(
+                    "The 'attr_name' parameter was not provided and could not be "
+                    "auto-detected. Either provide 'attr_name' explicitly or ensure "
+                    "the 'named_object_parameters' tag is set to a non-empty string. "
+                    f"Current tag value: {attr_name!r}"
+                )
+
+        validated_objs = self._validate_objects(
+            objs=objs,
+            attr_name=attr_name,
+            cls_type=cls_type,
+            allow_dict=allow_dict,
+            allow_mix=allow_mix,
+            allow_empty=allow_empty,
+        )
+
+        # Coercion (transform to named object tuples)
+        return self._coerce_to_named_object_tuples(
+            validated_objs, clone=clone, make_unique=True
+        )
+
+    @staticmethod
+    def _validate_objects(
+        objs,
+        attr_name,
+        cls_type=None,
+        allow_dict=False,
+        allow_mix=True,
+        allow_empty=False,
+    ):
+        """Validate objects without coercing to named object tuples.
+
+        This is pure validation logic with no instance dependencies.
+        It validates structure and types but does not transform the objects.
+
+        Parameters
+        ----------
+        objs : Any
+            Should be list of objects, a list of (str, object) tuples or a
+            dict[str, objects]. Any objects should be `cls_type` class.
+        attr_name : str
+            Name of checked attribute in error messages. Must be provided.
+        cls_type : class or tuple of classes, optional
+            Class(es) that all objects are checked to be an instance of.
+            If None, defaults to BaseObject.
+        allow_dict : bool, default=False
+            Whether ``objs`` can be a dictionary mapping str names to objects.
+        allow_mix : bool, default=True
+            Whether mix of objects and (str, objects) is allowed in ``objs``.
+        allow_empty : bool, default=False
+            Whether ``objs`` can be empty.
+
+        Returns
+        -------
+        list or dict
+            The validated objects as-is (not coerced to tuples).
+            Returns the same type as input after validation.
+
+        Raises
+        ------
+        TypeError
+            If `objs` is not a list of (str, object) tuples or a dict[str, objects].
+            Also raised if objects in `objs` are not instances of `cls_type`
+            or `cls_type is not None, a class or tuple of classes.
+        """
+        # Construct error message
         msg = (
             f"Invalid {attr_name!r} attribute, {attr_name!r} should be a list "
             "of objects, or a list of (string, object) tuples. "
         )
 
+        # Determine and validate cls_type
         if cls_type is None:
             cls_type = BaseObject
             _class_name = "BaseObject"
@@ -444,6 +527,7 @@ class _MetaObjectMixin:
 
         msg += f"All objects in {attr_name!r} must be of type {_class_name}"
 
+        # Check basic structure
         if (
             objs is None
             or (not allow_empty and len(objs) == 0)
@@ -458,17 +542,18 @@ class _MetaObjectMixin:
 
             return is_est, is_tuple
 
-        # We've already guarded against objs being dict when allow_dict is False
-        # So here we can just check dictionary elements
+        # Validate dictionary elements
         if isinstance(objs, dict) and not all(
             isinstance(name, str) and isinstance(obj, cls_type)
             for name, obj in objs.items()
         ):
             raise TypeError(msg)
 
+        # Validate list elements
         elif not all(any(is_obj_is_tuple(x)) for x in objs):
             raise TypeError(msg)
 
+        # Check for mixed types if not allowed
         msg_no_mix = (
             f"Elements of {attr_name} must either all be objects, "
             f"or all (str, objects) tuples. A mix of the two is not allowed."
@@ -477,7 +562,8 @@ class _MetaObjectMixin:
             if not all(is_obj_is_tuple(x)[1] for x in objs):
                 raise TypeError(msg_no_mix)
 
-        return self._coerce_to_named_object_tuples(objs, clone=clone, make_unique=True)
+        # Return validated objects as-is (coercion happens in _check_objects)
+        return objs
 
     def _get_names_and_objects(self, named_objects, make_unique=False):
         """Return lists of names and object from input that follows named object API.

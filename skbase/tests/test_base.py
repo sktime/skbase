@@ -65,6 +65,7 @@ __all__ = [
     "test_create_test_instances_and_names",
     "test_has_implementation_of",
     "test_eq_dunder",
+    "test_get_class_tags_diamond_inheritance",
 ]
 
 import inspect
@@ -1465,3 +1466,35 @@ def test_clone_with_custom_plugins():
 
     cloned_multi = _clone(base_obj, clone_plugins=[CustomCloner, AnotherCustomCloner])
     assert cloned_multi is not base_obj
+
+
+def test_get_class_tags_diamond_inheritance():
+    """Test that diamond inheritance resolves tags correctly.
+
+    Regression test for a bug where _get_class_flags used hasattr/getattr
+    instead of __dict__ lookup, causing MRO-inherited _tags to overwrite
+    mixin overrides in diamond inheritance scenarios.
+    """
+
+    class Base(BaseObject):
+        _tags = {"A": 1, "B": 2}
+
+    class Mixin(BaseObject):
+        _tags = {"A": 42}
+
+    class Mid(Base):
+        pass
+
+    class Diamond(Mixin, Mid):
+        pass
+
+    tags = Diamond.get_class_tags()
+
+    assert (
+        tags["A"] == 42
+    ), "Mixin tag override was lost due to incorrect MRO tag resolution"
+    assert tags["B"] == 2
+
+    obj = Diamond()
+    assert obj.get_tag("A", raise_error=False) == 42
+    assert obj.get_tag("B", raise_error=False) == 2

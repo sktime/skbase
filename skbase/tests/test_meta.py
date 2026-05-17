@@ -15,6 +15,7 @@ from skbase.base._meta import (
     _MetaObjectMixin,
     _MetaTagLogicMixin,
 )
+from skbase.base._tagmanager import _FlagManager
 
 
 class MetaObjectTester(BaseMetaObject):
@@ -86,13 +87,15 @@ def test_basemetaestimator_inheritance(fixture_metaestimator_instance):
         and estimator_instance_is_baseobject_instance
     ), "`BaseMetaEstimator` not correctly subclassing `BaseEstimator` and `BaseObject`."
 
-    # Verify expected MRO inherittence order
-    assert BaseMetaEstimator.__mro__[:-2] == (
+    # Verify expected MRO inheritance order
+    mro_filtered = tuple(c for c in BaseMetaEstimator.__mro__ if c is not object)
+    assert mro_filtered == (
         BaseMetaEstimator,
         _MetaObjectMixin,
         _MetaTagLogicMixin,
         BaseEstimator,
         BaseObject,
+        _FlagManager,
     ), "`BaseMetaEstimator` has incorrect mro."
 
 
@@ -170,6 +173,59 @@ def test_metaestimator_composite(long_steps):
     assert meta_est.get_params()["bar__b"] == "something else"
 
 
+def test_check_objects_attr_name_auto_detection():
+    """Test that _check_objects auto-detects attr_name from tag."""
+
+    steps = [ComponentDummy(42), ComponentDummy(24)]
+    meta_obj = MetaObjectTester(steps=steps)
+
+    # auto-detect from tag
+    result = meta_obj._check_objects(steps, attr_name=None)
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert all(isinstance(item, tuple) and len(item) == 2 for item in result)
+    assert all(isinstance(item[0], str) for item in result)
+    assert all(isinstance(item[1], ComponentDummy) for item in result)
+
+    with pytest.raises(TypeError, match="'steps'"):
+        meta_obj._check_objects(None, attr_name=None)
+
+
+def test_check_objects_attr_name_explicit():
+    """Test that _check_objects works with explicit attr_name."""
+    # Create a meta object with steps
+    steps = [ComponentDummy(42), ComponentDummy(24)]
+    meta_obj = MetaObjectTester(steps=steps)
+
+    # Test with explicit attr_name
+    result = meta_obj._check_objects(steps, attr_name="custom_steps")
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+
+    with pytest.raises(TypeError, match="'custom_steps'"):
+        meta_obj._check_objects(None, attr_name="custom_steps")
+
+
+def test_check_objects_attr_name_custom_tag():
+    """Test that _check_objects auto-detects from custom named_object_parameters tag."""
+    # custom tag
+    meta_obj = MetaObjectTester()
+    meta_obj.set_tags(**{"named_object_parameters": "components"})
+
+    components = [ComponentDummy(1), ComponentDummy(2)]
+
+    # should auto-detect custom tag
+    result = meta_obj._check_objects(components, attr_name=None)
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+
+    with pytest.raises(TypeError, match="'components'"):
+        meta_obj._check_objects(None, attr_name=None)
+
+
 def test_set_params_resets_fitted_state():
     """Test that set_params calls reset, removing fitted state.
 
@@ -205,3 +261,67 @@ def test_set_params_resets_fitted_state():
     assert not hasattr(
         meta_obj, "fitted_attr_"
     ), "fitted_attr_ should be removed by reset() during set_params(foo=...)"
+
+
+def test_get_class_flags_preserves_mixin_tags():
+    """Regression test for Issue #539.
+
+    `_get_class_flags` previously sliced the MRO with ``[:-2]``, assuming the
+    last two entries are always ``BaseObject`` and ``object``.  Under multiple
+    inheritance Python's C3 linearisation can place a user-defined Mixin class
+    *after* ``BaseObject`` (i.e. at position -2), so the slice permanently
+    dropped any flags defined on that Mixin.
+
+    The fix iterates the full MRO and skips only ``object`` explicitly so that
+    every user-defined class – regardless of its MRO position – contributes its
+    flags.  This test pins that behaviour to prevent regressions.
+    """
+
+    class MyMixin:
+        """Mixin that defines a tag.  Has no _FlagManager inheritance."""
+
+        _flags = {"mixin_tag": 42}
+
+    # Inheriting BaseObject *before* MyMixin forces MyMixin to the tail of the
+    # MRO (just before `object`), which is exactly the scenario that was broken.
+    class MyObj(BaseObject, MyMixin):
+        """Concrete class using multiple inheritance."""
+
+        _flags = {"own_tag": 1}
+
+        def __init__(self):
+            super().__init__()
+
+    mro_classes = [c.__name__ for c in MyObj.__mro__]
+
+    # Sanity-check: MyMixin should be near the tail (after BaseObject).
+    assert mro_classes.index("MyMixin") > mro_classes.index(
+        "BaseObject"
+    ), "Test setup error: MyMixin should appear after BaseObject in the MRO."
+
+    collected = MyObj._get_class_flags()
+
+    # Both own_tag and mixin_tag must be present.
+    assert (
+        "own_tag" in collected
+    ), "'own_tag' defined directly on MyObj was not collected."
+    assert "mixin_tag" in collected, (
+        "Regression (Issue #539): 'mixin_tag' from MyMixin was dropped by "
+        "_get_class_flags.  The MRO slice [:-2] is being used again – revert "
+        "to the explicit `if parent_class is object: continue` check."
+    )
+    assert collected["mixin_tag"] == 42
+    assert collected["own_tag"] == 1
+
+
+def test_check_objects_attr_name_none_tag_not_set():
+    """Test error when attr_name is None and tag is not set or returns None."""
+    meta_obj = MetaObjectTester()
+
+    # Set tag to None explicitly
+    meta_obj.set_tags(**{"named_object_parameters": None})
+
+    steps = [ComponentDummy(1)]
+
+    with pytest.raises(TypeError, match="could not be auto-detected.*non-empty string"):
+        meta_obj._check_objects(steps, attr_name=None)

@@ -21,7 +21,7 @@ import pytest
 
 from skbase.base import BaseEstimator, BaseObject
 from skbase.validate import check_sequence, check_type, is_sequence
-from skbase.validate._types import _convert_scalar_seq_type_input_to_tuple
+from skbase.validate._type_checks import _convert_scalar_seq_type_input_to_tuple
 
 __author__ = ["RNKuhns"]
 

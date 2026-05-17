@@ -14,6 +14,101 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[1.0.0] - 2026-04-19
+====================
+
+Increment version to 1.0.0 to mark long-term API stable releases of ``skbase``.
+
+Minor feature release.
+
+Tag inheritance resolution have changed to encompass diamond inheritance
+and mixed base class situations, see below for details.
+
+Core interface changes
+----------------------
+
+Tag inheritance resolution in ``get_tags`` and ``get_class_tags`` now uses all parent
+classes in MRO, and resolves diamond inheritance the same way as Python proper.
+
+``scikit-base`` no longer expects ``BaseObject`` to be the top level base class for
+all objects in the ecosystem, allowing mixin and other base classes to be used without
+API non-compliance.
+
+Enhancements
+------------
+
+* [ENH] change ``_MetaObjectMixin._check_objects`` default
+  for ``attr_name`` to auto-detect (:pr:`466`) :user:`SimonBlanke`
+* [ENH] change tag resolution in ``_get_class_flags`` to use all parent classes in MRO,
+  and check for tag in class dict
+  instead of using ``getattr`` (:pr:`540`) :user:`vedant21-oss`
+
+Fixes
+-----
+
+* [BUG] normalize package names in ``_check_soft_dependencies``
+  following PEP 503 (:pr:`544`) :user:`fkiraly`
+* [BUG] Fix incorrect tag resolution in ``_get_class_flags`` with diamond inheritance
+  (:pr:`511`) :user:`WHOIM1205`
+
+Maintenance
+-----------
+
+* [MNT] downwards compatibility testing for ``deep_equals``
+  (:pr:`537`) :user:`sid200727`
+
+Contributors
+------------
+
+:user:`fkiraly`,
+:user:`sid200727`,
+:user:`SimonBlanke`,
+:user:`WHOIM1205`,
+:user:`vedant21-oss`
+
+[0.13.2] - 2026-04-12
+=====================
+
+Feature, bugfix, and maintenance release.
+
+Enhancements
+------------
+
+* [ENH] Added catch all exceptions block instead of just
+  catching ``ImportError`` & ``AttributeError`` in ``_safe_import``
+  (:pr:`494`) :user:`RecreationalMath`
+* [ENH] Catch expected ``FutureWarnings`` in ``test_tag_aliaser``
+  (:pr:`498`) :user:`Dreamstick9`
+* [ENH] Fix ``SparseEfficiencyWarning`` when comparing
+  sparse matrices in ``test_base.py`` (:pr:`496`) :user:`Dreamstick9`
+
+Fixes
+-----
+
+* [BUG] Fix ``__eq__`` missing class type check (:pr:`507`) :user:`WHOIM1205`
+
+Maintenance
+-----------
+
+* [MNT] Update legacy black dependency in pre-commit hook
+  (:pr:`500`) :user:`Dreamstick9`
+* [MNT] [Dependabot](deps): Bump actions/download-artifact from ``7`` to ``8``
+  (:pr:`505`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump actions/upload-artifact from ``6`` to ``7``
+  (:pr:`506`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps-dev): Update sphinx-issues requirement
+  from ``<6.0.0`` to ``<7.0.0`` (:pr:`534`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump codecov/codecov-action
+  from ``5`` to ``6`` (:pr:`538`) :user:`dependabot[bot]`
+
+Contributors
+------------
+
+:user:`Dreamstick9`,
+:user:`RecreationalMath`,
+:user:`WHOIM1205`
+
+
 [0.13.1] - 2026-01-25
 =====================
 
