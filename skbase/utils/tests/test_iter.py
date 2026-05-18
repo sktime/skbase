@@ -134,9 +134,7 @@ def test_make_strings_unique_immutable_input():
     input_list = ["abc", "abc", "bcd"]
     input_copy = list(input_list)
     make_strings_unique(input_list)
-    assert (
-        input_list == input_copy
-    ), "make_strings_unique mutated its input flat list!"
+    assert input_list == input_copy, "make_strings_unique mutated its input flat list!"
 
     # Test with a nested list structure
     nested_list = [["abc", "abc"], "bcd"]
@@ -145,4 +143,3 @@ def test_make_strings_unique_immutable_input():
     assert (
         nested_list == nested_copy
     ), "make_strings_unique mutated its input nested list!"
-
