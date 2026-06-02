@@ -13,6 +13,7 @@ class hybridmethod:
 
     def __get__(self, obj, cls):
         """Get method that can be called on both class and instance."""
+
         def wrapper(*args, **kwargs):
             return self.func(obj if obj is not None else cls, *args, **kwargs)
 
