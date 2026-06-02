@@ -42,6 +42,7 @@ __all__ = [
     "test_get_param_names",
     "test_get_params",
     "test_get_params_invariance",
+    "test_get_params_deep_with_baseobject_class_param",
     "test_get_params_after_set_params",
     "test_set_params",
     "test_set_params_raises_error_non_existent_param",
@@ -759,6 +760,25 @@ def test_get_params_invariance(
     shallow_params = composite.get_params(deep=False)
     deep_params = composite.get_params(deep=True)
     assert all(item in deep_params.items() for item in shallow_params.items())
+
+
+class ParentWithClassParam(BaseObject):
+    """BaseObject whose parameter holds a BaseObject subclass, not an instance."""
+
+    def __init__(self, nested_cls):
+        self.nested_cls = nested_cls
+        super().__init__()
+
+
+def test_get_params_deep_with_baseobject_class_param():
+    """get_params(deep=True) must not recurse into BaseObject class parameters.
+
+    Regression test for https://github.com/sktime/skbase/issues/558
+    """
+    parent = ParentWithClassParam(nested_cls=Child)
+    params = parent.get_params(deep=True)
+    assert params["nested_cls"] is Child
+    assert not any(key.startswith("nested_cls__") for key in params)
 
 
 def test_get_params_after_set_params(fixture_class_parent: Type[Parent]):

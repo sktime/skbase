@@ -333,7 +333,9 @@ class BaseObject(_FlagManager):
         if deep:
             deep_params = {}
             for key, value in params.items():
-                if hasattr(value, "get_params"):
+                # Skip class objects (e.g. BaseObject subclasses stored as params);
+                # only recurse into instances with a parameter interface (#558).
+                if hasattr(value, "get_params") and not isinstance(value, type):
                     deep_items = value.get_params().items()
                     deep_params.update({f"{key}__{k}": val for k, val in deep_items})
             params.update(deep_params)
