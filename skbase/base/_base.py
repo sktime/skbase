@@ -64,6 +64,7 @@ from skbase._exceptions import NotFittedError
 from skbase.base._clone_base import _check_clone, _clone
 from skbase.base._pretty_printing._object_html_repr import _object_html_repr
 from skbase.base._tagmanager import _FlagManager
+from skbase.utils._hybridmethod import hybridmethod
 
 __author__: List[str] = ["fkiraly", "mloning", "RNKuhns", "tpvasconcelos"]
 __all__: List[str] = ["BaseEstimator", "BaseObject"]
@@ -204,7 +205,7 @@ class BaseObject(_FlagManager):
 
         Returns
         -------
-        list of str
+        list of BaseCloner descendants, default = None
             List of clone plugins for descendants.
             Each plugin must inherit from ``BaseCloner``
             in ``skbase.base._clone_plugins``, and implement
@@ -567,6 +568,7 @@ class BaseObject(_FlagManager):
             flag_attr_name="_tags",
         )
 
+    @hybridmethod
     def get_tags(self):
         """Get tags from instance, with tag level inheritance and overrides.
 
@@ -599,8 +601,13 @@ class BaseObject(_FlagManager):
             class attribute via nested inheritance and then any overrides
             and new tags from ``_tags_dynamic`` object attribute.
         """
+        if isinstance(self, type):
+            # if called on class, return class tags
+            return self.get_class_tags()
+        # if called on instance, return instance tags with overrides
         return self._get_flags(flag_attr_name="_tags")
 
+    @hybridmethod
     def get_tag(self, tag_name, tag_value_default=None, raise_error=True):
         """Get tag value from instance, with tag level inheritance and overrides.
 
@@ -645,6 +652,12 @@ class BaseObject(_FlagManager):
             The ``ValueError`` is then raised if ``tag_name`` is
             not in ``self.get_tags().keys()``.
         """
+        if isinstance(self, type):
+            # if called on class, return class tag
+            return self.get_class_tag(
+                tag_name=tag_name,
+                tag_value_default=tag_value_default,
+            )
         return self._get_flag(
             flag_name=tag_name,
             flag_value_default=tag_value_default,

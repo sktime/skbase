@@ -23,7 +23,6 @@ def _safe_import(import_path, pkg_name=None, condition=True, return_object="Magi
 
     Example: ``clone = _safe_import("sklearn.clone", pkg_name="scikit-learn")``.
 
-
     Parameters
     ----------
     import_path : str
