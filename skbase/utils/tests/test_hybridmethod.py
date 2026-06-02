@@ -11,13 +11,13 @@ class HybridmethodTestclass:
         self.ref_to_self = self
 
     @hybridmethod
-    def method(self_or_cls):
+    def method(self):
 
-        if isclass(self_or_cls):
-            assert self_or_cls is self_or_cls.ref_to_self
+        if isclass(self):
+            assert self is self.ref_to_self
         else:
-            assert self_or_cls is self_or_cls.ref_to_self
-            assert isinstance(self_or_cls, self_or_cls.__class__)
+            assert self is self.ref_to_self
+            assert isinstance(self, self.__class__)
 
 
 HybridmethodTestclass.ref_to_self = HybridmethodTestclass
