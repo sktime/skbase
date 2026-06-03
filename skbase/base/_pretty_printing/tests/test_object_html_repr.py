@@ -32,6 +32,25 @@ class MetaObjectForHtml(BaseMetaObject):
         super().__init__()
 
 
+class ParentWithClassParam(BaseObject):
+    """BaseObject whose parameter holds a BaseObject subclass, not an instance."""
+
+    def __init__(self, nested_cls):
+        self.nested_cls = nested_cls
+        super().__init__()
+
+
+def test_html_repr_with_baseobject_class_param():
+    """HTML diagram repr must not call get_params on a BaseObject class param.
+
+    Regression test for https://github.com/sktime/skbase/issues/558
+    """
+    parent = ParentWithClassParam(nested_cls=ComponentDummy)
+    html_repr = _object_html_repr(parent)
+    assert isinstance(html_repr, str)
+    assert parent.__class__.__name__ in html_repr
+
+
 def test_meta_object_html_repr_does_not_raise():
     """Ensure HTML repr for a meta-object does not raise (regression test).
 
