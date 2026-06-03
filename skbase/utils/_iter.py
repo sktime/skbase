@@ -210,7 +210,7 @@ def make_strings_unique(str_list):
     str_count = collections.Counter(str_list)
     # if any duplicates, we append _integer of occurrence to non-uniques
     now_count: collections.Counter = collections.Counter()
-    unique_strs = str_list
+    unique_strs = list(str_list)
     for i, x in enumerate(unique_strs):
         if str_count[x] > 1:
             now_count.update([x])
