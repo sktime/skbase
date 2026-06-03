@@ -346,11 +346,11 @@ class BaseObject(_FlagManager):
             if not callable(get_params):
                 continue
 
-            params = get_params()
-            if not isinstance(params, dict):
+            sub_params = get_params()
+            if not isinstance(sub_params, dict):
                 continue
 
-            deep_params.update({f"{key}__{k}": v for k, v in params.items()})
+            deep_params.update({f"{key}__{k}": v for k, v in sub_params.items()})
 
         params.update(deep_params)
 
