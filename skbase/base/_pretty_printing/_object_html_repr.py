@@ -108,7 +108,7 @@ def _get_visual_block(base_object):
     if hasattr(base_object, "get_params"):
         base_objects = []
         for key, value in base_object.get_params().items():
-            # Only look at nested instances in the first layer (#558: not classes)
+            # Recurse to nested BaseObject instances in the first layer (not classes)
             if "__" not in key and hasattr(value, "get_params") and not isclass(value):
                 base_objects.append(value)
         if len(base_objects):
