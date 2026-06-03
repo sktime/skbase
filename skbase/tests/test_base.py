@@ -42,6 +42,7 @@ __all__ = [
     "test_get_param_names",
     "test_get_params",
     "test_get_params_invariance",
+    "test_get_params_deep_with_baseobject_class_param",
     "test_get_params_after_set_params",
     "test_set_params",
     "test_set_params_raises_error_non_existent_param",
@@ -759,6 +760,25 @@ def test_get_params_invariance(
     shallow_params = composite.get_params(deep=False)
     deep_params = composite.get_params(deep=True)
     assert all(item in deep_params.items() for item in shallow_params.items())
+
+
+class ParentWithClassParam(BaseObject):
+    """BaseObject whose parameter holds a BaseObject subclass, not an instance."""
+
+    def __init__(self, nested_cls):
+        self.nested_cls = nested_cls
+        super().__init__()
+
+
+def test_get_params_deep_with_baseobject_class_param():
+    """get_params(deep=True) must not recurse into BaseObject class parameters.
+
+    Regression test for https://github.com/sktime/skbase/issues/558
+    """
+    parent = ParentWithClassParam(nested_cls=Child)
+    params = parent.get_params(deep=True)
+    assert params["nested_cls"] is Child
+    assert not any(key.startswith("nested_cls__") for key in params)
 
 
 def test_get_params_after_set_params(fixture_class_parent: Type[Parent]):
@@ -1498,3 +1518,31 @@ def test_get_class_tags_diamond_inheritance():
     obj = Diamond()
     assert obj.get_tag("A", raise_error=False) == 42
     assert obj.get_tag("B", raise_error=False) == 2
+
+
+class BadGetParamsClass:
+
+    get_params = "This is not a method in order to test get_params nesting handling."
+
+
+class NestedBadGetParamsTester(BaseObject):
+    """Class for testing get_params functionality."""
+
+    clsvar = 210
+
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+        super().__init__()
+
+
+def test_get_params_with_nested_bad_get_params():
+    """Test that get_params works when nested get_params is not method."""
+    nested_bad_get_params = BadGetParamsClass()
+    obj = NestedBadGetParamsTester(a=7, b=nested_bad_get_params)
+
+    # this should not raise an error
+    # error mode is attenpting to call get_params of nested_bad_get_params,
+    # which is a string, instead of the get_params of the parent object
+    # instead, get_params should recognize the string type and not call it
+    obj.get_params(deep=True)

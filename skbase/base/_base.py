@@ -58,6 +58,7 @@ import re
 import warnings
 from collections import defaultdict
 from copy import deepcopy
+from inspect import isclass
 from typing import List
 
 from skbase._exceptions import NotFittedError
@@ -330,13 +331,28 @@ class BaseObject(_FlagManager):
         """
         params = {key: getattr(self, key) for key in self.get_param_names()}
 
-        if deep:
-            deep_params = {}
-            for key, value in params.items():
-                if hasattr(value, "get_params"):
-                    deep_items = value.get_params().items()
-                    deep_params.update({f"{key}__{k}": val for k, val in deep_items})
-            params.update(deep_params)
+        if not deep:
+            return params
+
+        # we know deep=True, so recurse
+        deep_params = {}
+        for key, value in params.items():
+            # Skip class objects (e.g. BaseObject subclasses stored as params);
+            # only recurse into instances with a valid get_params method.
+            if isclass(value):
+                continue
+
+            get_params = getattr(value, "get_params", None)
+            if not callable(get_params):
+                continue
+
+            sub_params = get_params()
+            if not isinstance(sub_params, dict):
+                continue
+
+            deep_params.update({f"{key}__{k}": v for k, v in sub_params.items()})
+
+        params.update(deep_params)
 
         return params
 
