@@ -8,6 +8,7 @@
 import html
 import uuid
 from contextlib import closing
+from inspect import isclass
 from io import StringIO
 from string import Template
 
@@ -108,11 +109,7 @@ def _get_visual_block(base_object):
         base_objects = []
         for key, value in base_object.get_params().items():
             # Only look at nested instances in the first layer (#558: not classes)
-            if (
-                "__" not in key
-                and hasattr(value, "get_params")
-                and not isinstance(value, type)
-            ):
+            if "__" not in key and hasattr(value, "get_params") and not isclass(value):
                 base_objects.append(value)
         if len(base_objects):
             return _VisualBlock("parallel", base_objects, names=None)
