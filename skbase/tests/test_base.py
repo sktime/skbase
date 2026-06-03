@@ -1518,3 +1518,31 @@ def test_get_class_tags_diamond_inheritance():
     obj = Diamond()
     assert obj.get_tag("A", raise_error=False) == 42
     assert obj.get_tag("B", raise_error=False) == 2
+
+
+class BadGetParamsClass:
+
+    get_params = "This is not a method in order to test get_params nesting handling."
+
+
+class NestedBadGetParamsTester(BaseObject):
+    """Class for testing get_params functionality."""
+
+    clsvar = 210
+
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+        super().__init__()
+
+
+def test_get_params_with_nested_bad_get_params():
+    """Test that get_params works when nested get_params is not method."""
+    nested_bad_get_params = BadGetParamsClass()
+    obj = NestedBadGetParamsTester(a=7, b=nested_bad_get_params)
+
+    # this should not raise an error
+    # error mode is attenpting to call get_params of nested_bad_get_params,
+    # which is a string, instead of the get_params of the parent object
+    # instead, get_params should recognize the string type and not call it
+    obj.get_params(deep=True)
