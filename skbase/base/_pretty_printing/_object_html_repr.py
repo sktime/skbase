@@ -8,6 +8,7 @@
 import html
 import uuid
 from contextlib import closing
+from inspect import isclass
 from io import StringIO
 from string import Template
 
@@ -103,12 +104,12 @@ def _get_visual_block(base_object):
     elif base_object is None:
         return _VisualBlock("single", base_object, names="None", name_details="None")
 
-    # check if base_object looks like a meta base_object wraps base_object
+    # collect BaseObject instances in the first layer to display in parallel
     if hasattr(base_object, "get_params"):
         base_objects = []
         for key, value in base_object.get_params().items():
-            # Only look at the BaseObjects in the first layer
-            if "__" not in key and hasattr(value, "get_params"):
+            # Recurse to nested BaseObject instances in the first layer (not classes)
+            if "__" not in key and hasattr(value, "get_params") and not isclass(value):
                 base_objects.append(value)
         if len(base_objects):
             return _VisualBlock("parallel", base_objects, names=None)
