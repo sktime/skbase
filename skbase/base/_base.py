@@ -58,6 +58,7 @@ import re
 import warnings
 from collections import defaultdict
 from copy import deepcopy
+from inspect import isclass
 from typing import List
 
 from skbase._exceptions import NotFittedError
