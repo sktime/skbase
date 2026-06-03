@@ -17,20 +17,44 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 [1.0.1] - 2026-06-03
 ====================
 
-Bugfix, and maintenance release.
+Bugfix and maintenance release.
 
 Enhancements
 ------------
 
+* [ENH] safer ``get_params(deep=True)`` nesting (:pr:`562`) :user:`fkiraly`
+
 Fixes
 -----
 
+* [BUG] Fix ``get_params(deep=True)`` for ``BaseObject`` class parameters
+  (:pr:`559`) :user:`patelchaitany`
+* [BUG] Fix ``deep_equals`` failing on string-dtype ``numpy`` arrays (``numpy < 2.0``)
+  (:pr:`519`) :user:`shourya1419-netizen`
+* [BUG] Fix in-place mutation in ``make_strings_unique``
+  (:pr:`553`) :user:`SHIVANSH-ux-ys`
+
 Maintenance
 -----------
+* [MNT] [Dependabot](deps): Bump ``astral-sh/setup-uv`` from ``4`` to ``7``
+  (:pr:`546`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump ``actions/setup-python`` from ``5`` to ``6``
+  (:pr:`547`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps-dev): Update ``sphinx-gallery`` requirement from ``<0.21.0``
+  to ``<0.22.0`` (:pr:`548`) :user:`dependabot[bot]`
+* [MNT] update release workflow to simplified setup (:pr:`550`) :user:`fkiraly`
+* [MNT] [Dependabot](deps): Bump ``actions/dependency-review-action`` from
+  ``4`` to ``5`` (:pr:`556`) :user:`dependabot[bot]`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`552`) :user:`pre-commit-ci[bot]`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`557`) :user:`pre-commit-ci[bot]`
 
 Contributors
 ------------
 
+:user:`fkiraly`,
+:user:`SHIVANSH-ux-ys`,
+:user:`shourya1419-netizen`,
+:user:`patelchaitany`
 
 
 [1.0.0] - 2026-04-19
