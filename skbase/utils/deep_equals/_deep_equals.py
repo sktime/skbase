@@ -508,6 +508,9 @@ def deep_equals_custom(x, y, return_msg=False, plugins=None):
     """
     ret = _make_ret(return_msg)
 
+    if x is y:
+        return ret(True, "")
+
     if type(x) is not type(y):
         return ret(False, f".type, x.type = {type(x)} != y.type = {type(y)}")
 
