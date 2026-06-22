@@ -28,7 +28,7 @@ Enhancements
 Maintenance
 -----------
 
-* [MNT] add integration testing for ``pandas 3``(:pr:`563`) :user:`fkiraly`
+* [MNT] add integration testing for ``pandas 3`` (:pr:`563`) :user:`fkiraly`
 * [MNT] [Dependabot](deps): Bump codecov/codecov-action from ``6`` to ``7``
   (:pr:`566`) :user:`dependabot[bot]`
 * [MNT] [Dependabot](deps): Bump actions/checkout from ``6`` to ``7`` (:pr:`567`)
