@@ -14,10 +14,37 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[1.0.2] - 2026-06-22
+====================
+
+Feature and maintenance release.
+
+Enhancements
+------------
+
+* [ENH] early return for ``deep_equals`` in case of object identity
+  (:pr:`568`) :user:`CloseChoice`
+
+Maintenance
+-----------
+
+* [MNT] add integration testing for ``pandas 3`` (:pr:`563`) :user:`fkiraly`
+* [MNT] [Dependabot](deps): Bump codecov/codecov-action from ``6`` to ``7``
+  (:pr:`566`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump actions/checkout from ``6`` to ``7`` (:pr:`567`)
+  :user:`dependabot[bot]`
+
+Contributors
+------------
+
+:user:`CloseChoice`,
+:user:`fkiraly`
+
+
 [1.0.1] - 2026-06-03
 ====================
 
-Bugfix and maintenance release.
+Feature, bugfix and maintenance release.
 
 Enhancements
 ------------
@@ -36,6 +63,7 @@ Fixes
 
 Maintenance
 -----------
+
 * [MNT] [Dependabot](deps): Bump ``astral-sh/setup-uv`` from ``4`` to ``7``
   (:pr:`546`) :user:`dependabot[bot]`
 * [MNT] [Dependabot](deps): Bump ``actions/setup-python`` from ``5`` to ``6``
