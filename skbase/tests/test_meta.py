@@ -173,6 +173,17 @@ def test_metaestimator_composite(long_steps):
     assert meta_est.get_params()["bar__b"] == "something else"
 
 
+def test_meta_object_visual_block_kind_tag():
+    """Meta objects can opt into parallel visual block layout."""
+    steps = [("a", ComponentDummy(1)), ("b", ComponentDummy(2))]
+    meta_obj = MetaObjectTester(steps=steps)
+    meta_obj.set_tags(visual_block_kind="parallel")
+
+    visual_block = meta_obj._sk_visual_block_()
+
+    assert visual_block.kind == "parallel"
+
+
 def test_check_objects_attr_name_auto_detection():
     """Test that _check_objects auto-detects attr_name from tag."""
 
