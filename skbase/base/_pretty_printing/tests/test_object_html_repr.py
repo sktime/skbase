@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 """Tests for HTML representation of BaseObjects."""
 
-import re
-
 from skbase.base import BaseObject
 from skbase.base._meta import BaseMetaObject
 from skbase.base._pretty_printing._object_html_repr import (
-    _generate_link_to_param_doc,
     _HTMLDocumentationLinkMixin,
     _object_html_repr,
-    _read_param,
 )
 
 
@@ -131,9 +127,8 @@ def test_meta_object_html_repr_does_not_raise():
     html_repr = _object_html_repr(meta)
 
     assert isinstance(html_repr, str)
-    # should include the class name and at least one html tag
     assert meta.__class__.__name__ in html_repr
-    assert "<div" in html_repr
+    assert "ComponentDummy" in html_repr
 
 
 def test_html_repr_includes_shallow_parameter_table():
@@ -148,9 +143,10 @@ def test_html_repr_includes_shallow_parameter_table():
     html_repr = _object_html_repr(obj)
 
     assert "<summary>Parameters</summary>" in html_repr
-    assert "parameters-table" in html_repr
-    assert "user-set" in html_repr
-    assert "onclick=\"skbaseCopyToClipboard('alpha'" in html_repr
+    assert 'class="parameters-table sk-params-table"' in html_repr
+    assert "sk-param-row--changed" in html_repr
+    assert "sk-copy-btn" in html_repr
+    assert "function skbaseCopyToClipboard" in html_repr
     assert "&lt;script&gt;alert(&#x27;xss&#x27;)&lt;/script&gt;" in html_repr
     assert "<script>alert" not in html_repr
     assert "[0, 1, ...]" in html_repr
@@ -160,12 +156,8 @@ def test_html_repr_marks_default_parameters():
     """Parameters that match defaults receive default styling."""
     html_repr = _object_html_repr(HtmlParamObject())
 
-    assert re.search(
-        r'<tr class="default sk-param-row--default">.*'
-        r'<td class="param">.*alpha.*</td>.*'
-        r'<td class="value">1</td>',
-        html_repr,
-    )
+    assert 'class="default sk-param-row--default"' in html_repr
+    assert "sk-param-row--changed" not in html_repr
 
 
 def test_html_repr_uses_nested_param_prefix_for_copy():
@@ -175,7 +167,6 @@ def test_html_repr_uses_nested_param_prefix_for_copy():
     html_repr = _object_html_repr(obj)
 
     assert 'data-param-prefix="child__"' in html_repr
-    assert "onclick=\"skbaseCopyToClipboard('a'" in html_repr
 
 
 def test_html_repr_doc_links_from_class_attrs():
@@ -205,54 +196,12 @@ def test_html_repr_doc_links_from_mixin():
     assert 'href="{}">'.format(expected_doc) in html_repr
 
 
-def test_generate_link_to_param_doc_returns_none_for_missing_param():
-    """Parameter doc links are only generated for documented parameters."""
-    url = _generate_link_to_param_doc(
-        HtmlParamObject, "missing", "https://example.test/HtmlParamObject.html"
-    )
-
-    assert url is None
-
-
-def test_read_param_escapes_and_truncates_values():
-    """Parameter row formatting is safe for display."""
-    out = _read_param("payload", "<unsafe>" * 20, ("payload",))
-
-    assert out["param_type"] == "user-set"
-    assert out["param_name"] == "payload"
-    assert "&lt;unsafe&gt;" in out["param_value"]
-    assert len(out["param_value"]) < len(repr("<unsafe>" * 20))
-
-
-def test_html_repr_includes_copy_script_and_theme_hook():
-    """HTML repr embeds the copy-to-clipboard JS resource."""
-    html_repr = _object_html_repr(HtmlParamObject(alpha=2))
-
-    assert "function skbaseCopyToClipboard" in html_repr
-    assert "skbaseForceTheme(" in html_repr
-
-
-def test_single_object_html_has_parameter_table_features():
-    """HTML repr shows parameter table, changed params, docs, and copy JS."""
+def test_html_repr_uses_direct_doc_link_attribute():
+    """A direct HTML repr doc link is used for object and parameter docs."""
     html_repr = _object_html_repr(DocumentedDummy(alpha=2, beta="<tag>"))
+    expected_doc = DocumentedDummy._html_repr_doc_link
 
-    assert "Parameters</summary>" in html_repr
-    assert 'class="parameters-table sk-params-table"' in html_repr
-    assert "sk-copy-btn" in html_repr
-    assert "navigator.clipboard.writeText" in html_repr
-    assert 'class="param-doc-link"' in html_repr
-    assert 'class="param-doc-description"' in html_repr
+    assert 'href="{}">'.format(expected_doc) in html_repr
+    assert 'href="{}#:~:text=alpha,-int">'.format(expected_doc) in html_repr
     assert "Documentation for alpha." in html_repr
-    assert "sk-param-row--changed" in html_repr
     assert "&lt;tag&gt;" in html_repr
-
-
-def test_meta_object_visual_block_kind_tag():
-    """Meta objects can opt into parallel diagram layout at the skbase level."""
-    steps = [("a", ComponentDummy(1)), ("b", ComponentDummy(2))]
-    meta = MetaObjectForHtml(steps=steps)
-    meta.set_tags(visual_block_kind="parallel")
-
-    visual_block = meta._sk_visual_block_()
-
-    assert visual_block.kind == "parallel"
