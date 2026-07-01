@@ -320,9 +320,11 @@
 }
 
 #$id .estimator-table .parameters-table {
+  border-collapse: collapse;
   margin-left: auto !important;
   margin-right: auto !important;
   margin-top: 0;
+  width: 100%;
 }
 
 #$id .estimator-table .parameters-table tr:nth-child(odd) {
