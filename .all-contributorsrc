@@ -181,6 +181,15 @@
       "contributions": [
         "infra"
       ]
+    },
+    {
+      "login": "mateuszkasprowicz",
+      "name": "Mateusz Kasprowicz",
+      "avatar_url": "https://avatars.githubusercontent.com/mateuszkasprowicz",
+      "profile": "https://github.com/mateuszkasprowicz",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "projectName": "skbase",
