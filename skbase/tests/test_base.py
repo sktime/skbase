@@ -1546,3 +1546,63 @@ def test_get_params_with_nested_bad_get_params():
     # which is a string, instead of the get_params of the parent object
     # instead, get_params should recognize the string type and not call it
     obj.get_params(deep=True)
+
+
+class NoneTagTestClass(BaseObject):
+    """Class for testing tag_value_default when tag is None."""
+
+    _tags = {
+        "none_tag": None,
+        "real_tag": "real_value",
+    }
+
+
+def test_get_class_tag_default_when_none():
+    """Test that tag_value_default is returned when tag value is None.
+
+    Regression test for #10305: get_class_tag returns None even if
+    tag_value_default is passed, when the tag is explicitly set to None
+    in _tags (e.g. "python_version": None).
+    """
+    cls = NoneTagTestClass
+
+    # When tag is None and a non-None default is provided, return the default
+    result = cls.get_class_tag("none_tag", "fallback")
+    assert result == "fallback", f"Expected 'fallback', got {result!r}"
+
+    # When tag is None and no default is provided, return None
+    result = cls.get_class_tag("none_tag")
+    assert result is None, f"Expected None, got {result!r}"
+
+    # When tag has a real value, return that value even if default is provided
+    result = cls.get_class_tag("real_tag", "fallback")
+    assert result == "real_value", f"Expected 'real_value', got {result!r}"
+
+    # Non-existent tag with default returns the default
+    result = cls.get_class_tag("nonexistent", "fallback")
+    assert result == "fallback", f"Expected 'fallback', got {result!r}"
+
+    # Non-existent tag without default returns None
+    result = cls.get_class_tag("nonexistent")
+    assert result is None, f"Expected None, got {result!r}"
+
+
+def test_get_tag_default_when_none():
+    """Test that tag_value_default is returned when tag value is None for get_tag.
+
+    Same regression as #10305 but for the instance-level get_tag method.
+    """
+    cls = NoneTagTestClass
+    obj = cls()
+
+    # When tag is None and a non-None default is provided, return the default
+    result = obj.get_tag("none_tag", "fallback")
+    assert result == "fallback", f"Expected 'fallback', got {result!r}"
+
+    # When tag is None and no default is provided, return None
+    result = obj.get_tag("none_tag")
+    assert result is None, f"Expected None, got {result!r}"
+
+    # When tag has a real value, return that value even if default is provided
+    result = obj.get_tag("real_tag", "fallback")
+    assert result == "real_value", f"Expected 'real_value', got {result!r}"
