@@ -70,7 +70,7 @@ repos:
         additional_dependencies: [black>=22.3.0]
       - id: nbqa-flake8
         args: [--nbqa-dont-skip-bad-cells, "--extend-ignore=E402,E203"]
-        additional_dependencies: [flake8==3.8.3]
+        additional_dependencies: [flake8==7.3.0]
 
   - repo: https://github.com/PyCQA/bandit
     rev: 1.9.4
