@@ -12,26 +12,26 @@ from copy import deepcopy
 from functools import lru_cache
 
 
-@lru_cache(maxsize=None)
-def _collect_class_flags_cached(cls, flag_attr_name):
-    """Walk the MRO once per (cls, flag_attr_name) and cache the result.
-
-    Returns the dict directly; callers are responsible for copying it
-    before handing it out or mutating it, since this is a shared cached
-    object.
-    """
-    collected_flags = {}
-    for parent_class in reversed(inspect.getmro(cls)):
-        if parent_class is object:
-            continue
-        if flag_attr_name in parent_class.__dict__:
-            more_flags = parent_class.__dict__[flag_attr_name]
-            collected_flags.update(more_flags)
-    return collected_flags
-
-
 class _FlagManager:
     """Mixin class for flag and configuration settings management."""
+
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def _collect_class_flags_cached(cls, flag_attr_name):
+        """Walk the MRO once per (cls, flag_attr_name) and cache the result.
+
+        Returns the dict directly; callers are responsible for copying it
+        before handing it out or mutating it, since this is a shared cached
+        object.
+        """
+        collected_flags = {}
+        for parent_class in reversed(inspect.getmro(cls)):
+            if parent_class is object:
+                continue
+            if flag_attr_name in parent_class.__dict__:
+                more_flags = parent_class.__dict__[flag_attr_name]
+                collected_flags.update(more_flags)
+        return collected_flags
 
     @classmethod
     def _get_class_flags(cls, flag_attr_name="_flags"):
@@ -49,7 +49,7 @@ class _FlagManager:
             class attribute via nested inheritance. NOT overridden by dynamic
             flags set by set_flags or clone_flags.
         """
-        cached = _collect_class_flags_cached(cls, flag_attr_name)
+        cached = cls._collect_class_flags_cached(cls, flag_attr_name)
         # shallow copy: cheap, and safe because tag values are immutable
         # (they are primitives types bool, etc.)
         return dict(cached)
@@ -112,7 +112,9 @@ class _FlagManager:
             and new flags from [flag_attr_name]_dynamic object attribute.
         """
         # shallow copy of the cached class-level dict
-        collected_flags = dict(_collect_class_flags_cached(type(self), flag_attr_name))
+        collected_flags = dict(
+            self._collect_class_flags_cached(type(self), flag_attr_name)
+        )
 
         if hasattr(self, f"{flag_attr_name}_dynamic"):
             collected_flags.update(getattr(self, f"{flag_attr_name}_dynamic"))
