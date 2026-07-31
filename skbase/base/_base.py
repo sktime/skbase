@@ -58,6 +58,7 @@ import re
 import warnings
 from collections import defaultdict
 from copy import deepcopy
+from functools import lru_cache
 from inspect import isclass
 from typing import List
 
@@ -214,6 +215,7 @@ class BaseObject(_FlagManager):
         return None
 
     @classmethod
+    @lru_cache(maxsize=None)
     def _get_init_signature(cls):
         """Get class init signature.
 
