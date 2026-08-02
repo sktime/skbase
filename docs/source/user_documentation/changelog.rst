@@ -14,6 +14,36 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[1.1.0] - 2026-08-02
+====================
+
+Feature and maintenance release.
+
+Enhancements
+------------
+
+* [ENH] Cache ``_get_init_signature`` and ``_collect_class_flags`` to improve
+  performance in repeated tag inspection (:pr:`576`) :user:`benheid`
+
+Maintenance
+-----------
+
+* [MNT] fix broken ``.readthedocs.yaml`` (:pr:`570`) :user:`fkiraly`
+* [MNT] [Dependabot](deps): Bump actions/setup-node from ``6`` to ``7``
+  (:pr:`573`) :user:`dependabot[bot]`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`572`) :user:`pre-commit-ci[bot]`
+* [MNT] [Dependabot](deps): Bump actions/setup-python from ``6`` to ``7``
+  (:pr:`575`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump github/codeql-action from ``4`` to ``4.37.3``
+  (:pr:`577`) :user:`dependabot[bot]`
+
+Contributors
+------------
+
+:user:`benheid`,
+:user:`fkiraly`
+
+
 [1.0.2] - 2026-06-22
 ====================
 
