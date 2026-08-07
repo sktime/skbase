@@ -514,7 +514,7 @@ class BaseObject(_FlagManager):
 
         1. Tags set in the ``_tags`` attribute of the class.
         2. Tags set in the ``_tags`` attribute of parent classes,
-          in order of inheritance.
+           in order of inheritance.
 
         Instances can override these tags depending on hyper-parameters.
 
@@ -557,7 +557,7 @@ class BaseObject(_FlagManager):
 
         1. Tags set in the ``_tags`` attribute of the class.
         2. Tags set in the ``_tags`` attribute of parent classes,
-          in order of inheritance.
+           in order of inheritance.
 
         Does not take into account dynamic tag overrides on instances,
         set via ``set_tags`` or ``clone_tags``,
@@ -605,10 +605,10 @@ class BaseObject(_FlagManager):
         order of descending priority:
 
         1. Tags set via ``set_tags`` or ``clone_tags`` on the instance,
-          at construction of the instance.
+           at construction of the instance.
         2. Tags set in the ``_tags`` attribute of the class.
         3. Tags set in the ``_tags`` attribute of parent classes,
-          in order of inheritance.
+           in order of inheritance.
 
         Returns
         -------
@@ -636,10 +636,10 @@ class BaseObject(_FlagManager):
         order of descending priority:
 
         1. Tags set via ``set_tags`` or ``clone_tags`` on the instance,
-          at construction of the instance.
+           at construction of the instance.
         2. Tags set in the ``_tags`` attribute of the class.
         3. Tags set in the ``_tags`` attribute of parent classes,
-          in order of inheritance.
+           in order of inheritance.
 
         Parameters
         ----------
@@ -1160,16 +1160,17 @@ class BaseObject(_FlagManager):
             Whether to set the random state in skbase object valued parameters, i.e.,
             component estimators.
 
-            * If False, will set only ``self``'s ``random_state`` parameter, if exists.
-            * If True, will set ``random_state`` parameters in component objects
+            * If ``False``, will set only ``self``'s ``random_state`` parameter,
+              if exists.
+            * If ``True``, will set ``random_state`` parameters in component objects
               as well.
 
         self_policy : str, one of {"copy", "keep", "new"}, default="copy"
 
-            * "copy" : ``self.random_state`` is set to input ``random_state``
-            * "keep" : ``self.random_state`` is kept as is
-            * "new" : ``self.random_state`` is set to a new random state,
-            derived from input ``random_state``, and in general different from it
+            * ``"copy"`` : ``self.random_state`` is set to input ``random_state``
+            * ``"keep"`` : ``self.random_state`` is kept as is
+            * ``"new"`` : ``self.random_state`` is set to a new random state,
+              derived from input ``random_state``, and in general different from it
 
         Returns
         -------
@@ -1200,7 +1201,7 @@ class TagAliaserMixin:
 
     * The keys in ``deprecate_dict`` should be the same as in alias_dict.
     * Values in ``deprecate_dict`` should be strings, the version of
-    removal/renaming, in PEP 440 format, e.g., ``"1.0.0"``.
+      removal/renaming, in PEP 440 format, e.g., ``"1.0.0"``.
 
     The class will ensure that new tags alias old tags and vice versa, during the
     deprecation period. Informative warnings will be raised whenever the deprecated tags
@@ -1277,7 +1278,7 @@ class TagAliaserMixin:
 
         1. Tags set in the ``_tags`` attribute of the class.
         2. Tags set in the ``_tags`` attribute of parent classes,
-          in order of inheritance.
+           in order of inheritance.
 
         Instances can override these tags depending on hyper-parameters.
 
@@ -1317,7 +1318,7 @@ class TagAliaserMixin:
 
         1. Tags set in the ``_tags`` attribute of the class.
         2. Tags set in the ``_tags`` attribute of parent classes,
-          in order of inheritance.
+           in order of inheritance.
 
         Does not take into account dynamic tag overrides on instances,
         set via ``set_tags`` or ``clone_tags``,
@@ -1406,10 +1407,10 @@ class TagAliaserMixin:
         order of descending priority:
 
         1. Tags set via ``set_tags`` or ``clone_tags`` on the instance,
-          at construction of the instance.
+           at construction of the instance.
         2. Tags set in the ``_tags`` attribute of the class.
         3. Tags set in the ``_tags`` attribute of parent classes,
-          in order of inheritance.
+           in order of inheritance.
 
         Returns
         -------
@@ -1440,10 +1441,10 @@ class TagAliaserMixin:
         order of descending priority:
 
         1. Tags set via ``set_tags`` or ``clone_tags`` on the instance,
-          at construction of the instance.
+           at construction of the instance.
         2. Tags set in the ``_tags`` attribute of the class.
         3. Tags set in the ``_tags`` attribute of parent classes,
-          in order of inheritance.
+           in order of inheritance.
 
         Parameters
         ----------
@@ -1721,10 +1722,11 @@ class BaseEstimator(BaseObject):
         deep : bool, default=True
             Whether to return fitted parameters of components.
 
-            * If True, will return a dict of parameter name : value for this object,
+            * If ``True``, will return a dict of parameter name : value for this object,
               including fitted parameters of fittable components
-              (= BaseEstimator-valued parameters).
-            * If False, will return a dict of parameter name : value for this object,
+              (= ``BaseEstimator``-valued parameters).
+            * If ``False``, will return a dict of
+              parameter name : value for this object,
               but not include fitted parameters of components.
 
         Returns
