@@ -132,7 +132,7 @@ class BaseObject(_FlagManager):
 
         After a ``self.reset()`` call,
         ``self`` is equal in value and state, to the object obtained after
-        a constructor call``type(self)(**self.get_params(deep=False))``.
+        a constructor call ``type(self)(**self.get_params(deep=False))``.
 
         Returns
         -------
