@@ -39,7 +39,7 @@ class _MetaObjectMixin:
     # _steps_attr points to the attribute of self
     # which contains the heterogeneous set of estimators
     # this must be an iterable of (name: str, estimator) pairs for the default
-    _tags = {"named_object_parameters": "steps"}
+    _tags = {"named_object_parameters": "steps", "visual_block_kind": "serial"}
 
     def is_composite(self):
         """Check if the object is composite.
@@ -776,7 +776,7 @@ class _MetaObjectMixin:
         names = [_get_name(name, est) for name, est in named_objects]
         name_details = [str(obj) for obj in objs]
         return _VisualBlock(
-            "serial",
+            self.get_tag("visual_block_kind", tag_value_default="serial"),
             objs,
             names=names,
             name_details=name_details,

@@ -144,6 +144,10 @@ exclude_dirs = ["*/tests/*", "*/testing/*"]
 zip-safe = true
 
 [tool.setuptools.package-data]
+skbase = [
+    "base/_pretty_printing/*.css",
+    "base/_pretty_printing/*.js",
+]
 sktime = [
     "*.csv",
     "*.csv.gz",
