@@ -342,6 +342,7 @@ class QuickTester:
         """
         from _pytest.outcomes import Skipped
 
+        from skbase.utils.stderr_mute import StderrMute
         from skbase.utils.stdout_mute import StdoutMute
 
         tests_to_run = self._check_none_str_or_list_of_str(
@@ -464,7 +465,10 @@ class QuickTester:
                 print_if_verbose(f"{key}")
 
                 try:
-                    with StdoutMute(active=verbose < 2):
+                    with (
+                        StdoutMute(active=verbose < 2),
+                        StderrMute(active=verbose < 2),
+                    ):
                         test_fun(**deepcopy(args))
                     results[key] = "PASSED"
                     print_if_verbose("PASSED")
@@ -541,7 +545,7 @@ class QuickTester:
                 obj = [obj]
             if not isinstance(obj, list):
                 raise ValueError(msg)
-            if not np.all(isinstance(x, str) for x in obj):
+            if not np.all([isinstance(x, str) for x in obj]):
                 raise ValueError(msg)
         return obj
 
@@ -715,12 +719,12 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
             f"found {type(names)}"
         )
 
-        assert np.all(isinstance(est, object_class) for est in objects), (
+        assert np.all([isinstance(est, object_class) for est in objects]), (
             "list elements of first return returned by create_test_instances_and_names "
             "all must be an instance of the class"
         )
 
-        assert np.all(isinstance(name, names) for name in names), (
+        assert np.all([isinstance(name, str) for name in names]), (
             "list elements of second return returned by create_test_instances_and_names"
             " all must be strings"
         )
