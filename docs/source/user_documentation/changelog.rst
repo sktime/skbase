@@ -14,6 +14,13 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[1.1.1] - 2026-08-25
+====================
+
+Feature and maintenance release.
+
+
+
 [1.1.0] - 2026-08-02
 ====================
 
