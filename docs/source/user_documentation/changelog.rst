@@ -38,6 +38,7 @@ Maintenance
   (:pr:`585`) :user:`dependabot[bot]`
 * [pre-commit.ci] pre-commit autoupdate (:pr:`580`) :user:`pre-commit-ci[bot]`
 * [pre-commit.ci] pre-commit autoupdate (:pr:`584`) :user:`pre-commit-ci[bot]`
+* [MNT] remove extraneous material from package wheel (:pr:`588`) :user:`fkiraly`
 
 Contributors
 ------------
