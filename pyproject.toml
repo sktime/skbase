@@ -144,24 +144,11 @@ exclude_dirs = ["*/tests/*", "*/testing/*"]
 zip-safe = true
 
 [tool.setuptools.package-data]
-sktime = [
+skbase = [
     "*.csv",
     "*.csv.gz",
-    "*.arff",
-    "*.arff.gz",
     "*.txt",
-    "*.ts",
-    "*.tsv",
 ]
 
 [tool.setuptools.packages.find]
-exclude = [
-    "tests",
-    "tests.*",
-    "docs",
-    "docs.*",
-    "examples",
-    "examples.*",
-    "build_tools",
-    "build_tools.*",
-]
+include = ["skbase", "skbase.*"]
