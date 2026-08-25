@@ -17,7 +17,7 @@ For planned changes and upcoming releases, see our :ref:`roadmap`.
 [1.1.1] - 2026-08-25
 ====================
 
-Feature and maintenance release.
+Bugfix and maintenance release.
 
 Fixes
 -----
