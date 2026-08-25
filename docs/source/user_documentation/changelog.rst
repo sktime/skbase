@@ -14,6 +14,39 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[1.1.1] - 2026-08-25
+====================
+
+Bugfix and maintenance release.
+
+Fixes
+-----
+
+* [BUG] mute ``stderr`` in ``QuickTester.run_tests``, and fix ``np.all`` generator
+  checks (:pr:`586`) :user:`yash-sangwan`
+
+Maintenance
+-----------
+
+* [MNT] [Dependabot](deps): Bump ``github/codeql-action`` from ``4.37.3`` to ``4.37.4``
+  (:pr:`579`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump ``github/codeql-action`` from ``4.37.4`` to ``4.37.6``
+  (:pr:`581`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump ``github/codeql-action`` from ``4.37.6`` to ``4.37.7``
+  (:pr:`583`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump ``github/codeql-action`` from ``4.37.7`` to ``4.37.8``
+  (:pr:`585`) :user:`dependabot[bot]`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`580`) :user:`pre-commit-ci[bot]`
+* [pre-commit.ci] pre-commit autoupdate (:pr:`584`) :user:`pre-commit-ci[bot]`
+* [MNT] remove extraneous material from package wheel (:pr:`588`) :user:`fkiraly`
+
+Contributors
+------------
+
+:user:`fkiraly`,
+:user:`yash-sangwan`
+
+
 [1.1.0] - 2026-08-02
 ====================
 
