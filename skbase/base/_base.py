@@ -384,28 +384,40 @@ class BaseObject(_FlagManager):
             return self
         valid_params = self.get_params(deep=True)
 
+        # snapshot instance state, to restore it if setting params below raises,
+        # e.g., through a validation failure in __init__ during the reset call.
+        # Without this, a failed set_params can leave self in a state that
+        # __init__ could not have produced, since setattr writes below happen
+        # before that validation runs.
+        prev_state = self.__dict__.copy()
+
         unmatched_keys = []
 
         nested_params = defaultdict(dict)  # grouped by prefix
-        for full_key, value in params.items():
-            # split full_key by first occurrence of __, if contains __
-            # "key_without_dblunderscore" -> "key_without_dbl_underscore", None, None
-            # "key__with__dblunderscore" -> "key", "__", "with__dblunderscore"
-            key, delim, sub_key = full_key.partition("__")
-            # if key not recognized, remember for suffix matching
-            if key not in valid_params:
-                unmatched_keys += [key]
-            # if full_key contained __, collect suffix for component set_params
-            elif delim:
-                nested_params[key][sub_key] = value
-            # if key is found and did not contain __, set self.key to the value
-            else:
-                setattr(self, key, value)
-                valid_params[key] = value
+        try:
+            for full_key, value in params.items():
+                # split full_key by first occurrence of __, if contains __
+                # "key_without_dblunderscore" -> "key_without_dbl_underscore", None, None
+                # "key__with__dblunderscore" -> "key", "__", "with__dblunderscore"
+                key, delim, sub_key = full_key.partition("__")
+                # if key not recognized, remember for suffix matching
+                if key not in valid_params:
+                    unmatched_keys += [key]
+                # if full_key contained __, collect suffix for component set_params
+                elif delim:
+                    nested_params[key][sub_key] = value
+                # if key is found and did not contain __, set self.key to the value
+                else:
+                    setattr(self, key, value)
+                    valid_params[key] = value
 
-        # all matched params have now been set
-        # reset object to clean post-init state with those params
-        self.reset()
+            # all matched params have now been set
+            # reset object to clean post-init state with those params
+            self.reset()
+        except Exception:
+            self.__dict__.clear()
+            self.__dict__.update(prev_state)
+            raise
 
         # recurse in components
         for key, sub_params in nested_params.items():

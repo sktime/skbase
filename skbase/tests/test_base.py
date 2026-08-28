@@ -903,6 +903,48 @@ def test_set_params_with_no_param_to_set_returns_object(
     )
 
 
+class ValidatingObject(BaseObject):
+    """BaseObject whose __init__ writes then validates a parameter.
+
+    Regression fixture for https://github.com/sktime/sktime/issues/10695 :
+    __init__ assigns ``self.x`` before raising, mirroring the common pattern
+    of estimators that write a hyper-parameter to ``self`` ahead of a
+    validation check.
+    """
+
+    def __init__(self, x=1):
+        self.x = x
+        if x < 0:
+            raise ValueError("x must be non-negative")
+        super().__init__()
+
+
+def test_set_params_rolls_back_state_on_invalid_value():
+    """Test a failed set_params leaves the object in its pre-call state.
+
+    A failed set_params previously left self holding the rejected value,
+    since set_params writes parameters to self before reset() re-runs
+    __init__ for validation. A state __init__ could never have produced
+    would then survive the raise, and break get_params, clone and repeated
+    set_params calls from that point on.
+    """
+    obj = ValidatingObject(x=5)
+
+    with pytest.raises(ValueError, match="x must be non-negative"):
+        obj.set_params(x=-1)
+
+    assert obj.x == 5
+    assert obj.get_params() == {"x": 5}
+
+    # clone should still work off the pre-call state
+    cloned = obj.clone()
+    assert cloned.get_params() == {"x": 5}
+
+    # a subsequent valid set_params call should still work normally
+    obj.set_params(x=9)
+    assert obj.get_params() == {"x": 9}
+
+
 # This section tests the clone functionality
 # These have been adapted from sklearn's tests of clone to use the clone
 # method that is included as part of the BaseObject interface
