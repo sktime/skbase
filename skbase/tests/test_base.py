@@ -930,8 +930,14 @@ def test_set_params_rolls_back_state_on_invalid_value():
     """
     obj = ValidatingObject(x=5)
 
-    with pytest.raises(ValueError, match="x must be non-negative"):
+    with pytest.raises(RuntimeError, match="restored to its state") as exc_info:
         obj.set_params(x=-1)
+
+    # the exception names the failing object and reports the restore
+    assert "ValidatingObject.set_params" in str(exc_info.value)
+    # the original __init__ exception is chained, not discarded
+    assert isinstance(exc_info.value.__cause__, ValueError)
+    assert "x must be non-negative" in str(exc_info.value.__cause__)
 
     assert obj.x == 5
     assert obj.get_params() == {"x": 5}

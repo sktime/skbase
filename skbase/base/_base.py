@@ -384,40 +384,48 @@ class BaseObject(_FlagManager):
             return self
         valid_params = self.get_params(deep=True)
 
-        # snapshot instance state, to restore it if setting params below raises,
-        # e.g., through a validation failure in __init__ during the reset call.
-        # Without this, a failed set_params can leave self in a state that
-        # __init__ could not have produced, since setattr writes below happen
-        # before that validation runs.
+        # snapshot instance state, to restore it if the reset call below raises,
+        # e.g., through a parameter validation failure in __init__.
+        # Must be taken before the setattr writes below, since those writes are
+        # what leave self in a state that __init__ could not have produced.
+        # This is a shallow copy of the instance __dict__, i.e., it stores
+        # references to attribute values, it does not copy the values themselves.
         prev_state = self.__dict__.copy()
 
         unmatched_keys = []
 
         nested_params = defaultdict(dict)  # grouped by prefix
-        try:
-            for full_key, value in params.items():
-                # split full_key by first occurrence of __, if contains __
-                # "key_without_dblunderscore" -> "key_without_dbl_underscore", None, None
-                # "key__with__dblunderscore" -> "key", "__", "with__dblunderscore"
-                key, delim, sub_key = full_key.partition("__")
-                # if key not recognized, remember for suffix matching
-                if key not in valid_params:
-                    unmatched_keys += [key]
-                # if full_key contained __, collect suffix for component set_params
-                elif delim:
-                    nested_params[key][sub_key] = value
-                # if key is found and did not contain __, set self.key to the value
-                else:
-                    setattr(self, key, value)
-                    valid_params[key] = value
+        for full_key, value in params.items():
+            # split full_key by first occurrence of __, if contains __
+            # "key_without_dblunderscore" -> "key_without_dbl_underscore", None, None
+            # "key__with__dblunderscore" -> "key", "__", "with__dblunderscore"
+            key, delim, sub_key = full_key.partition("__")
+            # if key not recognized, remember for suffix matching
+            if key not in valid_params:
+                unmatched_keys += [key]
+            # if full_key contained __, collect suffix for component set_params
+            elif delim:
+                nested_params[key][sub_key] = value
+            # if key is found and did not contain __, set self.key to the value
+            else:
+                setattr(self, key, value)
+                valid_params[key] = value
 
-            # all matched params have now been set
-            # reset object to clean post-init state with those params
+        # all matched params have now been set
+        # reset object to clean post-init state with those params
+        try:
             self.reset()
-        except Exception:
+        except Exception as e:
+            # restore the pre-call state, then report what happened,
+            # the original exception is chained via "from e"
             self.__dict__.clear()
             self.__dict__.update(prev_state)
-            raise
+            raise RuntimeError(
+                f"Error in {type(self).__name__}.set_params, the parameter values "
+                f"passed were rejected when re-running __init__, which raised "
+                f"{type(e).__name__}: {e}. The object has been restored to its "
+                f"state before the set_params call."
+            ) from e
 
         # recurse in components
         for key, sub_params in nested_params.items():
