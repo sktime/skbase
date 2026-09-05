@@ -384,6 +384,14 @@ class BaseObject(_FlagManager):
             return self
         valid_params = self.get_params(deep=True)
 
+        # snapshot instance state, to restore it if the reset call below raises,
+        # e.g., through a parameter validation failure in __init__.
+        # Must be taken before the setattr writes below, since those writes are
+        # what leave self in a state that __init__ could not have produced.
+        # This is a shallow copy of the instance __dict__, i.e., it stores
+        # references to attribute values, it does not copy the values themselves.
+        prev_state = self.__dict__.copy()
+
         unmatched_keys = []
 
         nested_params = defaultdict(dict)  # grouped by prefix
@@ -405,7 +413,19 @@ class BaseObject(_FlagManager):
 
         # all matched params have now been set
         # reset object to clean post-init state with those params
-        self.reset()
+        try:
+            self.reset()
+        except Exception as e:
+            # restore the pre-call state, then report what happened,
+            # the original exception is chained via "from e"
+            self.__dict__.clear()
+            self.__dict__.update(prev_state)
+            raise RuntimeError(
+                f"Error in {type(self).__name__}.set_params, the parameter values "
+                f"passed were rejected when re-running __init__, which raised "
+                f"{type(e).__name__}: {e}. The object has been restored to its "
+                f"state before the set_params call."
+            ) from e
 
         # recurse in components
         for key, sub_params in nested_params.items():
