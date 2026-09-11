@@ -930,7 +930,9 @@ def test_set_params_rolls_back_state_on_invalid_value():
     """
     obj = ValidatingObject(x=5)
 
-    with pytest.raises(RuntimeError, match="restored to its state") as exc_info:
+    # the raised type is the one __init__ raised, so that callers catching
+    # (TypeError, ValueError), as sklearn's check_set_params does, still catch it
+    with pytest.raises(ValueError, match="restored to its state") as exc_info:
         obj.set_params(x=-1)
 
     # the exception names the failing object and reports the restore

@@ -420,7 +420,7 @@ class BaseObject(_FlagManager):
             # the original exception is chained via "from e"
             self.__dict__.clear()
             self.__dict__.update(prev_state)
-            raise RuntimeError(
+            raise type(e)(
                 f"Error in {type(self).__name__}.set_params, the parameter values "
                 f"passed were rejected when re-running __init__, which raised "
                 f"{type(e).__name__}: {e}. The object has been restored to its "
