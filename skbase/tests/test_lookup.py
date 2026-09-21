@@ -33,3 +33,19 @@ def test_all_objects_returns_class_name_for_alias(tmp_path, monkeypatch):
 
     sys.modules.pop(f"{pkg_name}.module", None)
     sys.modules.pop(pkg_name, None)
+
+
+def test_all_objects_filter_tags_not_empty():
+    from skbase.base import all_objects
+
+    objs = all_objects()
+    assert len(objs) > 0
+
+    first_obj = objs[0][1]
+    tags = first_obj.get_class_tags()
+
+    tag_name, tag_value = next(iter(tags.items()))
+
+    filtered = all_objects(filter_tags={tag_name: tag_value})
+
+    assert len(filtered) > 0
