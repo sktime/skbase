@@ -14,6 +14,15 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[1.2.0] - 2026-09-23
+====================
+
+Python 3.15 compatibility release.
+
+Adds support for Python 3.15 after testing against the latest release candidate
+(``3.15.0-rc.2``).
+
+
 [1.1.1] - 2026-08-25
 ====================
 
