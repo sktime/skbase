@@ -913,7 +913,7 @@ class TestAllObjects(BaseFixtureGenerator, QuickTester):
 
     def test_repr(self, object_instance):
         """Check that __repr__ call to instance does not raise exceptions."""
-        repr(object_instance)
+        repr_tested = repr(object_instance)
 
     def test_repr_html(self, object_instance):
         """Check that _repr_html_ call to instance does not raise exceptions."""
