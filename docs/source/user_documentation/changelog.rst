@@ -14,6 +14,27 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[1.2.0] - 2026-09-23
+====================
+
+Python 3.15 compatibility release.
+
+Adds support for Python 3.15 after testing against the latest release candidate
+(``3.15.0-rc.2``).
+
+Contents
+---------
+
+* [pre-commit.ci] pre-commit autoupdate by @pre-commit-ci[bot] in https://github.com/sktime/skbase/pull/591
+* [MNT] [Dependabot](deps): Bump ``github/codeql-action`` from ``4.37.8`` to ``4.37.9``
+  (:pr:`590`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump ``github/codeql-action`` from ``4.37.9`` to ``4.38.1``
+  (:pr:`594`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps-dev): Update sphinx-gallery requirement from ``<0.22.0`` to
+  ``<0.23.0`` (:pr:`593`) :user:`dependabot[bot]`
+* [MNT] Python 3.15 support and testing (:pr:`595`) :user:`fkiraly`
+* [MNT] fix minimal ``pre-commit`` issue (:pr:`596`) :user:`fkiraly`
+
 [1.1.1] - 2026-08-25
 ====================
 
