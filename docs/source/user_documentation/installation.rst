@@ -6,7 +6,7 @@ Installation
 
 ``skbase`` currently supports:
 
-* environments with python version 3.10, 3.11, 3.12, 3.13, or 3.14
+* environments with python version 3.10, 3.11, 3.12, 3.13, 3.14, or 3.15
 * operating systems Mac OS X, Unix-like OS, Windows 8.1 and higher
 
 Checkout the full list of pre-compiled wheels on
