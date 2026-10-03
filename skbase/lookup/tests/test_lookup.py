@@ -411,6 +411,22 @@ def test_filter_by_tags():
         assert _filter_by_tags(Parent, {7: 11})
 
 
+def test_filter_by_tags_unhashable_tag_value():
+    """Test _filter_by_tags does not fail if a tag value contains unhashable items.
+
+    For instance, python_dependencies can be a list containing a nested list.
+    """
+
+    class ClassWithNestedListTag(BaseObject):
+        _tags = {"python_dependencies": ["pkg_a", ["pkg_b>=1.0", "pkg_c<2.0"]]}
+
+    assert _filter_by_tags(ClassWithNestedListTag, {"python_dependencies": "pkg_a"})
+    assert not _filter_by_tags(ClassWithNestedListTag, {"python_dependencies": "pkg_b"})
+    assert _filter_by_tags(
+        ClassWithNestedListTag, {"python_dependencies": ["pkg_x", "pkg_a"]}
+    )
+
+
 def test_walk_returns_expected_format(fixture_skbase_root_path):
     """Check walk function returns expected format."""
 

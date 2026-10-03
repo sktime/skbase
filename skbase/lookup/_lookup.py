@@ -236,7 +236,9 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
 
         # search value matches tag value iff
         # at least one element of search value matches at least one element of tag value
-        str_match = len(set(search_str).intersection(tag_value)) > 0
+        # compare by equality rather than via set, since tag values may contain
+        # unhashable elements, e.g., nested lists in python_dependencies
+        str_match = any(s == tag for s in search_str for tag in tag_value)
         re_match = any(s.fullmatch(str(tag)) for s in search_re for tag in tag_value)
         match = str_match or re_match
 
