@@ -236,15 +236,49 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
 
         # search value matches tag value iff
         # at least one element of search value matches at least one element of tag value
-        # compare by equality rather than via set, since tag values may contain
-        # unhashable elements, e.g., nested lists in python_dependencies
-        str_match = any(s == tag for s in search_str for tag in tag_value)
+        str_match = _any_element_equal(search_str, tag_value)
         re_match = any(s.fullmatch(str(tag)) for s in search_re for tag in tag_value)
         match = str_match or re_match
 
         cond_sat = cond_sat and match
 
     return cond_sat
+
+
+def _is_hashable(obj):
+    """Return whether obj is hashable."""
+    try:
+        hash(obj)
+    except TypeError:
+        return False
+    return True
+
+
+def _any_element_equal(left, right):
+    """Check whether any element of left is equal to any element of right.
+
+    Hashable elements are compared via set lookup, in linear time.
+    Only unhashable elements, e.g., nested lists, are compared pairwise,
+    against all elements of the other iterable.
+
+    Parameters
+    ----------
+    left, right : list
+        lists of elements to compare, may contain unhashable elements
+
+    Returns
+    -------
+    bool, whether there is an element of left equal to an element of right
+    """
+    left_hashable = {x for x in left if _is_hashable(x)}
+    left_unhashable = [x for x in left if not _is_hashable(x)]
+    right_unhashable = [y for y in right if not _is_hashable(y)]
+
+    if any(y in left_hashable for y in right if _is_hashable(y)):
+        return True
+    if any(x == y for x in left_unhashable for y in right):
+        return True
+    return any(x == y for x in left for y in right_unhashable)
 
 
 def _walk(root, exclude=None, prefix=""):

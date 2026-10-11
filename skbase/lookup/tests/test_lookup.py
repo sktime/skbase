@@ -20,6 +20,7 @@ from skbase.base import BaseEstimator, BaseObject
 from skbase.base._base import TagAliaserMixin
 from skbase.lookup import all_objects, get_package_metadata
 from skbase.lookup._lookup import (
+    _any_element_equal,
     _determine_module_path,
     _filter_by_class,
     _filter_by_tags,
@@ -425,6 +426,30 @@ def test_filter_by_tags_unhashable_tag_value():
     assert _filter_by_tags(
         ClassWithNestedListTag, {"python_dependencies": ["pkg_x", "pkg_a"]}
     )
+    # nested lists can be matched, too
+    assert _filter_by_tags(
+        ClassWithNestedListTag,
+        {"python_dependencies": [["pkg_b>=1.0", "pkg_c<2.0"]]},
+    )
+
+
+def test_any_element_equal():
+    """Test _any_element_equal with hashable and unhashable elements."""
+    # hashable only
+    assert _any_element_equal(["a", "b"], ["c", "b"])
+    assert not _any_element_equal(["a", "b"], ["c", "d"])
+    assert not _any_element_equal([], ["a"])
+
+    # unhashable elements in right, left, or both
+    assert _any_element_equal(["a"], [["x"], "a"])
+    assert not _any_element_equal(["x"], [["x"], "a"])
+    assert _any_element_equal([["x"], "b"], ["c", ["x"]])
+    assert _any_element_equal([{"k": 1}], [{"k": 1}])
+    assert not _any_element_equal([["x"]], [("x",), "x"])
+
+    # hashable equal to unhashable, e.g., frozenset and set
+    assert _any_element_equal([frozenset({1})], [{1}])
+    assert _any_element_equal([{1}], [frozenset({1})])
 
 
 def test_walk_returns_expected_format(fixture_skbase_root_path):
