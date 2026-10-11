@@ -236,7 +236,12 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
 
         # search value matches tag value iff
         # at least one element of search value matches at least one element of tag value
-        str_match = _any_element_equal(search_str, tag_value)
+        try:
+            str_match = len(set(search_str).intersection(tag_value)) > 0
+        except TypeError:
+            # only reached if there are unhashable elements, e.g., nested lists
+            # in python_dependencies, otherwise the fast set lookup is used
+            str_match = _any_element_equal(search_str, tag_value)
         re_match = any(s.fullmatch(str(tag)) for s in search_re for tag in tag_value)
         match = str_match or re_match
 
