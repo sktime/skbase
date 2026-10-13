@@ -431,6 +431,32 @@ def _get_pkg_version(package_name, case_sensitive=False):
     return pkg_env_version
 
 
+def _get_tag(obj, tag_name, tag_value_default=None):
+    """Get tag value of obj, including dynamic tag overrides if obj is an instance.
+
+    Parameters
+    ----------
+    obj : BaseObject descendant, class or instance
+        object to retrieve the tag value from
+    tag_name : str
+        name of the tag to retrieve
+    tag_value_default : any type, default=None
+        value to return if the tag is not found
+
+    Returns
+    -------
+    tag_value : value of the tag ``tag_name`` of ``obj``.
+        If ``obj`` is an instance, retrieved via ``get_tag``, i.e., taking into account
+        dynamic tag overrides, otherwise retrieved via ``get_class_tag``.
+        If the tag is not found, ``tag_value_default`` is returned.
+    """
+    if not isclass(obj) and hasattr(obj, "get_tag"):
+        return obj.get_tag(
+            tag_name, tag_value_default=tag_value_default, raise_error=False
+        )
+    return obj.get_class_tag(tag_name, tag_value_default=tag_value_default)
+
+
 def _check_python_version(
     obj, package=None, msg=None, severity="error", prereleases=True
 ):
@@ -443,7 +469,7 @@ def _check_python_version(
 
         * If str, must be PEP 440 compatible specifier string, e.g., "<3.9, >= 3.6.3"
         * If BaseObject descendant, must have "python_version" tag containing such a
-          str, or None.
+          str, or None. If an instance, dynamic tag overrides are taken into account.
 
     package : str, default = None
         if given, will be used in error message as package name
@@ -482,7 +508,7 @@ def _check_python_version(
     if isinstance(obj, str):
         specifier_tag = obj
     elif hasattr(obj, "get_class_tag"):
-        specifier_tag = obj.get_class_tag("python_version", tag_value_default="None")
+        specifier_tag = _get_tag(obj, "python_version", tag_value_default="None")
     else:
         return True
 
@@ -534,8 +560,9 @@ def _check_env_marker(obj, package=None, msg=None, severity="error"):
 
     Parameters
     ----------
-    obj : BaseObject descendant
-        used to check python version
+    obj : BaseObject descendant, class or instance
+        used to check the "env_marker" tag.
+        If an instance, dynamic tag overrides are taken into account.
     package : str, default = None
         if given, will be used in error message as package name
     msg : str, optional, default = default message (msg below)
@@ -565,7 +592,7 @@ def _check_env_marker(obj, package=None, msg=None, severity="error"):
         incompatible with the python environment. If package is given,
         error message gives package as the reason for incompatibility.
     """
-    est_marker_tag = obj.get_class_tag("env_marker", tag_value_default="None")
+    est_marker_tag = _get_tag(obj, "env_marker", tag_value_default="None")
     if est_marker_tag in ["None", None]:
         return True
 
@@ -613,7 +640,8 @@ def _check_estimator_deps(obj, msg=None, severity="error"):
     Parameters
     ----------
     obj : BaseObject descendant, instance or class, or list/tuple thereof
-        object(s) that this function checks compatibility of, with the python env
+        object(s) that this function checks compatibility of, with the python env.
+        For instances, dynamic tag overrides are taken into account.
 
     msg : str, optional, default = default message (msg below)
         error message to be returned in the ``ModuleNotFoundError``, overrides default
@@ -656,7 +684,7 @@ def _check_estimator_deps(obj, msg=None, severity="error"):
     compatible = compatible and _check_python_version(obj, severity=severity)
     compatible = compatible and _check_env_marker(obj, severity=severity)
 
-    pkg_deps = obj.get_class_tag("python_dependencies", None)
+    pkg_deps = _get_tag(obj, "python_dependencies", tag_value_default=None)
     if pkg_deps is not None and not isinstance(pkg_deps, list):
         pkg_deps = [pkg_deps]
     if pkg_deps is not None:
