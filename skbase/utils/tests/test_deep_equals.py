@@ -131,6 +131,53 @@ def copy_except_if_sklearn(obj):
             return deepcopy(obj)
 
 
+@pytest.mark.skipif(
+    not _check_soft_dependencies("numpy", severity="none"),
+    reason="numpy not available",
+)
+@pytest.mark.parametrize("shape", [(3,), (1, 3), (3, 1)])
+@pytest.mark.parametrize("difference_index", [0, 1, 2])
+@pytest.mark.parametrize("nested", [False, True])
+def test_deep_equals_numpy_object_array_all_elements(shape, difference_index, nested):
+    """Compare every object-array element, including nested arrays."""
+    import numpy as np
+
+    x = np.empty(3, dtype=object)
+    for i in range(3):
+        x[i] = np.array([i, i + 1]) if nested else i
+    x = x.reshape(shape)
+    y = deepcopy(x)
+
+    assert deep_equals(x, y) is True
+    assert deep_equals(x, y, return_msg=True) == (True, "")
+
+    if nested:
+        y.flat[difference_index][1] += 1
+    else:
+        y.flat[difference_index] += 1
+
+    assert deep_equals(x, y) is False
+    is_equal, msg = deep_equals(x, y, return_msg=True)
+    assert is_equal is False
+    assert msg.startswith(f"[{difference_index}]")
+
+
+@pytest.mark.skipif(
+    not _check_soft_dependencies("numpy", severity="none"),
+    reason="numpy not available",
+)
+@pytest.mark.parametrize("shape", [(), (0,), (0, 2), (1,), (2, 2)])
+def test_deep_equals_numpy_object_array_equal(shape):
+    """Preserve equality for scalar, empty and NaN-containing object arrays."""
+    import numpy as np
+
+    x = np.full(shape, np.nan, dtype=object)
+    y = deepcopy(x)
+
+    assert deep_equals(x, y) is True
+    assert deep_equals(x, y, return_msg=True) == (True, "")
+
+
 # Add JAX examples
 if _check_soft_dependencies("jax", severity="none"):
     import jax.numpy as jnp
