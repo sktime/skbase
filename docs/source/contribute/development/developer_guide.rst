@@ -9,6 +9,7 @@ Developer guide
    :hidden:
 
    developer_guide/dev_installation
+   developer_guide/wsl_setup
    developer_guide/git_workflow
    developer_guide/ci
    developer_guide/coding_standards
@@ -34,6 +35,20 @@ Developer guide
             :expand:
 
             Installation
+
+    .. grid-item-card:: WSL Setup
+        :text-align: center
+
+        Set up Ubuntu WSL for development.
+
+        +++
+
+        .. button-ref:: developer_guide/wsl_setup
+            :color: primary
+            :click-parent:
+            :expand:
+
+            WSL Setup
 
     .. grid-item-card:: Git Workflow
         :text-align: center
