@@ -26,6 +26,7 @@ __all__ = [
     "test_get_tags",
     "test_get_tag",
     "test_get_tag_raises",
+    "test_get_tag_default_bypasses_raise_error",
     "test_set_tags",
     "test_set_tags_works_with_missing_tags_dynamic_attribute",
     "test_clone_tags",
@@ -362,6 +363,28 @@ def test_get_tag_raises(fixture_tag_class_object: Child):
     """
     with pytest.raises(ValueError, match=r"Tag with name"):
         fixture_tag_class_object.get_tag("bar")
+
+
+def test_get_tag_default_bypasses_raise_error(fixture_tag_class_object: Child):
+    """Test that supplying tag_value_default bypasses raise_error.
+
+    Providing a default should return it for missing tags even when
+    raise_error=True (the default), matching dict.get() / getattr() semantics.
+
+    Raises
+    ------
+    AssertError if explicit default does not suppress ValueError.
+    AssertError if explicit None default is not returned.
+    """
+    # Explicit string default, no raise_error=False needed
+    val = fixture_tag_class_object.get_tag("bar", "fallback")
+    assert (
+        val == "fallback"
+    ), "Expected 'fallback' when default supplied without raise_error=False"
+
+    # Explicitly passing None as default should return None, not raise
+    val_none = fixture_tag_class_object.get_tag("bar", None)
+    assert val_none is None, "Expected None when None is explicitly supplied as default"
 
 
 def test_set_tags(

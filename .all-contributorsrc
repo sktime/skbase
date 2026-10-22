@@ -181,6 +181,16 @@
       "contributions": [
         "infra"
       ]
+    },
+    {
+      "login": "Deep-Axe",
+      "name": "Deep-Axe",
+      "avatar_url": "https://avatars.githubusercontent.com/u/152912444?v=4",
+      "profile": "https://github.com/Deep-Axe",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "projectName": "skbase",
