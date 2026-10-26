@@ -307,6 +307,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_normalize_version",
             "_raise_at_severity",
             "_norm_pkgname",
+            "_get_tag",
         ),
         "skbase.utils.random_state": (
             "check_random_state",
