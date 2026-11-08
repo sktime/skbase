@@ -15,24 +15,6 @@ from functools import lru_cache
 class _FlagManager:
     """Mixin class for flag and configuration settings management."""
 
-    @staticmethod
-    @lru_cache(maxsize=None)
-    def _collect_class_flags_cached(cls, flag_attr_name):
-        """Walk the MRO once per (cls, flag_attr_name) and cache the result.
-
-        Returns the dict directly; callers are responsible for copying it
-        before handing it out or mutating it, since this is a shared cached
-        object.
-        """
-        collected_flags = {}
-        for parent_class in reversed(inspect.getmro(cls)):
-            if parent_class is object:
-                continue
-            if flag_attr_name in parent_class.__dict__:
-                more_flags = parent_class.__dict__[flag_attr_name]
-                collected_flags.update(more_flags)
-        return collected_flags
-
     @classmethod
     def _get_class_flags(cls, flag_attr_name="_flags"):
         """Get class flags from estimator class and all its parent classes.
@@ -229,3 +211,21 @@ class _FlagManager:
         self._set_flags(flag_attr_name=flag_attr_name, **update_dict)
 
         return self
+
+
+@lru_cache(maxsize=None)
+def _collect_class_flags_cached(cls, flag_attr_name):
+    """Walk the MRO once per (cls, flag_attr_name) and cache the result.
+
+    Returns the dict directly; callers are responsible for copying it
+    before handing it out or mutating it, since this is a shared cached
+    object.
+    """
+    collected_flags = {}
+    for parent_class in reversed(inspect.getmro(cls)):
+        if parent_class is object:
+            continue
+        if flag_attr_name in parent_class.__dict__:
+            more_flags = parent_class.__dict__[flag_attr_name]
+            collected_flags.update(more_flags)
+    return collected_flags
