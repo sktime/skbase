@@ -31,7 +31,7 @@ class _FlagManager:
             class attribute via nested inheritance. NOT overridden by dynamic
             flags set by set_flags or clone_flags.
         """
-        cached = cls._collect_class_flags_cached(cls, flag_attr_name)
+        cached = _collect_class_flags_cached(cls, flag_attr_name)
         # shallow copy: cheap, and safe because tag values are immutable
         # (they are primitives types bool, etc.)
         return dict(cached)
@@ -94,9 +94,7 @@ class _FlagManager:
             and new flags from [flag_attr_name]_dynamic object attribute.
         """
         # shallow copy of the cached class-level dict
-        collected_flags = dict(
-            self._collect_class_flags_cached(type(self), flag_attr_name)
-        )
+        collected_flags = dict(_collect_class_flags_cached(type(self), flag_attr_name))
 
         if hasattr(self, f"{flag_attr_name}_dynamic"):
             collected_flags.update(getattr(self, f"{flag_attr_name}_dynamic"))
