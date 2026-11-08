@@ -824,14 +824,14 @@ def all_objects(
             applied to ``tag_value``.
 
     exclude_objects: str or list[str], default=None
-        Names of estimators to exclude.
+        Names of objects to exclude.
 
     as_dataframe: bool, default=False
         Whether to return the results as a pandas DataFrame or as a list.
 
-        - If False, ``all_estimators`` will return a list - either a list of
+        - If False, ``all_objectss`` will return a list - either a list of
           ``scikit-base`` compatible classes or a list of tuples, see Returns.
-        - If True, ``all_estimators`` will return a ``pandas.DataFrame`` with named
+        - If True, ``all_objects`` will return a ``pandas.DataFrame`` with named
           columns for all of the attributes being returned.
           this requires soft dependency ``pandas`` to be installed.
 
