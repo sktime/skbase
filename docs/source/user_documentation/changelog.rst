@@ -14,6 +14,17 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[1.2.1] - 2026-11-08
+====================
+
+Maintenance and bugfix release.
+
+Removes support for 3.10 after end-of-life.
+
+Contents
+---------
+
+
 [1.2.0] - 2026-09-23
 ====================
 
