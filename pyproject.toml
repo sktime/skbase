@@ -3,10 +3,10 @@ name = "scikit-base"
 version = "1.2.0"
 description = "Base classes for sklearn-like parametric objects"
 authors = [
-    {name = "sktime developers", email = "sktime.toolbox@gmail.com"},
+    {name = "sktime developers", email = "info@sktime.net"},
 ]
 maintainers = [
-    {name = "sktime developers", email = "sktime.toolbox@gmail.com"},
+    {name = "sktime developers", email = "info@sktime.net"},
     {name = "Franz Király"},
 ]
 readme = "README.md"

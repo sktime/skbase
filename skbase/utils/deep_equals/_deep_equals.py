@@ -70,10 +70,21 @@ def deep_equals(x, y, return_msg=False, plugins=None):
             .dtype - dtype of pandas or numpy object is not equal
             .index - index of pandas object is not equal
             .series_equals, .df_equals, .index_equals - .equals of pd returns False
-            [i] - if tuple/list: i-th element not equal
+            [i] - if tuple/list or object-dtype array: i-th element not equal
+                  (arrays are flattened before comparison)
             [key] - if dict: value at key is not equal
             [colname] - if pandas.DataFrame: column with name colname is not equal
             != - call to generic != returns False
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> x = np.array([1, 2], dtype=object)
+    >>> y = np.array([1, 3], dtype=object)
+    >>> deep_equals(x, y)
+    False
+    >>> deep_equals(x, y, return_msg=True)
+    (False, '[1] !=, 2 != 3')
     """
     # call deep_equals_custom with default plugins
     plugins_default = [
@@ -149,8 +160,9 @@ def _numpy_equals_plugin(x, y, return_msg=False, deep_equals=None):
         y_flat = y.flatten()
         for i in range(len(x_flat)):
             is_equal, msg = deep_equals(x_flat[i], y_flat[i], return_msg=True)
-            return ret(is_equal, f"[{i}]" + msg)
-        return ret(True, "")  # catches len(x_flat) == 0
+            if not is_equal:
+                return ret(False, f"[{i}]" + msg)
+        return ret(True, "")
     else:
         return ret(np.array_equal(x, y, equal_nan=True), ".values")
 
