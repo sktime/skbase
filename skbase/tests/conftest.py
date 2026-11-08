@@ -216,6 +216,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_get_sklearn_clone",
             "_is_sklearn_present",
         ),
+        "skbase.base._tagmanager": ("_collect_class_flags_cached",),
         "skbase.base._pretty_printing._object_html_repr": (
             "_get_visual_block",
             "_object_html_repr",
