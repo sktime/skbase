@@ -14,6 +14,60 @@ You can also subscribe to ``skbase``'s
 
 For planned changes and upcoming releases, see our :ref:`roadmap`.
 
+[1.2.1] - 2026-11-08
+====================
+
+Maintenance and bugfix release.
+
+Removes support for 3.10 after end-of-life.
+
+Enhancements
+------------
+
+* [ENH] isolate ``_collect_class_flags_cached`` in ``_FlagManager``
+  (:pr:`613`) :user:`fkiraly`
+
+Bugfixes
+--------
+
+* [BUG] Compare all elements of object-dtype arrays by @j45856021-dev in https://github.com/sktime/skbase/pull/608
+  (:pr:`608`) :user:`j45856021-dev`
+* [BUG] fix ``all_objects`` tag filter crashing on unhashable tag values by @VividhDesign in https://github.com/sktime/skbase/pull/603
+  (:pr:`603`) :user:`VividhDesign`
+
+Maintenance
+-----------
+
+* [pre-commit.ci] pre-commit autoupdate
+  (:pr:`599`) :user:`pre-commit-ci[bot]`
+* [pre-commit.ci] pre-commit autoupdate
+  (:pr:`607`) :user:`pre-commit-ci[bot]`
+* [pre-commit.ci] pre-commit autoupdate
+  (:pr:`610`) :user:`pre-commit-ci[bot]`
+* [MNT] [Dependabot](deps): Bump github/codeql-action from ``4.38.1`` to ``4.38.2``
+  (:pr:`598`) :user:`dependabot[bot]`
+* [MNT] change the contact email in ``pyproject.toml`` to the ``sktime.net`` domain
+  (:pr:`604`) :user:`fkiraly`
+* [MNT] remove prerelease-allow for testing python 3.15
+  (:pr:`605`) :user:`fkiraly`
+* [MNT] [Dependabot](deps): Bump github/codeql-action from ``4.38.2`` to ``4.38.3``
+  (:pr:`606`) :user:`dependabot[bot]`
+* [MNT] [Dependabot](deps): Bump ``github/codeql-action`` from ``4.38.3`` to ``4.39.2``
+  (:pr:`612`) :user:`dependabot[bot]`
+
+Documentation
+-------------
+
+* [DOC] Improve docstring of ``all_objects`` (:pr:`614`) :user:`fkiraly`
+
+Contributors
+------------
+
+:user:`fkiraly`,
+:user:`j45856021-dev`,
+:user:`VividhDesign`
+
+
 [1.2.0] - 2026-09-23
 ====================
 
