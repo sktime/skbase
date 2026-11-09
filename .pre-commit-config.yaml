@@ -60,7 +60,7 @@ repos:
         additional_dependencies: [".[toml]"]
 
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.9.1
+    rev: 1.10.0
     hooks:
       - id: nbqa-isort
         args: [--nbqa-mutate, --nbqa-dont-skip-bad-cells]
