@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """Tests for _check_soft_dependencies utility."""
 
+import warnings
 from unittest.mock import patch
 
 import pytest
 from packaging.requirements import InvalidRequirement
 
 from skbase.utils.dependencies import (
+    _check_estimator_deps,
     _check_python_version,
     _check_soft_dependencies,
 )
@@ -190,3 +192,51 @@ def test_check_python_version(
                 f"\n\t - prereleases: {prereleases},",
                 f"\nERROR MESSAGE: {exception.msg}",
             ) from exception
+
+
+@pytest.mark.parametrize(
+    "tag_name, tag_value",
+    [
+        ("python_version", "<3.0"),
+        ("env_marker", "sys_platform == 'nonexistent_platform'"),
+        ("python_dependencies", "nonexistent__package_foo_bar"),
+    ],
+)
+def test_check_estimator_deps_dynamic_tags(tag_name, tag_value):
+    """Test _check_estimator_deps with tags set on instances, see #600."""
+    from skbase.base import BaseObject
+
+    class DummyObjectClass(BaseObject):
+        _tags = {tag_name: tag_value}
+
+        def __init__(self, clear_tag=False):
+            self.clear_tag = clear_tag
+            super().__init__()
+            if clear_tag:
+                self.set_tags(**{tag_name: None})
+
+    class DummyObjectClassNoReqs(BaseObject):
+        _tags = {tag_name: None}
+
+        def __init__(self, add_tag=False):
+            self.add_tag = add_tag
+            super().__init__()
+            if add_tag:
+                self.set_tags(**{tag_name: tag_value})
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        assert not _check_estimator_deps(DummyObjectClass, severity="none")
+        assert not _check_estimator_deps(DummyObjectClass(), severity="none")
+        assert _check_estimator_deps(DummyObjectClassNoReqs, severity="none")
+        assert _check_estimator_deps(DummyObjectClassNoReqs(), severity="none")
+
+    # todo 1.4.0: negate the two results below, and remove the pytest.warns
+    with pytest.warns(DeprecationWarning, match=tag_name):
+        assert not _check_estimator_deps(
+            DummyObjectClass(clear_tag=True), severity="none"
+        )
+    with pytest.warns(DeprecationWarning, match=tag_name):
+        assert _check_estimator_deps(
+            DummyObjectClassNoReqs(add_tag=True), severity="none"
+        )

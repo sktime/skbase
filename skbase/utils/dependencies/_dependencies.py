@@ -431,6 +431,57 @@ def _get_pkg_version(package_name, case_sensitive=False):
     return pkg_env_version
 
 
+# todo 1.4.0: return the instance tag value, remove the warning, and update
+# the docstrings of _check_python_version, _check_env_marker, _check_estimator_deps
+def _get_tag(obj, tag_name, tag_value_default=None):
+    """Get tag value of obj for the dependency checks.
+
+    Currently returns the class tag value, also if ``obj`` is an instance.
+    If ``obj`` is an instance with a tag value that differs from the class tag value,
+    e.g., due to ``set_tags``, a ``DeprecationWarning`` is raised,
+    since from scikit-base 1.4.0 onwards, the instance tag value will be used.
+
+    Parameters
+    ----------
+    obj : BaseObject descendant, class or instance
+        object to retrieve the tag value from
+    tag_name : str
+        name of the tag to retrieve
+    tag_value_default : any type, default=None
+        value to return if the tag is not found
+
+    Returns
+    -------
+    tag_value : value of the tag ``tag_name`` of the class of ``obj``,
+        retrieved via ``get_class_tag``.
+        If the tag is not found, ``tag_value_default`` is returned.
+    """
+    class_tag_value = obj.get_class_tag(tag_name, tag_value_default=tag_value_default)
+
+    if isclass(obj) or not hasattr(obj, "get_tag"):
+        return class_tag_value
+
+    instance_tag_value = obj.get_tag(
+        tag_name, tag_value_default=tag_value_default, raise_error=False
+    )
+    if instance_tag_value != class_tag_value:
+        warnings.warn(
+            f"The {tag_name!r} tag of the {type(obj).__name__} instance differs "
+            "from its class tag, e.g., due to set_tags. Currently, the dependency "
+            "checks in skbase.utils.dependencies use the class tag. "
+            "From scikit-base 1.4.0 onwards, the instance tag will be used, "
+            "see scikit-base issue #600. To retain the current behaviour, "
+            "pass the class instead of the instance.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+    # todo 1.4.0: replace this line
+    return class_tag_value
+    # by this line
+    # return instance_tag_value
+
+
 def _check_python_version(
     obj, package=None, msg=None, severity="error", prereleases=True
 ):
@@ -482,7 +533,7 @@ def _check_python_version(
     if isinstance(obj, str):
         specifier_tag = obj
     elif hasattr(obj, "get_class_tag"):
-        specifier_tag = obj.get_class_tag("python_version", tag_value_default="None")
+        specifier_tag = _get_tag(obj, "python_version", tag_value_default="None")
     else:
         return True
 
@@ -534,8 +585,8 @@ def _check_env_marker(obj, package=None, msg=None, severity="error"):
 
     Parameters
     ----------
-    obj : BaseObject descendant
-        used to check python version
+    obj : BaseObject descendant, class or instance
+        used to check the "env_marker" tag
     package : str, default = None
         if given, will be used in error message as package name
     msg : str, optional, default = default message (msg below)
@@ -565,7 +616,7 @@ def _check_env_marker(obj, package=None, msg=None, severity="error"):
         incompatible with the python environment. If package is given,
         error message gives package as the reason for incompatibility.
     """
-    est_marker_tag = obj.get_class_tag("env_marker", tag_value_default="None")
+    est_marker_tag = _get_tag(obj, "env_marker", tag_value_default="None")
     if est_marker_tag in ["None", None]:
         return True
 
@@ -656,7 +707,7 @@ def _check_estimator_deps(obj, msg=None, severity="error"):
     compatible = compatible and _check_python_version(obj, severity=severity)
     compatible = compatible and _check_env_marker(obj, severity=severity)
 
-    pkg_deps = obj.get_class_tag("python_dependencies", None)
+    pkg_deps = _get_tag(obj, "python_dependencies", tag_value_default=None)
     if pkg_deps is not None and not isinstance(pkg_deps, list):
         pkg_deps = [pkg_deps]
     if pkg_deps is not None:
