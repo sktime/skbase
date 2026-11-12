@@ -431,8 +431,15 @@ def _get_pkg_version(package_name, case_sensitive=False):
     return pkg_env_version
 
 
+# todo 1.4.0: return the instance tag value, remove the warning, and update
+# the docstrings of _check_python_version, _check_env_marker, _check_estimator_deps
 def _get_tag(obj, tag_name, tag_value_default=None):
-    """Get tag value of obj, including dynamic tag overrides if obj is an instance.
+    """Get tag value of obj for the dependency checks.
+
+    Currently returns the class tag value, also if ``obj`` is an instance.
+    If ``obj`` is an instance with a tag value that differs from the class tag value,
+    e.g., due to ``set_tags``, a ``DeprecationWarning`` is raised,
+    since from scikit-base 1.4.0 onwards, the instance tag value will be used.
 
     Parameters
     ----------
@@ -445,16 +452,34 @@ def _get_tag(obj, tag_name, tag_value_default=None):
 
     Returns
     -------
-    tag_value : value of the tag ``tag_name`` of ``obj``.
-        If ``obj`` is an instance, retrieved via ``get_tag``, i.e., taking into account
-        dynamic tag overrides, otherwise retrieved via ``get_class_tag``.
+    tag_value : value of the tag ``tag_name`` of the class of ``obj``,
+        retrieved via ``get_class_tag``.
         If the tag is not found, ``tag_value_default`` is returned.
     """
-    if not isclass(obj) and hasattr(obj, "get_tag"):
-        return obj.get_tag(
-            tag_name, tag_value_default=tag_value_default, raise_error=False
+    class_tag_value = obj.get_class_tag(tag_name, tag_value_default=tag_value_default)
+
+    if isclass(obj) or not hasattr(obj, "get_tag"):
+        return class_tag_value
+
+    instance_tag_value = obj.get_tag(
+        tag_name, tag_value_default=tag_value_default, raise_error=False
+    )
+    if instance_tag_value != class_tag_value:
+        warnings.warn(
+            f"The {tag_name!r} tag of the {type(obj).__name__} instance differs "
+            "from its class tag, e.g., due to set_tags. Currently, the dependency "
+            "checks in skbase.utils.dependencies use the class tag. "
+            "From scikit-base 1.4.0 onwards, the instance tag will be used, "
+            "see scikit-base issue #600. To retain the current behaviour, "
+            "pass the class instead of the instance.",
+            DeprecationWarning,
+            stacklevel=2,
         )
-    return obj.get_class_tag(tag_name, tag_value_default=tag_value_default)
+
+    # todo 1.4.0: replace this line
+    return class_tag_value
+    # by this line
+    # return instance_tag_value
 
 
 def _check_python_version(
@@ -469,7 +494,7 @@ def _check_python_version(
 
         * If str, must be PEP 440 compatible specifier string, e.g., "<3.9, >= 3.6.3"
         * If BaseObject descendant, must have "python_version" tag containing such a
-          str, or None. If an instance, dynamic tag overrides are taken into account.
+          str, or None.
 
     package : str, default = None
         if given, will be used in error message as package name
@@ -561,8 +586,7 @@ def _check_env_marker(obj, package=None, msg=None, severity="error"):
     Parameters
     ----------
     obj : BaseObject descendant, class or instance
-        used to check the "env_marker" tag.
-        If an instance, dynamic tag overrides are taken into account.
+        used to check the "env_marker" tag
     package : str, default = None
         if given, will be used in error message as package name
     msg : str, optional, default = default message (msg below)
@@ -640,8 +664,7 @@ def _check_estimator_deps(obj, msg=None, severity="error"):
     Parameters
     ----------
     obj : BaseObject descendant, instance or class, or list/tuple thereof
-        object(s) that this function checks compatibility of, with the python env.
-        For instances, dynamic tag overrides are taken into account.
+        object(s) that this function checks compatibility of, with the python env
 
     msg : str, optional, default = default message (msg below)
         error message to be returned in the ``ModuleNotFoundError``, overrides default

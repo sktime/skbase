@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests for _check_soft_dependencies utility."""
 
+import warnings
 from unittest.mock import patch
 
 import pytest
@@ -202,7 +203,7 @@ def test_check_python_version(
     ],
 )
 def test_check_estimator_deps_dynamic_tags(tag_name, tag_value):
-    """Test that _check_estimator_deps respects dynamic tags of instances."""
+    """Test _check_estimator_deps with tags set on instances, see #600."""
     from skbase.base import BaseObject
 
     class DummyObjectClass(BaseObject):
@@ -223,15 +224,19 @@ def test_check_estimator_deps_dynamic_tags(tag_name, tag_value):
             if add_tag:
                 self.set_tags(**{tag_name: tag_value})
 
-    assert not _check_estimator_deps(DummyObjectClass, severity="none")
-    assert not _check_estimator_deps(DummyObjectClass(), severity="none")
-    assert _check_estimator_deps(DummyObjectClass(clear_tag=True), severity="none")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        assert not _check_estimator_deps(DummyObjectClass, severity="none")
+        assert not _check_estimator_deps(DummyObjectClass(), severity="none")
+        assert _check_estimator_deps(DummyObjectClassNoReqs, severity="none")
+        assert _check_estimator_deps(DummyObjectClassNoReqs(), severity="none")
 
-    assert _check_estimator_deps(DummyObjectClassNoReqs, severity="none")
-    assert _check_estimator_deps(DummyObjectClassNoReqs(), severity="none")
-    assert not _check_estimator_deps(
-        DummyObjectClassNoReqs(add_tag=True), severity="none"
-    )
-
-    with pytest.raises(ModuleNotFoundError):
-        _check_estimator_deps(DummyObjectClassNoReqs(add_tag=True))
+    # todo 1.4.0: negate the two results below, and remove the pytest.warns
+    with pytest.warns(DeprecationWarning, match=tag_name):
+        assert not _check_estimator_deps(
+            DummyObjectClass(clear_tag=True), severity="none"
+        )
+    with pytest.warns(DeprecationWarning, match=tag_name):
+        assert _check_estimator_deps(
+            DummyObjectClassNoReqs(add_tag=True), severity="none"
+        )
