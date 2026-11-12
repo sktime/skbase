@@ -236,13 +236,54 @@ def _filter_by_tags(obj, tag_filter=None, as_dataframe=True):
 
         # search value matches tag value iff
         # at least one element of search value matches at least one element of tag value
-        str_match = len(set(search_str).intersection(tag_value)) > 0
+        try:
+            str_match = len(set(search_str).intersection(tag_value)) > 0
+        except TypeError:
+            # only reached if there are unhashable elements, e.g., nested lists
+            # in python_dependencies, otherwise the fast set lookup is used
+            str_match = _any_element_equal(search_str, tag_value)
         re_match = any(s.fullmatch(str(tag)) for s in search_re for tag in tag_value)
         match = str_match or re_match
 
         cond_sat = cond_sat and match
 
     return cond_sat
+
+
+def _is_hashable(obj):
+    """Return whether obj is hashable."""
+    try:
+        hash(obj)
+    except TypeError:
+        return False
+    return True
+
+
+def _any_element_equal(left, right):
+    """Check whether any element of left is equal to any element of right.
+
+    Hashable elements are compared via set lookup, in linear time.
+    Only unhashable elements, e.g., nested lists, are compared pairwise,
+    against all elements of the other iterable.
+
+    Parameters
+    ----------
+    left, right : list
+        lists of elements to compare, may contain unhashable elements
+
+    Returns
+    -------
+    bool, whether there is an element of left equal to an element of right
+    """
+    left_hashable = {x for x in left if _is_hashable(x)}
+    left_unhashable = [x for x in left if not _is_hashable(x)]
+    right_unhashable = [y for y in right if not _is_hashable(y)]
+
+    if any(y in left_hashable for y in right if _is_hashable(y)):
+        return True
+    if any(x == y for x in left_unhashable for y in right):
+        return True
+    return any(x == y for x in left for y in right_unhashable)
 
 
 def _walk(root, exclude=None, prefix=""):
@@ -776,6 +817,7 @@ def all_objects(
     Parameters
     ----------
     object_types: class or tuple, list of classes, default=None
+        Which kind of objects should be returned.
 
         - If class_lookup is provided, can also be str or list of str
           which kind of objects should be returned.
@@ -786,6 +828,7 @@ def all_objects(
           as `class_lookup` parameter is passed a lookup dict.
 
     return_names: bool, default=True
+        Whether to include the class name strings in the returned objects.
 
         - If True, estimator class name is included in the ``all_objects``
           return in the order: name, estimator class, optional tags, either as
@@ -793,10 +836,11 @@ def all_objects(
         - If False, estimator class name is removed from the ``all_objects`` return.
 
     filter_tags: str, list[str] or dict[str, Any], default=None
-        Filter used to determine if ``klass`` has tag or expected tag values.
+        Filter condition to filter returned objects based on their tags.
+        The filter condition is used to determine which objects are returned.
 
         - If a str or list of strings is provided, the return will be filtered
-          to keep classes that have all the tag(s) specified by the strings,
+          to keep exactly classes that have all the tag(s) specified by the strings,
           with the tag value being True.
 
         - If a dict is provided, the return will be filtered to keep exactly the classes
@@ -821,15 +865,16 @@ def all_objects(
             applied to ``tag_value``.
 
     exclude_objects: str or list[str], default=None
-        Names of estimators to exclude.
+        Names of objects to exclude.
 
     as_dataframe: bool, default=False
+        Whether to return the results as a pandas DataFrame or as a list.
 
-        - If False, `all_objects` will return a list (either a list of
-          `skbase` objects or a list of tuples, see Returns).
-        - If True, `all_objects` will return a `pandas.DataFrame` with named
-            columns for all of the attributes being returned.
-            this requires soft dependency `pandas` to be installed.
+        - If False, ``all_objectss`` will return a list - either a list of
+          ``scikit-base`` compatible classes or a list of tuples, see Returns.
+        - If True, ``all_objects`` will return a ``pandas.DataFrame`` with named
+          columns for all of the attributes being returned.
+          this requires soft dependency ``pandas`` to be installed.
 
     return_tags: str or list of str, default=None
         Names of tags to fetch and return each object's value of. The tag values
@@ -871,7 +916,7 @@ def all_objects(
 
     - a pandas.DataFrame if ``as_dataframe=True``, with columns:
 
-      - "names" with the returned class names if ``return_name=True``
+      - "names" with the returned class names if ``return_names=True``
       - "objects" with returned classes.
       - optional columns named based on tags passed in ``return_tags``
         if ``return_tags is not None``.

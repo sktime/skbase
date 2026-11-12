@@ -216,6 +216,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_get_sklearn_clone",
             "_is_sklearn_present",
         ),
+        "skbase.base._tagmanager": ("_collect_class_flags_cached",),
         "skbase.base._pretty_printing._object_html_repr": (
             "_get_visual_block",
             "_object_html_repr",
@@ -226,6 +227,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
         "skbase.lookup._lookup": (
             "all_objects",
             "get_package_metadata",
+            "_any_element_equal",
             "_check_object_types",
             "_coerce_to_tuple",
             "_determine_module_path",
@@ -235,6 +237,7 @@ SKBASE_FUNCTIONS_BY_MODULE.update(
             "_get_module_info",
             "_get_return_tags",
             "_import_module",
+            "_is_hashable",
             "_is_ignored_module",
             "_is_non_public_module",
             "_make_dataframe",
