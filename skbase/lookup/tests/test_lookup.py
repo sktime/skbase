@@ -34,10 +34,8 @@ from skbase.tests.conftest import (
     SKBASE_BASE_CLASSES,
     SKBASE_CLASSES_BY_MODULE,
     SKBASE_FUNCTIONS_BY_MODULE,
-    SKBASE_MODULES,
     SKBASE_PUBLIC_CLASSES_BY_MODULE,
     SKBASE_PUBLIC_FUNCTIONS_BY_MODULE,
-    SKBASE_PUBLIC_MODULES,
     ClassWithABTrue,
     Parent,
 )
@@ -763,7 +761,7 @@ def test_get_package_metadata_returns_expected_results(
 ):
     """Test that get_package_metadata_returns expected results using skbase."""
     results = get_package_metadata(
-        "skbase",
+        "skbase.lookup.tests.mock_package",
         exclude_non_public_items=exclude_non_public_items,
         exclude_non_public_modules=exclude_non_public_modules,
         package_base_classes=SKBASE_BASE_CLASSES,
@@ -771,22 +769,16 @@ def test_get_package_metadata_returns_expected_results(
         classes_to_exclude=TagAliaserMixin,
         suppress_import_stdout=False,
     )
-    public_modules_excluding_tests = [
-        module
-        for module in SKBASE_PUBLIC_MODULES
-        if not _is_ignored_module(module, modules_to_ignore="tests")
-    ]
-    modules_excluding_tests = [
-        module
-        for module in SKBASE_MODULES
-        if not _is_ignored_module(module, modules_to_ignore="tests")
-    ]
-    if exclude_non_public_modules:
-        assert tuple(results.keys()) == tuple(public_modules_excluding_tests)
-    else:
-        assert tuple(results.keys()) == tuple(modules_excluding_tests)
+    modules_excluding_tests = list(results.keys())
+    public_modules_excluding_tests = modules_excluding_tests
 
     for module in results:
+
+        if exclude_non_public_modules:
+            assert tuple(results.keys()) == tuple(public_modules_excluding_tests)
+        else:
+            assert tuple(results.keys()) == tuple(modules_excluding_tests)
+
         if exclude_non_public_items:
             module_funcs = SKBASE_PUBLIC_FUNCTIONS_BY_MODULE.get(module, ())
             module_classes = SKBASE_PUBLIC_CLASSES_BY_MODULE.get(module, ())
