@@ -19,7 +19,7 @@ repos:
         args: ["--django"]
 
   - repo: https://github.com/pycqa/isort
-    rev: 10.0.0b2
+    rev: 10.0.0b3
     hooks:
       - id: isort
         name: isort
@@ -60,7 +60,7 @@ repos:
         additional_dependencies: [".[toml]"]
 
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.9.1
+    rev: 1.10.0
     hooks:
       - id: nbqa-isort
         args: [--nbqa-mutate, --nbqa-dont-skip-bad-cells]
