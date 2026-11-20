@@ -325,3 +325,280 @@ def test_check_objects_attr_name_none_tag_not_set():
 
     with pytest.raises(TypeError, match="could not be auto-detected.*non-empty string"):
         meta_obj._check_objects(steps, attr_name=None)
+
+
+# Tests for _MetaObjectMixin error paths and helper methods
+# ---------------------------------------------------------
+
+
+def test_check_names_valid():
+    """Test _check_names returns valid names unchanged."""
+    meta_obj = MetaObjectTester()
+    names = ["comp1", "comp2"]
+
+    assert meta_obj._check_names(names, make_unique=True) == ["comp1", "comp2"]
+    assert meta_obj._check_names(names, make_unique=False) == ["comp1", "comp2"]
+
+
+def test_check_names_duplicate_raises():
+    """Test _check_names raises ValueError when names are not unique."""
+    meta_obj = MetaObjectTester()
+
+    with pytest.raises(ValueError, match="Names provided are not unique"):
+        meta_obj._check_names(["comp1", "comp1"])
+
+
+@pytest.mark.parametrize(
+    "invalid_names",
+    [
+        ["a", "comp1"],
+        ["steps", "comp1"],
+        ["comp__1", "comp2"],
+        ["a", "bad__name"],
+    ],
+)
+def test_check_names_conflict_or_dunder_raises(invalid_names):
+    """Test _check_names raises ValueError on param conflict or '__' in name."""
+    meta_obj = MetaObjectTester()
+
+    with pytest.raises(
+        ValueError, match="conflict with constructor argument or contain '__'"
+    ):
+        meta_obj._check_names(invalid_names)
+
+
+@pytest.mark.parametrize(
+    "bad_cls_type",
+    [
+        "BaseObject",
+        123,
+        (ComponentDummy, "not_a_class"),
+    ],
+)
+def test_validate_objects_invalid_cls_type_raises(bad_cls_type):
+    """Test _validate_objects raises TypeError for invalid cls_type."""
+    meta_obj = MetaObjectTester()
+    steps = [ComponentDummy(1)]
+
+    with pytest.raises(TypeError, match="`cls_type` must be a class or tuple of"):
+        meta_obj._validate_objects(steps, attr_name="steps", cls_type=bad_cls_type)
+
+
+def test_validate_objects_cls_type_class_and_tuple():
+    """Test _validate_objects with single class and tuple of classes for cls_type."""
+    meta_obj = MetaObjectTester()
+    comp = ComponentDummy(1)
+    est = BaseEstimator()
+
+    # Single class passes for matching instance, fails for non-matching
+    assert meta_obj._validate_objects(
+        [comp], attr_name="steps", cls_type=ComponentDummy
+    )
+    with pytest.raises(TypeError, match="must be of type ComponentDummy"):
+        meta_obj._validate_objects([est], attr_name="steps", cls_type=ComponentDummy)
+
+    # Tuple of classes passes for both, fails for non-matching
+    cls_tuple = (ComponentDummy, BaseEstimator)
+    assert meta_obj._validate_objects(
+        [comp, est], attr_name="steps", cls_type=cls_tuple
+    )
+    with pytest.raises(
+        TypeError, match="must be of type ComponentDummy or BaseEstimator"
+    ):
+        meta_obj._validate_objects(
+            [BaseObject()], attr_name="steps", cls_type=cls_tuple
+        )
+
+
+def test_validate_objects_invalid_dict_and_list_elements():
+    """Test _validate_objects raises TypeError for invalid dict or list elements."""
+    meta_obj = MetaObjectTester()
+
+    # Invalid dict: non-str key or wrong value type
+    with pytest.raises(TypeError, match="Invalid 'steps' attribute"):
+        meta_obj._validate_objects(
+            {1: ComponentDummy()}, attr_name="steps", allow_dict=True
+        )
+    with pytest.raises(TypeError, match="Invalid 'steps' attribute"):
+        meta_obj._validate_objects(
+            {"c1": "not_an_object"}, attr_name="steps", allow_dict=True
+        )
+
+    # Invalid list element
+    with pytest.raises(TypeError, match="Invalid 'steps' attribute"):
+        meta_obj._validate_objects(["not_an_object"], attr_name="steps")
+
+
+def test_validate_objects_mixed_not_allowed():
+    """Test _validate_objects raises TypeError when mix is disallowed."""
+    meta_obj = MetaObjectTester()
+    mixed = [ComponentDummy(1), ("c2", ComponentDummy(2))]
+
+    with pytest.raises(TypeError, match="A mix of the two is not allowed"):
+        meta_obj._validate_objects(mixed, attr_name="steps", allow_mix=False)
+
+
+def test_coerce_object_tuple_and_dict_helpers():
+    """Test _coerce_object_tuple 1-tuple and dict handling in name/object helpers."""
+    meta_obj = MetaObjectTester()
+    comp1 = ComponentDummy(1)
+    comp2 = ComponentDummy(2)
+
+    assert meta_obj._coerce_object_tuple((comp1,)) == ("ComponentDummy", comp1)
+
+    obj_dict = {"first": comp1, "second": comp2}
+    names, objs = meta_obj._get_names_and_objects(obj_dict)
+    assert names == ["first", "second"]
+    assert objs == [comp1, comp2]
+
+    coerced = meta_obj._coerce_to_named_object_tuples(obj_dict)
+    assert coerced == [("first", comp1), ("second", comp2)]
+
+
+def test_set_params_empty_returns_self():
+    """Test set_params with no keyword arguments returns self."""
+    meta_obj = MetaObjectTester(steps=[ComponentDummy(1)])
+    assert meta_obj.set_params() is meta_obj
+
+
+@pytest.mark.parametrize(
+    "kwargs, exc_type, match",
+    [
+        (
+            {
+                "base_class": BaseObject,
+                "composite_class": MetaObjectTester,
+                "concat_order": "middle",
+            },
+            ValueError,
+            "`concat_order` must be 'left' or 'right'",
+        ),
+        (
+            {
+                "base_class": BaseObject,
+                "composite_class": MetaObjectTester,
+                "attr_name": 123,
+            },
+            TypeError,
+            "`attr_name` must be str",
+        ),
+        (
+            {
+                "base_class": BaseObject,
+                "composite_class": "not_a_class",
+            },
+            TypeError,
+            "`composite_class` must be a class",
+        ),
+        (
+            {
+                "base_class": "not_a_class",
+                "composite_class": MetaObjectTester,
+            },
+            TypeError,
+            "`base_class` must be a class",
+        ),
+        (
+            {
+                "base_class": ComponentDummy,
+                "composite_class": MetaObjectTester,
+            },
+            ValueError,
+            "`composite_class` must be a subclass of base_class",
+        ),
+        (
+            {
+                "base_class": BaseObject,
+                "composite_class": MetaEstimatorTester,
+            },
+            TypeError,
+            "self must be an instance of `composite_class`",
+        ),
+    ],
+)
+def test_dunder_concat_validation_errors(kwargs, exc_type, match):
+    """Test _dunder_concat raises expected errors on invalid arguments."""
+    meta_obj = MetaObjectTester(steps=[ComponentDummy(1)])
+    other = ComponentDummy(2)
+
+    with pytest.raises(exc_type, match=match):
+        meta_obj._dunder_concat(other=other, **kwargs)
+
+
+def test_dunder_concat_composites_and_base_objects():
+    """Test _dunder_concat with composites, base objects, named tuples, and params."""
+    c1 = ComponentDummy(1)
+    c2 = ComponentDummy(2)
+    c3 = ComponentDummy(3)
+
+    m1 = MetaObjectTester(steps=[c1])
+    m2 = MetaObjectTester(steps=[c2])
+
+    # Left and right concatenation of two composites (all default class names -> list)
+    left = m1._dunder_concat(m2, BaseObject, MetaObjectTester, concat_order="left")
+    assert isinstance(left, MetaObjectTester)
+    assert left.steps == [c1, c2]
+
+    right = m1._dunder_concat(m2, BaseObject, MetaObjectTester, concat_order="right")
+    assert right.steps == [c2, c1]
+
+    # Concatenation with a single base_class instance
+    with_base = m1._dunder_concat(c3, BaseObject, MetaObjectTester)
+    assert with_base.steps == [c1, c3]
+
+    # Concatenation with a named (str, base_class) tuple keeps named tuples
+    with_named = m1._dunder_concat(("custom", c3), BaseObject, MetaObjectTester)
+    assert with_named.steps == [("ComponentDummy", c1), ("custom", c3)]
+
+    # composite_params are forwarded without mutating the input dict
+    extra_params = {"a": 99, "b": "extra"}
+    with_params = m1._dunder_concat(
+        c2, BaseObject, MetaObjectTester, composite_params=extra_params
+    )
+    assert with_params.a == 99
+    assert with_params.b == "extra"
+    assert "steps" not in extra_params
+
+    # Incompatible other returns NotImplemented
+    assert m1._dunder_concat("not_an_object", BaseObject, MetaObjectTester) is (
+        NotImplemented
+    )
+
+
+def test_metaestimator_get_fitted_params():
+    """Test _get_fitted_params / get_fitted_params on a fitted BaseMetaEstimator."""
+
+    class FittedComponent(BaseEstimator):
+        def __init__(self, x=1):
+            self.x = x
+            super().__init__()
+
+        def fit(self):
+            self.learned_ = self.x * 10
+            self._is_fitted = True
+            return self
+
+    class FittedMetaEstimator(BaseMetaEstimator):
+        _tags = {
+            "named_object_parameters": "steps",
+            "fitted_named_object_parameters": "steps_",
+        }
+
+        def __init__(self, steps=None):
+            self.steps = steps
+            super().__init__()
+
+        def fit(self):
+            self.steps_ = [(name, est.clone().fit()) for name, est in self.steps]
+            self.meta_param_ = "fitted"
+            self._is_fitted = True
+            return self
+
+    meta_est = FittedMetaEstimator(
+        steps=[("c1", FittedComponent(2)), ("c2", FittedComponent(3))]
+    ).fit()
+
+    fitted = meta_est.get_fitted_params()
+    assert fitted["meta_param"] == "fitted"
+    assert fitted["c1__learned"] == 20
+    assert fitted["c2__learned"] == 30
