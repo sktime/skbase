@@ -11,9 +11,65 @@ import inspect
 from copy import deepcopy
 from functools import lru_cache
 
+# builtin container types whose values are copied before flags are returned,
+# matched by exact type so that subclasses (e.g., namedtuple) keep their type
+_CONTAINER_TYPES = (list, dict, set, tuple)
+
 
 class _FlagManager:
     """Mixin class for flag and configuration settings management."""
+
+    @staticmethod
+    def _copy_containers(value):
+        """Copy builtin containers in ``value`` recursively, share other objects.
+
+        Parameters
+        ----------
+        value : any
+            Flag value to copy.
+
+        Returns
+        -------
+        value_copy : any
+            ``value`` with every nested ``list``, ``dict``, ``set`` and ``tuple``
+            rebuilt, so that in-place changes to the copy do not affect ``value``.
+            Objects of any other type are returned unchanged.
+        """
+        copy_fn = _FlagManager._copy_containers
+        value_type = type(value)
+        if value_type is dict:
+            return {key: copy_fn(item) for key, item in value.items()}
+        if value_type is list:
+            return [copy_fn(item) for item in value]
+        if value_type is tuple:
+            return tuple(copy_fn(item) for item in value)
+        if value_type is set:
+            return set(value)
+        return value
+
+    @classmethod
+    def _copied_class_flags(cls, flag_attr_name="_flags"):
+        """Get the cached class flags as a dict that is safe to mutate.
+
+        Parameters
+        ----------
+        flag_attr_name : str, default = "_flags"
+            Name of the flag attribute that is read.
+
+        Returns
+        -------
+        collected_flags : dict
+            Fresh dict of class flags. Flat builtin containers are shallow-copied,
+            nested ones are copied with ``_copy_containers``, all other values
+            are shared with the cache.
+        """
+        flags, flat_keys, nested_keys = _collect_class_flags_cached(cls, flag_attr_name)
+        collected_flags = dict(flags)
+        for key in flat_keys:
+            collected_flags[key] = flags[key].copy()
+        for key in nested_keys:
+            collected_flags[key] = cls._copy_containers(flags[key])
+        return collected_flags
 
     @classmethod
     def _get_class_flags(cls, flag_attr_name="_flags"):
@@ -31,10 +87,7 @@ class _FlagManager:
             class attribute via nested inheritance. NOT overridden by dynamic
             flags set by set_flags or clone_flags.
         """
-        cached = _collect_class_flags_cached(cls, flag_attr_name)
-        # shallow copy: cheap, and safe because tag values are immutable
-        # (they are primitives types bool, etc.)
-        return dict(cached)
+        return cls._copied_class_flags(flag_attr_name)
 
     @classmethod
     def _get_class_flag(
@@ -93,11 +146,12 @@ class _FlagManager:
             class attribute via nested inheritance and then any overrides
             and new flags from [flag_attr_name]_dynamic object attribute.
         """
-        # shallow copy of the cached class-level dict
-        collected_flags = dict(_collect_class_flags_cached(type(self), flag_attr_name))
+        collected_flags = self._copied_class_flags(flag_attr_name)
 
         if hasattr(self, f"{flag_attr_name}_dynamic"):
-            collected_flags.update(getattr(self, f"{flag_attr_name}_dynamic"))
+            dynamic_flags = getattr(self, f"{flag_attr_name}_dynamic")
+            for key, value in dynamic_flags.items():
+                collected_flags[key] = self._copy_containers(value)
 
         return collected_flags
 
@@ -215,9 +269,18 @@ class _FlagManager:
 def _collect_class_flags_cached(cls, flag_attr_name):
     """Walk the MRO once per (cls, flag_attr_name) and cache the result.
 
-    Returns the dict directly; callers are responsible for copying it
-    before handing it out or mutating it, since this is a shared cached
-    object.
+    Returns
+    -------
+    collected_flags : dict
+        Class flags collected along the MRO. This is the shared cached object,
+        callers must not mutate it or hand it out, see
+        ``_FlagManager._copied_class_flags``.
+    flat_keys : tuple of str
+        Keys whose value is a ``list``, ``dict`` or ``set`` that contains no
+        builtin container, a shallow copy of these is enough.
+    nested_keys : tuple of str
+        Keys whose value is a ``list``, ``dict``, ``set`` or ``tuple`` that
+        contains a builtin container, these need ``_copy_containers``.
     """
     collected_flags = {}
     for parent_class in reversed(inspect.getmro(cls)):
@@ -226,4 +289,17 @@ def _collect_class_flags_cached(cls, flag_attr_name):
         if flag_attr_name in parent_class.__dict__:
             more_flags = parent_class.__dict__[flag_attr_name]
             collected_flags.update(more_flags)
-    return collected_flags
+
+    flat_keys = []
+    nested_keys = []
+    for key, value in collected_flags.items():
+        value_type = type(value)
+        if value_type not in _CONTAINER_TYPES:
+            continue
+        items = value.values() if value_type is dict else value
+        if any(type(item) in _CONTAINER_TYPES for item in items):
+            nested_keys.append(key)
+        elif value_type is not tuple:
+            flat_keys.append(key)
+
+    return collected_flags, tuple(flat_keys), tuple(nested_keys)

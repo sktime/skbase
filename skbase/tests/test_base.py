@@ -1520,6 +1520,83 @@ def test_get_class_tags_diamond_inheritance():
     assert obj.get_tag("B", raise_error=False) == 2
 
 
+def _mutable_tags():
+    return {
+        "lst": ["a"],
+        "nested": ["x", ["y"]],
+        "dct": {"k": ["v"]},
+        "tup": ("str", ["c"]),
+    }
+
+
+def test_get_class_tags_returns_copies_of_mutable_values():
+    """Mutating returned class tags must not change the class tags.
+
+    Regression test for #620: the class tag cache handed out its own list and
+    dict objects, so in-place changes leaked into every later lookup.
+    """
+
+    class MutableTags(BaseObject):
+        _tags = _mutable_tags()
+
+    MutableTags.get_class_tags()["lst"].append("leak")
+    MutableTags.get_class_tag("nested")[1].append("leak")
+    MutableTags.get_class_tags()["dct"]["k"].append("leak")
+    MutableTags.get_class_tag("tup")[1].append("leak")
+
+    assert MutableTags.get_class_tags() == _mutable_tags()
+    assert MutableTags().get_tags() == _mutable_tags()
+
+
+def test_get_tags_returns_copies_of_mutable_values():
+    """Mutating tags returned by an instance must not change its tags.
+
+    Covers class tags read through the instance and dynamic tags set with
+    ``set_tags``.
+    """
+
+    class MutableTags(BaseObject):
+        _tags = _mutable_tags()
+
+    obj = MutableTags()
+    obj.get_tags()["lst"].append("leak")
+    obj.get_tag("nested")[1].append("leak")
+
+    obj.set_tags(dyn=[1])
+    obj.get_tags()["dyn"].append(2)
+    obj.get_tag("dyn").append(3)
+
+    assert obj.get_tag("dyn") == [1]
+    assert obj.get_tags()["lst"] == ["a"]
+    assert MutableTags().get_tags() == _mutable_tags()
+
+
+def test_get_config_returns_copies_of_mutable_values():
+    """Mutating a returned config must not change the object's config."""
+
+    class MutableConfig(BaseObject):
+        _config = {"opts": ["a"]}
+
+    obj = MutableConfig()
+    obj.get_config()["opts"].append("leak")
+
+    assert obj.get_config()["opts"] == ["a"]
+
+
+def test_get_class_tags_shares_non_container_values():
+    """Tag values that are not builtin containers are returned as is."""
+    import types
+
+    def tag_fn():
+        pass
+
+    class ObjectTags(BaseObject):
+        _tags = {"fn": tag_fn, "mod": types}
+
+    assert ObjectTags.get_class_tag("fn") is tag_fn
+    assert ObjectTags.get_class_tags()["mod"] is types
+
+
 class BadGetParamsClass:
 
     get_params = "This is not a method in order to test get_params nesting handling."
