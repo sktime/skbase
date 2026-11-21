@@ -191,6 +191,16 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "kr1xh",
+      "name": "KRISH",
+      "avatar_url": "https://avatars.githubusercontent.com/u/259591991?v=4",
+      "profile": "https://github.com/kr1xh",
+      "contributions": [
+        "bug",
+        "code"
+      ]
     }
   ],
   "projectName": "skbase",
