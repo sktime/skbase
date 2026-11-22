@@ -11,9 +11,97 @@ import inspect
 from copy import deepcopy
 from functools import lru_cache
 
+# builtin container types whose values are copied before flags are returned,
+# matched by exact type so that subclasses (e.g., namedtuple) keep their type
+_CONTAINER_TYPES = (list, dict, set, tuple)
+
 
 class _FlagManager:
     """Mixin class for flag and configuration settings management."""
+
+    @staticmethod
+    def _copy_containers(value, memo=None):
+        """Copy builtin containers in ``value`` recursively, share other objects.
+
+        Parameters
+        ----------
+        value : any
+            Flag value to copy.
+        memo : dict, optional
+            Maps ``id`` of already copied containers to their copy, so that
+            self-referencing values do not recurse forever and objects that
+            appear twice in ``value`` are copied once, as in ``deepcopy``.
+
+        Returns
+        -------
+        value_copy : any
+            ``value`` with every nested ``list``, ``dict``, ``set`` and ``tuple``
+            rebuilt, so that in-place changes to the copy do not affect ``value``.
+            Objects of any other type are returned unchanged.
+        """
+        value_type = type(value)
+        if value_type not in _CONTAINER_TYPES:
+            return value
+        value_id = id(value)
+        if memo is not None and value_id in memo:
+            return memo[value_id]
+
+        # fast path: a container without containers inside needs a shallow copy
+        items = value.values() if value_type is dict else value
+        if not any(type(item) in _CONTAINER_TYPES for item in items):
+            value_copy = value if value_type is tuple else value.copy()
+            if memo is not None:
+                memo[value_id] = value_copy
+            return value_copy
+
+        if memo is None:
+            memo = {}
+        copy_fn = _FlagManager._copy_containers
+        # lists and dicts are registered before their items are copied,
+        # so that a cycle back to them finds the copy in progress
+        if value_type is list:
+            value_copy = []
+            memo[value_id] = value_copy
+            value_copy.extend(copy_fn(item, memo) for item in value)
+            return value_copy
+        if value_type is dict:
+            value_copy = {}
+            memo[value_id] = value_copy
+            for key, item in value.items():
+                value_copy[key] = copy_fn(item, memo)
+            return value_copy
+        if value_type is set:
+            value_copy = set(value)
+            memo[value_id] = value_copy
+            return value_copy
+        # a tuple can only be built after its items, a cycle through it passes
+        # through a list or dict that is already registered
+        value_copy = tuple(copy_fn(item, memo) for item in value)
+        return memo.setdefault(value_id, value_copy)
+
+    @classmethod
+    def _copied_class_flags(cls, flag_attr_name="_flags"):
+        """Get the cached class flags as a dict that is safe to mutate.
+
+        Parameters
+        ----------
+        flag_attr_name : str, default = "_flags"
+            Name of the flag attribute that is read.
+
+        Returns
+        -------
+        collected_flags : dict
+            Fresh dict of class flags. Flat builtin containers are shallow-copied,
+            nested ones are copied with ``_copy_containers``, all other values
+            are shared with the cache.
+        """
+        flags, flat_keys, nested_keys = _collect_class_flags_cached(cls, flag_attr_name)
+        collected_flags = dict(flags)
+        for key in flat_keys:
+            collected_flags[key] = flags[key].copy()
+        for key in nested_keys:
+            collected_flags[key] = cls._copy_containers(flags[key])
+        return collected_flags
 
     @classmethod
     def _get_class_flags(cls, flag_attr_name="_flags"):
@@ -31,10 +119,7 @@ class _FlagManager:
             class attribute via nested inheritance. NOT overridden by dynamic
             flags set by set_flags or clone_flags.
         """
-        cached = _collect_class_flags_cached(cls, flag_attr_name)
-        # shallow copy: cheap, and safe because tag values are immutable
-        # (they are primitives types bool, etc.)
-        return dict(cached)
+        return cls._copied_class_flags(flag_attr_name)
 
     @classmethod
     def _get_class_flag(
@@ -56,9 +141,11 @@ class _FlagManager:
         flag_value
             Value of `flag_name` flag in self. If not found, `flag_value_default`.
         """
-        collected_flags = cls._get_class_flags(flag_attr_name=flag_attr_name)
-
-        return collected_flags.get(flag_name, flag_value_default)
+        # look up the one flag instead of copying all class flags
+        class_flags = _collect_class_flags_cached(cls, flag_attr_name)[0]
+        if flag_name not in class_flags:
+            return flag_value_default
+        return cls._copy_containers(class_flags[flag_name])
 
     def _init_flags(self, flag_attr_name="_flags"):
         """Create dynamic flag dictionary in self.
@@ -93,11 +180,14 @@ class _FlagManager:
             class attribute via nested inheritance and then any overrides
             and new flags from [flag_attr_name]_dynamic object attribute.
         """
-        # shallow copy of the cached class-level dict
-        collected_flags = dict(_collect_class_flags_cached(type(self), flag_attr_name))
+        collected_flags = self._copied_class_flags(flag_attr_name)
 
         if hasattr(self, f"{flag_attr_name}_dynamic"):
-            collected_flags.update(getattr(self, f"{flag_attr_name}_dynamic"))
+            dynamic_flags = getattr(self, f"{flag_attr_name}_dynamic")
+            for key, value in dynamic_flags.items():
+                if type(value) in _CONTAINER_TYPES:
+                    value = self._copy_containers(value)
+                collected_flags[key] = value
 
         return collected_flags
 
@@ -133,14 +223,19 @@ class _FlagManager:
             if `raise_error` is `True`, i.e.,
             if `flag_name` is not in `self.get_flags().keys()`
         """
-        collected_flags = self._get_flags(flag_attr_name=flag_attr_name)
+        # look up the one flag instead of copying all flags;
+        # dynamic flags override class flags, as in _get_flags
+        dynamic_flags = getattr(self, f"{flag_attr_name}_dynamic", {})
+        if flag_name in dynamic_flags:
+            return self._copy_containers(dynamic_flags[flag_name])
 
-        flag_value = collected_flags.get(flag_name, flag_value_default)
+        class_flags = _collect_class_flags_cached(type(self), flag_attr_name)[0]
+        if flag_name in class_flags:
+            return self._copy_containers(class_flags[flag_name])
 
-        if raise_error and flag_name not in collected_flags.keys():
+        if raise_error:
             raise ValueError(f"Tag with name {flag_name} could not be found.")
-
-        return flag_value
+        return flag_value_default
 
     def _set_flags(self, flag_attr_name="_flags", **flag_dict):
         """Set dynamic flags to given values.
@@ -215,9 +310,18 @@ class _FlagManager:
 def _collect_class_flags_cached(cls, flag_attr_name):
     """Walk the MRO once per (cls, flag_attr_name) and cache the result.
 
-    Returns the dict directly; callers are responsible for copying it
-    before handing it out or mutating it, since this is a shared cached
-    object.
+    Returns
+    -------
+    collected_flags : dict
+        Class flags collected along the MRO. This is the shared cached object,
+        callers must not mutate it or hand it out, see
+        ``_FlagManager._copied_class_flags``.
+    flat_keys : tuple of str
+        Keys whose value is a ``list``, ``dict`` or ``set`` that contains no
+        builtin container, a shallow copy of these is enough.
+    nested_keys : tuple of str
+        Keys whose value is a ``list``, ``dict``, ``set`` or ``tuple`` that
+        contains a builtin container, these need ``_copy_containers``.
     """
     collected_flags = {}
     for parent_class in reversed(inspect.getmro(cls)):
@@ -226,4 +330,17 @@ def _collect_class_flags_cached(cls, flag_attr_name):
         if flag_attr_name in parent_class.__dict__:
             more_flags = parent_class.__dict__[flag_attr_name]
             collected_flags.update(more_flags)
-    return collected_flags
+
+    flat_keys = []
+    nested_keys = []
+    for key, value in collected_flags.items():
+        value_type = type(value)
+        if value_type not in _CONTAINER_TYPES:
+            continue
+        items = value.values() if value_type is dict else value
+        if any(type(item) in _CONTAINER_TYPES for item in items):
+            nested_keys.append(key)
+        elif value_type is not tuple:
+            flat_keys.append(key)
+
+    return collected_flags, tuple(flat_keys), tuple(nested_keys)
