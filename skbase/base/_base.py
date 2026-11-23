@@ -145,11 +145,17 @@ class BaseObject(_FlagManager):
         config = self.get_config()
 
         # delete all object attributes in self
-        attrs = [attr for attr in dir(self) if "__" not in attr]
-        cls_attrs = list(dir(type(self)))
-        self_attrs = set(attrs).difference(cls_attrs)
-        for attr in self_attrs:
-            delattr(self, attr)
+        if hasattr(self, "__dict__"):
+            self_attrs = [
+                attr for attr in list(self.__dict__.keys()) if "__" not in attr
+            ]
+            for attr in self_attrs:
+                delattr(self, attr)
+
+        for cls in type(self).__mro__:
+            for slot in getattr(cls, "__slots__", []):
+                if "__" not in slot and hasattr(self, slot):
+                    delattr(self, slot)
 
         # run init with a copy of parameters self had at the start
         self.__init__(**params)

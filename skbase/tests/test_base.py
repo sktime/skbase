@@ -671,6 +671,18 @@ def test_reset(fixture_reset_tester: Type[ResetTester]):
     assert hasattr(x, "foo")
 
 
+def test_reset_shadowed_class_attribute(fixture_reset_tester: Type[ResetTester]):
+    """Test that reset removes instance attributes shadowing class attributes (#624)."""
+    x = fixture_reset_tester(168)
+    x.clsvar = 999
+    assert "clsvar" in x.__dict__ and x.clsvar == 999
+
+    x.reset()
+
+    assert "clsvar" not in getattr(x, "__dict__", {})
+    assert x.clsvar == 210
+
+
 def test_reset_composite(fixture_reset_tester: Type[ResetTester]):
     """Test reset method for correct behaviour, on a composite estimator."""
     y = fixture_reset_tester(42)
